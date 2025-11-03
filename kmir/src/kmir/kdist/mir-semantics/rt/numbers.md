@@ -148,6 +148,7 @@ This truncation function is instrumental in the implementation of Integer arithm
 
 ```k
 // FIXME: Alignment is platform specific
+// TODO: Extend #alignOf to be total by handling aggregate layouts (structs, arrays, unions).
 syntax Int ::= #alignOf( TypeInfo ) [function]
 rule #alignOf( typeInfoPrimitiveType(primTypeBool) )        => 1
 rule #alignOf( typeInfoPrimitiveType(primTypeChar) )        => 4
@@ -167,6 +168,16 @@ rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF16)) )  => 2
 rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF32)) )  => 4
 rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF64)) )  => 8
 rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF128)) ) => 16
+
+rule #alignOf(
+       typeInfoStructType(
+         _,
+         _,
+         _,
+         someLayoutShape(layoutShape(_, _, _, align(ALIGN), _))
+       )
+     )
+  => ALIGN
 ```
 
 ```k

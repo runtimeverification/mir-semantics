@@ -49,7 +49,6 @@ PROVE_RS_SHOW_SPECS = [
     'offset-u8-fail',
     'pointer-cast-length-test-fail',
     'pointer-cast-struct-field-fail',
-    'pointer-cast-transparent-wrapper',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
 ]
