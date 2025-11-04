@@ -38,8 +38,6 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
 }
 PROVE_RS_SHOW_SPECS = [
-    'interior-mut-fail',
-    'interior-mut-refcell-fail',
     'assert_eq_exp',
     'bitwise-not-shift',
     'symbolic-args-fail',
