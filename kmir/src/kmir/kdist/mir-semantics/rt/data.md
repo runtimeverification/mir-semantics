@@ -128,6 +128,13 @@ Constant operands are simply decoded according to their type.
        ...
        </k>
     requires typeInfoVoidType =/=K lookupTy(TY)
+
+  // Fallback for zero-sized constants whose type metadata was not emitted.
+  rule <k> operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, TY, _)))
+        => Aggregate(variantIdx(0), .List)
+       ...
+       </k>
+    requires lookupTy(TY) ==K typeInfoVoidType
 ```
 
 ### Copying and Moving
@@ -1568,6 +1575,9 @@ Zero-sized types can be decoded trivially into their respective representation.
   // zero-sized array
   rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoArrayType(_, _))
         => Range(.List) ... </k>
+  // zero-sized function item (e.g., closures without captures)
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoFunType(_))
+        => Aggregate(variantIdx(0), .List) ... </k>
 ```
 
 Allocated constants of reference type with a single provenance map entry are decoded as references
