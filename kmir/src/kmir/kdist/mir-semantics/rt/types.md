@@ -99,6 +99,13 @@ Pointers to arrays/slices are compatible with pointers to the element type
   rule #allowsInteriorMutation(typeInfoStructType(NAME:String, _, _, _))
     => findString(NAME, "UnsafeCell", 0) =/=Int -1
   rule #allowsInteriorMutation(_) => false [owise]
+
+  syntax Bool ::= #isRefMutTy ( TypeInfo ) [function, total]
+
+  rule #isRefMutTy(typeInfoStructType(NAME:String, _, _, _))
+    => findString(NAME, "RefMut<", 0) =/=Int -1
+  rule #isRefMutTy(_)
+    => false [owise]
 ```
 
 ## Determining types of places with projection

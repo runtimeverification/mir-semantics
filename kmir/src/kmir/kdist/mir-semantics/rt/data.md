@@ -347,6 +347,19 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
 
+  syntax Value ::= #incCellBorrow ( Value ) [function, total]
+
+  rule #incCellBorrow(Integer(VAL, WIDTH, true))
+    => Integer(VAL +Int 1, WIDTH, true)
+    requires WIDTH ==Int 64
+    [preserves-definedness]
+
+  rule #incCellBorrow(Aggregate(IDX, ListItem(FIRST) REST))
+    => Aggregate(IDX, ListItem(#incCellBorrow(FIRST)) REST)
+    [preserves-definedness]
+
+  rule #incCellBorrow(OTHER) => OTHER [owise]
+
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
   rule appendP(.ProjectionElems, TAIL) => TAIL
   rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)

@@ -444,11 +444,136 @@ Other terminators that matter at the MIR level "Runtime" are `Drop` and `Unreach
 Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error.
 
 ```k
-  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), _SPAN))
+  syntax KItem ::= #applyDrop(MaybeTy)
+                 | #dropValue(Value, MaybeTy)
+                 | #releaseBorrowRefMut(Value)
+                 | #releaseBorrowCell(Value)
+                 | #applyBorrowCell(Int, ProjectionElems)
+                 | #applyBorrowCellStack(Int, Int, ProjectionElems)
+
+  rule [termDrop]:
+       <k> #execTerminator(terminator(terminatorKindDrop(place(local(I), PROJS), TARGET, _UNWIND), _SPAN))
          =>
-           #execBlockIdx(TARGET)
+           #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
+           ~> #readProjection(true)
+           ~> #applyDrop(getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJS))
+           ~> #execBlockIdx(TARGET)
         ...
        </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness] // valid local index checked
+
+  rule <k> VAL:Value ~> #applyDrop(MTY) => #dropValue(VAL, MTY) ... </k>
+
+  rule #dropValue(_:Value, MTY) => .K
+    requires notBool #isRefMutTy(#lookupMaybeTy(MTY))
+
+  rule <k> #dropValue(Aggregate(_, ARGS), MTY)
+        => #releaseBorrowRefMut(getValue(ARGS, 1))
+       ...
+       </k>
+    requires #isRefMutTy(#lookupMaybeTy(MTY))
+     andBool 1 <Int size(ARGS)
+
+  rule <k> #releaseBorrowRefMut(Aggregate(_, ListItem(PTR) _))
+        => #releaseBorrowCell(PTR)
+       ...
+       </k>
+
+  rule #releaseBorrowRefMut(_) => .K [owise]
+
+  rule <k> #releaseBorrowCell(PtrLocal(0, place(local(J), PROJS), _, _))
+        =>
+          #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
+          ~> #readProjection(false)
+          ~> #applyBorrowCell(J, PROJS)
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int J
+     andBool J <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[J])
+    [preserves-definedness] // valid pointer target on current stack frame
+
+  rule <k> #releaseBorrowCell(Reference(0, place(local(J), PROJS), _, _))
+        =>
+          #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
+          ~> #readProjection(false)
+          ~> #applyBorrowCell(J, PROJS)
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int J
+     andBool J <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[J])
+    [preserves-definedness]
+
+  rule <k> #releaseBorrowCell(PtrLocal(OFFSET, place(local(J), PROJS), _, _))
+        =>
+          #traverseProjection(
+            toStack(OFFSET, local(J)),
+            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
+            PROJS,
+            .Contexts
+          )
+          ~> #readProjection(false)
+          ~> #applyBorrowCellStack(OFFSET, J, PROJS)
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+     [preserves-definedness]
+
+  rule <k> #releaseBorrowCell(Reference(OFFSET, place(local(J), PROJS), _, _))
+        =>
+          #traverseProjection(
+            toStack(OFFSET, local(J)),
+            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
+            PROJS,
+            .Contexts
+          )
+          ~> #readProjection(false)
+          ~> #applyBorrowCellStack(OFFSET, J, PROJS)
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+     [preserves-definedness]
+
+  rule #releaseBorrowCell(_) => .K [owise]
+
+  rule <k> CELL:Value ~> #applyBorrowCell(J, PROJS)
+        => #setLocalValue(place(local(J), PROJS), #incCellBorrow(CELL))
+       ...
+       </k>
+
+  rule #applyBorrowCell(_, _) => .K [owise]
+
+  rule <k> CELL:Value ~> #applyBorrowCellStack(OFFSET, J, PROJS)
+        =>
+          #traverseProjection(
+            toStack(OFFSET, local(J)),
+            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
+            PROJS,
+            .Contexts
+          )
+          ~> #writeProjection(#incCellBorrow(CELL))
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule #applyBorrowCellStack(_, _, _) => .K [owise]
 
   syntax MIRError ::= "ReachedUnreachable"
 
