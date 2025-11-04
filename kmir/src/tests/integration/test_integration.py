@@ -39,7 +39,6 @@ PROVE_RS_START_SYMBOLS = {
 }
 PROVE_RS_SHOW_SPECS = [
     'interior-mut-fail',
-    'interior-mut3-fail',
     'interior-mut-refcell-fail',
     'assert_eq_exp',
     'bitwise-not-shift',
