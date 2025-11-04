@@ -272,6 +272,20 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
                 [KApply('symbol(_)_LIB_Symbol_String', [stringToken(sym['IntrinsicSym'])])],
             )
 
+    # Populate remaining NormalSym entries with `noBody` shims so lookupFunction keeps the real symbol name.
+    for ty, sym in smir_info.function_symbols.items():
+        if ty in functions or 'NormalSym' not in sym:
+            continue
+        symbol_name = sym['NormalSym']
+        functions[ty] = KApply(
+            'MonoItemKind::MonoItemFn',
+            [
+                KApply('symbol(_)_LIB_Symbol_String', [stringToken(symbol_name)]),
+                KApply('defId(_)_BODY_DefId_Int', [intToken(ty)]),
+                KApply('noBody_BODY_MaybeBody', ()),
+            ],
+        )
+
     return functions
 
 
