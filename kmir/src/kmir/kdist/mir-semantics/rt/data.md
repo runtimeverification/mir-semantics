@@ -613,11 +613,19 @@ An attempt to read more elements than the length of the accessed array is undefi
   // helper rewrite to implement truncating slices to required size
   syntax KItem ::= #derefTruncate ( MetadataSize , ProjectionElems )
   // ----------------------------------------------------------------------------------------
-  // no metadata, no change to the value
-  rule <k> #traverseProjection( DEST,         VAL, .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadataSize, PROJS)
+  // values other than `Range` do not have metadata anyway, they are passed along unchanged
+  rule <k> #traverseProjection( DEST,         VAL                , .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadataSize, PROJS)
         => #traverseProjection(DEST, VAL, PROJS, CTXTS)
         ...
        </k>
+    requires notBool isRange(VAL)
+
+  // TODO move these to value.md
+  syntax Bool ::= isRange ( Value ) [function, total]
+  // ------------------------------------------------
+  rule isRange(Range(_)) => true
+  rule isRange( _OTHER ) => false [owise]
+
   // staticSize metadata requires an array of suitable length and truncates it
   rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
@@ -630,6 +638,12 @@ An attempt to read more elements than the length of the accessed array is undefi
         ...
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
+  // If an array was projected to but no metadata is available, use the head element
+  rule <k> #traverseProjection( DEST, Range(ListItem(VAL) _:List), .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadataSize, PROJS)
+        => #traverseProjection(DEST, VAL, PROJS, CTXTS)
+        ...
+       </k>
+    [preserves-definedness]
 
   // Ref, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
