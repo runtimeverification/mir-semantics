@@ -322,8 +322,37 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'pointers' / 'offset_get_unchecked.state',
         None,
     ),
+    (
+        'Ptr-offset_read',
+        EXEC_DATA_DIR / 'pointers' / 'offset_read.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'offset_read.state',
+        2000,
+    ),
+    (
+        'Ptr-offset_write',
+        EXEC_DATA_DIR / 'pointers' / 'offset_write.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'offset_write.state',
+        2000,
+    ),
+    (
+        'Ptr-offset_struct_field_read',
+        EXEC_DATA_DIR / 'pointers' / 'offset_struct_field_read.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'offset_struct_field_read.state',
+        2000,
+    ),
+    (
+        'Ptr-offset_struct_field_write',
+        EXEC_DATA_DIR / 'pointers' / 'offset_struct_field_write.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'offset_struct_field_write.state',
+        2000,
+    ),
 ]
 
+
+
+
+
+      
 
 @pytest.mark.parametrize('symbolic', [False, True], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
