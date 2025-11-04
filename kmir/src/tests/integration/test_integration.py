@@ -349,11 +349,6 @@ EXEC_DATA = [
 ]
 
 
-
-
-
-      
-
 @pytest.mark.parametrize('symbolic', [False, True], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
