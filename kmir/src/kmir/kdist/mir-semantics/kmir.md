@@ -444,6 +444,23 @@ Other terminators that matter at the MIR level "Runtime" are `Drop` and `Unreach
 Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error.
 
 ```k
+  // Drop/borrow-release machinery for RefMut
+  //
+  // We model dropping RefMut<T> as releasing the interior-mutability
+  // borrow it holds. The flow is:
+  //   - Detect RefMut via type info (#isRefMutTy over #lookupMaybeTy).
+  //   - Extract the pointer to the RefCell "borrow cell" from field
+  //     index 1 of the RefMut aggregate and normalize pointer shapes.
+  //   - Read the cell and write back #incCellBorrow(cell). With our
+  //     convention, a unique (mutable) borrow stores -1; adding 1
+  //     yields 0, which corresponds to "no outstanding borrow".
+  //
+  // Notes:
+  //   - Borrow cell is modeled as a 64-bit signed integer Value
+  //     (see rt/data.md #incCellBorrow).
+  //   - We do not assert the current flag equals -1; repeated drop
+  //     would not trap in this model.
+  //   - #isRefMutTy relies on string matching "RefMut<" (see rt/types.md).
   syntax KItem ::= #applyDrop(MaybeTy)
                  | #dropValue(Value, MaybeTy)
                  | #releaseBorrowRefMut(Value)
@@ -466,11 +483,14 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid local index checked
 
+  // After reading the place value, delegate to type-directed drop
   rule <k> VAL:Value ~> #applyDrop(MTY) => #dropValue(VAL, MTY) ... </k>
 
+  // Non-RefMut types: no special drop behavior here
   rule #dropValue(_:Value, MTY) => .K
     requires notBool #isRefMutTy(#lookupMaybeTy(MTY))
 
+  // RefMut<T>: field #1 modeled as pointer to the borrow cell
   rule <k> #dropValue(Aggregate(_, ARGS), MTY)
         => #releaseBorrowRefMut(getValue(ARGS, 1))
        ...
@@ -478,13 +498,18 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
     requires #isRefMutTy(#lookupMaybeTy(MTY))
      andBool 1 <Int size(ARGS)
 
+  // Accept either Reference/PtrLocal inside the RefMut wrapper
+  // and forward to the release operation
   rule <k> #releaseBorrowRefMut(Aggregate(_, ListItem(PTR) _))
         => #releaseBorrowCell(PTR)
        ...
        </k>
 
+  // Unknown shapes: conservatively skip
   rule #releaseBorrowRefMut(_) => .K [owise]
 
+  // Current-frame pointer (OFFSET = 0): read the cell and then
+  // apply the borrow release in the same frame
   rule <k> #releaseBorrowCell(PtrLocal(0, place(local(J), PROJS), _, _))
         =>
           #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
@@ -498,6 +523,7 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      andBool isTypedValue(LOCALS[J])
     [preserves-definedness] // valid pointer target on current stack frame
 
+  // Current-frame Reference variant: same as PtrLocal case
   rule <k> #releaseBorrowCell(Reference(0, place(local(J), PROJS), _, _))
         =>
           #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
@@ -511,6 +537,8 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      andBool isTypedValue(LOCALS[J])
     [preserves-definedness]
 
+  // Ancestor-frame pointer (OFFSET > 0): locate the frame, read the
+  // cell and then apply the update in that ancestor frame
   rule <k> #releaseBorrowCell(PtrLocal(OFFSET, place(local(J), PROJS), _, _))
         =>
           #traverseProjection(
@@ -529,6 +557,7 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      andBool isStackFrame(STACK[OFFSET -Int 1])
      [preserves-definedness]
 
+  // Ancestor-frame Reference variant: same as PtrLocal case
   rule <k> #releaseBorrowCell(Reference(OFFSET, place(local(J), PROJS), _, _))
         =>
           #traverseProjection(
@@ -547,15 +576,19 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      andBool isStackFrame(STACK[OFFSET -Int 1])
      [preserves-definedness]
 
+  // Unknown pointer shapes: skip
   rule #releaseBorrowCell(_) => .K [owise]
 
+  // Current-frame writeback: increment the borrow cell (e.g. -1 -> 0)
   rule <k> CELL:Value ~> #applyBorrowCell(J, PROJS)
         => #setLocalValue(place(local(J), PROJS), #incCellBorrow(CELL))
        ...
        </k>
 
+  // Fallback
   rule #applyBorrowCell(_, _) => .K [owise]
 
+  // Ancestor-frame writeback: increment and write back via projection
   rule <k> CELL:Value ~> #applyBorrowCellStack(OFFSET, J, PROJS)
         =>
           #traverseProjection(
@@ -573,6 +606,7 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      andBool isStackFrame(STACK[OFFSET -Int 1])
     [preserves-definedness]
 
+  // Fallback
   rule #applyBorrowCellStack(_, _, _) => .K [owise]
 
   syntax MIRError ::= "ReachedUnreachable"

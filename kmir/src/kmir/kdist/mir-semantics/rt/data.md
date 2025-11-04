@@ -347,6 +347,16 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
 
+  // Borrow cell increment (interior mutability model)
+  //
+  // We model the RefCell borrow flag as a 64-bit signed integer Value:
+  //   0   -> no outstanding borrow
+  //   >0  -> number of shared (immutable) borrows
+  //   -1  -> unique (mutable) borrow
+  // Releasing a RefMut (unique borrow) applies +1 to the flag, so -1
+  // becomes 0. For aggregates we recurse into the first field to reach
+  // the integer payload in our simplified layout model. Other Values are
+  // left unchanged.
   syntax Value ::= #incCellBorrow ( Value ) [function, total]
 
   rule #incCellBorrow(Integer(VAL, WIDTH, true))
@@ -354,6 +364,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     requires WIDTH ==Int 64
     [preserves-definedness]
 
+  // Recurse into the head field if the borrow cell is wrapped
   rule #incCellBorrow(Aggregate(IDX, ListItem(FIRST) REST))
     => Aggregate(IDX, ListItem(#incCellBorrow(FIRST)) REST)
     [preserves-definedness]
