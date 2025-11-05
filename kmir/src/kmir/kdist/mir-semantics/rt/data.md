@@ -1553,6 +1553,19 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
        andBool size(ELEMS) *Int 8 ==Int #bitWidth(#numTypeOf(lookupTy(TY_TARGET)))
        andBool #areLittleEndianBytes(ELEMS)
       [preserves-definedness] // ensures #numTypeOf is defined
+
+  // Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
+  rule <k> #cast(
+              Integer(VAL, WIDTH, _SIGNEDNESS),
+              castKindTransmute,
+              _TY_SOURCE,
+              _TY_TARGET
+            )
+          =>
+            Range(#littleEndianBytesFromInt(VAL, WIDTH))
+          ...
+        </k>
+      [preserves-definedness] // ensures element type/length are well-formed
 ```
 
 Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
@@ -1585,6 +1598,22 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
   rule #littleEndianFromBytes(.List) => 0
   rule #littleEndianFromBytes(ListItem(Integer(BYTE, 8, false)) REST)
     => BYTE +Int 256 *Int #littleEndianFromBytes(REST)
+
+  syntax List ::= #littleEndianBytesFromInt ( Int, Int ) [function]
+                | #littleEndianBytes ( Int, Int ) [function]
+  // -------------------------------------------------------------
+  rule #littleEndianBytesFromInt(VAL, WIDTH)
+    => #littleEndianBytes(truncate(VAL, WIDTH, Unsigned), WIDTH /Int 8)
+    requires WIDTH %Int 8 ==Int 0
+     andBool WIDTH >=Int 0
+
+  rule #littleEndianBytes(_, COUNT)
+    => .List
+    requires COUNT <=Int 0
+
+  rule #littleEndianBytes(VAL, COUNT)
+    => ListItem(Integer(VAL %Int 256, 8, false)) #littleEndianBytes(VAL /Int 256, COUNT -Int 1)
+    requires COUNT >Int 0
 ```
 
 
