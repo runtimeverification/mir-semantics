@@ -92,6 +92,8 @@ pub(crate) fn inner_process_instruction(
     accounts: &[AccountInfo],
     instruction_data: &[u8],
 ) -> ProgramResult {
+    use pinocchio_token_interface::program::ID;
+
     let [discriminator, instruction_data @ ..] = instruction_data else {
         return Err(TokenError::InvalidInstruction.into());
     };
@@ -135,15 +137,14 @@ pub(crate) fn inner_process_instruction(
             }
 
             match accounts[2].data_len() {
-                Account::LEN => test_process_transfer(
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => test_process_transfer_multisig(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                Multisig::LEN => test_process_transfer_multisig(
+                _ => test_process_transfer(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                _ => panic!("Test_proces_transfer: Invalid account length"), /* TODO: replace with checking for malformed input */
             }
         }
         // 7 - MintTo
@@ -159,17 +160,14 @@ pub(crate) fn inner_process_instruction(
             }
 
             match accounts[2].data_len() {
-                Account::LEN => test_process_mint_to(
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => test_process_mint_to_multisig(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                Multisig::LEN => test_process_mint_to_multisig(
+                _ => test_process_mint_to(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                _ => panic!("Test_proces_mint_to: Invalid account length"), /* TODO: replace with
-                                                                             * checking for
-                                                                             * malformed input */
             }
         }
         // 8 - Test Burn
@@ -185,17 +183,14 @@ pub(crate) fn inner_process_instruction(
             }
 
             match accounts[2].data_len() {
-                Account::LEN => test_process_burn(
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => test_process_burn_multisig(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                Multisig::LEN => test_process_burn_multisig(
+                _ => test_process_burn(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                _ => panic!("Test_proces_burn: Invalid account length"), /* TODO: replace with
-                                                                          * checking for
-                                                                          * malformed input */
             }
         }
         // 9 - Test CloseAccount
@@ -214,11 +209,10 @@ pub(crate) fn inner_process_instruction(
             }
 
             match accounts[2].data_len() {
-                Account::LEN => test_process_close_account(accounts.first_chunk().unwrap()),
-                Multisig::LEN => {
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => {
                     test_process_close_account_multisig(accounts.first_chunk().unwrap())
                 }
-                _ => panic!("Test_proces_close_account: Invalid account length"), /* TODO: replace with checking for malformed input */
+                _ => test_process_close_account(accounts.first_chunk().unwrap()),
             }
         }
         // 12 - Test TransferChecked
@@ -237,15 +231,16 @@ pub(crate) fn inner_process_instruction(
             }
 
             match accounts[3].data_len() {
-                Account::LEN => test_process_transfer_checked(
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => {
+                    test_process_transfer_checked_multisig(
+                        accounts.first_chunk().unwrap(),
+                        instruction_data.first_chunk().unwrap(),
+                    )
+                }
+                _ => test_process_transfer_checked(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                Multisig::LEN => test_process_transfer_checked_multisig(
-                    accounts.first_chunk().unwrap(),
-                    instruction_data.first_chunk().unwrap(),
-                ),
-                _ => panic!("Test_proces_transfer_checked: Invalid account length"), /* TODO: replace with checking for malformed input */
             }
         }
         // 15 - Test BurnChecked
@@ -264,18 +259,16 @@ pub(crate) fn inner_process_instruction(
             }
 
             match accounts[2].data_len() {
-                Account::LEN => test_process_burn_checked(
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => {
+                    test_process_burn_checked_multisig(
+                        accounts.first_chunk().unwrap(),
+                        instruction_data.first_chunk().unwrap(),
+                    )
+                }
+                _ => test_process_burn_checked(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                Multisig::LEN => test_process_burn_checked_multisig(
-                    accounts.first_chunk().unwrap(),
-                    instruction_data.first_chunk().unwrap(),
-                ),
-                _ => panic!("Test_proces_burn_checked: Invalid account length"), /* TODO: replace
-                                                                                  * with checking
-                                                                                  * for malformed
-                                                                                  * input */
             }
         }
         // 16 - Test InitializeAccount2
@@ -330,6 +323,8 @@ fn inner_process_remaining_instruction(
     instruction_data: &[u8],
     discriminator: u8,
 ) -> ProgramResult {
+    use pinocchio_token_interface::program::ID;
+
     match discriminator {
         // 2 - InitializeMultisig
         2 => {
@@ -354,17 +349,14 @@ fn inner_process_remaining_instruction(
             }
 
             match accounts[2].data_len() {
-                Account::LEN => test_process_approve(
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => test_process_approve_multisig(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                Multisig::LEN => test_process_approve_multisig(
+                _ => test_process_approve(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                _ => panic!("Test_proces_approve: Invalid account length"), /* TODO: replace with
-                                                                             * checking for
-                                                                             * malformed input */
             }
         }
         // 5 - Revoke
@@ -380,11 +372,10 @@ fn inner_process_remaining_instruction(
             }
 
             match accounts[1].data_len() {
-                Account::LEN => test_process_revoke(accounts.first_chunk().unwrap()),
-                Multisig::LEN => test_process_revoke_multisig(accounts.first_chunk().unwrap()),
-                _ => panic!("Test_proces_revoke: Invalid account length"), /* TODO: replace with
-                                                                            * checking for
-                                                                            * malformed input */
+                Multisig::LEN if accounts[1].is_owned_by(&ID) => {
+                    test_process_revoke_multisig(accounts.first_chunk().unwrap())
+                }
+                _ => test_process_revoke(accounts.first_chunk().unwrap()),
             }
         }
         // 6 - SetAuthority
@@ -405,26 +396,28 @@ fn inner_process_remaining_instruction(
             if let Some(first_account) = accounts.first() {
                 match first_account.data_len() {
                     Account::LEN => match accounts[1].data_len() {
-                        Account::LEN => test_process_set_authority_account(
+                        Multisig::LEN if accounts[1].is_owned_by(&ID) => {
+                            test_process_set_authority_account_multisig(
+                                accounts.first_chunk().unwrap(),
+                                instruction_data.first_chunk().unwrap(),
+                            )
+                        }
+                        _ => test_process_set_authority_account(
                             accounts.first_chunk().unwrap(),
                             instruction_data.first_chunk().unwrap(),
                         ),
-                        Multisig::LEN => test_process_set_authority_account_multisig(
-                            accounts.first_chunk().unwrap(),
-                            instruction_data.first_chunk().unwrap(),
-                        ),
-                        _ => panic!("Test_proces_set_authority_account: Invalid account length"), /* TODO: replace with checking for malformed input */
                     },
                     Mint::LEN => match accounts[1].data_len() {
-                        Account::LEN => test_process_set_authority_mint(
+                        Multisig::LEN if accounts[1].is_owned_by(&ID) => {
+                            test_process_set_authority_mint_multisig(
+                                accounts.first_chunk().unwrap(),
+                                instruction_data.first_chunk().unwrap(),
+                            )
+                        }
+                        _ => test_process_set_authority_mint(
                             accounts.first_chunk().unwrap(),
                             instruction_data.first_chunk().unwrap(),
                         ),
-                        Multisig::LEN => test_process_set_authority_mint_multisig(
-                            accounts.first_chunk().unwrap(),
-                            instruction_data.first_chunk().unwrap(),
-                        ),
-                        _ => panic!("Test_proces_set_authority_mint: Invalid account length"), /* TODO: replace with checking for malformed input */
                     },
                     // FIXME: Create proof harness for this
                     _ => panic!("SetAuthority: Unexpected account data length"),
@@ -450,11 +443,10 @@ fn inner_process_remaining_instruction(
             }
 
             match accounts[2].data_len() {
-                Account::LEN => test_process_freeze_account(accounts.first_chunk().unwrap()),
-                Multisig::LEN => {
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => {
                     test_process_freeze_account_multisig(accounts.first_chunk().unwrap())
                 }
-                _ => panic!("Test_proces_freeze_account: Invalid account length"), /* TODO: replace with checking for malformed input */
+                _ => test_process_freeze_account(accounts.first_chunk().unwrap()),
             }
         }
         // 11 - ThawAccount
@@ -473,14 +465,10 @@ fn inner_process_remaining_instruction(
             }
 
             match accounts[2].data_len() {
-                Account::LEN => test_process_thaw_account(accounts.first_chunk().unwrap()),
-                Multisig::LEN => {
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => {
                     test_process_thaw_account_multisig(accounts.first_chunk().unwrap())
                 }
-                _ => panic!("Test_proces_thaw_account: Invalid account length"), /* TODO: replace
-                                                                                  * with checking
-                                                                                  * for malformed
-                                                                                  * input */
+                _ => test_process_thaw_account(accounts.first_chunk().unwrap()),
             }
         }
         // 13 - ApproveChecked
@@ -499,15 +487,16 @@ fn inner_process_remaining_instruction(
             }
 
             match accounts[3].data_len() {
-                Account::LEN => test_process_approve_checked(
+                Multisig::LEN if accounts[3].is_owned_by(&ID) => {
+                    test_process_approve_checked_multisig(
+                        accounts.first_chunk().unwrap(),
+                        instruction_data.first_chunk().unwrap(),
+                    )
+                }
+                _ => test_process_approve_checked(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                Multisig::LEN => test_process_approve_checked_multisig(
-                    accounts.first_chunk().unwrap(),
-                    instruction_data.first_chunk().unwrap(),
-                ),
-                _ => panic!("Test_proces_approve_checked: Invalid account length"), /* TODO: replace with checking for malformed input */
             }
         }
         // 14 - MintToChecked
@@ -526,15 +515,16 @@ fn inner_process_remaining_instruction(
             }
 
             match accounts[2].data_len() {
-                Account::LEN => test_process_mint_to_checked(
+                Multisig::LEN if accounts[2].is_owned_by(&ID) => {
+                    test_process_mint_to_checked_multisig(
+                        accounts.first_chunk().unwrap(),
+                        instruction_data.first_chunk().unwrap(),
+                    )
+                }
+                _ => test_process_mint_to_checked(
                     accounts.first_chunk().unwrap(),
                     instruction_data.first_chunk().unwrap(),
                 ),
-                Multisig::LEN => test_process_mint_to_checked_multisig(
-                    accounts.first_chunk().unwrap(),
-                    instruction_data.first_chunk().unwrap(),
-                ),
-                _ => panic!("Test_proces_mint_to_checked: Invalid account length"), /* TODO: replace with checking for malformed input */
             }
         }
         // 17 - SyncNative
@@ -607,31 +597,34 @@ fn inner_process_remaining_instruction(
             if let Some(acc) = accounts.first() {
                 match acc.data_len() {
                     Account::LEN => match accounts[2].data_len() {
-                        Account::LEN => test_process_withdraw_excess_lamports_account(
+                        Multisig::LEN if accounts[2].is_owned_by(&ID) => {
+                            test_process_withdraw_excess_lamports_account_multisig(
+                                accounts.first_chunk().unwrap(),
+                            )
+                        }
+                        _ => test_process_withdraw_excess_lamports_account(
                             accounts.first_chunk().unwrap(),
                         ),
-                        Multisig::LEN => test_process_withdraw_excess_lamports_account_multisig(
-                            accounts.first_chunk().unwrap(),
-                        ),
-                        _ => panic!("Test_proces_withdraw_excess_lamports: Invalid account length"), /* TODO: replace with checking for malformed input */
                     },
                     Mint::LEN => match accounts[2].data_len() {
-                        Account::LEN => test_process_withdraw_excess_lamports_mint(
+                        Multisig::LEN if accounts[2].is_owned_by(&ID) => {
+                            test_process_withdraw_excess_lamports_mint_multisig(
+                                accounts.first_chunk().unwrap(),
+                            )
+                        }
+                        _ => test_process_withdraw_excess_lamports_mint(
                             accounts.first_chunk().unwrap(),
                         ),
-                        Multisig::LEN => test_process_withdraw_excess_lamports_mint_multisig(
-                            accounts.first_chunk().unwrap(),
-                        ),
-                        _ => panic!("Test_proces_withdraw_excess_lamports: Invalid account length"), /* TODO: replace with checking for malformed input */
                     },
                     Multisig::LEN => match accounts[2].data_len() {
-                        Account::LEN => test_process_withdraw_excess_lamports_multisig(
+                        Multisig::LEN if accounts[2].is_owned_by(&ID) => {
+                            test_process_withdraw_excess_lamports_multisig_multisig(
+                                accounts.first_chunk().unwrap(),
+                            )
+                        }
+                        _ => test_process_withdraw_excess_lamports_multisig(
                             accounts.first_chunk().unwrap(),
                         ),
-                        Multisig::LEN => test_process_withdraw_excess_lamports_multisig_multisig(
-                            accounts.first_chunk().unwrap(),
-                        ),
-                        _ => panic!("Test_proces_withdraw_excess_lamports: Invalid account length"), /* TODO: replace with checking for malformed input */
                     },
                     // FIXME: Need harness for this
                     _other => panic!("withdraw_excess_lamports: Unexpected account data_len"),
@@ -710,7 +703,11 @@ fn inner_test_validate_owner(
         result
     }
     // Line 106-108
-    else if owner_account_info.data_len() == Multisig::LEN && owner_account_info.is_owned_by(&ID)
+    // We add the `maybe_multisig_is_initialised.is_some()` to not branch vacuously in the
+    // non-multisig cases
+    else if maybe_multisig_is_initialised.is_some()
+        && owner_account_info.data_len() == Multisig::LEN
+        && owner_account_info.is_owned_by(&ID)
     {
         // Guaranteed to succeed by `cheatcode_is_multisig`
         let multisig_is_initialised = maybe_multisig_is_initialised.unwrap();
@@ -1021,7 +1018,6 @@ pub fn test_process_transfer(
 
     cheatcode_is_account(&accounts[0]);
     cheatcode_is_account(&accounts[1]);
-    cheatcode_is_account(&accounts[2]);
 
     //-Initial State-----------------------------------------------------------
     let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
@@ -1328,7 +1324,6 @@ pub fn test_process_mint_to(
 
     cheatcode_is_mint(&accounts[0]);
     cheatcode_is_account(&accounts[1]);
-    cheatcode_is_account(&accounts[2]);
 
     //-Initial State-----------------------------------------------------------
     let initial_supply = get_mint(&accounts[0]).supply();
@@ -1522,7 +1517,6 @@ pub fn test_process_burn(accounts: &[AccountInfo; 3], instruction_data: &[u8; 8]
 
     cheatcode_is_account(&accounts[0]);
     cheatcode_is_mint(&accounts[1]);
-    cheatcode_is_account(&accounts[2]);
 
     //-Initial State-----------------------------------------------------------
     let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
@@ -1743,7 +1737,6 @@ pub fn test_process_close_account(accounts: &[AccountInfo; 3]) -> ProgramResult 
 
     cheatcode_is_account(&accounts[0]);
     cheatcode_is_account(&accounts[1]);
-    cheatcode_is_account(&accounts[2]);
 
     //-Initial State-----------------------------------------------------------
     let src_initialised = get_account(&accounts[0]).is_initialized();
@@ -1904,7 +1897,6 @@ pub fn test_process_transfer_checked(
     cheatcode_is_account(&accounts[0]);
     cheatcode_is_mint(&accounts[1]);
     cheatcode_is_account(&accounts[2]);
-    cheatcode_is_account(&accounts[3]);
 
     //-Initial State-----------------------------------------------------------
     let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
@@ -2237,7 +2229,6 @@ pub fn test_process_burn_checked(
 
     cheatcode_is_account(&accounts[0]);
     cheatcode_is_mint(&accounts[1]);
-    cheatcode_is_account(&accounts[2]);
 
     //-Initial State-----------------------------------------------------------
     let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
@@ -2802,7 +2793,6 @@ fn test_process_approve(accounts: &[AccountInfo; 3], instruction_data: &[u8; 8])
 
     cheatcode_is_account(&accounts[0]); // Source Account
     cheatcode_is_account(&accounts[1]); // Delegate
-    cheatcode_is_account(&accounts[2]); // Owner
 
     //-Initial State-----------------------------------------------------------
     let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
@@ -3483,7 +3473,6 @@ fn test_process_freeze_account(accounts: &[AccountInfo; 3]) -> ProgramResult {
 
     cheatcode_is_account(&accounts[0]);
     cheatcode_is_mint(&accounts[1]);
-    cheatcode_is_account(&accounts[2]);
 
     //-Initial State-----------------------------------------------------------
     let src_initialised = get_account(&accounts[0]).is_initialized();
@@ -3619,7 +3608,6 @@ fn test_process_thaw_account(accounts: &[AccountInfo; 3]) -> ProgramResult {
 
     cheatcode_is_account(&accounts[0]);
     cheatcode_is_mint(&accounts[1]);
-    cheatcode_is_account(&accounts[2]);
 
     //-Initial State-----------------------------------------------------------
     let src_initialised = get_account(&accounts[0]).is_initialized();
@@ -3760,7 +3748,6 @@ fn test_process_approve_checked(
     cheatcode_is_account(&accounts[0]); // Source Account
     cheatcode_is_mint(&accounts[1]); // Expected Mint
     cheatcode_is_account(&accounts[2]); // Delegate
-    cheatcode_is_account(&accounts[3]); // Owner
 
     //-Initial State-----------------------------------------------------------
     let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
@@ -3907,7 +3894,6 @@ fn test_process_mint_to_checked(
 
     cheatcode_is_mint(&accounts[0]);
     cheatcode_is_account(&accounts[1]);
-    cheatcode_is_account(&accounts[2]);
 
     //-Initial State-----------------------------------------------------------
     let initial_supply = get_mint(&accounts[0]).supply();
@@ -4405,7 +4391,6 @@ fn test_process_ui_amount_to_amount(
 fn test_process_withdraw_excess_lamports_account(accounts: &[AccountInfo; 3]) -> ProgramResult {
     cheatcode_is_account(&accounts[0]); // Source Account
     cheatcode_is_account(&accounts[1]); // Destination
-    cheatcode_is_account(&accounts[2]); // Authority
 
     //-Initial State-----------------------------------------------------------
     let src_data_len = accounts[0].data_len();
@@ -4554,7 +4539,6 @@ fn test_process_withdraw_excess_lamports_account_multisig(
 fn test_process_withdraw_excess_lamports_mint(accounts: &[AccountInfo; 3]) -> ProgramResult {
     cheatcode_is_mint(&accounts[0]); // Source Account (Mint)
     cheatcode_is_account(&accounts[1]); // Destination
-    cheatcode_is_account(&accounts[2]); // Authority
 
     //-Initial State-----------------------------------------------------------
     let src_data_len = accounts[0].data_len();
@@ -4703,7 +4687,6 @@ fn test_process_withdraw_excess_lamports_mint_multisig(
 fn test_process_withdraw_excess_lamports_multisig(accounts: &[AccountInfo; 3]) -> ProgramResult {
     cheatcode_is_multisig(&accounts[0]); // Source Account (Multisig)
     cheatcode_is_account(&accounts[1]); // Destination
-    cheatcode_is_account(&accounts[2]); // Authority
 
     //-Initial State-----------------------------------------------------------
     let src_data_len = accounts[0].data_len();
