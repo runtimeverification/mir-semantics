@@ -168,16 +168,7 @@ rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF16)) )  => 2
 rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF32)) )  => 4
 rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF64)) )  => 8
 rule #alignOf( typeInfoPrimitiveType(primTypeFloat(floatTyF128)) ) => 16
-
-rule #alignOf(
-       typeInfoStructType(
-         _,
-         _,
-         _,
-         someLayoutShape(layoutShape(_, _, _, align(ALIGN), _))
-       )
-     )
-  => ALIGN
+rule #alignOf( typeInfoStructType(_,_,_,someLayoutShape(layoutShape(_, _, _, align(ALIGN), _)))) => ALIGN
 ```
 
 ```k
