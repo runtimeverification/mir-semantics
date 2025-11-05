@@ -16,6 +16,7 @@ from .ty import (
     IntT,
     IntTy,
     Multiple,
+    Pointer,
     PrimitiveInt,
     PtrT,
     RefT,
@@ -23,6 +24,7 @@ from .ty import (
     StrT,
     StructT,
     UintT,
+    WrappingRange,
 )
 from .value import (
     NO_SIZE,
@@ -419,5 +421,12 @@ def _extract_tag(*, data: bytes, tag_offset: MachineSize, tag: Scalar) -> tuple[
             tag_data = data[tag_offset.in_bytes : tag_offset.in_bytes + length.value]
             tag_value = int.from_bytes(tag_data, byteorder='little', signed=False)
             return tag_value, length
+        # special case: niche-encoded optional pointer, None == 0x00000000
+        case Initialized(value=Pointer(), valid_range=WrappingRange(start=1, end=0)) if (
+            data == b'\x00\x00\x00\x00\x00\x00\x00\x00'
+        ):
+            from .ty import IntegerLength
+
+            return 0, IntegerLength.I64
         case _:
             raise ValueError(f'Unsupported tag: {tag}')
