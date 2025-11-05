@@ -109,6 +109,14 @@ Pointers to arrays/slices are compatible with pointers to the element type
     => findString(NAME, "RefMut<", 0) =/=Int -1
   rule #isRefMutTy(_)
     => false [owise]
+
+  // Identify Ref<T> (shared borrow) types while excluding RefMut<T>.
+  syntax Bool ::= #isRefTy ( TypeInfo ) [function, total]
+
+  rule #isRefTy(typeInfoStructType(NAME:String, _, _, _))
+    => findString(NAME, "Ref<", 0) =/=Int -1
+     andBool findString(NAME, "RefMut<", 0) ==Int -1
+  rule #isRefTy(_) => false [owise]
 ```
 
 ## Determining types of places with projection

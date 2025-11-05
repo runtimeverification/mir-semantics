@@ -386,6 +386,20 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   rule #incCellBorrow(OTHER) => OTHER [owise]
 
+  // Borrow cell decrement for releasing shared Ref borrows.
+  syntax Value ::= #decCellBorrow ( Value ) [function, total]
+
+  rule #decCellBorrow(Integer(VAL, WIDTH, true))
+    => Integer(VAL -Int 1, WIDTH, true)
+    requires WIDTH ==Int 64
+    [preserves-definedness]
+
+  rule #decCellBorrow(Aggregate(IDX, ListItem(FIRST) REST))
+    => Aggregate(IDX, ListItem(#decCellBorrow(FIRST)) REST)
+    [preserves-definedness]
+
+  rule #decCellBorrow(OTHER) => OTHER [owise]
+
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
   rule appendP(.ProjectionElems, TAIL) => TAIL
   rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)

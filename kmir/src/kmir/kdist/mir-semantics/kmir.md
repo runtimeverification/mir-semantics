@@ -464,9 +464,13 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
   syntax KItem ::= #applyDrop(MaybeTy)
                  | #dropValue(Value, MaybeTy)
                  | #releaseBorrowRefMut(Value)
+                 | #releaseBorrowRefShared(Value)
                  | #releaseBorrowCell(Value)
+                 | #releaseBorrowCellShared(Value)
                  | #applyBorrowCell(Int, ProjectionElems)
+                 | #applyBorrowCellShared(Int, ProjectionElems)
                  | #applyBorrowCellStack(Int, Int, ProjectionElems)
+                 | #applyBorrowCellStackShared(Int, Int, ProjectionElems)
 
   rule [termDrop]:
        <k> #execTerminator(terminator(terminatorKindDrop(place(local(I), PROJS), TARGET, _UNWIND), _SPAN))
@@ -486,10 +490,6 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
   // After reading the place value, delegate to type-directed drop
   rule <k> VAL:Value ~> #applyDrop(MTY) => #dropValue(VAL, MTY) ... </k>
 
-  // Non-RefMut types: no special drop behavior here
-  rule #dropValue(_:Value, MTY) => .K
-    requires notBool #isRefMutTy(#lookupMaybeTy(MTY))
-
   // RefMut<T>: field #1 modeled as pointer to the borrow cell
   rule <k> #dropValue(Aggregate(_, ARGS), MTY)
         => #releaseBorrowRefMut(getValue(ARGS, 1))
@@ -497,6 +497,19 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
        </k>
     requires #isRefMutTy(#lookupMaybeTy(MTY))
      andBool 1 <Int size(ARGS)
+
+  // Ref<T>: field #1 stores the shared borrow token that points to the borrow cell.
+  rule <k> #dropValue(Aggregate(_, ARGS), MTY)
+        => #releaseBorrowRefShared(getValue(ARGS, 1))
+       ...
+       </k>
+    requires #isRefTy(#lookupMaybeTy(MTY))
+     andBool 1 <Int size(ARGS)
+
+  // Other types: no special drop behavior here
+  rule #dropValue(_:Value, MTY) => .K
+    requires notBool #isRefMutTy(#lookupMaybeTy(MTY))
+     andBool notBool #isRefTy(#lookupMaybeTy(MTY))
 
   // Accept either Reference/PtrLocal inside the RefMut wrapper
   // and forward to the release operation
@@ -507,6 +520,14 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
 
   // Unknown shapes: conservatively skip
   rule #releaseBorrowRefMut(_) => .K [owise]
+
+  // Shared borrow release mirrors the RefMut case but decrements the borrow cell.
+  rule <k> #releaseBorrowRefShared(Aggregate(_, ListItem(PTR) _))
+        => #releaseBorrowCellShared(PTR)
+       ...
+       </k>
+
+  rule #releaseBorrowRefShared(_) => .K [owise]
 
   // Current-frame pointer (OFFSET = 0): read the cell and then
   // apply the borrow release in the same frame
@@ -579,6 +600,71 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
   // Unknown pointer shapes: skip
   rule #releaseBorrowCell(_) => .K [owise]
 
+  // Shared borrow release: same traversal but uses #decCellBorrow on writeback.
+  rule <k> #releaseBorrowCellShared(PtrLocal(0, place(local(J), PROJS), _, _))
+        =>
+          #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
+          ~> #readProjection(false)
+          ~> #applyBorrowCellShared(J, PROJS)
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int J
+     andBool J <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[J])
+    [preserves-definedness]
+
+  rule <k> #releaseBorrowCellShared(Reference(0, place(local(J), PROJS), _, _))
+        =>
+          #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
+          ~> #readProjection(false)
+          ~> #applyBorrowCellShared(J, PROJS)
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int J
+     andBool J <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[J])
+    [preserves-definedness]
+
+  rule <k> #releaseBorrowCellShared(PtrLocal(OFFSET, place(local(J), PROJS), _, _))
+        =>
+          #traverseProjection(
+            toStack(OFFSET, local(J)),
+            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
+            PROJS,
+            .Contexts
+          )
+          ~> #readProjection(false)
+          ~> #applyBorrowCellStackShared(OFFSET, J, PROJS)
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule <k> #releaseBorrowCellShared(Reference(OFFSET, place(local(J), PROJS), _, _))
+        =>
+          #traverseProjection(
+            toStack(OFFSET, local(J)),
+            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
+            PROJS,
+            .Contexts
+          )
+          ~> #readProjection(false)
+          ~> #applyBorrowCellStackShared(OFFSET, J, PROJS)
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule #releaseBorrowCellShared(_) => .K [owise]
+
   // Current-frame writeback: increment the borrow cell (e.g. -1 -> 0)
   rule <k> CELL:Value ~> #applyBorrowCell(J, PROJS)
         => #setLocalValue(place(local(J), PROJS), #incCellBorrow(CELL))
@@ -608,6 +694,33 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
 
   // Fallback
   rule #applyBorrowCellStack(_, _, _) => .K [owise]
+
+  // Shared borrow writeback helpers apply #decCellBorrow instead.
+  rule <k> CELL:Value ~> #applyBorrowCellShared(J, PROJS)
+        => #setLocalValue(place(local(J), PROJS), #decCellBorrow(CELL))
+       ...
+       </k>
+
+  rule #applyBorrowCellShared(_, _) => .K [owise]
+
+  rule <k> CELL:Value ~> #applyBorrowCellStackShared(OFFSET, J, PROJS)
+        =>
+          #traverseProjection(
+            toStack(OFFSET, local(J)),
+            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
+            PROJS,
+            .Contexts
+          )
+          ~> #writeProjection(#decCellBorrow(CELL))
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule #applyBorrowCellStackShared(_, _, _) => .K [owise]
 
   syntax MIRError ::= "ReachedUnreachable"
 
