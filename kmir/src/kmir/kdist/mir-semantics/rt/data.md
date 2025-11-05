@@ -1505,6 +1505,8 @@ What can be supported without additional layout consideration is trivial casts b
 
   // Transmuting a pointer to an integer discards provenance and
   // reinterprets the pointer’s offset as a value of the target integer type.
+  // Tested by `prove-rs/interior-mut3.rs`
+  // TODO: check its correctness, I assume the pointer offset is the address here and we can use it to recover the PtrLocal
   rule <k> #cast(
               PtrLocal(_, _, _, metadata(_, PTR_OFFSET, _)),
               castKindTransmute,
