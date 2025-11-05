@@ -13,6 +13,7 @@ from .ty import (
     BoolT,
     EnumT,
     Initialized,
+    IntegerLength,
     IntT,
     IntTy,
     Multiple,
@@ -45,7 +46,7 @@ if TYPE_CHECKING:
 
     from pyk.kast import KInner
 
-    from .ty import FieldsShape, IntegerLength, LayoutShape, MachineSize, Scalar, TagEncoding, Ty, TypeMetadata, UintTy
+    from .ty import FieldsShape, LayoutShape, MachineSize, Scalar, TagEncoding, Ty, TypeMetadata, UintTy
     from .value import MetadataSize
 
 
@@ -425,8 +426,6 @@ def _extract_tag(*, data: bytes, tag_offset: MachineSize, tag: Scalar) -> tuple[
         case Initialized(value=Pointer(), valid_range=WrappingRange(start=1, end=0)) if (
             data == b'\x00\x00\x00\x00\x00\x00\x00\x00'
         ):
-            from .ty import IntegerLength
-
             return 0, IntegerLength.I64
         case _:
             raise ValueError(f'Unsupported tag: {tag}')
