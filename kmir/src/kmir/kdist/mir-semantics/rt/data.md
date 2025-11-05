@@ -1519,6 +1519,26 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
        </k>
     requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
      andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
+
+  // Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.
+  rule <k> #cast(
+              Range(ELEMS),
+              castKindTransmute,
+              _TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              #littleEndianFromBytes(ELEMS),
+              size(ELEMS) *Int 8,
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool size(ELEMS) *Int 8 ==Int #bitWidth(#numTypeOf(lookupTy(TY_TARGET)))
+       andBool #areLittleEndianBytes(ELEMS)
+      [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
 Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
@@ -1538,6 +1558,19 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
   // ----------------------------------------------------------------
   rule #isEnumWithoutFields(typeInfoEnumType(_, _, _, FIELDSS, _)) => #noFields(FIELDSS)
   rule #isEnumWithoutFields(_OTHER) => false [owise]
+
+  syntax Bool ::= #areLittleEndianBytes ( List ) [function, total]
+  // -------------------------------------------------------------
+  rule #areLittleEndianBytes(.List) => true
+  rule #areLittleEndianBytes(ListItem(Integer(_, 8, false)) REST)
+    => #areLittleEndianBytes(REST)
+  rule #areLittleEndianBytes(ListItem(_OTHER) _) => false [owise]
+
+  syntax Int ::= #littleEndianFromBytes ( List ) [function]
+  // -----------------------------------------------------
+  rule #littleEndianFromBytes(.List) => 0
+  rule #littleEndianFromBytes(ListItem(Integer(BYTE, 8, false)) REST)
+    => BYTE +Int 256 *Int #littleEndianFromBytes(REST)
 ```
 
 
