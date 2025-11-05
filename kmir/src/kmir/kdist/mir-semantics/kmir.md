@@ -460,7 +460,7 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
   //     (see rt/data.md #incCellBorrow).
   //   - We do not assert the current flag equals -1; repeated drop
   //     would not trap in this model.
-  //   - #isRefMutTy relies on string matching "RefMut<" (see rt/types.md).
+  //   - #isRefMutTy relies on string matching "RefMut<" (defined below).
   syntax KItem ::= #applyDrop(MaybeTy)
                  | #dropValue(Value, MaybeTy)
                  | #releaseBorrowRefMut(Value)
@@ -495,6 +495,20 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
 
   // After reading the place value, delegate to type-directed drop
   rule <k> VAL:Value ~> #applyDrop(MTY) => #dropValue(VAL, MTY) ... </k>
+
+  // Identify Ref/RefMut via string matching; drop currently only needs these helpers.
+  syntax Bool ::= #isRefMutTy ( TypeInfo ) [function, total]
+
+  rule #isRefMutTy(typeInfoStructType(NAME:String, _, _, _))
+    => findString(NAME, "RefMut<", 0) =/=Int -1
+  rule #isRefMutTy(_) => false [owise]
+
+  syntax Bool ::= #isRefTy ( TypeInfo ) [function, total]
+
+  rule #isRefTy(typeInfoStructType(NAME:String, _, _, _))
+    => findString(NAME, "Ref<", 0) =/=Int -1
+     andBool findString(NAME, "RefMut<", 0) ==Int -1
+  rule #isRefTy(_) => false [owise]
 
   // RefMut<T>: field #1 modeled as pointer to the borrow cell
   rule <k> #dropValue(Aggregate(_, ARGS), MTY)

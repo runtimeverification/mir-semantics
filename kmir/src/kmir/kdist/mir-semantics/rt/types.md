@@ -100,23 +100,6 @@ Pointers to arrays/slices are compatible with pointers to the element type
     => findString(NAME, "UnsafeCell", 0) =/=Int -1
   rule #allowsInteriorMutation(_) => false [owise]
 
-  // Identify RefMut<T> types conservatively by name matching.
-  // This is a pragmatic approximation to avoid modeling full std types.
-  // If the name contains "RefMut<", we treat it as RefMut.
-  syntax Bool ::= #isRefMutTy ( TypeInfo ) [function, total]
-
-  rule #isRefMutTy(typeInfoStructType(NAME:String, _, _, _))
-    => findString(NAME, "RefMut<", 0) =/=Int -1
-  rule #isRefMutTy(_)
-    => false [owise]
-
-  // Identify Ref<T> (shared borrow) types while excluding RefMut<T>.
-  syntax Bool ::= #isRefTy ( TypeInfo ) [function, total]
-
-  rule #isRefTy(typeInfoStructType(NAME:String, _, _, _))
-    => findString(NAME, "Ref<", 0) =/=Int -1
-     andBool findString(NAME, "RefMut<", 0) ==Int -1
-  rule #isRefTy(_) => false [owise]
 ```
 
 ## Determining types of places with projection
