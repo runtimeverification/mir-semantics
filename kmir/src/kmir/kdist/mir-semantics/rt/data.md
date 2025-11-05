@@ -134,7 +134,7 @@ Constant operands are simply decoded according to their type.
         => Aggregate(variantIdx(0), .List)
        ...
        </k>
-    requires lookupTy(TY) ==K typeInfoVoidType
+    requires typeInfoVoidType ==K lookupTy(TY) 
 ```
 
 ### Copying and Moving
