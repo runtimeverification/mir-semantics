@@ -1313,6 +1313,13 @@ the `Value` sort.
 Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
 which have the same representation `Value::Range`.
 
+When the cast crosses transparent wrappers (for example newtypes that just forward field `0`), the pointer's
+`Place` must be realigned. `#alignTransparentPlace` rewrites the projection list until the source and target
+expose the same inner value:
+- if the source unwraps more than the target, append an explicit `field(0)` so the target still sees that field;
+- if the target unwraps more, strip any redundant tail projections with `#popTransparentTailTo`, leaving the
+  canonical prefix shared by both sides.
+
 ```k
   rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
