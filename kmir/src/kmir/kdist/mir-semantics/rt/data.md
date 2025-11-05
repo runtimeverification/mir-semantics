@@ -1564,12 +1564,16 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
               Integer(VAL, WIDTH, _SIGNEDNESS),
               castKindTransmute,
               _TY_SOURCE,
-              _TY_TARGET
+              TY_TARGET
             )
           =>
             Range(#littleEndianBytesFromInt(VAL, WIDTH))
           ...
         </k>
+      requires #isStaticU8Array(lookupTy(TY_TARGET))
+       andBool WIDTH >=Int 0
+       andBool WIDTH %Int 8 ==Int 0
+       andBool WIDTH ==Int #staticArrayLenBits(lookupTy(TY_TARGET))
       [preserves-definedness] // ensures element type/length are well-formed
 ```
 
@@ -1619,6 +1623,19 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
   rule #littleEndianBytes(VAL, COUNT)
     => ListItem(Integer(VAL %Int 256, 8, false)) #littleEndianBytes(VAL /Int 256, COUNT -Int 1)
     requires COUNT >Int 0
+
+  syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total]
+  // -------------------------------------------------------------
+  rule #isStaticU8Array(typeInfoArrayType(ELEM_TY, someTyConst(_)))
+    => lookupTy(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
+  rule #isStaticU8Array(_OTHER) => false [owise]
+
+  syntax Int ::= #staticArrayLenBits ( TypeInfo ) [function, total]
+  // -------------------------------------------------------------
+  rule #staticArrayLenBits(typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
+    => readTyConstInt(KIND) *Int 8
+    [preserves-definedness]
+  rule #staticArrayLenBits(_OTHER) => 0 [owise]
 ```
 
 
