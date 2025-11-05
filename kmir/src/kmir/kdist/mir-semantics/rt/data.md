@@ -374,42 +374,26 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
 
-  // Borrow cell increment (interior mutability model)
-  //
-  // We model the RefCell borrow flag as a 64-bit signed integer Value:
-  //   0   -> no outstanding borrow
-  //   >0  -> number of shared (immutable) borrows
-  //   -1  -> unique (mutable) borrow
-  // Releasing a RefMut (unique borrow) applies +1 to the flag, so -1
-  // becomes 0. For aggregates we recurse into the first field to reach
-  // the integer payload in our simplified layout model. Other Values are
-  // left unchanged.
+  // Borrow cell increment (interior mutability model) for shared Ref borrows.
   syntax Value ::= #incCellBorrow ( Value ) [function, total]
-
   rule #incCellBorrow(Integer(VAL, WIDTH, true))
     => Integer(VAL +Int 1, WIDTH, true)
     requires WIDTH ==Int 64
     [preserves-definedness]
-
-  // Recurse into the head field if the borrow cell is wrapped
   rule #incCellBorrow(Aggregate(IDX, ListItem(FIRST) REST))
     => Aggregate(IDX, ListItem(#incCellBorrow(FIRST)) REST)
     [preserves-definedness]
-
   rule #incCellBorrow(OTHER) => OTHER [owise]
 
   // Borrow cell decrement for releasing shared Ref borrows.
   syntax Value ::= #decCellBorrow ( Value ) [function, total]
-
   rule #decCellBorrow(Integer(VAL, WIDTH, true))
     => Integer(VAL -Int 1, WIDTH, true)
     requires WIDTH ==Int 64
     [preserves-definedness]
-
   rule #decCellBorrow(Aggregate(IDX, ListItem(FIRST) REST))
     => Aggregate(IDX, ListItem(#decCellBorrow(FIRST)) REST)
     [preserves-definedness]
-
   rule #decCellBorrow(OTHER) => OTHER [owise]
 
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
