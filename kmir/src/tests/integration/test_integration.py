@@ -346,6 +346,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'pointers' / 'offset_struct_field_write.state',
         2000,
     ),
+    (
+        'Alloc-option_consts',
+        EXEC_DATA_DIR / 'allocs' / 'option_consts.smir.json',
+        EXEC_DATA_DIR / 'allocs' / 'option_consts.state',
+        None,
+    ),
 ]
 
 
