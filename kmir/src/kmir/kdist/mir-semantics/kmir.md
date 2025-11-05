@@ -472,6 +472,12 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
                  | #applyBorrowCellStack(Int, Int, ProjectionElems)
                  | #applyBorrowCellStackShared(Int, Int, ProjectionElems)
 
+  syntax ProjectionElems ::= #withPointerOffset(ProjectionElems, Int, MetadataSize) [function, total]
+  rule #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE)
+       => appendP(PROJS, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE)))
+    requires PTR_OFFSET =/=Int 0
+  rule #withPointerOffset(PROJS, _PTR_OFFSET, _ORIGIN_SIZE) => PROJS [owise]
+
   rule [termDrop]:
        <k> #execTerminator(terminator(terminatorKindDrop(place(local(I), PROJS), TARGET, _UNWIND), _SPAN))
          =>
@@ -531,11 +537,16 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
 
   // Current-frame pointer (OFFSET = 0): read the cell and then
   // apply the borrow release in the same frame
-  rule <k> #releaseBorrowCell(PtrLocal(0, place(local(J), PROJS), _, _))
+  rule <k> #releaseBorrowCell(PtrLocal(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
         =>
-          #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
+          #traverseProjection(
+            toLocal(J),
+            getValue(LOCALS, J),
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
+            .Contexts
+          )
           ~> #readProjection(false)
-          ~> #applyBorrowCell(J, PROJS)
+          ~> #applyBorrowCell(J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
        ...
        </k>
        <locals> LOCALS </locals>
@@ -545,11 +556,16 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
     [preserves-definedness] // valid pointer target on current stack frame
 
   // Current-frame Reference variant: same as PtrLocal case
-  rule <k> #releaseBorrowCell(Reference(0, place(local(J), PROJS), _, _))
+  rule <k> #releaseBorrowCell(Reference(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
         =>
-          #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
+          #traverseProjection(
+            toLocal(J),
+            getValue(LOCALS, J),
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
+            .Contexts
+          )
           ~> #readProjection(false)
-          ~> #applyBorrowCell(J, PROJS)
+          ~> #applyBorrowCell(J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
        ...
        </k>
        <locals> LOCALS </locals>
@@ -560,16 +576,16 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
 
   // Ancestor-frame pointer (OFFSET > 0): locate the frame, read the
   // cell and then apply the update in that ancestor frame
-  rule <k> #releaseBorrowCell(PtrLocal(OFFSET, place(local(J), PROJS), _, _))
+  rule <k> #releaseBorrowCell(PtrLocal(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
         =>
           #traverseProjection(
             toStack(OFFSET, local(J)),
             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
-            PROJS,
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
             .Contexts
           )
           ~> #readProjection(false)
-          ~> #applyBorrowCellStack(OFFSET, J, PROJS)
+          ~> #applyBorrowCellStack(OFFSET, J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
        ...
        </k>
        <stack> STACK </stack>
@@ -579,16 +595,16 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      [preserves-definedness]
 
   // Ancestor-frame Reference variant: same as PtrLocal case
-  rule <k> #releaseBorrowCell(Reference(OFFSET, place(local(J), PROJS), _, _))
+  rule <k> #releaseBorrowCell(Reference(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
         =>
           #traverseProjection(
             toStack(OFFSET, local(J)),
             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
-            PROJS,
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
             .Contexts
           )
           ~> #readProjection(false)
-          ~> #applyBorrowCellStack(OFFSET, J, PROJS)
+          ~> #applyBorrowCellStack(OFFSET, J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
        ...
        </k>
        <stack> STACK </stack>
@@ -601,11 +617,16 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
   rule #releaseBorrowCell(_) => .K [owise]
 
   // Shared borrow release: same traversal but uses #decCellBorrow on writeback.
-  rule <k> #releaseBorrowCellShared(PtrLocal(0, place(local(J), PROJS), _, _))
+  rule <k> #releaseBorrowCellShared(PtrLocal(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
         =>
-          #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
+          #traverseProjection(
+            toLocal(J),
+            getValue(LOCALS, J),
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
+            .Contexts
+          )
           ~> #readProjection(false)
-          ~> #applyBorrowCellShared(J, PROJS)
+          ~> #applyBorrowCellShared(J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
        ...
        </k>
        <locals> LOCALS </locals>
@@ -614,11 +635,16 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      andBool isTypedValue(LOCALS[J])
     [preserves-definedness]
 
-  rule <k> #releaseBorrowCellShared(Reference(0, place(local(J), PROJS), _, _))
+  rule <k> #releaseBorrowCellShared(Reference(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
         =>
-          #traverseProjection(toLocal(J), getValue(LOCALS, J), PROJS, .Contexts)
+          #traverseProjection(
+            toLocal(J),
+            getValue(LOCALS, J),
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
+            .Contexts
+          )
           ~> #readProjection(false)
-          ~> #applyBorrowCellShared(J, PROJS)
+          ~> #applyBorrowCellShared(J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
        ...
        </k>
        <locals> LOCALS </locals>
@@ -627,16 +653,16 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      andBool isTypedValue(LOCALS[J])
     [preserves-definedness]
 
-  rule <k> #releaseBorrowCellShared(PtrLocal(OFFSET, place(local(J), PROJS), _, _))
+  rule <k> #releaseBorrowCellShared(PtrLocal(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
         =>
           #traverseProjection(
             toStack(OFFSET, local(J)),
             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
-            PROJS,
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
             .Contexts
           )
           ~> #readProjection(false)
-          ~> #applyBorrowCellStackShared(OFFSET, J, PROJS)
+          ~> #applyBorrowCellStackShared(OFFSET, J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
        ...
        </k>
        <stack> STACK </stack>
@@ -645,16 +671,16 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
      andBool isStackFrame(STACK[OFFSET -Int 1])
     [preserves-definedness]
 
-  rule <k> #releaseBorrowCellShared(Reference(OFFSET, place(local(J), PROJS), _, _))
+  rule <k> #releaseBorrowCellShared(Reference(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
         =>
           #traverseProjection(
             toStack(OFFSET, local(J)),
             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
-            PROJS,
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
             .Contexts
           )
           ~> #readProjection(false)
-          ~> #applyBorrowCellStackShared(OFFSET, J, PROJS)
+          ~> #applyBorrowCellStackShared(OFFSET, J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
        ...
        </k>
        <stack> STACK </stack>
