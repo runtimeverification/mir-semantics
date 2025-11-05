@@ -206,7 +206,10 @@ Known element sizes for common types:
 
 ### Enum decoding
 
-Enum decoding is for now restricted to enums wihout any fields.
+Enum decoding is for now restricted to a few special cases.
+
+#### Enums without any fields
+If there are no fields, the enum can be decoded by using their data as the discriminant.
 
 ```k
   rule #decodeValue(
@@ -289,6 +292,112 @@ Enum decoding is for now restricted to enums wihout any fields.
    requires TAG =/=Int DISCRIMINANT
 ```
 
+#### Enums with two variants
+
+Having two variants with possibly zero or one field each is a very common case,
+it includes a number of standard library types such as `Option` and `Result`.
+
+The following rules are specialised to the case of encoding an `Option`.
+An important distinction here is whether or not the tag is niche-encoded.
+If the option holds data that has all-zero as a possible value, a separate tag is used, usually as the first field.
+In both cases we expect the tag to be in the single shared field, and the discriminant to be just 0 and 1.
+
+```k
+  rule #decodeValue(
+         BYTES
+       , typeInfoEnumType(...
+           name: _
+         , adtDef: _
+         , discriminants: discriminant(0) discriminant(1) .Discriminants
+         , fields: (.Tys : (FIELD_TYPE .Tys) : .Tyss)
+         , layout:
+            someLayoutShape(layoutShape(...
+                fields: fieldsShapeArbitrary(mk(... offsets: machineSize(0) .MachineSizes))
+              , variants:
+                  variantsShapeMultiple(
+                    mk(...
+                        tag: scalarInitialized(
+                          mk(...
+                              value: primitiveInt(mk(... length: TAG_WIDTH, signed: _))
+                            , validRange: _RANGE
+                          )
+                        )
+                      , tagEncoding: tagEncodingDirect
+                      , tagField: 0
+                      , variants: _VARIANTS
+                      )
+                    )
+              , abi: _ABI
+              , abiAlign: _ABI_ALIGN
+              , size: _SIZE
+            ))
+         ) #as ENUM_TYPE
+       )
+    => #decodeOptionTag01(BYTES, TAG_WIDTH, FIELD_TYPE, ENUM_TYPE)
+
+  syntax Evaluation ::= #decodeOptionTag01 ( Bytes , IntegerLength , Ty , TypeInfo ) [function, total]
+  // --------------------------------------------------------------------------------------
+  rule #decodeOptionTag01(BYTES, _LEN, _TY, _ENUM_TYPE)
+    => Aggregate(variantIdx(0), .List)
+    requires 0 ==Int BYTES[0] // expect only 0 or 1 as tags, so higher bytes do not matter
+    [preserves-definedness]
+  rule #decodeOptionTag01(BYTES,  LEN,  TY, _ENUM_TYPE)
+    => Aggregate(variantIdx(1), ListItem(#decodeValue(substrBytes(BYTES, #byteLength(LEN), lengthBytes(BYTES)), lookupTy(TY))))
+    requires 1 ==Int BYTES[0] // expect only 0 or 1 as tags, so higher bytes do not matter
+    [preserves-definedness]
+  rule #decodeOptionTag01(BYTES, _LEN, _TY,  ENUM_TYPE)
+    => UnableToDecode(BYTES, ENUM_TYPE)
+    [owise]
+
+  syntax Int ::= #byteLength ( IntegerLength ) [function, total]
+  // -----------------------------------------------------------
+  rule #byteLength(integerLengthI8  ) => 1
+  rule #byteLength(integerLengthI16 ) => 2
+  rule #byteLength(integerLengthI32 ) => 4
+  rule #byteLength(integerLengthI64 ) => 8
+  rule #byteLength(integerLengthI128) => 16
+
+```
+
+If the option holds a reference or pointer, no extra tag field is required.
+The tag is niche-encoded with an all-zero value representing `None`.
+However, in this case only a `None` can actually be decoded.
+Any pointer or reference would have a very different encoding in KMIR, not a non-zero address.
+
+```k
+  rule #decodeValue(
+         BYTES
+       , typeInfoEnumType(...
+           name: _
+         , adtDef: _
+         , discriminants: discriminant(0) discriminant(1) .Discriminants
+         , fields: (.Tys : (_FIELD_TYPE .Tys) : .Tyss)
+         , layout:
+            someLayoutShape(layoutShape(...
+                fields: fieldsShapeArbitrary(mk(... offsets: machineSize(0) .MachineSizes))
+              , variants:
+                  variantsShapeMultiple(
+                    mk(...
+                        tag: scalarInitialized(
+                          mk(...
+                              value: primitivePointer(_ADDR_SPACE)
+                            , validRange: wrappingRange(1, 0)
+                          )
+                        )
+                      , tagEncoding: tagEncodingNiche() // FIXME incomplete data model in the AST
+                      , tagField: 0
+                      , variants: _VARIANTS
+                      )
+                    )
+              , abi: _ABI
+              , abiAlign: _ABI_ALIGN
+              , size: _SIZE
+            ))
+         )
+       )
+    => Aggregate(variantIdx(0), .List)
+    requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned)
+```
 
 ## Array Allocations
 
