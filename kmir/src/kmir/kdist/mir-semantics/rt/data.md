@@ -187,8 +187,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
        </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
-     andBool (mutabilityOf(getLocal(LOCALS, I)) ==K mutabilityMut
-       orBool #allowsInteriorMutation(lookupTy(tyOfLocal(getLocal(LOCALS, I)))))
+     andBool mutabilityOf(getLocal(LOCALS, I)) ==K mutabilityMut
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
@@ -255,6 +254,19 @@ A `Deref` projection in the projections list changes the target of the write ope
 
   rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
   rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
+
+  // interior mutability permits projected writeback
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjection(NEW)
+        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires CONTEXTS =/=K .Contexts
+     andBool 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+     andBool #allowsInteriorMutation(lookupTy(tyOfLocal({LOCALS[I]}:>TypedLocal)))
+    [priority(40), preserves-definedness]
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW)
