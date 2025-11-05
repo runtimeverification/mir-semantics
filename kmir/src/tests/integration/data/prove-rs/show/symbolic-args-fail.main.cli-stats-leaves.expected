@@ -5,7 +5,7 @@
 │
 │  (563 steps)
 └─ 3 (stuck, leaf)
-    #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
+    #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h3
     span: no-location:0
 
 
@@ -32,4 +32,4 @@ Leaf paths from init:
 LEAF <k> CELLS
 ---------------
 Node 3:
-  #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) , id: defId ( 38 ) , body: noBody ) , operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00\x17\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: provenanceMapEntry ( ... offset: 0 , allocId: allocId ( 1 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 39 ) , id: mirConstId ( 25 ) ) ) )  .Operands ) ~> .K
+  #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h37379bf3ce79a0d7E" ) , id: defId ( 38 ) , body: noBody ) , operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00\x17\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: provenanceMapEntry ( ... offset: 0 , allocId: allocId ( 1 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 39 ) , id: mirConstId ( 25 ) ) ) )  .Operands ) ~> .K
