@@ -461,10 +461,10 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
   rule [termDrop]:
        <k> #execTerminator(terminator(terminatorKindDrop(place(local(I), PROJS), TARGET, _UNWIND), _SPAN))
          =>
-           #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
-           ~> #readProjection(true)
-           ~> #applyDrop(getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJS))
-           ~> #execBlockIdx(TARGET)
+           #applyDrop(
+             operandMove(place(local(I), PROJS)),
+             getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJS)
+           ) ~> #execBlockIdx(TARGET)
         ...
        </k>
        <locals> LOCALS </locals>
