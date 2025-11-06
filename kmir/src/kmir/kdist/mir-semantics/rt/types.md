@@ -96,14 +96,6 @@ Pointers to arrays/slices are compatible with pointers to the element type
   rule #structOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
   rule #structOffsets(_) => .MachineSizes [owise]
 
-  syntax Bool ::= #allowsInteriorMutation(TypeInfo) [function, total]
-
-  rule #allowsInteriorMutation(typeInfoStructType(mirString(NAME), _, _, _))
-    => findString(NAME, "UnsafeCell", 0) =/=Int -1
-  rule #allowsInteriorMutation(typeInfoStructType(NAME:String, _, _, _))
-    => findString(NAME, "UnsafeCell", 0) =/=Int -1
-  rule #allowsInteriorMutation(_) => false [owise]
-
 ```
 
 ## Determining types of places with projection
