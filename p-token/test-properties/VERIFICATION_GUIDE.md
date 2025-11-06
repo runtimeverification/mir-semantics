@@ -6,7 +6,7 @@ This guide explains how to run formal verification for the p-token Solana progra
 
 ## Architecture
 
-After the merge of `dc/test-hack` branch, the codebase uses conditional compilation to separate production and verification code:
+The codebase uses conditional compilation to separate production and verification code:
 
 - **Production code**: `src/entrypoint.rs` - Used for normal builds
 - **Verification code**: `src/entrypoint-runtime-verification.rs` - Used when `runtime-verification` feature is enabled
@@ -19,10 +19,32 @@ Cheatcode functions are markers used by the formal verification tools to inject 
 fn cheatcode_is_account(_: &AccountInfo) {}
 fn cheatcode_is_mint(_: &AccountInfo) {}
 fn cheatcode_is_rent(_: &AccountInfo) {}
-fn cheatcode_is_multisig(_: &AccountInfo) {} // Currently unsupported and behind feature flag "multisig"
+fn cheatcode_is_multisig(_: &AccountInfo) {} // Currently unsupported
 ```
 
-These functions are no-ops at runtime but provide type hints to the verification tools.
+These functions are no-ops at runtime but set up data required for the verification.
+
+### Assumptions implemented in cheat codes
+
+* Calling `cheatcode_is_{account,mint,multisig,rent}` asserts that the `Account` pointed-to by `AccountInfo` 
+  is followed in memory by the respective data structure, `state::account::Account`, `state::mint::Mint`, 
+  `state::multisig::Multisig`, or `sysvars::rent::Rent`.
+* The cheat codes will set the data length (`data_len`) of the `AccountInfo` to the correct value for the underlying object:
+   | Object   | `data_len` |
+   |--------- | ---------- |
+   | Account  | 165        |
+   | Mint     |  82        |
+   | Rent     |  17        |
+   | Multisig | 355        |
+* For the `Rent` sysvar, the proofs make additional assumptions to avoid overflows and imprecise `Float` computation:
+  - The `lamports_per_byteyear` is assumed to be less than `2^32` (to avoid overflows during rent computation).
+  - The `exemption_threshold` is fixed to value `2.0` (default). This means that computations will be performed in `u64`.
+  - The `burn_percent` value is assumed to be between 0 and 100 (to avoid underflows during rent computation).
+* Access to the data structure is provided by intercepting the following Rust functions:
+   - `AccountInfo::borrow_data_unchecked` and `AccountInfo::borrow_mut_data_unchecked`
+   - `Transmutable::load_unchecked` and `Transmutable::load_mut_unchecked` for the instances `Account`, `Mint`, `Multisig`
+   - `sysvars::rent::Rent::from_bytes_unchecked` and `sysvars::rent::Rent::get`
+  and replacing their function body execution by an effect that provides the desired access (read-only or mutable).
 
 ## Running Verification
 
@@ -56,10 +78,7 @@ cd test-properties
 ./run-verification.sh -t 600 test_process_transfer
 
 # With custom prove-rs options
-./run-verification.sh -o "--max-iterations 50 --max-depth 300" test_process_transfer
-
-# With multisig feature enabled
-./run-verification.sh --multisig test_process_transfer
+./run-verification.sh -o "--max-iterations 50 --max-depth 200" test_process_transfer
 ```
 
 ## Test Functions
@@ -69,21 +88,12 @@ All test functions are located in `src/entrypoint-runtime-verification.rs` and f
 - Each function has cheatcode calls at the beginning to mark account types
 - Functions use fixed-size arrays for formal verification compatibility
 
-## Feature Flags
-
-### runtime-verification
+## Feature Flag `runtime-verification`
 Required for all verification tests. Enables the verification-specific entrypoint (entrypoint-runtime-verification.rs) and test functions.
-
-### multisig (optional)
-Enables cheat codes for all Owner / Authority accounts to be `Multisig` (by default these are `Account`). When enabled:
-- Owner / Authority accounts are instantiated as `Multisig` with symbolic arguments via `cheatcode_is_multisig` (TODO: not implemented yet)
-- `Multisig`-specific validation logic is included in proof harnesses
-
-Use `--multisig` flag with run-verification.sh to enable this feature.
 
 ## Available Tests
 
-See `tests.md` for the complete list of available test functions and their current status.
+See `proofs.md` for the complete list of available test functions.
 
 ## Troubleshooting
 
@@ -96,14 +106,7 @@ If you get errors about the entrypoint module not being found, ensure you're bui
 cargo build --features runtime-verification
 ```
 
-### Multisig Support
-To enable multisig account validation in verification tests, use both features:
-```bash
-cargo build --features "runtime-verification,multisig"
-```
-
 ## Notes
 
-- The verification process can take significant time (20+ minutes per test)
-- Default settings: max-depth 200, max-iterations 30, timeout 1200s
-- Results are stored in `artefacts/proof/` directory
+- Default settings: max-depth 2000, max-iterations 500, timeout 1h
+- Results are stored in `artefacts/proof-SHA1-SHA2/` directory, where `SHA1` and `SHA2` indicate the version of `solana-token` and `mir-semantics` used.

@@ -30,7 +30,7 @@ on:
         description: Timeout for running the proofs
         required: false
         type: string
-        default: 7200 # 2h
+        default: 3600 # 1h
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -85,7 +85,7 @@ jobs:
               ;;
           esac
 
-      - name: "Build with stable_mir_json"      
+      - name: "Build with stable_mir_json"
         run: |
           cd "${{ steps.vars.outputs.crate_dir }}"
           RUSTC=stable_mir_json cargo build --features runtime-verification
@@ -178,8 +178,8 @@ jobs:
               kmir prove-rs --smir "artefacts/${{ needs.compile.outputs.artifact_name }}.json" \
               --start-symbol "${{ needs.compile.outputs.start_prefix }}${{ matrix.proof }}" \
               --verbose \
-              --max-depth 500 \
-              --max-iterations 100 \
+              --max-depth 2000 \
+              --max-iterations 500 \
               --proof-dir artefacts/proof \
             || echo "Runner signals proof failure"
 

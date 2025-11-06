@@ -3,11 +3,12 @@
 # Run all start symbols given as arguments (or read them from proofs.md
 # table if -a given) with given run options (-o) and timeout (-t).
 # Options and defaults:
-#   -t NUM   : timeout in seconds (default 7200)
-#   -o STRING: prove-rs options. Default "--max-iterations 100 --max-depth 500"
+#   -t NUM   : timeout in seconds (default 1h=3600)
+#   -o STRING: prove-rs options. Default "--max-iterations 500 --max-depth 2000"
 #   -a       : run all start symbols from first table in `proofs.md` (1st column)
 #   -m       : run all start symbols from multisig table in `proofs.md` (2nd column)
 #   -c       : continue existing proofs instead of reloading (which is default)
+#   -l FILE  : log output to file "$NAME.PID" instead of stdout
 #
 # Always runs verbosely, always uses artefacts/proof
 # as proof directory
@@ -22,17 +23,21 @@ ARTIFACT_BASENAME="${ARTIFACT_BASENAME:-p-token}"
 ALL_NAMES=$(sed -n -e 's/^| \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 MULTISIG_NAMES=$(sed -n -e 's/^| m | \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 
-TIMEOUT=7200
-PROVE_OPTS="--max-iterations 100 --max-depth 500"
+TIMEOUT=3600
+PROVE_OPTS="--max-iterations 500 --max-depth 2000"
 RELOAD_OPT="--reload"
+LOG_FILE=""
 
-while getopts ":t:o:amc" opt; do
+while getopts ":t:o:l:amc" opt; do
     case $opt in
         t)
             TIMEOUT=$OPTARG
             ;;
         o)
             PROVE_OPTS=$OPTARG
+            ;;
+        l)
+            LOG_FILE="$OPTARG.$$"
             ;;
         a)
             TESTS=${ALL_NAMES}
@@ -55,25 +60,23 @@ shift $((OPTIND-1))
 
 # Collect tests
 if [ -z "$TESTS" ]; then
-    if [ -z "$@" ]; then
+    if [ "$#" -eq 0 ]; then
         echo "[ERROR] No test function names given. Use -a or provide at least one name." 1>&2
         exit 2
     fi
     TESTS=$@
 fi
 
+if [ ! -z "$LOG_FILE" ]; then
+    echo "[INFO] Logging output to file $LOG_FILE instead of stdout"
+    exec &> $LOG_FILE
+fi
+
 set -u
 
 REPO_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-if git status --porcelain 1>/dev/null 2>&1 && [ -n "$(git status --porcelain 2>/dev/null)" ]; then
-    REPO_COMMIT="${REPO_COMMIT}-dirty"
-fi
 
 MIR_COMMIT=$(git -C mir-semantics rev-parse --short HEAD 2>/dev/null || echo "unknown")
-if git -C mir-semantics status --porcelain 1>/dev/null 2>&1 && \
-   [ -n "$(git -C mir-semantics status --porcelain 2>/dev/null)" ]; then
-    MIR_COMMIT="${MIR_COMMIT}-dirty"
-fi
 
 PROOF_DIR="${ARTIFACTS_DIR:-artefacts}/proof-${REPO_COMMIT}-${MIR_COMMIT}"
 mkdir -p "${PROOF_DIR}"
