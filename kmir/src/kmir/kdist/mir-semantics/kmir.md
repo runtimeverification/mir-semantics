@@ -474,6 +474,7 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
     [preserves-definedness] // valid local index checked
 
   syntax KItem ::= #applyDrop(MaybeTy)
+  // std::cell::Ref/RefMut aggregates carry the BorrowRef helper (independent of `T`) in slot 1;
   rule <k> Aggregate(_, ARGS) ~> #applyDrop(MTY)
         => #releaseBorrowRef(getValue(ARGS, 1), #isRefMutTy(#lookupMaybeTy(MTY)))
        ...
@@ -498,15 +499,15 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
   // Helper to release borrow reference; Bool indicates mutability
   syntax KItem ::= #releaseBorrowRef(Value, Bool)
 
+  // Strip tuple/struct wrappers so the borrow cell pointer can be normalised.
   rule #releaseBorrowRef(Aggregate(_, ListItem(PTR) _), IS_MUT)
     => #releaseBorrowRef(PTR, IS_MUT)
 
-  rule #releaseBorrowRef(Aggregate(_, ListItem(_HEAD) ListItem(PTR) _), IS_MUT)
-    => #releaseBorrowRef(PTR, IS_MUT)
-
+  // Turn References into PtrLocal so projection traversal can reach the borrow cell.
   rule #releaseBorrowRef(Reference(OFFSET, PLACE, MUT, META), IS_MUT)
     => #releaseBorrowRef(PtrLocal(OFFSET, PLACE, MUT, META), IS_MUT)
 
+  // Stack height 0: borrow cell lives in the current frame, adjust projections (respecting pointer metadata).
   rule <k> #releaseBorrowRef(PtrLocal(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)), IS_MUT)
         =>
           #traverseProjection(
@@ -525,6 +526,7 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
      andBool isTypedValue(LOCALS[J])
     [preserves-definedness]
 
+  // Non-zero stack height: borrow cell resides in an ancestor frame, so traverse via `toStack`.
   rule <k> #releaseBorrowRef(PtrLocal(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)), IS_MUT)
         =>
           #traverseProjection(
@@ -543,6 +545,7 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
      andBool isStackFrame(STACK[OFFSET -Int 1])
     [preserves-definedness]
 
+  // If the value shape does not match the std Ref/RefMut layout (e.g. custom wrappers), bail out without touching memory.
   rule #releaseBorrowRef(_, _) => .K [owise]
 
   syntax ProjectionElems ::= #withPointerOffset(ProjectionElems, Int, MetadataSize) [function, total]
@@ -554,6 +557,7 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
   syntax KItem ::= #applyBorrowCellLocal(Int, ProjectionElems, Bool)
                  | #applyBorrowCellStack(Int, Int, ProjectionElems, Bool)
 
+  // Write the adjusted borrow count back into the current frame's cell.
   rule <k> CELL:Value ~> #applyBorrowCellLocal(J, PROJS, IS_MUT)
         =>
           #setLocalValue(
@@ -567,6 +571,7 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
        </k>
   rule #applyBorrowCellLocal(_, _, _) => .K [owise]
 
+  // Same as above, but for borrow cells located in ancestor stack frames.
   rule <k> CELL:Value ~> #applyBorrowCellStack(OFFSET, J, PROJS, IS_MUT)
         =>
           #traverseProjection(
