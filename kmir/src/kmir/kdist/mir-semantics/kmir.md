@@ -473,15 +473,15 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid local index checked
 
-  syntax KItem ::= #applyDrop(MaybeTy)
+  syntax KItem ::= #applyDrop ( Evaluation , MaybeTy ) [strict(1)]
   // std::cell::Ref/RefMut aggregates carry the BorrowRef helper (independent of `T`) in slot 1;
-  rule <k> Aggregate(_, ARGS) ~> #applyDrop(MTY)
+  rule <k> #applyDrop(Aggregate(_, ARGS), MTY)
         => #releaseBorrowRef(getValue(ARGS, 1), #isRefMutTy(#lookupMaybeTy(MTY)))
        ...
        </k>
     requires 1 <Int size(ARGS)
      andBool (#isRefMutTy(#lookupMaybeTy(MTY)) orBool #isRefTy(#lookupMaybeTy(MTY)))
-  rule <k> _:Value ~> #applyDrop(MTY) => .K ... </k>
+  rule <k> #applyDrop(_:Value, MTY) => .K ... </k>
     requires notBool #isRefMutTy(#lookupMaybeTy(MTY))
      andBool notBool #isRefTy(#lookupMaybeTy(MTY))
 
