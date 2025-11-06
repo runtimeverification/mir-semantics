@@ -1087,6 +1087,18 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
 
+  // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
+  rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
+        => #forceSetLocal(local(I), Aggregate(variantIdx(0), .List))
+        ~> rvalueRef(REGION, KIND, place(local(I), PROJS))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isNewLocal(LOCALS[I])
+     andBool #zeroSizedType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+    [preserves-definedness] // valid list indexing checked, zero-sized locals materialise trivially
+
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
         ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO: Sus on this rule

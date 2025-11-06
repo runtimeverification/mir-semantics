@@ -143,6 +143,21 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
     [preserves-definedness]
 ```
 
+## Zero-sized types
+
+```k
+  syntax Bool ::= #zeroSizedType ( TypeInfo ) [function, total]
+
+  rule #zeroSizedType(typeInfoTupleType(.Tys)) => true
+  rule #zeroSizedType(typeInfoStructType(_, _, .Tys, _)) => true
+  rule #zeroSizedType(typeInfoVoidType) => true
+  // FIXME: Only unit tuples, empty structs, and void are recognized here; other
+  // zero-sized types (e.g. single-variant enums, function or closure items,
+  // newtype wrappers around ZSTs) still fall through because we do not consult
+  // the layout metadata yet. Update once we rely on machineSize(0).
+  rule #zeroSizedType(_) => false [owise]
+```
+
 ```k
 endmodule
 ```
