@@ -457,6 +457,7 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
 - The model does not assert that the borrow cell currently equals `-1`; repeated drops therefore leave the configuration unchanged.
 
 ```k
+  // TODO: support general drops (not specifically Ref/RefMut)
   rule [termDrop]:
        <k> #execTerminator(terminator(terminatorKindDrop(place(local(I), PROJS), TARGET, _UNWIND), _SPAN))
          =>
@@ -473,25 +474,13 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
     [preserves-definedness] // valid local index checked
 
   syntax KItem ::= #applyDrop(MaybeTy)
-  rule <k> VAL:Value ~> #applyDrop(MTY) => #dropValue(VAL, MTY) ... </k>
-
-  syntax KItem ::= #dropValue(Value, MaybeTy)
-
-  rule <k> #dropValue(Aggregate(_, ARGS), MTY)
-        => #releaseBorrowRefMut(getValue(ARGS, 1))
+  rule <k> Aggregate(_, ARGS) ~> #applyDrop(MTY)
+        => #releaseBorrowRef(getValue(ARGS, 1), #isRefMutTy(#lookupMaybeTy(MTY)))
        ...
        </k>
-    requires #isRefMutTy(#lookupMaybeTy(MTY))
-     andBool 1 <Int size(ARGS)
-
-  rule <k> #dropValue(Aggregate(_, ARGS), MTY)
-        => #releaseBorrowRefShared(getValue(ARGS, 1))
-       ...
-       </k>
-    requires #isRefTy(#lookupMaybeTy(MTY))
-     andBool 1 <Int size(ARGS)
-
-  rule #dropValue(_:Value, MTY) => .K
+    requires 1 <Int size(ARGS)
+     andBool (#isRefMutTy(#lookupMaybeTy(MTY)) orBool #isRefTy(#lookupMaybeTy(MTY)))
+  rule <k> _:Value ~> #applyDrop(MTY) => .K ... </k>
     requires notBool #isRefMutTy(#lookupMaybeTy(MTY))
      andBool notBool #isRefTy(#lookupMaybeTy(MTY))
 
@@ -506,19 +495,55 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
      andBool findString(NAME, "RefMut<", 0) ==Int -1
   rule #isRefTy(_) => false [owise]
 
-  syntax KItem ::= #releaseBorrowRefMut(Value)
-  rule <k> #releaseBorrowRefMut(Aggregate(_, ListItem(PTR) _))
-        => #releaseBorrowCell(PTR)
-       ...
-       </k>
-  rule #releaseBorrowRefMut(_) => .K [owise]
+  // Helper to release borrow reference; Bool indicates mutability
+  syntax KItem ::= #releaseBorrowRef(Value, Bool)
 
-  syntax KItem ::= #releaseBorrowRefShared(Value)
-  rule <k> #releaseBorrowRefShared(Aggregate(_, ListItem(PTR) _))
-        => #releaseBorrowCellShared(PTR)
+  rule #releaseBorrowRef(Aggregate(_, ListItem(PTR) _), IS_MUT)
+    => #releaseBorrowRef(PTR, IS_MUT)
+
+  rule #releaseBorrowRef(Aggregate(_, ListItem(_HEAD) ListItem(PTR) _), IS_MUT)
+    => #releaseBorrowRef(PTR, IS_MUT)
+
+  rule #releaseBorrowRef(Reference(OFFSET, PLACE, MUT, META), IS_MUT)
+    => #releaseBorrowRef(PtrLocal(OFFSET, PLACE, MUT, META), IS_MUT)
+
+  rule <k> #releaseBorrowRef(PtrLocal(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)), IS_MUT)
+        =>
+          #traverseProjection(
+            toLocal(J),
+            getValue(LOCALS, J),
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
+            .Contexts
+          )
+          ~> #readProjection(false)
+          ~> #applyBorrowCellLocal(J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE), IS_MUT)
        ...
        </k>
-  rule #releaseBorrowRefShared(_) => .K [owise]
+       <locals> LOCALS </locals>
+    requires 0 <=Int J
+     andBool J <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[J])
+    [preserves-definedness]
+
+  rule <k> #releaseBorrowRef(PtrLocal(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)), IS_MUT)
+        =>
+          #traverseProjection(
+            toStack(OFFSET, local(J)),
+            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
+            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
+            .Contexts
+          )
+          ~> #readProjection(false)
+          ~> #applyBorrowCellStack(OFFSET, J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE), IS_MUT)
+       ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule #releaseBorrowRef(_, _) => .K [owise]
 
   syntax ProjectionElems ::= #withPointerOffset(ProjectionElems, Int, MetadataSize) [function, total]
   rule #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE)
@@ -526,165 +551,23 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
     requires PTR_OFFSET =/=Int 0
   rule #withPointerOffset(PROJS, _PTR_OFFSET, _ORIGIN_SIZE) => PROJS [owise]
 
-  syntax KItem ::= #releaseBorrowCell(Value)
-  rule <k> #releaseBorrowCell(PtrLocal(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
+  syntax KItem ::= #applyBorrowCellLocal(Int, ProjectionElems, Bool)
+                 | #applyBorrowCellStack(Int, Int, ProjectionElems, Bool)
+
+  rule <k> CELL:Value ~> #applyBorrowCellLocal(J, PROJS, IS_MUT)
         =>
-          #traverseProjection(
-            toLocal(J),
-            getValue(LOCALS, J),
-            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
-            .Contexts
+          #setLocalValue(
+            place(local(J), PROJS),
+            #if IS_MUT
+             #then #incCellBorrow(CELL)
+             #else #decCellBorrow(CELL)
+             #fi
           )
-          ~> #readProjection(false)
-          ~> #applyBorrowCell(J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
        ...
        </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int J
-     andBool J <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[J])
-    [preserves-definedness] // valid pointer target on current stack frame
+  rule #applyBorrowCellLocal(_, _, _) => .K [owise]
 
-  rule <k> #releaseBorrowCell(Reference(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
-        =>
-          #traverseProjection(
-            toLocal(J),
-            getValue(LOCALS, J),
-            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
-            .Contexts
-          )
-          ~> #readProjection(false)
-          ~> #applyBorrowCell(J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
-       ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int J
-     andBool J <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[J])
-    [preserves-definedness]
-
-  rule <k> #releaseBorrowCell(PtrLocal(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
-        =>
-          #traverseProjection(
-            toStack(OFFSET, local(J)),
-            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
-            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
-            .Contexts
-          )
-          ~> #readProjection(false)
-          ~> #applyBorrowCellStack(OFFSET, J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
-       ...
-       </k>
-       <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     [preserves-definedness]
-
-  rule <k> #releaseBorrowCell(Reference(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
-        =>
-          #traverseProjection(
-            toStack(OFFSET, local(J)),
-            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
-            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
-            .Contexts
-          )
-          ~> #readProjection(false)
-          ~> #applyBorrowCellStack(OFFSET, J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
-       ...
-       </k>
-       <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     [preserves-definedness]
-
-  rule #releaseBorrowCell(_) => .K [owise]
-
-  syntax KItem ::= #releaseBorrowCellShared(Value)
-  rule <k> #releaseBorrowCellShared(PtrLocal(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
-        =>
-          #traverseProjection(
-            toLocal(J),
-            getValue(LOCALS, J),
-            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
-            .Contexts
-          )
-          ~> #readProjection(false)
-          ~> #applyBorrowCellShared(J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
-       ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int J
-     andBool J <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[J])
-    [preserves-definedness]
-
-  rule <k> #releaseBorrowCellShared(Reference(0, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
-        =>
-          #traverseProjection(
-            toLocal(J),
-            getValue(LOCALS, J),
-            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
-            .Contexts
-          )
-          ~> #readProjection(false)
-          ~> #applyBorrowCellShared(J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
-       ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int J
-     andBool J <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[J])
-    [preserves-definedness]
-
-  rule <k> #releaseBorrowCellShared(PtrLocal(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
-        =>
-          #traverseProjection(
-            toStack(OFFSET, local(J)),
-            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
-            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
-            .Contexts
-          )
-          ~> #readProjection(false)
-          ~> #applyBorrowCellStackShared(OFFSET, J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
-       ...
-       </k>
-       <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-    [preserves-definedness]
-
-  rule <k> #releaseBorrowCellShared(Reference(OFFSET, place(local(J), PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE)))
-        =>
-          #traverseProjection(
-            toStack(OFFSET, local(J)),
-            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
-            #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE),
-            .Contexts
-          )
-          ~> #readProjection(false)
-          ~> #applyBorrowCellStackShared(OFFSET, J, #withPointerOffset(PROJS, PTR_OFFSET, ORIGIN_SIZE))
-       ...
-       </k>
-       <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-    [preserves-definedness]
-
-  rule #releaseBorrowCellShared(_) => .K [owise]
-
-  syntax KItem ::= #applyBorrowCell(Int, ProjectionElems)
-  rule <k> CELL:Value ~> #applyBorrowCell(J, PROJS)
-        => #setLocalValue(place(local(J), PROJS), #incCellBorrow(CELL))
-       ...
-       </k>
-  rule #applyBorrowCell(_, _) => .K [owise]
-
-  syntax KItem ::= #applyBorrowCellStack(Int, Int, ProjectionElems)
-  rule <k> CELL:Value ~> #applyBorrowCellStack(OFFSET, J, PROJS)
+  rule <k> CELL:Value ~> #applyBorrowCellStack(OFFSET, J, PROJS, IS_MUT)
         =>
           #traverseProjection(
             toStack(OFFSET, local(J)),
@@ -692,7 +575,12 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
             PROJS,
             .Contexts
           )
-          ~> #writeProjection(#incCellBorrow(CELL))
+          ~> #writeProjection(
+               #if IS_MUT
+                #then #incCellBorrow(CELL)
+                #else #decCellBorrow(CELL)
+                #fi
+             )
        ...
        </k>
        <stack> STACK </stack>
@@ -700,33 +588,7 @@ Our runtime model tracks RefCell borrow counts for smart-pointer types. Dropping
      andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
     [preserves-definedness]
-  rule #applyBorrowCellStack(_, _, _) => .K [owise]
-
-  syntax KItem ::= #applyBorrowCellShared(Int, ProjectionElems)
-  rule <k> CELL:Value ~> #applyBorrowCellShared(J, PROJS)
-        => #setLocalValue(place(local(J), PROJS), #decCellBorrow(CELL))
-       ...
-       </k>
-  rule #applyBorrowCellShared(_, _) => .K [owise]
-
-  syntax KItem ::= #applyBorrowCellStackShared(Int, Int, ProjectionElems)
-  rule <k> CELL:Value ~> #applyBorrowCellStackShared(OFFSET, J, PROJS)
-        =>
-          #traverseProjection(
-            toStack(OFFSET, local(J)),
-            #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(J), OFFSET),
-            PROJS,
-            .Contexts
-          )
-          ~> #writeProjection(#decCellBorrow(CELL))
-       ...
-       </k>
-       <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-    [preserves-definedness]
-  rule #applyBorrowCellStackShared(_, _, _) => .K [owise]
+  rule #applyBorrowCellStack(_, _, _, _) => .K [owise]
 ```
 
 #### Unreachable Terminator
