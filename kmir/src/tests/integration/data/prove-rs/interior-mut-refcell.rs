@@ -96,17 +96,30 @@ pub fn dual_account_demo(account_info: &AccountInfo, mint_info: &AccountInfo) ->
 
     let mut account_write = account_info.borrow_mut_data();
     let mut mint_write = mint_info.borrow_mut_data();
-    MiniTokenAccount {
+    let expected_account = MiniTokenAccount {
         owner: *b"demoacct",
         amount: 123,
         status: 1,
-    }
-    .pack_into_slice(&mut account_write);
-    MiniMint {
+    };
+    let expected_mint = MiniMint {
         decimals: 9,
         supply: 500,
-    }
-    .pack_into_slice(&mut mint_write);
+    };
+    expected_account.pack_into_slice(&mut account_write);
+    expected_mint.pack_into_slice(&mut mint_write);
+    drop(account_write);
+    drop(mint_write);
+
+    let account_read_after = account_info.borrow_data();
+    let mint_read_after = mint_info.borrow_data();
+    assert_eq!(
+        MiniTokenAccount::unpack_unchecked(&account_read_after),
+        expected_account
+    );
+    assert_eq!(
+        MiniMint::unpack_unchecked(&mint_read_after),
+        expected_mint
+    );
 
     true
 }
