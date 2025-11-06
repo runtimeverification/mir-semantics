@@ -122,13 +122,13 @@ power of two but the semantics will always operate with these particular ones.
   rule (VAL +Int 256 *Int _) %Int 256 => VAL
   requires 0 <=Int VAL
     andBool VAL <=Int 255
-  [simplification, preserves-definedness, smt-lemma]
+  [simplification, preserves-definedness]
 
   rule (VAL +Int 256 *Int REST) /Int 256 => REST
   requires 0 <=Int VAL
     andBool VAL <=Int 255
     andBool 0 <=Int REST
-  [simplification, preserves-definedness, smt-lemma]
+  [simplification, preserves-definedness]
 ```
 
 
