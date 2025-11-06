@@ -36,6 +36,7 @@ PROVE_RS_START_SYMBOLS = {
     'pointer-cast-length-test-fail': ['array_cast_test'],
     'assume-cheatcode': ['check_assume'],
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
+    'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -52,6 +53,7 @@ PROVE_RS_SHOW_SPECS = [
     'closure_access_struct',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
+    'byte-endian-fail',
 ]
 
 
