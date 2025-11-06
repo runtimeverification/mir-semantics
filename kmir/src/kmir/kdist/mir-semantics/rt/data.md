@@ -289,11 +289,7 @@ A `Deref` projection in the projections list changes the target of the write ope
        </k>
        <stack> STACK
             => STACK[(FRAME -Int 1) <-
-                      #updateStackLocal(
-                        {STACK[FRAME -Int 1]}:>StackFrame,
-                        I,
-                        #adjustRef(#buildUpdate(NEW, CONTEXTS), 0 -Int FRAME)
-                      )
+                      #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(NEW, CONTEXTS))
                     ]
        </stack>
     requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
@@ -307,11 +303,7 @@ A `Deref` projection in the projections list changes the target of the write ope
        </k>
        <stack> STACK
             => STACK[(FRAME -Int 1) <-
-                      #updateStackLocal(
-                        {STACK[FRAME -Int 1]}:>StackFrame,
-                        I,
-                        #adjustRef(#buildUpdate(Moved, CONTEXTS), 0 -Int FRAME)
-                      ) // TODO retain Ty and Mutability from _ORIGINAL
+                      #updateStackLocal({STACK[FRAME -Int 1]}:>StackFrame, I, #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
                     ]
        </stack>
     requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
