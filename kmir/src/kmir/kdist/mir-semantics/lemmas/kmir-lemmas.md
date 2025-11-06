@@ -118,6 +118,19 @@ power of two but the semantics will always operate with these particular ones.
   rule VAL &Int bitmask128 => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask128 [simplification, preserves-definedness, smt-lemma]
 ```
 
+```k
+  rule (VAL +Int 256 *Int REST) %Int 256 => VAL
+  requires 0 <=Int VAL
+    andBool VAL <=Int 255
+  [simplification, preserves-definedness, smt-lemma]
+
+  rule (VAL +Int 256 *Int REST) /Int 256 => REST
+  requires 0 <=Int VAL
+    andBool VAL <=Int 255
+    andBool 0 <=Int REST
+  [simplification, preserves-definedness, smt-lemma]
+```
+
 
 ```k
 endmodule

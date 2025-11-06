@@ -1406,6 +1406,92 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
      andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
 ```
 
+Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.
+
+```k
+  rule <k> #cast(
+              Range(ELEMS),
+              castKindTransmute,
+              _TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              #littleEndianFromBytes(ELEMS),
+              size(ELEMS) *Int 8,
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool size(ELEMS) *Int 8 ==Int #bitWidth(#numTypeOf(lookupTy(TY_TARGET)))
+       andBool #areLittleEndianBytes(ELEMS)
+      [preserves-definedness] // ensures #numTypeOf is defined
+
+  syntax Bool ::= #areLittleEndianBytes ( List ) [function, total]
+  // -------------------------------------------------------------
+  rule #areLittleEndianBytes(.List) => true
+  rule #areLittleEndianBytes(ListItem(Integer(_, 8, false)) REST)
+    => #areLittleEndianBytes(REST)
+  rule #areLittleEndianBytes(ListItem(_OTHER) _) => false [owise]
+
+  syntax Int ::= #littleEndianFromBytes ( List ) [function]
+  // -----------------------------------------------------
+  rule #littleEndianFromBytes(.List) => 0
+  rule #littleEndianFromBytes(ListItem(Integer(BYTE, 8, false)) REST)
+    => BYTE +Int 256 *Int #littleEndianFromBytes(REST)
+```
+
+Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
+
+```k
+  rule <k> #cast(
+              Integer(VAL, WIDTH, _SIGNEDNESS),
+              castKindTransmute,
+              _TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            Range(#littleEndianBytesFromInt(VAL, WIDTH))
+          ...
+        </k>
+      requires #isStaticU8Array(lookupTy(TY_TARGET))
+       andBool WIDTH >=Int 0
+       andBool WIDTH %Int 8 ==Int 0
+       andBool WIDTH ==Int #staticArrayLenBits(lookupTy(TY_TARGET))
+      [preserves-definedness] // ensures element type/length are well-formed
+
+  syntax List ::= #littleEndianBytesFromInt ( Int, Int ) [function]
+  // -------------------------------------------------------------
+  rule #littleEndianBytesFromInt(VAL, WIDTH)
+    => #littleEndianBytes(truncate(VAL, WIDTH, Unsigned), WIDTH /Int 8)
+    requires WIDTH %Int 8 ==Int 0
+     andBool WIDTH >=Int 0
+
+  syntax List ::= #littleEndianBytes ( Int, Int ) [function]
+  // -------------------------------------------------------------
+  rule #littleEndianBytes(_, COUNT)
+    => .List
+    requires COUNT <=Int 0
+
+  rule #littleEndianBytes(VAL, COUNT)
+    => ListItem(Integer(VAL %Int 256, 8, false)) #littleEndianBytes(VAL /Int 256, COUNT -Int 1)
+    requires COUNT >Int 0
+
+  syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total]
+  // -------------------------------------------------------------
+  rule #isStaticU8Array(typeInfoArrayType(ELEM_TY, someTyConst(_)))
+    => lookupTy(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
+  rule #isStaticU8Array(_OTHER) => false [owise]
+
+  syntax Int ::= #staticArrayLenBits ( TypeInfo ) [function, total]
+  // -------------------------------------------------------------
+  rule #staticArrayLenBits(typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
+    => readTyConstInt(KIND) *Int 8
+    [preserves-definedness]
+  rule #staticArrayLenBits(_OTHER) => 0 [owise]
+```
+
 Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
 (see `#discriminant` and `rvalueDiscriminant`).
 If none of the `enum` variants has any fields, the `Transmute` of a number to the `enum` data is necessarily just the discriminant itself., and can be returned as the integer value afgter adjusting to the byte length of the discriminant:
