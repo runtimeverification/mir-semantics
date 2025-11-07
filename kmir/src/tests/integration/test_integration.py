@@ -154,6 +154,12 @@ EXEC_DATA = [
         30,
     ),
     (
+        'closure-call',
+        EXEC_DATA_DIR / 'call-with-args' / 'closure-call.smir.json',
+        EXEC_DATA_DIR / 'call-with-args' / 'closure-call.state',
+        30,
+    ),
+    (
         'assign-cast',
         EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.smir.json',
         EXEC_DATA_DIR / 'assign-cast' / 'assign-cast.state',
