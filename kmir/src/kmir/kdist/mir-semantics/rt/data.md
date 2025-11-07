@@ -446,17 +446,6 @@ This is done without consideration of the validity of the Downcast[^downcast].
 
 If an Aggregate contains only one element and #traverseProjection becomes stuck, you can directly access this element.
 
-Without this rule, the test `closure_access_struct-fail.rs` demonstrates the following behavior:
-- The execution gets stuck after 192 steps at `#traverseProjection ( toLocal ( 2 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( ... ) ) , ... )`
-- The stuck state occurs because there's a Deref projection that needs to be applied to the single element of this Aggregate, but the existing Deref rules only handle pointers and references, not Aggregates
-
-With this rule enabled:
-- The execution progresses further to 277 steps before getting stuck
-- It gets stuck at a different location: `#traverseProjection ( toLocal ( 19 ) , thunk ( #decodeConstant ( constantKindAll ... ) ) , ... )`
-- The rule automatically unwraps the single-element Aggregate, allowing the field access to proceed
-
-This rule is essential for handling closures that access struct fields, as MIR represents certain struct accesses through single-element Aggregates that need to be unwrapped.
-
 ```k
   rule <k> #traverseProjection(
              DEST,
