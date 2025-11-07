@@ -1467,6 +1467,7 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     => #littleEndianBytes(truncate(VAL, WIDTH, Unsigned), WIDTH /Int 8)
     requires WIDTH %Int 8 ==Int 0
      andBool WIDTH >=Int 0
+    [preserves-definedness]
 
   syntax List ::= #littleEndianBytes ( Int, Int ) [function]
   // -------------------------------------------------------------
