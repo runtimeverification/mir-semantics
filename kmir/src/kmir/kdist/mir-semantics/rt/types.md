@@ -98,24 +98,6 @@ To make this function total, an optional `MaybeTy` is used.
   syntax MaybeTy ::= Ty
                    | "TyUnknown"
 
-  syntax MaybeTy ::= #transparentFieldTy ( TypeInfo ) [function, total]
-
-  rule #transparentFieldTy(typeInfoStructType(_, _, FIELD .Tys, LAYOUT)) => FIELD
-    requires #zeroFieldOffset(LAYOUT)
-  rule #transparentFieldTy(_) => TyUnknown [owise]
-
-  syntax Int ::= #transparentDepth ( TypeInfo ) [function, total]
-
-  rule #transparentDepth(typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
-    => 1 +Int #transparentDepth(lookupTy(FIELD))
-    requires #zeroFieldOffset(LAYOUT)
-  rule #transparentDepth(_) => 0 [owise]
-
-  syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total]
-
-  rule #lookupMaybeTy(TY:Ty) => lookupTy(TY)
-  rule #lookupMaybeTy(TyUnknown) => typeInfoVoidType
-
   syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ) [function, total]
   // -----------------------------------------------------------
   rule getTyOf(TyUnknown,             _                      ) => TyUnknown
