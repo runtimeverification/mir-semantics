@@ -163,7 +163,7 @@ def _kmir_section_edge(opts: SectionEdgeOpts) -> None:
 
     target_path = opts.proof_dir / opts.id
 
-    _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {opts.id}')
+    _LOGGER.info(f'Reading proof from disk: {opts.proof_dir}, {opts.id}')
     apr_proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
 
     smir_info = SMIRInfo.from_file(target_path / 'smir.json')

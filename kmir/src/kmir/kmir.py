@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 from contextlib import contextmanager
 from functools import cached_property
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
@@ -27,6 +26,7 @@ from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from pathlib import Path
     from typing import Final
 
     from pyk.cterm.show import CTermShow
@@ -202,14 +202,12 @@ class KMIR(KProve, KRun, KParse):
         target_dir.mkdir(parents=True, exist_ok=True)
 
         if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
+            _LOGGER.info(f'Reading proof from disk: {opts.proof_dir}, {label}')
             apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
 
             smir_info = SMIRInfo.from_file(proof_data_dir / 'smir.json')
 
-            kmir = KMIR.from_kompiled_kore(
-                smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_dir
-            )
+            kmir = KMIR.from_kompiled_kore(smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_dir)
         else:
             _LOGGER.info(f'Constructing initial proof: {label}')
             if opts.smir:
@@ -222,8 +220,7 @@ class KMIR(KProve, KRun, KParse):
             missing_body_syms = [
                 sym
                 for sym, item in smir_exec.items.items()
-                if 'MonoItemFn' in item['mono_item_kind']
-                and item['mono_item_kind']['MonoItemFn'].get('body') is None
+                if 'MonoItemFn' in item['mono_item_kind'] and item['mono_item_kind']['MonoItemFn'].get('body') is None
             ]
             has_missing = len(missing_body_syms) > 0
             _LOGGER.info(f'Reduced items table size {len(smir_exec.items)}')
@@ -231,9 +228,7 @@ class KMIR(KProve, KRun, KParse):
                 _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
                 _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
-            kmir = KMIR.from_kompiled_kore(
-                smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_dir
-            )
+            kmir = KMIR.from_kompiled_kore(smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_dir)
 
             apr_proof = kmir.apr_proof_from_smir(
                 label, smir_exec, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
