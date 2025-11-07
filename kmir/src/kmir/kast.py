@@ -36,8 +36,6 @@ if TYPE_CHECKING:
     from pyk.kast.outer import KDefinition
 
     from .smir import SMIRInfo
-    from .ty import TypeMetadata
-    from .value import MetadataSize, Value
 
 
 _LOGGER: Final = logging.getLogger(__name__)
