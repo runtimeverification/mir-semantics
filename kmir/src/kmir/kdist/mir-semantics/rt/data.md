@@ -1293,7 +1293,6 @@ which have the same representation `Value::Range`.
       requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
       [preserves-definedness] // valid map lookups checked
 
-
   syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
   // -------------------------------------------------------------------------------------
 ```
@@ -1412,8 +1411,6 @@ What can be supported without additional layout consideration is trivial casts b
   rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
-
-
 
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
 The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
