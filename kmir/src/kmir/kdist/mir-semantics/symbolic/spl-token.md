@@ -5,99 +5,103 @@ requires "../kmir.md"
 requires "../rt/configuration.md"
 ```
 
-This module extends the `KMIR-P-TOKEN` semantics so that existing Pinocchio-specific
-data modelling rules can be reused for the SPL Token runtime verification harness.
-It maps the SPL cheatcodes (and the helper entry points they rely on) onto the
-same symbolic constructors used by `p-token.md`.
+This module now provides a standalone SPL Token modelling path instead of
+reusing the Pinocchio helper pipeline.  For determinism we rebuild the domain
+data that `cheatcode_is_spl_account` needs directly inside this module (other
+cheatcodes will be ported later).
 
 ```k
 module KMIR-SPL-TOKEN
   imports KMIR-P-TOKEN
 ```
 
-## Cheatcode aliases
+## Cheatcode handling
 
 ```k
   rule [cheatcode-is-spl-account]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkPTokenAccount(PLACE) ~> #execBlockIdx(TARGET)
+      => #mkSPLTokenAccount(PLACE) ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_account"
     [priority(30), preserves-definedness]
-
-  rule [cheatcode-is-spl-mint]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkPTokenMint(PLACE) ~> #execBlockIdx(TARGET)
-    ...
-    </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_mint"
-    [priority(30), preserves-definedness]
-
-  rule [cheatcode-is-spl-rent]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkPTokenRent(PLACE) ~> #execBlockIdx(TARGET)
-    ...
-    </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_rent"
-    [priority(30), preserves-definedness]
 ```
 
-## Account data helpers
+## SPL account constructor
 
-The SPL harness uses `spl_token::state::{Account,Mint,Multisig}` `Pack` helpers
-instead of Pinocchio's `Transmutable` APIs.  These rules redirect the calls to
-the existing symbolic constructors so that previously defined projections and
-updates keep working without duplication.
+We mirror the `p-token.md` modelling strategy but construct the symbolic account
+value locally.  This avoids the `#addAccount` detour that attempted to reuse the
+Pinocchio helpers via synthetic aggregates.
 
-To reuse the Pinocchio rules, we synthesize the expected `PAcc` layout from the
-SPL `AccountInfo` payloads before they reach `#add{Account,Mint,Rent}`.  The SPL
-runtime only exposes the raw byte buffers, so we introduce helper functions that
-fabricate a compatible `PAcc` record while preserving the data length that
-downstream rules rely on.
+```k
+  syntax KItem ::= #mkSPLTokenAccount ( Place )
+
+  rule
+    <k> #mkSPLTokenAccount(place(LOCAL, PROJS))
+      => #setLocalValue(
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+            #mkSPLAccountValue()
+         )
+    ...
+    </k>
+```
+```k
+  syntax Value ::= #mkSPLAccountValue ( )
+```
 
 ```{.k .symbolic}
-  syntax PAcc ::= #mkSPLPAcc ( Int )
-
-  rule #mkSPLPAcc(DATA_LEN)
-      => PAcc(
-           U8(?SplBorrowState:Int),
-           U8(?SplIsSigner:Int),
-           U8(?SplIsWritable:Int),
-           U8(?SplExecutable:Int),
-           I32(?SplResizeDelta:Int),
-           Key(?SplAccountKey:List),
-           Key(?SplOwnerKey:List),
-           U64(?SplLamports:Int),
-           U64(DATA_LEN)
+  rule #mkSPLAccountValue()
+      => PAccountAccount(
+           PAcc(
+             U8(?SplBorrowState:Int),
+             U8(?SplIsSigner:Int),
+             U8(?SplIsWritable:Int),
+             U8(?SplExecutable:Int),
+             I32(?SplResizeDelta:Int),
+             Key(?SplAccountKey:List),
+             Key(?SplOwnerKey:List),
+             U64(?SplLamports:Int),
+             U64(165) // size_of(Account)
+           ),
+           IAcc(
+             Key(?SplMintKey:List),
+             Key(?SplTokenOwner:List),
+             Amount(?SplAmount:Int),
+             Flag(?SplDelegateFlag:Int),
+             Key(?SplDelegateKey:List),
+             U8(?SplAccountState:Int),
+             Flag(?SplNativeFlag:Int),
+             Amount(?SplNativeAmount:Int),
+             Amount(?SplDelegateAmount:Int),
+             Flag(?SplCloseFlag:Int),
+             Key(?SplCloseAuthorityKey:List)
+           )
          )
     ensures 0 <=Int ?SplBorrowState andBool ?SplBorrowState <Int 256
       andBool 0 <=Int ?SplIsSigner andBool ?SplIsSigner <Int 256
       andBool 0 <=Int ?SplIsWritable andBool ?SplIsWritable <Int 256
       andBool 0 <=Int ?SplExecutable andBool ?SplExecutable <Int 256
       andBool -2147483648 <=Int ?SplResizeDelta andBool ?SplResizeDelta <=Int 2147483647
-      andBool 0 <=Int ?SplLamports andBool ?SplLamports <Int 18446744073709551616
       andBool size(?SplAccountKey) ==Int 32 andBool allBytes(?SplAccountKey)
       andBool size(?SplOwnerKey) ==Int 32 andBool allBytes(?SplOwnerKey)
-
-  syntax Value ::= #mkSPLAccountAggregate ( Int ) [function, total]
-  rule #mkSPLAccountAggregate(DATA_LEN) => #fromPAcc(#mkSPLPAcc(DATA_LEN))
-
-  rule [spl-addAccount-coerce]:
-    #addAccount(Aggregate(variantIdx(0), ListItem(Range(ACC_BYTES)) .List))
-      => #addAccount(#mkSPLAccountAggregate(size(ACC_BYTES)))
-    [priority(25), preserves-definedness]
-
-  rule [spl-addMint-coerce]:
-    #addMint(Aggregate(variantIdx(0), ListItem(Range(MINT_BYTES)) .List))
-      => #addMint(#mkSPLAccountAggregate(size(MINT_BYTES)))
-    [priority(25), preserves-definedness]
-
-  rule [spl-addRent-coerce]:
-    #addRent(Aggregate(variantIdx(0), ListItem(Range(RENT_BYTES)) .List))
-      => #addRent(#mkSPLAccountAggregate(size(RENT_BYTES)))
-    [priority(25), preserves-definedness]
+      andBool 0 <=Int ?SplLamports andBool ?SplLamports <Int 18446744073709551616
+      andBool size(?SplMintKey) ==Int 32 andBool allBytes(?SplMintKey)
+      andBool size(?SplTokenOwner) ==Int 32 andBool allBytes(?SplTokenOwner)
+      andBool size(?SplDelegateKey) ==Int 32 andBool allBytes(?SplDelegateKey)
+      andBool size(?SplCloseAuthorityKey) ==Int 32 andBool allBytes(?SplCloseAuthorityKey)
+      andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
+      andBool 0 <=Int ?SplNativeAmount andBool ?SplNativeAmount <Int (1 <<Int 64)
+      andBool 0 <=Int ?SplDelegateAmount andBool ?SplDelegateAmount <Int (1 <<Int 64)
+      andBool 0 <=Int ?SplDelegateFlag andBool ?SplDelegateFlag <=Int 1
+      andBool 0 <=Int ?SplNativeFlag andBool ?SplNativeFlag <=Int 1
+      andBool 0 <=Int ?SplCloseFlag andBool ?SplCloseFlag <=Int 1
+      andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <Int 256
 ```
+
+## Pack/borrow helpers
+
+The remaining helpers still map SPL harness calls onto the Pinocchio
+representations so the downstream projections keep working.
 
 ```k
   // Account::unpack* wrappers -------------------------------------------------
@@ -142,14 +146,9 @@ downstream rules rely on.
     [priority(30), preserves-definedness]
 ```
 
-## Borrow helpers
-
-Pinocchio uses bespoke `borrow_*_unchecked` helpers; the SPL harness implements
-borrows via `RefCell`.  The following aliases keep the symbolic `PAccByteRef`
-representation consistent by mapping the standard library calls to the existing
-constructor.
-
 ```k
+  // RefCell::<&mut [u8]> borrow helpers ---------------------------------------
+
   rule [spl-borrow-data]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemField(fieldIdx(2), #hack()) projectionElemDeref .ProjectionElems))), mutabilityNot)
