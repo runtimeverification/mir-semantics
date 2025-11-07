@@ -415,6 +415,8 @@ The first argument of the closure is its environment.
 Its type is currently not extracted (KMIR does not currently support variable-capturing) and it is not initialised.
 The second argument is a _tuple_ of all the arguments, however the function body expects these arguments as single locals.
 
+This should be indicated by the `spread_arg` field in the function body but it isn't more often than not.
+
 ```k
   // reserve space for local variables and copy/move arguments from a tuple inside the old locals into their place
   rule [setupCalleeClosure]: <k> #setUpCalleeData(
@@ -430,8 +432,36 @@ The second argument is a _tuple_ of all the arguments, however the function body
        <currentFrame>
          <currentBody> _ => toKList(BLOCKS) </currentBody>
          <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
-         <stack> 
-              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved))) 
+         <stack>
+              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
+              _:List
+          </stack>
+         // assumption: arguments stored as _1 .. _n before actual "local" data
+         ...
+       </currentFrame>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
+     andBool isTypedValue(getLocal(LOCALS, TUPLE))
+     andBool isTupleType(lookupTy(tyOfLocal(getLocal(LOCALS, TUPLE))))
+     andBool typeInfoVoidType ==K lookupTy(tyOfLocal(getLocal(LOCALS, CLOSURE)))
+              // either the closure ref type is missing from type table
+    [priority(40), preserves-definedness]
+
+  rule [setupCalleeClosure2]: <k> #setUpCalleeData(
+              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
+                operandMove(place(local(CLOSURE:Int), .ProjectionElems))
+                operandMove(place(local(TUPLE), .ProjectionElems))
+                .Operands
+              )
+         =>
+           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+         ...
+       </k>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
+         <stack>
+              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
               _:List
           </stack>
          // assumption: arguments stored as _1 .. _n before actual "local" data
@@ -442,8 +472,9 @@ The second argument is a _tuple_ of all the arguments, however the function body
      andBool isTypedValue(getLocal(LOCALS, TUPLE))
      andBool isTupleType(lookupTy(tyOfLocal(getLocal(LOCALS, TUPLE))))
      andBool isRefType(lookupTy(tyOfLocal(getLocal(LOCALS, CLOSURE))))
-     andBool lookupTy({pointeeTy(lookupTy(tyOfLocal(getLocal(LOCALS, CLOSURE))))}:>Ty) ==K typeInfoVoidType // closure types don't get extracted at the moment
-    [priority(40), preserves-definedness]
+     andBool isTy(pointeeTy(lookupTy(tyOfLocal(getLocal(LOCALS, CLOSURE)))))
+     andBool lookupTy({pointeeTy(lookupTy(tyOfLocal(getLocal(LOCALS, CLOSURE))))}:>Ty) ==K typeInfoVoidType
+    [priority(45), preserves-definedness]
 
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
                 | isRefType ( TypeInfo ) [function, total]
