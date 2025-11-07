@@ -61,32 +61,6 @@ Pointers to arrays/slices are compatible with pointers to the element type
 
   rule #isArrayOf(typeInfoArrayType(TY, _), TY) => true
   rule #isArrayOf(      _                 , _ ) => false [owise]
-
-  rule #typesCompatible(SRC, OTHER) => true
-    requires #zeroSizedType(SRC) orBool #zeroSizedType(OTHER)
-
-
-
-  rule #typesCompatible(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
-    => #typesCompatible(lookupTy(FIELD), OTHER)
-    requires #zeroFieldOffset(LAYOUT)
-
-  rule #typesCompatible(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
-    => #typesCompatible(OTHER, lookupTy(FIELD))
-    requires #zeroFieldOffset(LAYOUT)
-
-  syntax Bool ::= #zeroFieldOffset ( MaybeLayoutShape ) [function, total]
-
-  rule #zeroFieldOffset(LAYOUT)
-    =>      #structOffsets(LAYOUT) ==K .MachineSizes
-     orBool #structOffsets(LAYOUT) ==K machineSize(mirInt(0)) .MachineSizes
-     orBool #structOffsets(LAYOUT) ==K machineSize(0) .MachineSizes
-
-  syntax MachineSizes ::= #structOffsets ( MaybeLayoutShape ) [function, total]
-
-  rule #structOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
-  rule #structOffsets(_) => .MachineSizes [owise]
-
 ```
 
 ## Determining types of places with projection
