@@ -1456,6 +1456,28 @@ What can be supported without additional layout consideration is trivial casts b
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
 
+Transmuting a pointer to an integer discards provenance and reinterprets the pointer’s offset as a value of the target integer type.
+
+```k
+  // `prove-rs/interior-mut3.rs` needs this
+  // TODO: check its correctness, I assume the pointer offset is the address here and we can use it to recover the PtrLocal
+  rule <k> #cast(
+              PtrLocal(_, _, _, metadata(_, PTR_OFFSET, _)),
+              castKindTransmute,
+              _TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              PTR_OFFSET,
+              #bitWidth(#numTypeOf(lookupTy(TY_TARGET))),
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY_TARGET))
+```
+
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
 The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
 
