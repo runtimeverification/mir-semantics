@@ -20,11 +20,11 @@ module KMIR-SPL-TOKEN
 ## Helper syntax
 
 ```k
-  syntax Value ::= SPLRefCellData ( SPLDataBuffer )
+  syntax Value ::= SPLRefCellData ( Value )
                  | SPLRefCellLamports ( U64 )
                  | SPLDataBuffer ( Value )
-                 | SPLDataBorrow ( Place , SPLDataBuffer )
-                 | SPLDataBorrowMut ( Place , SPLDataBuffer )
+                 | SPLDataBorrow ( Place , Value )
+                 | SPLDataBorrowMut ( Place , Value )
 
   syntax Value ::= #mkSPLAccountInfo ( )
                  | #mkSPLAccountPayload ( )
@@ -67,9 +67,9 @@ and the eight-account fields described in the SPL Pack implementation.
            ListItem(SPLRefCellData(SPLDataBuffer(#mkSPLAccountPayload())))
            ListItem(Range(?SplOwnerKey))
            ListItem(Integer(?SplRentEpoch:Int, 64, false))
-           ListItem(BoolVal(?SplIsSigner:Bool))
-           ListItem(BoolVal(?SplIsWritable:Bool))
-           ListItem(BoolVal(?SplExecutable:Bool))
+           ListItem(BoolVal(?_SplIsSigner:Bool))
+           ListItem(BoolVal(?_SplIsWritable:Bool))
+           ListItem(BoolVal(?_SplExecutable:Bool))
          )
     ensures size(?SplAccountKey) ==Int 32 andBool allBytes(?SplAccountKey)
       andBool size(?SplOwnerKey) ==Int 32 andBool allBytes(?SplOwnerKey)
