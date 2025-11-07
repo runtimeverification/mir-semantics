@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import tempfile
 from contextlib import contextmanager
 from functools import cached_property
 from pathlib import Path
@@ -192,78 +191,80 @@ class KMIR(KProve, KRun, KParse):
         return APRProof(id, kcfg, [], init_node.id, target_node.id, {}, proof_dir=proof_dir)
 
     @staticmethod
-    def prove_rs(opts: ProveRSOpts) -> APRProof:
+    def prove_rs(opts: ProveRSOpts, target_dir: Path) -> APRProof:
         if not opts.rs_file.is_file():
             raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
         label = str(opts.rs_file.stem) + '.' + opts.start_symbol
 
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            target_path = opts.proof_dir / label if opts.proof_dir is not None else Path(tmp_dir)
+        proof_data_dir = (opts.proof_dir / label) if opts.proof_dir is not None else None
 
-            if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-                _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-                apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
+        target_dir.mkdir(parents=True, exist_ok=True)
 
-                smir_info = SMIRInfo.from_file(target_path / 'smir.json')
-                kmir = KMIR.from_kompiled_kore(
-                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path
-                )
+        if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
+            _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
+            apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
+
+            smir_info = SMIRInfo.from_file(proof_data_dir / 'smir.json')
+
+            kmir = KMIR.from_kompiled_kore(
+                smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_dir
+            )
+        else:
+            _LOGGER.info(f'Constructing initial proof: {label}')
+            if opts.smir:
+                smir_info = SMIRInfo.from_file(opts.rs_file)
             else:
-                _LOGGER.info(f'Constructing initial proof: {label}')
-                if opts.smir:
-                    smir_info = SMIRInfo.from_file(opts.rs_file)
-                else:
-                    smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
+                smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-                smir_info = smir_info.reduce_to(opts.start_symbol)
-                # Report whether the reduced call graph includes any functions without MIR bodies
-                missing_body_syms = [
-                    sym
-                    for sym, item in smir_info.items.items()
-                    if 'MonoItemFn' in item['mono_item_kind']
-                    and item['mono_item_kind']['MonoItemFn'].get('body') is None
-                ]
-                has_missing = len(missing_body_syms) > 0
-                _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
-                if has_missing:
-                    _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
-                    _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
+            smir_exec = smir_info.reduce_to(opts.start_symbol)
+            # Report whether the reduced call graph includes any functions without MIR bodies
+            missing_body_syms = [
+                sym
+                for sym, item in smir_exec.items.items()
+                if 'MonoItemFn' in item['mono_item_kind']
+                and item['mono_item_kind']['MonoItemFn'].get('body') is None
+            ]
+            has_missing = len(missing_body_syms) > 0
+            _LOGGER.info(f'Reduced items table size {len(smir_exec.items)}')
+            if has_missing:
+                _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
+                _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
-                kmir = KMIR.from_kompiled_kore(
-                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path
-                )
-
-                apr_proof = kmir.apr_proof_from_smir(
-                    label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
-                )
-                if apr_proof.proof_dir is not None and (apr_proof.proof_dir / label).is_dir():
-                    smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
-
-            if apr_proof.passed:
-                return apr_proof
-
-            cut_point_rules = KMIR.cut_point_rules(
-                break_on_calls=opts.break_on_calls,
-                break_on_function_calls=opts.break_on_function_calls,
-                break_on_intrinsic_calls=opts.break_on_intrinsic_calls,
-                break_on_thunk=opts.break_on_thunk,
-                break_every_statement=opts.break_every_statement,
-                break_on_terminator_goto=opts.break_on_terminator_goto,
-                break_on_terminator_switch_int=opts.break_on_terminator_switch_int,
-                break_on_terminator_return=opts.break_on_terminator_return,
-                break_on_terminator_call=opts.break_on_terminator_call,
-                break_on_terminator_assert=opts.break_on_terminator_assert,
-                break_on_terminator_drop=opts.break_on_terminator_drop,
-                break_on_terminator_unreachable=opts.break_on_terminator_unreachable,
-                break_every_terminator=opts.break_every_terminator,
-                break_every_step=opts.break_every_step,
+            kmir = KMIR.from_kompiled_kore(
+                smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_dir
             )
 
-            with kmir.kcfg_explore(label) as kcfg_explore:
-                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, cut_point_rules=cut_point_rules)
-                prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
-                return apr_proof
+            apr_proof = kmir.apr_proof_from_smir(
+                label, smir_exec, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+            )
+            if apr_proof.proof_dir is not None and (apr_proof.proof_dir / label).is_dir():
+                smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
+
+        if apr_proof.passed:
+            return apr_proof
+
+        cut_point_rules = KMIR.cut_point_rules(
+            break_on_calls=opts.break_on_calls,
+            break_on_function_calls=opts.break_on_function_calls,
+            break_on_intrinsic_calls=opts.break_on_intrinsic_calls,
+            break_on_thunk=opts.break_on_thunk,
+            break_every_statement=opts.break_every_statement,
+            break_on_terminator_goto=opts.break_on_terminator_goto,
+            break_on_terminator_switch_int=opts.break_on_terminator_switch_int,
+            break_on_terminator_return=opts.break_on_terminator_return,
+            break_on_terminator_call=opts.break_on_terminator_call,
+            break_on_terminator_assert=opts.break_on_terminator_assert,
+            break_on_terminator_drop=opts.break_on_terminator_drop,
+            break_on_terminator_unreachable=opts.break_on_terminator_unreachable,
+            break_every_terminator=opts.break_every_terminator,
+            break_every_step=opts.break_every_step,
+        )
+
+        with kmir.kcfg_explore(label) as kcfg_explore:
+            prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, cut_point_rules=cut_point_rules)
+            prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
+            return apr_proof
 
 
 class KMIRSemantics(DefaultSemantics):

@@ -105,11 +105,13 @@ class ProveRSOpts(ProveOpts):
     save_smir: bool
     smir: bool
     start_symbol: str
+    target_dir: Path | None
 
     def __init__(
         self,
         rs_file: Path,
         proof_dir: Path | str | None = None,
+        target_dir: Path | str | None = None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
@@ -134,6 +136,7 @@ class ProveRSOpts(ProveOpts):
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.target_dir = Path(target_dir).resolve() if target_dir is not None else None
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations

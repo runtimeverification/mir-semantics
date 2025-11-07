@@ -66,10 +66,22 @@ def _kmir_run(opts: RunOpts) -> None:
 
 
 def _kmir_prove_rs(opts: ProveRSOpts) -> None:
-    proof = KMIR.prove_rs(opts)
-    print(str(proof.summary))
-    if not proof.passed:
-        sys.exit(1)
+    label = f'{opts.rs_file.stem}.{opts.start_symbol}'
+    proof_data_dir = (opts.proof_dir / label) if opts.proof_dir is not None else None
+
+    def prove(target_dir: Path) -> APRProof:
+        proof = KMIR.prove_rs(opts, target_dir=target_dir)
+        print(str(proof.summary))
+        if not proof.passed:
+            sys.exit(1)
+
+    if opts.target_dir is not None:
+        prove(Path(opts.target_dir))
+    elif proof_data_dir is not None:
+        prove(proof_data_dir)
+    else:
+        with tempfile.TemporaryDirectory() as target_dir:
+            prove(Path(target_dir))
 
 
 def _kmir_view(opts: ViewOpts) -> None:
@@ -239,6 +251,7 @@ def _arg_parser() -> ArgumentParser:
 
     prove_args = ArgumentParser(add_help=False)
     prove_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
+    prove_args.add_argument('--target-dir', type=Path, metavar='TARGET_DIR', help='SMIR kompilation target directory')
     prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
     prove_args.add_argument('--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg')
     prove_args.add_argument(
@@ -486,6 +499,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file),
                 proof_dir=ns.proof_dir,
+                target_dir=ns.target_dir,
                 bug_report=ns.bug_report,
                 max_depth=ns.max_depth,
                 max_iterations=ns.max_iterations,
