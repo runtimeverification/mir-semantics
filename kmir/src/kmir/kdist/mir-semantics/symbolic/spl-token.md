@@ -50,6 +50,55 @@ instead of Pinocchio's `Transmutable` APIs.  These rules redirect the calls to
 the existing symbolic constructors so that previously defined projections and
 updates keep working without duplication.
 
+To reuse the Pinocchio rules, we synthesize the expected `PAcc` layout from the
+SPL `AccountInfo` payloads before they reach `#add{Account,Mint,Rent}`.  The SPL
+runtime only exposes the raw byte buffers, so we introduce helper functions that
+fabricate a compatible `PAcc` record while preserving the data length that
+downstream rules rely on.
+
+```{.k .symbolic}
+  syntax PAcc ::= #mkSPLPAcc ( Int )
+
+  rule #mkSPLPAcc(DATA_LEN)
+      => PAcc(
+           U8(?SplBorrowState:Int),
+           U8(?SplIsSigner:Int),
+           U8(?SplIsWritable:Int),
+           U8(?SplExecutable:Int),
+           I32(?SplResizeDelta:Int),
+           Key(?SplAccountKey:List),
+           Key(?SplOwnerKey:List),
+           U64(?SplLamports:Int),
+           U64(DATA_LEN)
+         )
+    ensures 0 <=Int ?SplBorrowState andBool ?SplBorrowState <Int 256
+      andBool 0 <=Int ?SplIsSigner andBool ?SplIsSigner <Int 256
+      andBool 0 <=Int ?SplIsWritable andBool ?SplIsWritable <Int 256
+      andBool 0 <=Int ?SplExecutable andBool ?SplExecutable <Int 256
+      andBool -2147483648 <=Int ?SplResizeDelta andBool ?SplResizeDelta <=Int 2147483647
+      andBool 0 <=Int ?SplLamports andBool ?SplLamports <Int 18446744073709551616
+      andBool size(?SplAccountKey) ==Int 32 andBool allBytes(?SplAccountKey)
+      andBool size(?SplOwnerKey) ==Int 32 andBool allBytes(?SplOwnerKey)
+
+  syntax Value ::= #mkSPLAccountAggregate ( Int ) [function, total]
+  rule #mkSPLAccountAggregate(DATA_LEN) => #fromPAcc(#mkSPLPAcc(DATA_LEN))
+
+  rule [spl-addAccount-coerce]:
+    #addAccount(Aggregate(variantIdx(0), ListItem(Range(ACC_BYTES)) .List))
+      => #addAccount(#mkSPLAccountAggregate(size(ACC_BYTES)))
+    [priority(25), preserves-definedness]
+
+  rule [spl-addMint-coerce]:
+    #addMint(Aggregate(variantIdx(0), ListItem(Range(MINT_BYTES)) .List))
+      => #addMint(#mkSPLAccountAggregate(size(MINT_BYTES)))
+    [priority(25), preserves-definedness]
+
+  rule [spl-addRent-coerce]:
+    #addRent(Aggregate(variantIdx(0), ListItem(Range(RENT_BYTES)) .List))
+      => #addRent(#mkSPLAccountAggregate(size(RENT_BYTES)))
+    [priority(25), preserves-definedness]
+```
+
 ```k
   // Account::unpack* wrappers -------------------------------------------------
 
