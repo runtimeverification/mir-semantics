@@ -1478,6 +1478,7 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
   rule #littleEndianBytes(VAL, COUNT)
     => ListItem(Integer(VAL %Int 256, 8, false)) #littleEndianBytes(VAL /Int 256, COUNT -Int 1)
     requires COUNT >Int 0
+    [preserves-definedness]
 
   syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total]
   // -------------------------------------------------------------
