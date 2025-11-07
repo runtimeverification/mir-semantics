@@ -8,8 +8,6 @@ requires "value.md"
 
 module RT-TYPES
   imports BOOL
-  imports INT
-  imports STRING
   imports MAP
   imports K-EQUAL
 
