@@ -53,7 +53,6 @@ PROVE_RS_SHOW_SPECS = [
     'closure_access_struct',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
-    'byte-endian-fail',
 ]
 
 
