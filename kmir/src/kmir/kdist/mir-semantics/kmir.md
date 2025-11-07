@@ -427,14 +427,13 @@ The second argument is a _tuple_ of all the arguments, however the function body
            #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
          ...
        </k>
-       //<currentFunc> CALLEE </currentFunc>
        <currentFrame>
          <currentBody> _ => toKList(BLOCKS) </currentBody>
-        //  <caller> CALLER </caller>
-        //  <dest> DEST </dest>
-        //  <target> TARGET </target>
-        //  <unwind> UNWIND </unwind>
          <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
+         <stack> 
+              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved))) 
+              _:List
+          </stack>
          // assumption: arguments stored as _1 .. _n before actual "local" data
          ...
        </currentFrame>

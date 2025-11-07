@@ -157,7 +157,7 @@ EXEC_DATA = [
         'closure-call',
         EXEC_DATA_DIR / 'call-with-args' / 'closure-call.smir.json',
         EXEC_DATA_DIR / 'call-with-args' / 'closure-call.state',
-        30,
+        None,
     ),
     (
         'assign-cast',
