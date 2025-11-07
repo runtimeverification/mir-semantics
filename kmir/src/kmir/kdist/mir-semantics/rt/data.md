@@ -1400,27 +1400,9 @@ What can be supported without additional layout consideration is trivial casts b
 
   rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
-
-  // Transmuting a pointer to an integer discards provenance and
-  // reinterprets the pointer’s offset as a value of the target integer type.
-  // Tested by `prove-rs/interior-mut3.rs`
-  // TODO: check its correctness, I assume the pointer offset is the address here and we can use it to recover the PtrLocal
-  rule <k> #cast(
-              PtrLocal(_, _, _, metadata(_, PTR_OFFSET, _)),
-              castKindTransmute,
-              _TY_SOURCE,
-              TY_TARGET
-            )
-          =>
-            #intAsType(
-              PTR_OFFSET,
-              #bitWidth(#numTypeOf(lookupTy(TY_TARGET))),
-              #numTypeOf(lookupTy(TY_TARGET))
-            )
-          ...
-        </k>
-      requires #isIntType(lookupTy(TY_TARGET))
 ```
+
+
 
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
 The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
@@ -1436,7 +1418,6 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
        </k>
     requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
      andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
-
 ```
 
 Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
