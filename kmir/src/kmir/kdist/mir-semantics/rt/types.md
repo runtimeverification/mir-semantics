@@ -81,8 +81,8 @@ Pointers to structs with a single zero-offset field are compatible with pointers
      orBool #structOffsets(LAYOUT) ==K machineSize(mirInt(0)) .MachineSizes
      orBool #structOffsets(LAYOUT) ==K machineSize(0) .MachineSizes
 
+  // Extract field offsets from the struct layout when available (Arbitrary only).
   syntax MachineSizes ::= #structOffsets ( MaybeLayoutShape ) [function, total]
-
   rule #structOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
   rule #structOffsets(_) => .MachineSizes [owise]
 ```
