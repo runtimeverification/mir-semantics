@@ -39,6 +39,7 @@ module KMIR-SPL-TOKEN
     ...
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_account"
+      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token_domain_data::cheatcode_is_spl_account" 
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #mkSPLTokenAccount ( Place )
@@ -164,6 +165,8 @@ and the eight-account fields described in the SPL Pack implementation.
         #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::unpack_unchecked"
       orBool
         #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::unpack"
+      orBool
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token_domain_data::Account::unpack_unchecked"
     )
     [priority(30), preserves-definedness]
 
@@ -185,7 +188,11 @@ and the eight-account fields described in the SPL Pack implementation.
          ~> #execBlockIdx(TARGET)
     ...
     </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::pack"
+    requires (
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::pack"
+      orBool
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token_domain_data::Account::pack"
+    )
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation , Place ) [seqstrict(2)]

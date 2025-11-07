@@ -37,6 +37,7 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode': ['check_assume'],
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
+    'spl_token_domain_data': ['test_spltoken_domain_data']
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -51,9 +52,7 @@ PROVE_RS_SHOW_SPECS = [
     'pointer-cast-length-test-fail',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
-    'raw-ptr-cast-fail',
-    'transmute-u8-to-enum-fail',
-    'transmute-u8-to-enum-changed-discriminant-signed-fail',
+    'spl_token_domain_data',
 ]
 
 
