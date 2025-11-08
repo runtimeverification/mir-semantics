@@ -427,6 +427,7 @@ This should be indicated by the `spread_arg` field in the function body but it i
               )
          =>
            #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+          // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
        <currentFrame>
@@ -436,14 +437,14 @@ This should be indicated by the `spread_arg` field in the function body but it i
               (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
               _:List
           </stack>
-         // assumption: arguments stored as _1 .. _n before actual "local" data
          ...
        </currentFrame>
     requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
      andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
-     andBool isTypedValue(getLocal(LOCALS, TUPLE))
-     andBool isTupleType(lookupTy(tyOfLocal(getLocal(LOCALS, TUPLE))))
-     andBool typeInfoVoidType ==K lookupTy(tyOfLocal(getLocal(LOCALS, CLOSURE)))
+     andBool isTypedValue(LOCALS[TUPLE])
+     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTypedLocal(LOCALS[CLOSURE])
+     andBool typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
               // either the closure ref type is missing from type table
     [priority(40), preserves-definedness]
 
@@ -455,6 +456,7 @@ This should be indicated by the `spread_arg` field in the function body but it i
               )
          =>
            #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+          // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
        <currentFrame>
@@ -464,16 +466,17 @@ This should be indicated by the `spread_arg` field in the function body but it i
               (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
               _:List
           </stack>
-         // assumption: arguments stored as _1 .. _n before actual "local" data
          ...
        </currentFrame>
     requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
      andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
-     andBool isTypedValue(getLocal(LOCALS, TUPLE))
-     andBool isTupleType(lookupTy(tyOfLocal(getLocal(LOCALS, TUPLE))))
-     andBool isRefType(lookupTy(tyOfLocal(getLocal(LOCALS, CLOSURE))))
-     andBool isTy(pointeeTy(lookupTy(tyOfLocal(getLocal(LOCALS, CLOSURE)))))
-     andBool lookupTy({pointeeTy(lookupTy(tyOfLocal(getLocal(LOCALS, CLOSURE))))}:>Ty) ==K typeInfoVoidType
+     andBool isTypedValue(LOCALS[TUPLE])
+     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTypedLocal(LOCALS[CLOSURE])
+               // or the closure ref type pointee is missing from the type table
+     andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+     andBool isTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
+     andBool lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
     [priority(45), preserves-definedness]
 
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
