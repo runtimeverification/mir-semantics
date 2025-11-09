@@ -415,7 +415,14 @@ The first argument of the closure is its environment.
 Its type is currently not extracted (KMIR does not currently support variable-capturing) and it is not initialised.
 The second argument is a _tuple_ of all the arguments, however the function body expects these arguments as single locals.
 
-This should be indicated by the `spread_arg` field in the function body but it isn't more often than not.
+Using this calling convention should be indicated by the `spread_arg` field in the function body.[^spread_arg]
+However, this field is usually `None` for _closures_, it is only set for internal functions of the Rust execution mechanism.
+Therefore a heuristics is used here:
+* The function has two arguments,
+* the 1st argument has an unknown type (or refers to one),
+* and the 2nd argument is a tuple.
+
+[^spread_arg]: https://doc.rust-lang.org/beta/nightly-rustc/rustc_public/mir/body/struct.Body.html#structfield.spread_arg
 
 ```k
   // reserve space for local variables and copy/move arguments from a tuple inside the old locals into their place
