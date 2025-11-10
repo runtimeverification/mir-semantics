@@ -1,0 +1,30 @@
+{
+  "bytes": [],
+  "types": [],
+  "typeInfo": {
+    "TupleType": {
+      "types": [],
+      "layout": {
+        "fields": {
+          "Arbitrary": {
+            "offsets": []
+          }
+        },
+        "variants": {
+          "Single": {
+            "index": 0
+          }
+        },
+        "abi": {
+          "Aggregate": {
+            "sized": true
+          }
+        },
+        "abi_align": 1,
+        "size": {
+          "num_bits": 0
+        }
+      }
+    }
+  }
+}

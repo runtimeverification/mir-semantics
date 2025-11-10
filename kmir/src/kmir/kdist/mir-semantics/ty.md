@@ -274,7 +274,8 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                     | typeInfoArrayType(Ty, MaybeTyConst)        [symbol(TypeInfo::ArrayType)    , group(mir-enum---elem-type--size)]
                     | typeInfoPtrType(Ty)                        [symbol(TypeInfo::PtrType)      , group(mir-enum---pointee-type)]
                     | typeInfoRefType(Ty)                        [symbol(TypeInfo::RefType)      , group(mir-enum---pointee-type)]
-                    | typeInfoTupleType(Tys)                     [symbol(TypeInfo::TupleType)    , group(mir-enum---types)]
+                    | typeInfoTupleType(types: Tys, layout: MaybeLayoutShape)
+                                                            [symbol(TypeInfo::TupleType)    , group(mir-enum---types--layout)]
                     | typeInfoFunType(MIRString)                 [symbol(TypeInfo::FunType)      , group(mir-enum)]
                     | "typeInfoVoidType"                         [symbol(TypeInfo::VoidType)     , group(mir-enum)]
 
