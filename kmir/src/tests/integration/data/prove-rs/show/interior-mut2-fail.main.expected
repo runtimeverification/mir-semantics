@@ -3,13 +3,15 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (185 steps)
-└─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 2 ) , thunk ( #cast ( PtrLocal ( 3 , place ( ...
-    span: 53
-
-
-┌─ 2 (root, leaf, target, terminal)
+│  (725 steps)
+├─ 3 (terminal)
 │   #EndProgram ~> .K
+│   function: main
+│
+┊  constraint: true
+┊  subst: ...
+└─ 2 (leaf, target, terminal)
+    #EndProgram ~> .K
+
 
 
