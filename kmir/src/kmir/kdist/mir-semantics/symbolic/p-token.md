@@ -36,10 +36,10 @@ We model this special assumption through a special subsort of `Value` with rules
   syntax PAccount ::=
       PAccountAccount( PAcc , IAcc )    // p::Account and iface::Account structs
     | PAccountMint( PAcc , IMint )      // p::Account and iface::Mint structs
-    // | PAccountMultisig( PAcc , IMulti ) // p::Account and iface::Multisig structs
+    | PAccountMultisig( PAcc , IMulti ) // p::Account and iface::Multisig structs
     | PAccountRent ( PAcc, PRent )      // p::Account and p::sysvars::rent::Rent
 
-  syntax PAccount2nd ::= IAcc | IMint | PRent // all sorts that can be 2nd component
+  syntax PAccount2nd ::= IAcc | IMint | IMulti | PRent // all sorts that can be 2nd component
 ```
 
 ### Pinocchio Account
@@ -115,6 +115,26 @@ The code uses some helper sorts for better readability.
   // We assume that the Key always contains valid data, because it is constructed via toKey.
   rule fromKey(KeyError(VAL)) => VAL
   rule fromKey(Key(VAL))      => Range(VAL) [preserves-definedness]
+
+  syntax Signers ::= Signers ( List ) // 11 Pubkeys, each List of 32 bytes
+                   | SignersError ( Value )
+
+  syntax Signers ::= toSigners ( Value ) [function, total]
+  // -----------------------------------------------------------
+  rule toSigners(Range(ELEMS)) => Signers( ELEMS ) requires size(ELEMS) ==Int 11 andBool allKeys(ELEMS) [preserves-definedness]
+  rule toSigners(VAL) => SignersError(VAL) [owise]
+
+  syntax Value ::= fromSigners ( Signers ) [function, total]
+  // -----------------------------------------------------------
+  // We assume that the Signers always contains valid data, because it is constructed via toSigners.
+  rule fromSigners(SignersError(VAL)) => VAL
+  rule fromSigners(Signers(VAL))      => Range(VAL) [preserves-definedness]
+
+  syntax Bool ::= allKeys ( List ) [function, total]
+  // -----------------------------------------------------------
+  rule allKeys( .List ) => true
+  rule allKeys( ListItem(ELEMS) REST:List ) => allKeys(REST) requires size(ELEMS) ==Int 32 andBool allBytes(ELEMS)
+  rule allKeys( ListItem(_OTHER) _:List )   => false [owise]
 ```
 
 ### SPL Token Interface Account
@@ -249,7 +269,7 @@ The code uses some helper sorts for better readability.
   rule toFlag(fromFlag(FLG)) => FLG [simplification, preserves-definedness]
 ```
 
-### SPL Token Interfact Mint
+### SPL Token Interface Mint
 ```k
   // Mint struct: optional mint authority, supply, decimals, initialised flag, optional freeze authority
   syntax IMint ::= IMint ( Flag, Key , Amount , U8 , U8 , Flag , Key )
@@ -292,6 +312,46 @@ The code uses some helper sorts for better readability.
   rule #toIMint(#fromIMint(IMINT)) => IMINT [simplification, preserves-definedness]
   rule #fromIMint(#toIMint(IMINT)) => IMINT [simplification, preserves-definedness]
 ```
+
+### SPL Token Interface Multisig
+```k
+  // Multisig struct: number of required signers, number of valid signers, initialised flag, array of 11 signers
+  syntax IMulti ::= IMulti ( U8 , U8 , U8 , Signers )
+                  | IMultiError ( Value )
+
+  syntax IMulti ::= #toIMulti ( Value ) [function, total]
+  // ----------------------------------------------------
+  rule #toIMulti(
+          Aggregate(variantIdx(0),
+                ListItem(Integer(M, 8, false))
+                ListItem(Integer(N, 8, false))
+                ListItem(Integer(INITIALISED, 8, false))
+                ListItem(SIGNERS)
+          )
+        )
+      => IMulti(U8(M),
+               U8(N),
+               U8(INITIALISED),
+               toSigners(SIGNERS)
+          )
+
+  rule #toIMulti(OTHER) => IMultiError(OTHER) [owise]
+
+  syntax Value ::= #fromIMulti ( IMulti ) [function, total]
+  // ------------------------------------------------------
+  rule #fromIMulti(IMulti(U8(M), U8(N), U8(INITIALISED), SIGNERS))
+    => Aggregate(variantIdx(0),
+                   ListItem(Integer(M, 8, false))
+                   ListItem(Integer(N, 8, false))
+                   ListItem(Integer(INITIALISED, 8, false))
+                   ListItem(fromSigners(SIGNERS))
+          )
+  rule #fromIMulti(IMultiError(VAL)) => VAL
+
+  rule #toIMulti(#fromIMulti(IMULTI)) => IMULTI [simplification, preserves-definedness]
+  rule #fromIMulti(#toIMulti(IMULTI)) => IMULTI [simplification, preserves-definedness]
+```
+
 ### Pinocchio Rent sysvar
 
 ```k
@@ -348,6 +408,11 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
         ...
         </k>
     [priority(30)]
+  rule <k> #traverseProjection(DEST, PAccountMultisig(PACC, PMULTI), PROJ PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(PMULTI) CTXTS)
+        ...
+        </k>
+    [priority(30)]
   rule <k> #traverseProjection(DEST, PAccountRent(PACC, PRENT), PROJ PROJS, CTXTS)
         => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(PRENT) CTXTS)
         ...
@@ -363,6 +428,9 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
     [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
   rule #buildUpdate(VAL, CtxPAccountPAcc(IMINT:IMint) CTXS)
     => #buildUpdate(PAccountMint(#toPAcc(VAL), IMINT), CTXS)
+    [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
+  rule #buildUpdate(VAL, CtxPAccountPAcc(IMULTISIG:IMulti) CTXS)
+    => #buildUpdate(PAccountMultisig(#toPAcc(VAL), IMULTISIG), CTXS)
     [preserves-definedness] // by construction, VAL has the correct shape from introducing the context
   rule #buildUpdate(VAL, CtxPAccountPAcc(PRENT:PRent) CTXS)
     => #buildUpdate(PAccountRent(#toPAcc(VAL), PRENT), CTXS)
@@ -403,6 +471,13 @@ An `AccountInfo` reference is passed to the function.
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_program::entrypoint::cheatcode_is_mint"
     [priority(30), preserves-definedness]
+  rule [cheatcode-is-multisig]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkPTokenMultisig(PLACE) ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_program::entrypoint::cheatcode_is_multisig"
+    [priority(30), preserves-definedness]
   rule [cheatcode-is-rent]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkPTokenRent(PLACE) ~> #execBlockIdx(TARGET)
@@ -414,8 +489,8 @@ An `AccountInfo` reference is passed to the function.
   // cheat codes and rules to create a special PTokenAccount flavour
   syntax KItem ::= #mkPTokenAccount ( Place )
                  | #mkPTokenMint ( Place )
+                 | #mkPTokenMultisig ( Place )
                  | #mkPTokenRent ( Place )
-             //  | #mkPTokenMultisig ( Place )
 
   // place assumed to be a ref to an AccountInfo, having 1 field holding a pointer to an account
   // dereference, then read and dereference pointer in field 1 to read the account data
@@ -438,6 +513,14 @@ An `AccountInfo` reference is passed to the function.
     </k>
 
   rule
+    <k> #mkPTokenMultisig(place(LOCAL, PROJS))
+      => #setLocalValue(
+            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+            #addMultisig(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)))))
+      ...
+    </k>
+
+  rule
     <k> #mkPTokenRent(place(LOCAL, PROJS))
       => #setLocalValue(
             place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
@@ -454,8 +537,8 @@ An `AccountInfo` reference is passed to the function.
 ```k
   syntax Evaluation ::= #addAccount ( Evaluation )  [seqstrict()]
                       | #addMint ( Evaluation )     [seqstrict()]
+                      | #addMultisig ( Evaluation ) [seqstrict()]
                       | #addRent ( Evaluation )     [seqstrict()]
-                   // | #addMultisig ( Evaluation ) [seqstrict()]
 ```
 
 #### `#addAccount`
@@ -547,6 +630,39 @@ An `AccountInfo` reference is passed to the function.
                  U8(#randU1()),           // initialized, only 0 or 1 allowed
                  Flag(#randU1()),         // freeze_auth_flag, only 0 or 1 allowed
                  #randKey()               // freeze_auth_key
+           )
+         )
+```
+
+#### `#addMultisig`
+
+```{.k .symbolic}
+  rule #addMultisig(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
+      => PAccountMultisig(
+           #toPAcc(P_ACC),
+           IMulti(U8(?M),
+                  U8(?N),
+                  U8(?INITIALISED),
+                  Signers(?SIGNERS)
+           )
+         )
+    ensures 0 <=Int ?M andBool ?M <=Int 256
+    andBool 0 <=Int ?N andBool ?N <=Int 256
+    andBool 0 <=Int ?INITIALISED andBool ?INITIALISED <=Int 256
+    andBool size(?SIGNERS) ==Int 11 andBool allKeys(?SIGNERS)
+    andBool DATA_LEN ==Int 355 // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
+```
+
+```{.k .concrete}
+  // FIXME: The randomisation here is too naive, it allows for n < m, and there is no connection between the
+  // Signers and n. It needs work to create sensible cases.
+  rule #addMultisig(Aggregate(variantIdx(0), _) #as P_ACC)
+      => PAccountMultisig(
+           #toPAccWithDataLen(P_ACC, 355), // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
+           IMulti(U8(#randU8()),           // m (number of signers required)
+                  U8(#randU8()),           // n (number of valid signers)
+                  U8(#randU8()),           // initialized (0 - false, 1 - true, error state owise)
+                  #randSigners()           // signers (Signer public keys)
            )
          )
 ```
@@ -648,7 +764,7 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
 The Rust `from_bytes` function is inlined and contains a length check: `if bytes.len() < Self::LEN`.
 Since we intercept `from_bytes_unchecked` instead of the inlined `from_bytes`,
 we need to handle the length validation ourselves.
-We determine the data type (IAcc/IMint/PRent) by examining the `PAccount` value and
+We determine the data type (IAcc/IMint/IMulti/PRent) by examining the `PAccount` value and
 set an appropriate `LEN` constant in `PAccByteRef` so that `PtrMetadata` operations
 (which implement `bytes.len()`) return the correct length.
 The expected length is also stored inside the PAcc data structure (last field),
@@ -667,11 +783,16 @@ this field is expected to be constrained accordingly in the path condition.
         ...
        </k>
     requires DATA_LEN ==Int 82 // IMint length
-    rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountRent(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
-        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 17))
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountMultisig(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
+        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 355))
         ...
        </k>
-    requires DATA_LEN ==Int 17 // PRent length
+    requires DATA_LEN ==Int 355 // IMulti length
+  rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountRent(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
+      => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 17))
+      ...
+     </k>
+  requires DATA_LEN ==Int 17 // PRent length
 
   // Handle PtrMetadata for PAccByteRef to return the stored length
   rule <k> #applyUnOp(unOpPtrMetadata, PAccByteRef(_, _, _, LEN)) => Integer(LEN, 64, false) ... </k>
@@ -708,6 +829,19 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
           #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_interface::state::load_unchecked::<pinocchio_token_interface::state::mint::Mint>"
         orBool
           #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_interface::state::load_mut_unchecked::<pinocchio_token_interface::state::mint::Mint>"
+     )
+    [priority(30), preserves-definedness]
+
+  rule [cheatcode-mk-imulti-ref]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OPERAND .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    => #mkPAccountRef(DEST, OPERAND, PAccountIMulti, true)
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires (
+          #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_interface::state::load_unchecked::<pinocchio_token_interface::state::multisig::Multisig>"
+        orBool
+          #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "pinocchio_token_interface::state::load_mut_unchecked::<pinocchio_token_interface::state::multisig::Multisig>"
      )
     [priority(30), preserves-definedness]
 
@@ -858,7 +992,7 @@ This ensures that the data structure can be written to (by constructing and writ
 NB The projection rule must have higher priority than the one which auto-projects to the `PAcc` part of the `PAccount`.
 
 ```k
-  syntax ProjectionElem ::= "PAccountIAcc" | "PAccountIMint" | "PAccountPRent"
+  syntax ProjectionElem ::= "PAccountIAcc" | "PAccountIMint" | "PAccountIMulti" | "PAccountPRent"
 
   // special traverseProjection rules that call fromPAcc on demand when needed
   rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PAccountIAcc PROJS, CTXTS)
@@ -873,6 +1007,12 @@ NB The projection rule must have higher priority than the one which auto-project
         </k>
      [priority(20)] // avoid matching the default rule to access PAcc
 
+  rule <k> #traverseProjection(DEST, PAccountMultisig(PACC, IMULTISIG), PAccountIMulti PROJS, CTXTS)
+        => #traverseProjection(DEST, #fromIMulti(IMULTISIG)        , PROJS, CtxPAccountIMulti(PACC) CTXTS)
+        ...
+        </k>
+     [priority(20)] // avoid matching the default rule to access PAcc
+
   rule <k> #traverseProjection(DEST, PAccountRent(PACC, PRENT), PAccountPRent PROJS, CTXTS)
         => #traverseProjection(DEST, #fromPRent(PRENT)        , PROJS, CtxPAccountPRent(PACC) CTXTS)
         ...
@@ -882,15 +1022,19 @@ NB The projection rule must have higher priority than the one which auto-project
 
   syntax Context ::= CtxPAccountIAcc( PAcc )
                    | CtxPAccountIMint( PAcc )
+                   | CtxPAccountIMulti( PAcc )
                    | CtxPAccountPRent( PAcc )
 
   rule #projectionsFor(CtxPAccountIAcc(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIAcc PROJS)
   rule #projectionsFor(CtxPAccountIMint(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIMint PROJS)
+  rule #projectionsFor(CtxPAccountIMulti(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIMulti PROJS)
   rule #projectionsFor(CtxPAccountPRent(_) CTXS, PROJS) => #projectionsFor(CTXS, PAccountPRent PROJS)
 
   rule #buildUpdate(VAL, CtxPAccountIAcc(PACC) CTXS) => #buildUpdate(PAccountAccount(PACC, #toIAcc(VAL)), CTXS)
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
   rule #buildUpdate(VAL, CtxPAccountIMint(PACC) CTXS) => #buildUpdate(PAccountMint(PACC, #toIMint(VAL)), CTXS)
+    [preserves-definedness] // by construction, VAL has the right shape from introducing the context
+  rule #buildUpdate(VAL, CtxPAccountIMulti(PACC) CTXS) => #buildUpdate(PAccountMultisig(PACC, #toIMulti(VAL)), CTXS)
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
   rule #buildUpdate(VAL, CtxPAccountPRent(PACC) CTXS) => #buildUpdate(PAccountRent(PACC, #toPRent(VAL)), CTXS)
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
@@ -968,6 +1112,19 @@ NB The projection rule must have higher priority than the one which auto-project
                          ListItem(Integer(#randU8(), 8, false))
                          ListItem(Integer(#randU8(), 8, false))
                          ListItem(Integer(#randU8(), 8, false)))
+
+  syntax Signers ::= #randSigners() [function, total, impure, symbol(randSigners)]
+  rule #randSigners() => Signers(ListItem(#randKey())
+                                 ListItem(#randKey())
+                                 ListItem(#randKey())
+                                 ListItem(#randKey())
+                                 ListItem(#randKey())
+                                 ListItem(#randKey())
+                                 ListItem(#randKey())
+                                 ListItem(#randKey())
+                                 ListItem(#randKey())
+                                 ListItem(#randKey())
+                                 ListItem(#randKey()))
 ```
 
 ```k
