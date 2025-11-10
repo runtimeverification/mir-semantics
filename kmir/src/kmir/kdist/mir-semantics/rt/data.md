@@ -172,7 +172,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
-                 | #forceSetLocal ( Local , Value )
+                 | #forceSetLocal ( Local , Evaluation ) [strict(2)]
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
@@ -203,7 +203,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
 
-  rule <k> #forceSetLocal(local(I), MBVAL) => .K ... </k>
+  rule <k> #forceSetLocal(local(I), MBVAL:Value) => .K ... </k>
        <locals> LOCALS => LOCALS[I <- typedValue(MBVAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))] </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
@@ -1064,6 +1064,25 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
 
+  // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
+  rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
+        => #forceSetLocal(
+              local(I),
+              #decodeConstant(
+                constantKindZeroSized,
+                tyOfLocal(getLocal(LOCALS, I)),
+                lookupTy(tyOfLocal(getLocal(LOCALS, I)))
+              )
+            )
+        ~> rvalueRef(REGION, KIND, place(local(I), PROJS))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isNewLocal(LOCALS[I])
+     andBool #zeroSizedType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+    [preserves-definedness] // valid list indexing checked, zero-sized locals materialise trivially
+
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
         ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO: Sus on this rule
@@ -1440,16 +1459,16 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
           ...
         </k>
       requires #isStaticU8Array(lookupTy(TY_TARGET))
-       andBool WIDTH >=Int 0
-       andBool WIDTH %Int 8 ==Int 0
        andBool WIDTH ==Int #staticArrayLenBits(lookupTy(TY_TARGET))
+      //  andBool WIDTH >=Int 0  ensured by the above
+      //  andBool WIDTH % 8 == 0 ensured by the above
       [preserves-definedness] // ensures element type/length are well-formed
 
   syntax List ::= #littleEndianBytesFromInt ( Int, Int ) [function]
   // -------------------------------------------------------------
   rule #littleEndianBytesFromInt(VAL, WIDTH)
-    => #littleEndianBytes(truncate(VAL, WIDTH, Unsigned), WIDTH /Int 8)
-    requires WIDTH %Int 8 ==Int 0
+    => #littleEndianBytes(truncate(VAL, WIDTH, Unsigned), WIDTH >>Int 3)
+    requires WIDTH &Int 7 ==Int 0 // WIDTH % 8 == 0
      andBool WIDTH >=Int 0
     [preserves-definedness]
 
@@ -1460,7 +1479,7 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     requires COUNT <=Int 0
 
   rule #littleEndianBytes(VAL, COUNT)
-    => ListItem(Integer(VAL %Int 256, 8, false)) #littleEndianBytes(VAL /Int 256, COUNT -Int 1)
+    => ListItem(Integer(VAL &Int 255, 8, false)) #littleEndianBytes(VAL >>Int 8, COUNT -Int 1)
     requires COUNT >Int 0
     [preserves-definedness]
 
