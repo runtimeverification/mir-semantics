@@ -1,5 +1,5 @@
 
 Types requested: (1, 5, 6)
-Type 1: TupleT(components=[])
+Type 1: TupleT(components=[], layout=LayoutShape(fields=ArbitraryFields(offsets=[]), variants=Single(index=0), abi=ValueAbi(), abi_align=1, size=MachineSize(num_bits=0)))
 Type 5: RefT(pointee_type=32)
 Type 6: IntT(info=<IntTy.I64: 8>)

@@ -620,6 +620,7 @@ class RefT(TypeMetadata):
 @dataclass
 class TupleT(TypeMetadata):
     components: list[Ty]
+    layout: LayoutShape | None
 
     @staticmethod
     def from_raw(data: Any) -> TupleT:
@@ -627,11 +628,38 @@ class TupleT(TypeMetadata):
             case {
                 'TupleType': {
                     'types': types,
+                    'layout': layout,
                 }
             }:
-                return TupleT(list(types))
+                return TupleT(
+                    components=list(types),
+                    layout=LayoutShape.from_raw(layout) if layout is not None else None,
+                )
+            case {
+                'TupleType': {
+                    'types': types,
+                }
+            }:
+                return TupleT(
+                    components=list(types),
+                    layout=None,
+                )
             case _:
                 raise _cannot_parse_as('TupleT', data)
+
+    def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
+        match self.layout:
+            case None:
+                total = 0
+                for component in self.components:
+                    try:
+                        component_info = types[component]
+                    except KeyError as err:
+                        raise ValueError(f'Unknown tuple component type: {component}') from err
+                    total += component_info.nbytes(types)
+                return total
+            case LayoutShape(size=size):
+                return size.in_bytes
 
 
 @dataclass

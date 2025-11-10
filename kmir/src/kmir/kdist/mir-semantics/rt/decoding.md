@@ -86,10 +86,21 @@ When using layout offsets we always return fields in declaration order within th
 // ---------------------------------------------------------------------------
 // Use the offsets when they are provided and the input length is sufficient.
 rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, LAYOUT))
-      => Aggregate(variantIdx(0), #decodeStructFieldsWithOffsets(BYTES, TYS, #structOffsets(LAYOUT)))
-  requires #structOffsets(LAYOUT) =/=K .MachineSizes
-   andBool 0 <=Int #neededBytesForOffsets(TYS, #structOffsets(LAYOUT))
-   andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYS, #structOffsets(LAYOUT))
+      => Aggregate(variantIdx(0), #decodeFieldsWithOffsets(BYTES, TYS, #layoutOffsets(LAYOUT)))
+  requires #layoutOffsets(LAYOUT) =/=K .MachineSizes
+   andBool 0 <=Int #neededBytesForOffsets(TYS, #layoutOffsets(LAYOUT))
+   andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYS, #layoutOffsets(LAYOUT))
+  [preserves-definedness]
+
+rule #decodeValue(BYTES, typeInfoTupleType(.Tys, _))
+      => Aggregate(variantIdx(0), .List)
+  requires lengthBytes(BYTES) ==Int 0
+
+rule #decodeValue(BYTES, typeInfoTupleType(TYS, LAYOUT))
+      => Aggregate(variantIdx(0), #decodeFieldsWithOffsets(BYTES, TYS, #layoutOffsets(LAYOUT)))
+  requires #layoutOffsets(LAYOUT) =/=K .MachineSizes
+   andBool 0 <=Int #neededBytesForOffsets(TYS, #layoutOffsets(LAYOUT))
+   andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYS, #layoutOffsets(LAYOUT))
   [preserves-definedness]
 
 // ---------------------------------------------------------------------------
@@ -101,10 +112,10 @@ rule #msBytes(machineSize(mirInt(NBITS))) => NBITS /Int 8 [preserves-definedness
 rule #msBytes(machineSize(NBITS)) => NBITS /Int 8 [owise, preserves-definedness]
 
 // Extract field offsets from the struct layout when available (Arbitrary only).
-syntax MachineSizes ::= #structOffsets ( MaybeLayoutShape ) [function, total]
-rule #structOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
-rule #structOffsets(noLayoutShape) => .MachineSizes
-rule #structOffsets(_) => .MachineSizes [owise]
+syntax MachineSizes ::= #layoutOffsets ( MaybeLayoutShape ) [function, total]
+rule #layoutOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
+rule #layoutOffsets(noLayoutShape) => .MachineSizes
+rule #layoutOffsets(_) => .MachineSizes [owise]
 
 // Minimum number of input bytes required to decode all fields by the chosen offsets.
 // Uses builtin maxInt to compute max(offset + size). The lists of types and
@@ -118,17 +129,17 @@ rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
 rule #neededBytesForOffsets(_, _) => -1 [owise]
 
 // Decode each field at its byte offset and return values in declaration order.
-syntax List ::= #decodeStructFieldsWithOffsets ( Bytes , Tys , MachineSizes ) [function, total]
-rule #decodeStructFieldsWithOffsets(_, .Tys, _OFFSETS) => .List
-rule #decodeStructFieldsWithOffsets(_, _TYS, .MachineSizes) => .List [owise]
-rule #decodeStructFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
+syntax List ::= #decodeFieldsWithOffsets ( Bytes , Tys , MachineSizes ) [function, total]
+rule #decodeFieldsWithOffsets(_, .Tys, _OFFSETS) => .List
+rule #decodeFieldsWithOffsets(_, _TYS, .MachineSizes) => .List [owise]
+rule #decodeFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
   => ListItem(
        #decodeValue(
          substrBytes(BYTES, #msBytes(OFFSET), #msBytes(OFFSET) +Int #elemSize(lookupTy(TY))),
          lookupTy(TY)
        )
      )
-     #decodeStructFieldsWithOffsets(BYTES, TYS, OFFSETS)
+     #decodeFieldsWithOffsets(BYTES, TYS, OFFSETS)
   requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)))
   [preserves-definedness]
 ```
@@ -182,10 +193,10 @@ Known element sizes for common types:
     [owise]
 
   // ---- Tuples ----
-  // Without layout, approximate as sum of element sizes (ignores padding).
-  rule #elemSize(typeInfoTupleType(.Tys)) => 0
-  rule #elemSize(typeInfoTupleType(TY TYS))
-    => #elemSize(lookupTy(TY)) +Int #elemSize(typeInfoTupleType(TYS))
+  rule #elemSize(typeInfoTupleType(_TYS, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
+  rule #elemSize(typeInfoTupleType(.Tys, noLayoutShape)) => 0
+  rule #elemSize(typeInfoTupleType(TY TYS, noLayoutShape))
+    => #elemSize(lookupTy(TY)) +Int #elemSize(typeInfoTupleType(TYS, noLayoutShape))
 
   // ---- Structs and Enums with layout ----
   rule #elemSize(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
