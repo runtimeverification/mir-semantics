@@ -24,6 +24,7 @@ from .ty import (
     Single,
     StrT,
     StructT,
+    TupleT,
     UintT,
     WrappingRange,
 )
@@ -190,6 +191,8 @@ def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMe
             return _decode_array(data, elem_ty, length, types)
         case StructT(fields=fields, layout=layout):
             return _decode_struct(data=data, fields=fields, layout=layout, types=types)
+        case TupleT(components=components):
+            return _decode_tuple(data=data, component_tys=components, types=types)
         case EnumT(
             discriminants=discriminants,
             fields=fields,
@@ -280,6 +283,20 @@ def _decode_struct(
 
     field_values = _decode_fields(data=data, tys=fields, offsets=offsets, types=types)
     return AggregateValue(0, field_values)
+
+
+def _decode_tuple(
+    *,
+    data: bytes,
+    component_tys: list[Ty],
+    types: Mapping[Ty, TypeMetadata],
+) -> Value:
+    if not component_tys:
+        if data:
+            raise ValueError(f'Zero-sized tuple expected empty data, got: {data!r}')
+        return AggregateValue(0, [])
+
+    raise ValueError('Tuple decoding with components is not implemented yet')
 
 
 def _decode_enum(
