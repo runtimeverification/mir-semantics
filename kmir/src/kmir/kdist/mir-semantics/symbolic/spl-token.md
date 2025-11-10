@@ -25,72 +25,47 @@ module KMIR-SPL-TOKEN
                  | SPLDataBuffer ( Value )
                  | SPLDataBorrow ( Place , Value )
                  | SPLDataBorrowMut ( Place , Value )
-
-  syntax Value ::= #mkSPLAccountInfo ( )
-                 | #mkSPLAccountPayload ( )
 ```
 
 ## Cheatcode handling
 
-```k
+```{.k .symbolic}
   rule [cheatcode-is-spl-account]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(PLACE) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLTokenAccount(PLACE) ~> #execBlockIdx(TARGET)
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #setLocalValue(
+            place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
+            Aggregate(variantIdx(0),
+              ListItem(Range(?SplAccountKey:List))
+              ListItem(SPLRefCellLamports(U64(?SplLamports:Int)))
+              ListItem(SPLRefCellData(SPLDataBuffer(
+                Aggregate(variantIdx(0),
+                  ListItem(Range(?SplMintKey:List))
+                  ListItem(Range(?SplTokenOwnerKey:List))
+                  ListItem(Integer(?SplAmount:Int, 64, false))
+                  ListItem(?SplDelegateCOpt:Value)
+                  ListItem(Integer(?SplAccountState:Int, 8, false))
+                  ListItem(?SplIsNativeCOpt:Value)
+                  ListItem(Integer(?SplDelegatedAmount:Int, 64, false))
+                  ListItem(?SplCloseAuthCOpt:Value)
+                )
+              )))
+              ListItem(Range(?SplOwnerKey))
+              ListItem(Integer(?SplRentEpoch:Int, 64, false))
+              ListItem(BoolVal(?_SplIsSigner:Bool))
+              ListItem(BoolVal(?_SplIsWritable:Bool))
+              ListItem(BoolVal(?_SplExecutable:Bool))
+            )
+         )
+         ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_account"
-      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token_domain_data::cheatcode_is_spl_account" 
-    [priority(30), preserves-definedness]
-
-  syntax KItem ::= #mkSPLTokenAccount ( Place )
-
-  rule
-    <k> #mkSPLTokenAccount(place(LOCAL, PROJS))
-      => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
-            #mkSPLAccountInfo()
-         )
-    ...
-    </k>
-```
-
-## AccountInfo construction
-
-The following helpers use the exact field order from `solana_account_info::AccountInfo`
-and `spl_token::state::Account`, so that MIR projections match the real SPL structures: 
-key/lamports/data/owner/rent_epoch/is_signer/is_writable/executable for `AccountInfo`, 
-and the eight-account fields described in the SPL Pack implementation.
-```{.k .symbolic}
-  rule #mkSPLAccountInfo()
-      => Aggregate(variantIdx(0),
-           ListItem(Range(?SplAccountKey:List))
-           ListItem(SPLRefCellLamports(U64(?SplLamports:Int)))
-           ListItem(SPLRefCellData(SPLDataBuffer(#mkSPLAccountPayload())))
-           ListItem(Range(?SplOwnerKey))
-           ListItem(Integer(?SplRentEpoch:Int, 64, false))
-           ListItem(BoolVal(?_SplIsSigner:Bool))
-           ListItem(BoolVal(?_SplIsWritable:Bool))
-           ListItem(BoolVal(?_SplExecutable:Bool))
-         )
+      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_account" 
     ensures size(?SplAccountKey) ==Int 32 andBool allBytes(?SplAccountKey)
       andBool size(?SplOwnerKey) ==Int 32 andBool allBytes(?SplOwnerKey)
       andBool 0 <=Int ?SplLamports andBool ?SplLamports <Int 18446744073709551616
       andBool 0 <=Int ?SplRentEpoch andBool ?SplRentEpoch <Int 18446744073709551616
-```
-
-```{.k .symbolic}
-  rule #mkSPLAccountPayload()
-      => Aggregate(variantIdx(0),
-           ListItem(Range(?SplMintKey:List))
-           ListItem(Range(?SplTokenOwnerKey:List))
-           ListItem(Integer(?SplAmount:Int, 64, false))
-           ListItem(?SplDelegateCOpt:Value)
-           ListItem(Integer(?SplAccountState:Int, 8, false))
-           ListItem(?SplIsNativeCOpt:Value)
-           ListItem(Integer(?SplDelegatedAmount:Int, 64, false))
-           ListItem(?SplCloseAuthCOpt:Value)
-         )
-    ensures size(?SplMintKey) ==Int 32 andBool allBytes(?SplMintKey)
+      andBool size(?SplMintKey) ==Int 32 andBool allBytes(?SplMintKey)
       andBool size(?SplTokenOwnerKey) ==Int 32 andBool allBytes(?SplTokenOwnerKey)
       andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <Int 256
@@ -116,6 +91,7 @@ and the eight-account fields described in the SPL Pack implementation.
           andBool 0 <=Int ?SplIsNativeAmount
           andBool ?SplIsNativeAmount <Int (1 <<Int 64))
       )
+    [priority(30), preserves-definedness]
 ```
 
 ## RefCell::<&mut [u8]> helpers
@@ -166,7 +142,7 @@ and the eight-account fields described in the SPL Pack implementation.
       orBool
         #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::unpack"
       orBool
-        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token_domain_data::Account::unpack_unchecked"
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "Account::unpack_unchecked"
     )
     [priority(30), preserves-definedness]
 
@@ -191,7 +167,7 @@ and the eight-account fields described in the SPL Pack implementation.
     requires (
         #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::pack"
       orBool
-        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token_domain_data::Account::pack"
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "Account::pack"
     )
     [priority(30), preserves-definedness]
 
