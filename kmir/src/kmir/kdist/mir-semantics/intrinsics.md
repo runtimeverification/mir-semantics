@@ -28,6 +28,17 @@ its argument to the destination without modification.
        ... </k>
 ```
 
+#### Cold Path (`std::hint::cold_path`)
+
+The `cold_path` intrinsic is a compiler hint indicating that the current execution path is unlikely to be taken.
+It provides metadata for the optimiser and code generator to improve layout and branch predicition but is
+a NO OP for program semantics. Related are "intrinsics" `likely`, and `unlikely` are not `Intrinsics` but
+are `MonoItemFn` that call the `cold_path` intrinsic.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("cold_path")), .Operands, _DEST) => .K ... </k>
+```
+
 #### Raw Eq (`std::intrinsics::raw_eq`)
 
 The `raw_eq` intrinsic performs byte-by-byte equality comparison of the memory contents pointed to by two references.
