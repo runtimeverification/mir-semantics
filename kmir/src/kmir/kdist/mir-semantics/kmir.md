@@ -367,7 +367,6 @@ An operand may be a `Reference` (the only way a function could access another fu
       =>
        ListItem(newLocal(TY, MUT)) #reserveFor(REST)
 
-
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
                  | #execIntrinsic ( MonoItemKind, Operands, Place )
@@ -410,6 +409,108 @@ An operand may be a `Reference` (the only way a function could access another fu
      andBool isTypedValue(CALLERLOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
+
+For closures (like `|x,y| { things using x and y }`), a special calling convention is in effect:
+The first argument of the closure is its environment.
+Its type is currently not extracted (KMIR does not currently support variable-capturing) and it is not initialised.
+The second argument is a _tuple_ of all the arguments, however the function body expects these arguments as single locals.
+
+Using this calling convention should be indicated by the `spread_arg` field in the function body.[^spread_arg]
+However, this field is usually `None` for _closures_, it is only set for internal functions of the Rust execution mechanism.
+Therefore a heuristics is used here:
+* The function has two arguments,
+* the 1st argument has an unknown type (or refers to one),
+* and the 2nd argument is a tuple.
+
+[^spread_arg]: https://doc.rust-lang.org/beta/nightly-rustc/rustc_public/mir/body/struct.Body.html#structfield.spread_arg
+
+```k
+  // reserve space for local variables and copy/move arguments from a tuple inside the old locals into their place
+  rule [setupCalleeClosure]: <k> #setUpCalleeData(
+              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
+                operandMove(place(local(CLOSURE:Int), .ProjectionElems))
+                operandMove(place(local(TUPLE), .ProjectionElems))
+                .Operands
+              )
+         =>
+           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+          // arguments are tuple components, stored as _2 .. _n
+         ...
+       </k>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
+         <stack>
+              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
+              _:List
+          </stack>
+         ...
+       </currentFrame>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[TUPLE])
+     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTypedLocal(LOCALS[CLOSURE])
+     andBool typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
+              // either the closure ref type is missing from type table
+    [priority(40), preserves-definedness]
+
+  rule [setupCalleeClosure2]: <k> #setUpCalleeData(
+              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
+                operandMove(place(local(CLOSURE:Int), .ProjectionElems))
+                operandMove(place(local(TUPLE), .ProjectionElems))
+                .Operands
+              )
+         =>
+           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+          // arguments are tuple components, stored as _2 .. _n
+         ...
+       </k>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
+         <stack>
+              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
+              _:List
+          </stack>
+         ...
+       </currentFrame>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[TUPLE])
+     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTypedLocal(LOCALS[CLOSURE])
+               // or the closure ref type pointee is missing from the type table
+     andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+     andBool isTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
+     andBool lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
+    [priority(45), preserves-definedness]
+
+  syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
+                | isRefType ( TypeInfo ) [function, total]
+  // -------------------------------------------------------
+  rule isTupleType(typeInfoTupleType(_)) => true
+  rule isTupleType(    _               ) => false [owise]
+  rule isRefType(typeInfoRefType(_)) => true
+  rule isRefType(    _             ) => false [owise]
+
+  syntax KItem ::= #setTupleArgs ( Int , Value )
+                 | #setTupleArgs ( Int , List )
+
+  // unpack tuple and set arguments individually
+  rule <k> #setTupleArgs(IDX, Aggregate(variantIdx(0), ARGS)) => #setTupleArgs(IDX, ARGS) ... </k>
+
+  rule <k> #setTupleArgs(_, .List ) => .K ... </k>
+
+  rule <k> #setTupleArgs(IDX, ListItem(VAL) REST:List)
+        => #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(VAL)) ~> #setTupleArgs(IDX +Int 1, REST)
+        ...
+       </k>
+```
+
+
+#### Assert
+
 The `Assert` terminator checks that an operand holding a boolean value (which has previously been computed, e.g., an overflow flag for arithmetic operations) has the expected value (e.g., that this overflow flag is `false` - a very common case).
 If the condition value is as expected, the program proceeds with the given `target` block.
 Otherwise the provided message is passed to a `panic!` call, ending the program with an error, modelled as an `AssertError` in the semantics.
