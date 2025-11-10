@@ -1,0 +1,72 @@
+{
+  "bytes": [
+    52,
+    18,
+    1,
+    254
+  ],
+  "types": [
+    [
+      0,
+      {
+        "PrimitiveType": {
+          "Uint": "U8"
+        }
+      }
+    ],
+    [
+      1,
+      {
+        "PrimitiveType": "Bool"
+      }
+    ],
+    [
+      2,
+      {
+        "PrimitiveType": {
+          "Int": "I16"
+        }
+      }
+    ]
+  ],
+  "typeInfo": {
+    "TupleType": {
+      "types": [
+        2,
+        1,
+        0
+      ],
+      "layout": {
+        "fields": {
+          "Arbitrary": {
+            "offsets": [
+              {
+                "num_bits": 0
+              },
+              {
+                "num_bits": 16
+              },
+              {
+                "num_bits": 24
+              }
+            ]
+          }
+        },
+        "variants": {
+          "Single": {
+            "index": 0
+          }
+        },
+        "abi": {
+          "Aggregate": {
+            "sized": true
+          }
+        },
+        "abi_align": 1,
+        "size": {
+          "num_bits": 32
+        }
+      }
+    }
+  }
+}

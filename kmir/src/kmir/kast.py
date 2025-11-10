@@ -428,7 +428,7 @@ class _ArgGenerator:
                     ),
                 )
 
-            case TupleT(components):
+            case TupleT(components=components):
                 elem_vars = []
                 elem_constraints = []
                 for _ty in components:

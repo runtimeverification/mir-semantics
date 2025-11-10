@@ -489,8 +489,8 @@ Therefore a heuristics is used here:
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
                 | isRefType ( TypeInfo ) [function, total]
   // -------------------------------------------------------
-  rule isTupleType(typeInfoTupleType(_)) => true
-  rule isTupleType(    _               ) => false [owise]
+  rule isTupleType(typeInfoTupleType(_, _)) => true
+  rule isTupleType(    _                  ) => false [owise]
   rule isRefType(typeInfoRefType(_)) => true
   rule isRefType(    _             ) => false [owise]
 
