@@ -39,6 +39,17 @@ are `MonoItemFn` that call the `cold_path` intrinsic.
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("cold_path")), .Operands, _DEST) => .K ... </k>
 ```
 
+#### Prefetch (`std::intrinsics::prefetch_*`)
+
+The `prefetch_read_data` and `prefetch_write_data` intrinsics in Rust are performance hints that request the CPU
+to load or prepare a memory address in cache before it's used. They have no effect on program semantics, and are
+implemented as a NO OP in this semantics.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_read_data")),  _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_data")), _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
+```
+
 #### Raw Eq (`std::intrinsics::raw_eq`)
 
 The `raw_eq` intrinsic performs byte-by-byte equality comparison of the memory contents pointed to by two references.
