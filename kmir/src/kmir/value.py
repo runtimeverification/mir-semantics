@@ -107,11 +107,51 @@ class RefValue(Value):
 
 
 @dataclass
+class PtrEmulation(ABC):
+    @abstractmethod
+    def to_kast(self) -> KInner: ...
+
+
+@dataclass
+class PtrEmulationFromMetadata(PtrEmulation):
+    metadata: Metadata
+
+    def to_kast(self) -> KInner:
+        return KApply('ptrEmulation', self.metadata.to_kast())
+
+
+@dataclass
+class PtrOffset(PtrEmulation):
+    amount: int
+    inner: PtrEmulation
+
+    def to_kast(self) -> KInner:
+        return KApply('ptrOffset', intToken(self.amount), self.inner.to_kast())
+
+
+@dataclass
+class PtrOrigSize(PtrEmulation):
+    size: int
+
+    def to_kast(self) -> KInner:
+        return KApply('ptrOrigSize', intToken(self.size))
+
+
+@dataclass
+class InvalidOffset(PtrEmulation):
+    amount: int
+    inner: PtrEmulation
+
+    def to_kast(self) -> KInner:
+        return KApply('InvalidOffset', intToken(self.amount), self.inner.to_kast())
+
+
+@dataclass
 class PtrLocalValue(Value):
     stack_depth: int
     place: Place
     mut: bool
-    metadata: Metadata
+    emulation: PtrEmulation
 
     def to_kast(self) -> KInner:
         return KApply(
@@ -119,7 +159,7 @@ class PtrLocalValue(Value):
             intToken(self.stack_depth),
             self.place.to_kast(),
             KApply('Mutability::Mut') if self.mut else KApply('Mutability::Not'),
-            self.metadata.to_kast(),
+            self.emulation.to_kast(),
         )
 
 
