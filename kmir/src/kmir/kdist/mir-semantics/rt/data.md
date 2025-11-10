@@ -172,7 +172,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
-                 | #forceSetLocal ( Local , Value )
+                 | #forceSetLocal ( Local , Evaluation ) [strict(2)]
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
@@ -203,7 +203,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
 
-  rule <k> #forceSetLocal(local(I), MBVAL) => .K ... </k>
+  rule <k> #forceSetLocal(local(I), MBVAL:Value) => .K ... </k>
        <locals> LOCALS => LOCALS[I <- typedValue(MBVAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))] </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
@@ -1090,7 +1090,14 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
-        => #forceSetLocal(local(I), Aggregate(variantIdx(0), .List))
+        => #forceSetLocal(
+              local(I),
+              #decodeConstant(
+                constantKindZeroSized,
+                tyOfLocal(getLocal(LOCALS, I)),
+                lookupTy(tyOfLocal(getLocal(LOCALS, I)))
+              )
+            )
         ~> rvalueRef(REGION, KIND, place(local(I), PROJS))
        ...
        </k>
