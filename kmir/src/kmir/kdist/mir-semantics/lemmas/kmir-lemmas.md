@@ -118,18 +118,39 @@ power of two but the semantics will always operate with these particular ones.
   rule VAL &Int bitmask128 => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask128 [simplification, preserves-definedness, smt-lemma]
 ```
 
+Support for `transmute` between byte arrays and numbers (and vice-versa) uses computations involving bit masks with 255 and 8-bit shifts.
+To support simplifying round-trip conversion, the following simplifications are essential.
+
 ```k
-  rule (VAL +Int 256 *Int REST) %Int 256 => VAL
+  rule (VAL +Int 256 *Int REST) &Int 255 => VAL
   requires 0 <=Int VAL
     andBool VAL <=Int 255
     andBool 0 <=Int REST
   [simplification, preserves-definedness]
 
-  rule (VAL +Int 256 *Int REST) /Int 256 => REST
+  rule (VAL +Int 256 *Int REST) >>Int 8 => REST
   requires 0 <=Int VAL
     andBool VAL <=Int 255
     andBool 0 <=Int REST
   [simplification, preserves-definedness]
+
+  rule (_ &Int 255) <=Int 255 => true
+    [simplification, preserves-definedness]
+  rule 0 <=Int (_ &Int 255) => true
+    [simplification, preserves-definedness]
+
+  rule [simplify-u64-bytes-u64]:
+      (VAL                                                                         &Int 255) +Int (256 *Int (
+        ((VAL >>Int 8)                                                             &Int 255) +Int (256 *Int (
+          ((VAL >>Int 8 >>Int 8)                                                   &Int 255) +Int (256 *Int (
+            ((VAL >>Int 8 >>Int 8 >>Int 8)                                         &Int 255) +Int (256 *Int (
+              ((VAL >>Int 8 >>Int 8 >>Int 8 >>Int 8)                               &Int 255) +Int (256 *Int (
+                ((VAL >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8)                     &Int 255) +Int (256 *Int (
+                  ((VAL >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8)           &Int 255) +Int (256 *Int (
+                    ((VAL >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8) &Int 255)))))))))))))))
+      => VAL
+    requires 0 <=Int VAL andBool VAL <=Int bitmask64
+    [simplification, preserves-definedness, symbolic(VAL)]
 ```
 
 
