@@ -1265,7 +1265,7 @@ the `Value` sort.
 Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
 which have the same representation `Value::Range`.
 
-When the cast crosses transparent wrappers (for example newtypes that just forward field `0`), the pointer's
+When the cast crosses transparent wrappers (newtypes that just forward field `0` e.g. `struct Wrapper<T>(T)`, the pointer's
 `Place` must be realigned. `#alignTransparentPlace` rewrites the projection list until the source and target
 expose the same inner value:
 - if the source unwraps more than the target, append an explicit `field(0)` so the target still sees that field;
