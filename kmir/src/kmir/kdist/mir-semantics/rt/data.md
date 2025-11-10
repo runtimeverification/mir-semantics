@@ -1459,16 +1459,16 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
           ...
         </k>
       requires #isStaticU8Array(lookupTy(TY_TARGET))
-       andBool WIDTH >=Int 0
-       andBool WIDTH %Int 8 ==Int 0
        andBool WIDTH ==Int #staticArrayLenBits(lookupTy(TY_TARGET))
+      //  andBool WIDTH >=Int 0  ensured by the above
+      //  andBool WIDTH % 8 == 0 ensured by the above
       [preserves-definedness] // ensures element type/length are well-formed
 
   syntax List ::= #littleEndianBytesFromInt ( Int, Int ) [function]
   // -------------------------------------------------------------
   rule #littleEndianBytesFromInt(VAL, WIDTH)
-    => #littleEndianBytes(truncate(VAL, WIDTH, Unsigned), WIDTH /Int 8)
-    requires WIDTH %Int 8 ==Int 0
+    => #littleEndianBytes(truncate(VAL, WIDTH, Unsigned), WIDTH >>Int 3)
+    requires WIDTH &Int 7 ==Int 0 // WIDTH % 8 == 0
      andBool WIDTH >=Int 0
     [preserves-definedness]
 
@@ -1479,7 +1479,7 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     requires COUNT <=Int 0
 
   rule #littleEndianBytes(VAL, COUNT)
-    => ListItem(Integer(VAL %Int 256, 8, false)) #littleEndianBytes(VAL /Int 256, COUNT -Int 1)
+    => ListItem(Integer(VAL &Int 255, 8, false)) #littleEndianBytes(VAL >>Int 8, COUNT -Int 1)
     requires COUNT >Int 0
     [preserves-definedness]
 
