@@ -60,6 +60,10 @@ Definedness of the list and list elements is also guaranteed.
   rule #Ceil(#mapOffset(L, _)[I]) => #Ceil(L) #And {true #Equals 0 <=Int I} #And {true #Equals I <Int size(L)} [simplification]
 
   rule #Ceil(#mapOffset(L, _)) => #Ceil(L) [simplification]
+
+  rule #mapOffset(#mapOffset(L, OFFSET1), OFFSET2)
+    => #mapOffset(L, OFFSET1 +Int OFFSET2)
+    [simplification]
 ```
 
 ## Simplifications for Int
