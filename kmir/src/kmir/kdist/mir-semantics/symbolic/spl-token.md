@@ -37,7 +37,7 @@ module KMIR-SPL-TOKEN
             Aggregate(variantIdx(0),
               ListItem(Range(?SplAccountKey:List))                         // pub key: &'a Pubkey
               ListItem(SPLRc(SPLRefCell(Integer(?SplLamports:Int, 64, false)))) // lamports: Rc<RefCell<&'a mut u64>>
-              ListItem(Aggregate(variantIdx(0), ListItem( Aggregate(variantIdx(0), ListItem( // data: Rc<RefCell<&'a mut [u8]>>
+              ListItem( // data: Rc<RefCell<&'a mut [u8]>>
                 SPLRc(SPLRefCell(SPLDataBuffer( // data: Rc<RefCell<&'a mut [u8]>>, Aggregate is for &account.data
                 Aggregate(variantIdx(0),
                   ListItem(Range(?SplMintKey:List))                        // Account.mint: Pubkey
@@ -49,7 +49,7 @@ module KMIR-SPL-TOKEN
                   ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
                   ListItem(?SplCloseAuthCOpt:Value)                        // Account.close_authority: COption<Pubkey>
                 )
-              ))))))))
+              ))))
               ListItem(Range(?SplOwnerKey))                                // owner: &'a Pubkey
               ListItem(Integer(?SplRentEpoch:Int, 64, false))              // rent_epoch: u64
               ListItem(BoolVal(?_SplIsSigner:Bool))                        // is_signer: bool
@@ -97,45 +97,33 @@ module KMIR-SPL-TOKEN
 
 ## Accessing `Rc<RefCell<_>>`
 
-
-```k
-  rule <k> #cast(SPLRc(VALUE), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
-          => SPLRc(VALUE) ...
-        </k>
-      requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
-      [preserves-definedness] // valid map lookups checked
-```
-
 We shortcut the MIR field access that `<Rc<_> as Deref>::deref` performs and
 expose the wrapped payload directly.
 
 ```k
-  rule <k> #traverseProjection(
-             DEST,
-             SPLRc(VALUE),
-             projectionElemDeref PROJS,
-             CTXTS
-           )
-        => #traverseProjection(
-             DEST,
-             VALUE,
-             PROJS,
-             CtxSPLRc CTXTS
-           )
-        ...
-        </k>
-    [priority(30)]
+  // rule <k> #traverseProjection(
+  //            DEST,
+  //            SPLRc(VALUE),
+  //            projectionElemDeref PROJS,
+  //            CTXTS
+  //          )
+  //       => #traverseProjection(
+  //            DEST,
+  //            VALUE,
+  //            PROJS,
+  //            CtxSPLRc CTXTS
+  //          )
+  //       ...
+  //       </k>
+  //   [priority(30)]
 
-  syntax Context ::= "CtxSPLRc"
+  // syntax Context ::= "CtxSPLRc"
 
-  rule #buildUpdate(VAL, CtxSPLRc CTXS) => #buildUpdate(SPLRc(VAL), CTXS)
-  rule #projectionsFor(CtxSPLRc CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
+  // rule #buildUpdate(VAL, CtxSPLRc CTXS) => #buildUpdate(SPLRc(VAL), CTXS)
+  // rule #projectionsFor(CtxSPLRc CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
 
   rule [spl-rc-deref]:
-    <k> #execTerminator(
-           terminator(
-             terminatorKindCall(FUNC, OP:Operand OPS:Operands, DEST, TARGET, UNWIND),
-             _SPAN))
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand OPS:Operands, DEST, TARGET, UNWIND), _SPAN))
       => #finishSPLRcDeref(OP, DEST, TARGET, FUNC, OP OPS, UNWIND)
     ...
     </k>
@@ -144,51 +132,91 @@ expose the wrapped payload directly.
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #finishSPLRcDeref ( Evaluation , Place , MaybeBasicBlockIdx , Operand , Operands , UnwindAction ) [seqstrict(1)]
+                  | #resolveSPLRcRef ( Value , Place , MaybeBasicBlockIdx , Operand , Operands , UnwindAction )
+                  | #finishResolvedSPLRc ( Place , MaybeBasicBlockIdx , Operand , Operands , UnwindAction )
 
-  // rule <k> #finishSPLRcDeref(SPLRc(VALUE), DEST, TARGET, _FUNC, _ARGS, _UNWIND)
-  //       => #setLocalValue(DEST, VALUE) ~> #continueAt(TARGET)
-  //       ...
-  //      </k>
+  rule <k> #finishSPLRcDeref(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET, FUNC, ARGS, UNWIND)
+        => #resolveSPLRcRef(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET, FUNC, ARGS, UNWIND)
+       ...
+      </k>
 
-  // rule [spl-rc-deref-fallback]:
-  //   <k> #finishSPLRcDeref(_VAL:Value, DEST, TARGET, FUNC, ARGS, UNWIND)
-  //       => #setUpCalleeData(lookupFunction(#tyOfCall(FUNC)), ARGS)
-  //       ...
-  //      </k>
-  //      <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
-  //      <currentFrame>
-  //        <currentBody> _ </currentBody>
-  //        <caller> OLDCALLER => CALLER </caller>
-  //        <dest> OLDDEST => DEST </dest>
-  //        <target> OLDTARGET => TARGET </target>
-  //        <unwind> OLDUNWIND => UNWIND </unwind>
-  //        <locals> LOCALS </locals>
-  //      </currentFrame>
-  //      <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-  //   [owise]
+  rule <k> #resolveSPLRcRef(Reference(0, place(local(I), PROJS), _, _), DEST, TARGET, FUNC, ARGS, UNWIND)
+        => #traverseProjection(
+             toLocal(I),
+             getValue(LOCALS, I),
+             PROJS,
+             .Contexts
+           )
+           ~> #readProjection(false)
+           ~> #finishResolvedSPLRc(DEST, TARGET, FUNC, ARGS, UNWIND)
+       ...
+      </k>
+      <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+
+  rule <k> #resolveSPLRcRef(Reference(OFFSET, place(local(I), PROJS), _, _), DEST, TARGET, FUNC, ARGS, UNWIND)
+        => #traverseProjection(
+             toStack(OFFSET, local(I)),
+             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET),
+             PROJS,
+             .Contexts
+           )
+           ~> #readProjection(false)
+           ~> #finishResolvedSPLRc(DEST, TARGET, FUNC, ARGS, UNWIND)
+       ...
+      </k>
+      <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool 0 <=Int I
+  
+  rule <k> SPLRc(PAYLOAD) ~> #finishResolvedSPLRc(DEST, TARGET, _FUNC, _ARGS, _UNWIND)
+        => #setLocalValue(DEST, PAYLOAD) ~> #continueAt(TARGET)
+       ...
+      </k>
+
+  rule [spl-rc-deref-fallback]:
+    <k> #finishSPLRcDeref(_VAL:Value, DEST, TARGET, FUNC, ARGS, UNWIND)
+        => #setUpCalleeData(lookupFunction(#tyOfCall(FUNC)), ARGS)
+        ...
+       </k>
+       <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
+       <currentFrame>
+         <currentBody> _ </currentBody>
+         <caller> OLDCALLER => CALLER </caller>
+         <dest> OLDDEST => DEST </dest>
+         <target> OLDTARGET => TARGET </target>
+         <unwind> OLDUNWIND => UNWIND </unwind>
+         <locals> LOCALS </locals>
+       </currentFrame>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+    [owise]
 ```
 
 ```k
-  rule <k> #traverseProjection(
-             DEST,
-             SPLRefCell(VALUE),
-             projectionElemField(fieldIdx(2), TY) PROJS,
-             CTXTS
-           )
-        => #traverseProjection(
-             DEST,
-             VALUE,
-             PROJS,
-             CtxSPLRefCell(TY) CTXTS
-           )
-        ...
-        </k>
-    [priority(30)]
+  // rule <k> #traverseProjection(
+  //            DEST,
+  //            SPLRefCell(VALUE),
+  //            projectionElemField(fieldIdx(2), TY) PROJS,
+  //            CTXTS
+  //          )
+  //       => #traverseProjection(
+  //            DEST,
+  //            VALUE,
+  //            PROJS,
+  //            CtxSPLRefCell(TY) CTXTS
+  //          )
+  //       ...
+  //       </k>
+  //   [priority(30)]
 
-  syntax Context ::= CtxSPLRefCell ( Ty )
+  // syntax Context ::= CtxSPLRefCell ( Ty )
 
-  rule #buildUpdate(VAL, CtxSPLRefCell(_) CTXS) => #buildUpdate(SPLRefCell(VAL), CTXS)
-  rule #projectionsFor(CtxSPLRefCell(TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(fieldIdx(2), TY) PROJS)
+  // rule #buildUpdate(VAL, CtxSPLRefCell(_) CTXS) => #buildUpdate(SPLRefCell(VAL), CTXS)
+  // rule #projectionsFor(CtxSPLRefCell(TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(fieldIdx(2), TY) PROJS)
 ```
 
 ## RefCell::<&mut [u8]> helpers
@@ -214,15 +242,15 @@ expose the wrapped payload directly.
 
   syntax KItem ::= #mkSPLBorrowData ( Place , Evaluation , Place , Bool ) [seqstrict(2)]
 
-  // rule <k> #mkSPLBorrowData(DEST, SPLRefCellData(BUF), SRC, false)
-  //       => #setLocalValue(DEST, SPLDataBorrow(SRC, BUF))
-  //       ...
-  //      </k>
+  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(BUF), SRC, false)
+        => #setLocalValue(DEST, SPLDataBorrow(SRC, BUF))
+        ...
+       </k>
 
-  // rule <k> #mkSPLBorrowData(DEST, SPLRefCellData(BUF), SRC, true)
-  //       => #setLocalValue(DEST, SPLDataBorrowMut(SRC, BUF))
-  //       ...
-  //      </k>
+  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(BUF), SRC, true)
+        => #setLocalValue(DEST, SPLDataBorrowMut(SRC, BUF))
+        ...
+       </k>
 ```
 
 ```k
