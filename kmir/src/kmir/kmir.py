@@ -276,13 +276,10 @@ class KMIRSemantics(DefaultSemantics):
         k_cell = cterm.cell('K_CELL')
 
         if self.terminate_on_thunk:  # terminate on `thunk ( ... )` rule
+            thunk = KLabel('thunk(_)_RT-DATA_Value_Evaluation')
             match k_cell:
-                case KApply(KLabel('thunk(_)_RT-DATA_Value_Evaluation', _)):
+                case KApply(thunk, _) | KSequence((KApply(thunk, _), *_)):
                     return True
-            if type(k_cell) == KSequence and 0 < k_cell.arity:
-                match k_cell[0]:
-                    case KApply(KLabel('thunk(_)_RT-DATA_Value_Evaluation', _)):
-                        return True
 
         # <k> #EndProgram </k>
         if k_cell == KMIR.Symbols.END_PROGRAM:
