@@ -61,14 +61,6 @@ Definedness of the list and list elements is also guaranteed.
 
   rule #Ceil(#mapOffset(L, _)) => #Ceil(L) [simplification]
 
-  rule #adjustRef(VAL:Value, 0) => VAL [simplification]
-
-  rule #adjustRef(#adjustRef(VAL, OFFSET1), OFFSET2)
-    => #adjustRef(VAL, OFFSET1 +Int OFFSET2)
-    [simplification]
-
-  rule #mapOffset(L, 0) => L [simplification]
-
   rule #mapOffset(#mapOffset(L, OFFSET1), OFFSET2)
     => #mapOffset(L, OFFSET1 +Int OFFSET2)
     [simplification]
