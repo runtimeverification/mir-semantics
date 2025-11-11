@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
+from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -128,13 +128,14 @@ class KMIR(KProve, KRun, KParse):
 
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
+        THUNK: Final = KLabel('thunk(_)_RT-DATA_Value_Evaluation')
 
     @cached_property
     def parser(self) -> Parser:
         return Parser(self.definition)
 
     @contextmanager
-    def kcfg_explore(self, label: str | None = None) -> Iterator[KCFGExplore]:
+    def kcfg_explore(self, label: str | None = None, terminate_on_thunk: bool = False) -> Iterator[KCFGExplore]:
         with cterm_symbolic(
             self.definition,
             self.definition_dir,
@@ -143,7 +144,7 @@ class KMIR(KProve, KRun, KParse):
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
             simplify_each=30,
         ) as cts:
-            yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
+            yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics(terminate_on_thunk=terminate_on_thunk))
 
     def run_smir(
         self,
@@ -247,7 +248,7 @@ class KMIR(KProve, KRun, KParse):
                 break_on_calls=opts.break_on_calls,
                 break_on_function_calls=opts.break_on_function_calls,
                 break_on_intrinsic_calls=opts.break_on_intrinsic_calls,
-                break_on_thunk=opts.break_on_thunk,
+                break_on_thunk=opts.break_on_thunk or opts.terminate_on_thunk,  # must break for terminal rule
                 break_every_statement=opts.break_every_statement,
                 break_on_terminator_goto=opts.break_on_terminator_goto,
                 break_on_terminator_switch_int=opts.break_on_terminator_switch_int,
@@ -260,15 +261,26 @@ class KMIR(KProve, KRun, KParse):
                 break_every_step=opts.break_every_step,
             )
 
-            with kmir.kcfg_explore(label) as kcfg_explore:
+            with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
                 prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, cut_point_rules=cut_point_rules)
                 prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
                 return apr_proof
 
 
 class KMIRSemantics(DefaultSemantics):
+    terminate_on_thunk: bool
+
+    def __init__(self, terminate_on_thunk: bool = False) -> None:
+        self.terminate_on_thunk = terminate_on_thunk
+
     def is_terminal(self, cterm: CTerm) -> bool:
         k_cell = cterm.cell('K_CELL')
+
+        if self.terminate_on_thunk:  # terminate on `thunk ( ... )` rule
+            match k_cell:
+                case KApply(label, _) | KSequence((KApply(label, _), *_)) if label == KMIR.Symbols.THUNK:
+                    return True
+
         # <k> #EndProgram </k>
         if k_cell == KMIR.Symbols.END_PROGRAM:
             return True
