@@ -134,7 +134,7 @@ class KMIR(KProve, KRun, KParse):
         return Parser(self.definition)
 
     @contextmanager
-    def kcfg_explore(self, label: str | None = None) -> Iterator[KCFGExplore]:
+    def kcfg_explore(self, label: str | None = None, terminate_on_thunk: bool = False) -> Iterator[KCFGExplore]:
         with cterm_symbolic(
             self.definition,
             self.definition_dir,
@@ -143,7 +143,7 @@ class KMIR(KProve, KRun, KParse):
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
             simplify_each=30,
         ) as cts:
-            yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
+            yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics(terminate_on_thunk=terminate_on_thunk))
 
     def run_smir(
         self,
@@ -247,7 +247,7 @@ class KMIR(KProve, KRun, KParse):
                 break_on_calls=opts.break_on_calls,
                 break_on_function_calls=opts.break_on_function_calls,
                 break_on_intrinsic_calls=opts.break_on_intrinsic_calls,
-                break_on_thunk=opts.break_on_thunk,
+                break_on_thunk=opts.break_on_thunk or opts.terminate_on_thunk,  # must break for terminal rule
                 break_every_statement=opts.break_every_statement,
                 break_on_terminator_goto=opts.break_on_terminator_goto,
                 break_on_terminator_switch_int=opts.break_on_terminator_switch_int,
