@@ -115,6 +115,15 @@ The code uses some helper sorts for better readability.
   // We assume that the Key always contains valid data, because it is constructed via toKey.
   rule fromKey(KeyError(VAL)) => VAL
   rule fromKey(Key(VAL))      => Range(VAL) [preserves-definedness]
+```
+For lists that are already known to contain bytes, the following simplification removes the `#mapOffset` call
+This ensures that branches on the key value are not duplicated.
+
+```k
+  rule #mapOffset(VAR, _) => VAR requires allBytes(VAR)
+```
+
+```k
 
   syntax Signers ::= Signers ( List ) // 11 Pubkeys, each List of 32 bytes
                    | SignersError ( Value )
