@@ -264,6 +264,12 @@ def _arg_parser() -> ArgumentParser:
         '--break-on-thunk', dest='break_on_thunk', action='store_true', help='Break on thunk evaluation'
     )
     prove_args.add_argument(
+        '--terminate-on-thunk',
+        dest='terminate_on_thunk',
+        action='store_true',
+        help='Terminate proof when reaching a thunk',
+    )
+    prove_args.add_argument(
         '--break-every-statement',
         dest='break_every_statement',
         action='store_true',
@@ -507,6 +513,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 break_on_terminator_unreachable=ns.break_on_terminator_unreachable,
                 break_every_terminator=ns.break_every_terminator,
                 break_every_step=ns.break_every_step,
+                terminate_on_thunk=ns.terminate_on_thunk,
             )
         case 'link':
             return LinkOpts(
