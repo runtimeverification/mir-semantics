@@ -191,8 +191,8 @@ def decode_value(data: bytes, type_info: TypeMetadata, types: Mapping[Ty, TypeMe
             return _decode_array(data, elem_ty, length, types)
         case StructT(fields=fields, layout=layout):
             return _decode_struct(data=data, fields=fields, layout=layout, types=types)
-        case TupleT(components=components):
-            return _decode_tuple(data=data, component_tys=components, types=types)
+        case TupleT(components=components, layout=layout):
+            return _decode_tuple(data=data, component_tys=components, layout=layout, types=types)
         case EnumT(
             discriminants=discriminants,
             fields=fields,
@@ -289,6 +289,7 @@ def _decode_tuple(
     *,
     data: bytes,
     component_tys: list[Ty],
+    layout: LayoutShape | None,
     types: Mapping[Ty, TypeMetadata],
 ) -> Value:
     if not component_tys:
@@ -296,7 +297,19 @@ def _decode_tuple(
             raise ValueError(f'Zero-sized tuple expected empty data, got: {data!r}')
         return AggregateValue(0, [])
 
-    raise ValueError('Tuple decoding with components is not implemented yet')
+    if not layout:
+        raise ValueError('Tuple layout not provided')
+
+    offsets = _extract_offsets(layout.fields)
+
+    match layout.variants:
+        case Single(index=0):
+            pass
+        case _:
+            raise ValueError(f'Unexpected layout variants in tuple: {layout.variants}')
+
+    field_values = _decode_fields(data=data, tys=component_tys, offsets=offsets, types=types)
+    return AggregateValue(0, field_values)
 
 
 def _decode_enum(

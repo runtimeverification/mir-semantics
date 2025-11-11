@@ -52,6 +52,7 @@ PROVE_RS_SHOW_SPECS = [
     'pointer-cast-length-test-fail',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
+    'raw-ptr-cast-fail',
 ]
 
 

@@ -2,5 +2,6 @@
     [0, { "PrimitiveType": { "Uint": "U8"}}],
     [1, { "PrimitiveType": "Bool"}],
     [2, { "PrimitiveType": { "Int": "I16"}}],
-    [3, { "PrimitiveType": { "Int": "I32"}}]
+    [3, { "PrimitiveType": { "Int": "I32"}}],
+    [4, { "PrimitiveType": { "Uint": "U32"}}]
 ]
