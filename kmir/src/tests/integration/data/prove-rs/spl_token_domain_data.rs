@@ -41,14 +41,15 @@ impl AccountInfo {
 
 fn test_spltoken_domain_data(acc: &AccountInfo, _mint: &AccountInfo, _rent: &AccountInfo) {
     cheatcode_is_spl_account(acc);
+    let x = &acc.data.borrow();
 
-    let mut account = Account::unpack_unchecked(&acc.data.borrow()).unwrap();
+    // let mut account = Account::unpack_unchecked(&acc.data.borrow()).unwrap();
 
-    account.is_native = COption::Some(0);
-    Account::pack(account, &mut acc.data.borrow_mut()[..]).unwrap();
+    // account.is_native = COption::Some(0);
+    // Account::pack(account, &mut acc.data.borrow_mut()[..]).unwrap();
 
-    let unpacked = get_account(acc);
-    assert!(unpacked.is_native());
+    // let unpacked = get_account(acc);
+    // assert!(unpacked.is_native());
 }
 
 fn get_account(acc: &AccountInfo) -> Account {

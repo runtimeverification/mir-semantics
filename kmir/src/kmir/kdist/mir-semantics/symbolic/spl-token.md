@@ -20,40 +20,41 @@ module KMIR-SPL-TOKEN
 ## Helper syntax
 
 ```k
-  syntax Value ::= SPLRefCellData ( Value )
-                 | SPLRefCellLamports ( U64 )
+  syntax Value ::= SPLRc ( Value ) // work as reference to data and lamports
+                 | SPLRefCell ( Value )
                  | SPLDataBuffer ( Value )
                  | SPLDataBorrow ( Place , Value )
                  | SPLDataBorrowMut ( Place , Value )
 ```
 
-## Cheatcode handling
 
+## Cheatcode handling
 ```{.k .symbolic}
   rule [cheatcode-is-spl-account]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #setLocalValue(
             place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
             Aggregate(variantIdx(0),
-              ListItem(Range(?SplAccountKey:List))
-              ListItem(SPLRefCellLamports(U64(?SplLamports:Int)))
-              ListItem(SPLRefCellData(SPLDataBuffer(
+              ListItem(Range(?SplAccountKey:List))                         // pub key: &'a Pubkey
+              ListItem(SPLRc(SPLRefCell(Integer(?SplLamports:Int, 64, false)))) // lamports: Rc<RefCell<&'a mut u64>>
+              ListItem(Aggregate(variantIdx(0), ListItem( Aggregate(variantIdx(0), ListItem( // data: Rc<RefCell<&'a mut [u8]>>
+                SPLRc(SPLRefCell(SPLDataBuffer( // data: Rc<RefCell<&'a mut [u8]>>, Aggregate is for &account.data
                 Aggregate(variantIdx(0),
-                  ListItem(Range(?SplMintKey:List))
-                  ListItem(Range(?SplTokenOwnerKey:List))
-                  ListItem(Integer(?SplAmount:Int, 64, false))
-                  ListItem(?SplDelegateCOpt:Value)
-                  ListItem(Integer(?SplAccountState:Int, 8, false))
-                  ListItem(?SplIsNativeCOpt:Value)
-                  ListItem(Integer(?SplDelegatedAmount:Int, 64, false))
-                  ListItem(?SplCloseAuthCOpt:Value)
+                  ListItem(Range(?SplMintKey:List))                        // Account.mint: Pubkey
+                  ListItem(Range(?SplTokenOwnerKey:List))                  // Account.owner: Pubkey
+                  ListItem(Integer(?SplAmount:Int, 64, false))             // Account.amount: u64
+                  ListItem(?SplDelegateCOpt:Value)                         // Account.delegate: COption<Pubkey>
+                  ListItem(Integer(?SplAccountState:Int, 8, false))        // Account.state: AccountState (repr u8)
+                  ListItem(?SplIsNativeCOpt:Value)                         // Account.is_native: COption<u64>
+                  ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
+                  ListItem(?SplCloseAuthCOpt:Value)                        // Account.close_authority: COption<Pubkey>
                 )
-              )))
-              ListItem(Range(?SplOwnerKey))
-              ListItem(Integer(?SplRentEpoch:Int, 64, false))
-              ListItem(BoolVal(?_SplIsSigner:Bool))
-              ListItem(BoolVal(?_SplIsWritable:Bool))
-              ListItem(BoolVal(?_SplExecutable:Bool))
+              ))))))))
+              ListItem(Range(?SplOwnerKey))                                // owner: &'a Pubkey
+              ListItem(Integer(?SplRentEpoch:Int, 64, false))              // rent_epoch: u64
+              ListItem(BoolVal(?_SplIsSigner:Bool))                        // is_signer: bool
+              ListItem(BoolVal(?_SplIsWritable:Bool))                      // is_writable: bool
+              ListItem(BoolVal(?_SplExecutable:Bool))                      // executable: bool
             )
          )
          ~> #execBlockIdx(TARGET)
@@ -94,6 +95,102 @@ module KMIR-SPL-TOKEN
     [priority(30), preserves-definedness]
 ```
 
+## Accessing `Rc<RefCell<_>>`
+
+
+```k
+  rule <k> #cast(SPLRc(VALUE), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+          => SPLRc(VALUE) ...
+        </k>
+      requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+      [preserves-definedness] // valid map lookups checked
+```
+
+We shortcut the MIR field access that `<Rc<_> as Deref>::deref` performs and
+expose the wrapped payload directly.
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             SPLRc(VALUE),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             VALUE,
+             PROJS,
+             CtxSPLRc CTXTS
+           )
+        ...
+        </k>
+    [priority(30)]
+
+  syntax Context ::= "CtxSPLRc"
+
+  rule #buildUpdate(VAL, CtxSPLRc CTXS) => #buildUpdate(SPLRc(VAL), CTXS)
+  rule #projectionsFor(CtxSPLRc CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
+
+  rule [spl-rc-deref]:
+    <k> #execTerminator(
+           terminator(
+             terminatorKindCall(FUNC, OP:Operand OPS:Operands, DEST, TARGET, UNWIND),
+             _SPAN))
+      => #finishSPLRcDeref(OP, DEST, TARGET, FUNC, OP OPS, UNWIND)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<std::rc::Rc<std::cell::RefCell<std::vec::Vec<u8>>> as std::ops::Deref>::deref"
+    [priority(30), preserves-definedness]
+
+  syntax KItem ::= #finishSPLRcDeref ( Evaluation , Place , MaybeBasicBlockIdx , Operand , Operands , UnwindAction ) [seqstrict(1)]
+
+  // rule <k> #finishSPLRcDeref(SPLRc(VALUE), DEST, TARGET, _FUNC, _ARGS, _UNWIND)
+  //       => #setLocalValue(DEST, VALUE) ~> #continueAt(TARGET)
+  //       ...
+  //      </k>
+
+  // rule [spl-rc-deref-fallback]:
+  //   <k> #finishSPLRcDeref(_VAL:Value, DEST, TARGET, FUNC, ARGS, UNWIND)
+  //       => #setUpCalleeData(lookupFunction(#tyOfCall(FUNC)), ARGS)
+  //       ...
+  //      </k>
+  //      <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
+  //      <currentFrame>
+  //        <currentBody> _ </currentBody>
+  //        <caller> OLDCALLER => CALLER </caller>
+  //        <dest> OLDDEST => DEST </dest>
+  //        <target> OLDTARGET => TARGET </target>
+  //        <unwind> OLDUNWIND => UNWIND </unwind>
+  //        <locals> LOCALS </locals>
+  //      </currentFrame>
+  //      <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+  //   [owise]
+```
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             SPLRefCell(VALUE),
+             projectionElemField(fieldIdx(2), TY) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             VALUE,
+             PROJS,
+             CtxSPLRefCell(TY) CTXTS
+           )
+        ...
+        </k>
+    [priority(30)]
+
+  syntax Context ::= CtxSPLRefCell ( Ty )
+
+  rule #buildUpdate(VAL, CtxSPLRefCell(_) CTXS) => #buildUpdate(SPLRefCell(VAL), CTXS)
+  rule #projectionsFor(CtxSPLRefCell(TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(fieldIdx(2), TY) PROJS)
+```
+
 ## RefCell::<&mut [u8]> helpers
 
 ```k
@@ -103,7 +200,7 @@ module KMIR-SPL-TOKEN
          ~> #execBlockIdx(TARGET)
     ...
     </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "core::cell::RefCell::<&mut [u8]>::borrow"
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "std::cell::RefCell::<std::vec::Vec<u8>>::borrow"
     [priority(30), preserves-definedness]
 
   rule [spl-borrow-mut-data]:
@@ -112,75 +209,20 @@ module KMIR-SPL-TOKEN
          ~> #execBlockIdx(TARGET)
     ...
     </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "core::cell::RefCell::<&mut [u8]>::borrow_mut"
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "std::cell::RefCell::<std::vec::Vec<u8>>::borrow_mut"
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #mkSPLBorrowData ( Place , Evaluation , Place , Bool ) [seqstrict(2)]
 
-  rule <k> #mkSPLBorrowData(DEST, SPLRefCellData(BUF), SRC, false)
-        => #setLocalValue(DEST, SPLDataBorrow(SRC, BUF))
-        ...
-       </k>
+  // rule <k> #mkSPLBorrowData(DEST, SPLRefCellData(BUF), SRC, false)
+  //       => #setLocalValue(DEST, SPLDataBorrow(SRC, BUF))
+  //       ...
+  //      </k>
 
-  rule <k> #mkSPLBorrowData(DEST, SPLRefCellData(BUF), SRC, true)
-        => #setLocalValue(DEST, SPLDataBorrowMut(SRC, BUF))
-        ...
-       </k>
-```
-
-## Account::unpack / Account::pack
-
-```k
-  rule [spl-account-unpack]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(ARG) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLAccountUnpack(DEST, operandCopy(ARG))
-         ~> #execBlockIdx(TARGET)
-    ...
-    </k>
-    requires (
-        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::unpack_unchecked"
-      orBool
-        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::unpack"
-      orBool
-        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "Account::unpack_unchecked"
-    )
-    [priority(30), preserves-definedness]
-
-  syntax KItem ::= #mkSPLAccountUnpack ( Place , Evaluation ) [seqstrict(2)]
-
-  rule <k> #mkSPLAccountUnpack(DEST, SPLDataBorrow(_, SPLDataBuffer(ACCOUNT)))
-        => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(ACCOUNT)))
-        ...
-       </k>
-
-  rule <k> #mkSPLAccountUnpack(DEST, SPLDataBorrowMut(_, SPLDataBuffer(ACCOUNT)))
-        => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(ACCOUNT)))
-        ...
-       </k>
-
-  rule [spl-account-pack]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(SRC) operandCopy(BUF) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLAccountPack(operandCopy(SRC), operandCopy(BUF), DEST)
-         ~> #execBlockIdx(TARGET)
-    ...
-    </k>
-    requires (
-        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::pack"
-      orBool
-        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "Account::pack"
-    )
-    [priority(30), preserves-definedness]
-
-  syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation , Place ) [seqstrict(2)]
-
-  rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)), DEST)
-        => #setLocalValue(
-             PLACE,
-             SPLRefCellData(SPLDataBuffer(ACCOUNT))
-           )
-         ~> #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List))))
-        ...
-       </k>
+  // rule <k> #mkSPLBorrowData(DEST, SPLRefCellData(BUF), SRC, true)
+  //       => #setLocalValue(DEST, SPLDataBorrowMut(SRC, BUF))
+  //       ...
+  //      </k>
 ```
 
 ```k
