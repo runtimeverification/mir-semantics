@@ -32,8 +32,8 @@ its argument to the destination without modification.
 
 The `cold_path` intrinsic is a compiler hint indicating that the current execution path is unlikely to be taken.
 It provides metadata for the optimiser and code generator to improve layout and branch predicition but is
-a NO OP for program semantics. Related are "intrinsics" `likely`, and `unlikely` are not `Intrinsics` but
-are `MonoItemFn` that call the `cold_path` intrinsic.
+a NO OP for program semantics. `std::intrinsics::likely` and `std::intrinsics::unlikely` are
+"normal" `MonoItemFn`s that call the `cold_path` intrinsic.
 
 ```k
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("cold_path")), .Operands, _DEST) => .K ... </k>
