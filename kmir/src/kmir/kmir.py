@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KSequence, KSort, KToken, KVariable, Subst
+from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -260,15 +260,30 @@ class KMIR(KProve, KRun, KParse):
                 break_every_step=opts.break_every_step,
             )
 
-            with kmir.kcfg_explore(label) as kcfg_explore:
+            with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
                 prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, cut_point_rules=cut_point_rules)
                 prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
                 return apr_proof
 
 
 class KMIRSemantics(DefaultSemantics):
+    terminate_on_thunk: bool
+
+    def __init__(self, terminate_on_thunk: bool = False) -> None:
+        self.terminate_on_thunk = terminate_on_thunk
+
     def is_terminal(self, cterm: CTerm) -> bool:
         k_cell = cterm.cell('K_CELL')
+
+        if self.terminate_on_thunk:  # terminate on `thunk ( ... )` rule
+            match k_cell:
+                case KApply(KLabel('thunk(_)_RT-DATA_Value_Evaluation', _)):
+                    return True
+            if type(k_cell) == KSequence and 0 < k_cell.arity:
+                match k_cell[0]:
+                    case KApply(KLabel('thunk(_)_RT-DATA_Value_Evaluation', _)):
+                        return True
+
         # <k> #EndProgram </k>
         if k_cell == KMIR.Symbols.END_PROGRAM:
             return True
