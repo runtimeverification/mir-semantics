@@ -128,6 +128,7 @@ class KMIR(KProve, KRun, KParse):
 
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
+        THUNK: Final = KLabel('thunk(_)_RT-DATA_Value_Evaluation')
 
     @cached_property
     def parser(self) -> Parser:
@@ -276,9 +277,8 @@ class KMIRSemantics(DefaultSemantics):
         k_cell = cterm.cell('K_CELL')
 
         if self.terminate_on_thunk:  # terminate on `thunk ( ... )` rule
-            thunk = KLabel('thunk(_)_RT-DATA_Value_Evaluation')
             match k_cell:
-                case KApply(thunk, _) | KSequence((KApply(thunk, _), *_)):
+                case KApply(label, _) | KSequence((KApply(label, _), *_)) if label == KMIR.Symbols.THUNK:
                     return True
 
         # <k> #EndProgram </k>
