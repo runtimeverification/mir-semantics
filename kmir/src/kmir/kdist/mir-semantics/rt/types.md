@@ -148,7 +148,7 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
 ```k
   syntax Bool ::= #zeroSizedType ( TypeInfo ) [function, total]
 
-  rule #zeroSizedType(typeInfoTupleType(.Tys)) => true
+  rule #zeroSizedType(typeInfoTupleType(.Tys, _)) => true
   rule #zeroSizedType(typeInfoStructType(_, _, .Tys, _)) => true
   rule #zeroSizedType(typeInfoVoidType) => true
   // FIXME: Only unit tuples, empty structs, and void are recognized here; other
