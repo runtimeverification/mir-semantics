@@ -849,6 +849,8 @@ pub fn test_process_initialize_mint_freeze(
         assert_eq!(result, Err(ProgramError::NotEnoughAccountKeys))
     } else if accounts[0].data_len() != Mint::LEN {
         assert_eq!(result, Err(ProgramError::InvalidAccountData))
+    } else if accounts[1].key() != &pinocchio::sysvars::rent::RENT_ID {
+        assert_eq!(result, Err(ProgramError::InvalidArgument))
     } else if mint_is_initialised_prior.is_err() {
         assert_eq!(result, Err(ProgramError::InvalidAccountData))
     } else if mint_is_initialised_prior.unwrap() {
@@ -903,6 +905,8 @@ pub fn test_process_initialize_mint_no_freeze(
         assert_eq!(result, Err(ProgramError::NotEnoughAccountKeys))
     } else if accounts[0].data_len() != Mint::LEN {
         assert_eq!(result, Err(ProgramError::InvalidAccountData))
+    } else if accounts[1].key() != &pinocchio::sysvars::rent::RENT_ID {
+        assert_eq!(result, Err(ProgramError::InvalidArgument))
     } else if mint_is_initialised_prior.is_err() {
         assert_eq!(result, Err(ProgramError::InvalidAccountData))
     } else if mint_is_initialised_prior.unwrap() {

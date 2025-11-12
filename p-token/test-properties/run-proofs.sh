@@ -3,8 +3,8 @@
 # Run all start symbols given as arguments (or read them from proofs.md
 # table if -a given) with given run options (-o) and timeout (-t).
 # Options and defaults:
-#   -t NUM   : timeout in seconds (default 1h=3600)
-#   -o STRING: prove-rs options. Default "--max-iterations 500 --max-depth 2000"
+#   -t NUM   : timeout in seconds (default 2h=7200)
+#   -o STRING: prove-rs options. Default "--max-iterations 1000 --max-depth 2000"
 #   -a       : run all start symbols from first table in `proofs.md` (1st column)
 #   -m       : run all start symbols from multisig table in `proofs.md` (2nd column)
 #   -c       : continue existing proofs instead of reloading (which is default)
@@ -23,8 +23,8 @@ ARTIFACT_BASENAME="${ARTIFACT_BASENAME:-p-token}"
 ALL_NAMES=$(sed -n -e 's/^| \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 MULTISIG_NAMES=$(sed -n -e 's/^| m | \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 
-TIMEOUT=3600
-PROVE_OPTS="--max-iterations 500 --max-depth 2000"
+TIMEOUT=7200
+PROVE_OPTS="--max-iterations 1000 --max-depth 2000"
 RELOAD_OPT="--reload"
 LOG_FILE=""
 
