@@ -153,6 +153,46 @@ To support simplifying round-trip conversion, the following simplifications are 
     [simplification, preserves-definedness, symbolic(VAL)]
 ```
 
+For the case where the (symbolic) byte values are first converted to a number, the round-trip simplification requires different matching.
+First, the bit-masking with `&Int 255` eliminates `Bytes2Int(Int2Bytes(1, ..) +Bytes ..)` enclosing a byte-valued variable:
+
+```k
+  rule Bytes2Int(Int2Bytes(1, X, LE) +Bytes _, LE, Unsigned) &Int 255 => X
+    requires 0 <=Int X andBool X <=Int 255
+    [simplification]
+  rule Bytes2Int(Int2Bytes(1, X, LE), LE, Unsigned) &Int 255 => X
+    requires 0 <=Int X andBool X <=Int 255
+    [simplification]
+```
+
+Conversely, bit shifts by 8 interact with nests of `Bytes2Int(Int2Bytes(..) +Bytes Rest)` by eliminating the first byte:
+```k
+  rule Bytes2Int(Int2Bytes(1, _:Int, _) +Bytes REST, LE, SIGNEDNESS) >>Int 8 => Bytes2Int(REST, LE, SIGNEDNESS)
+    [simplification, preserves-definedness] // bit-shift by positive number
+```
+
+Finally, the magnitude of a value converted from bytes is known to be within the limit for the byte count:
+```k
+  rule [u64-bytes-within-limit]:
+    BYTE0 +Int (256 *Int (
+      BYTE1 +Int (256 *Int (
+        BYTE2 +Int (256 *Int (
+          BYTE3 +Int (256 *Int (
+            BYTE4 +Int (256 *Int (
+              BYTE5 +Int (256 *Int (
+                BYTE6 +Int (256 *Int (
+                  BYTE7)))))))))))))) <=Int bitmask64 => true
+    requires 0 <=Int BYTE0 andBool BYTE0 <=Int 255
+     andBool 0 <=Int BYTE1 andBool BYTE1 <=Int 255
+     andBool 0 <=Int BYTE2 andBool BYTE2 <=Int 255
+     andBool 0 <=Int BYTE3 andBool BYTE3 <=Int 255
+     andBool 0 <=Int BYTE4 andBool BYTE4 <=Int 255
+     andBool 0 <=Int BYTE5 andBool BYTE5 <=Int 255
+     andBool 0 <=Int BYTE6 andBool BYTE6 <=Int 255
+     andBool 0 <=Int BYTE7 andBool BYTE7 <=Int 255
+    [simplification]
+```
+
 
 ```k
 endmodule
