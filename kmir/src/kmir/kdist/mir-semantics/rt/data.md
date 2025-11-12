@@ -10,6 +10,7 @@ requires "./types.md"
 requires "./value.md"
 requires "./numbers.md"
 requires "./decoding.md"
+requires "./pointer-int.md"
 
 module RT-DATA
   imports INT
@@ -27,6 +28,7 @@ module RT-DATA
   imports RT-NUMBERS
   imports RT-DECODING
   imports RT-TYPES
+  imports RT-POINTER-INT
   imports KMIR-CONFIGURATION
 
 ```
@@ -316,7 +318,6 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
 
-  syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
 
   syntax Contexts ::= List{Context, ""}
 
@@ -1393,28 +1394,6 @@ What can be supported without additional layout consideration is trivial casts b
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
 
-Transmuting a pointer to an integer discards provenance and reinterprets the pointer’s offset as a value of the target integer type.
-
-```k
-  // `prove-rs/interior-mut3.rs` needs this
-  // TODO: check its correctness, I assume the pointer offset is the address here and we can use it to recover the PtrLocal
-  rule <k> #cast(
-              PtrLocal(_, _, _, metadata(_, PTR_OFFSET, _)),
-              castKindTransmute,
-              _TY_SOURCE,
-              TY_TARGET
-            )
-          =>
-            #intAsType(
-              PTR_OFFSET,
-              #bitWidth(#numTypeOf(lookupTy(TY_TARGET))),
-              #numTypeOf(lookupTy(TY_TARGET))
-            )
-          ...
-        </k>
-      requires #isIntType(lookupTy(TY_TARGET))
-```
-
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
 The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
 
@@ -1517,6 +1496,54 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     => readTyConstInt(KIND) *Int 8
     [preserves-definedness]
   rule #staticArrayLenBits(_OTHER) => 0 [owise]
+```
+
+Transmuting a pointer to an integer uses the helpers defined in `RT-POINTER-INT` to encode the entire pointer (stack depth, place, mutability, and metadata) into a single natural number; decoding applies the inverse helpers. The encoding must fit into the target integer bit-width, otherwise the transmute is stuck.
+
+```k
+  syntax Value ::= #ptrWithOffset ( Value , Int , TypeInfo ) [function, total]
+  rule #ptrWithOffset(PtrLocal(STACK, PLACE, MUT, metadata(SIZE, _, ORIGIN)), OFFSET, TYINFO)
+    => PtrLocal(STACK, PLACE, MUT, #convertMetadata(metadata(SIZE, OFFSET, ORIGIN), TYINFO))
+  rule #ptrWithOffset(VAL:Value, _, _) => VAL [owise]
+
+  rule <k> #cast(
+              PtrLocal(_, _, _, _) #as PTR,
+              castKindTransmute,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              #encodePtrInt(PTR, pointeeTy(lookupTy(TY_SOURCE))),
+              #bitWidth(#numTypeOf(lookupTy(TY_TARGET))),
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool #fitsInWidth(
+                 #encodePtrInt(PTR, pointeeTy(lookupTy(TY_SOURCE))),
+                 #bitWidth(#numTypeOf(lookupTy(TY_TARGET)))
+               )
+
+  rule <k> #cast(
+              Integer(VAL, WIDTH, SIGNED) #as _INT,
+              castKindTransmute,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #ptrWithOffset(
+              #decodePtrBase(#cantorUnpairLeft(#unsignedFromIntValue(VAL, WIDTH, SIGNED))),
+              #bytesToPtrOffset(
+                #cantorUnpairRight(#unsignedFromIntValue(VAL, WIDTH, SIGNED)),
+                pointeeTy(lookupTy(TY_TARGET))
+              ),
+              lookupTy(TY_TARGET)
+            )
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY_SOURCE))
 ```
 
 Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
