@@ -21,10 +21,13 @@ module KMIR-SPL-TOKEN
 
 ```k
   syntax Value ::= SPLRc ( Value ) // work as reference to data and lamports
-                 | SPLRefCell ( Value )
+                 | SPLRefCell ( Place , Value , Bool )
                  | SPLDataBuffer ( Value )
                  | SPLDataBorrow ( Place , Value )
                  | SPLDataBorrowMut ( Place , Value )
+
+  syntax Ty ::= #SPLAccountInfoTy() [function, total, symbol(#SPLAccountInfoTy)]
+  rule #SPLAccountInfoTy() => ty(0)
 ```
 
 
@@ -36,9 +39,17 @@ module KMIR-SPL-TOKEN
             place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
             Aggregate(variantIdx(0),
               ListItem(Range(?SplAccountKey:List))                         // pub key: &'a Pubkey
-              ListItem(SPLRc(SPLRefCell(Integer(?SplLamports:Int, 64, false)))) // lamports: Rc<RefCell<&'a mut u64>>
+              ListItem(
+                SPLRc(SPLRefCell(
+                  place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #SPLAccountInfoTy()) .ProjectionElems)),
+                  Integer(?SplLamports:Int, 64, false),
+                  true
+                ))
+              )                                                           // lamports: Rc<RefCell<&'a mut u64>>
               ListItem( // data: Rc<RefCell<&'a mut [u8]>>
-                SPLRc(SPLRefCell(SPLDataBuffer( // data: Rc<RefCell<&'a mut [u8]>>, Aggregate is for &account.data
+                SPLRc(SPLRefCell(
+                  place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #SPLAccountInfoTy()) .ProjectionElems)),
+                  SPLDataBuffer( // data: Rc<RefCell<&'a mut [u8]>>, Aggregate is for &account.data
                 Aggregate(variantIdx(0),
                   ListItem(Range(?SplMintKey:List))                        // Account.mint: Pubkey
                   ListItem(Range(?SplTokenOwnerKey:List))                  // Account.owner: Pubkey
@@ -49,7 +60,10 @@ module KMIR-SPL-TOKEN
                   ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
                   ListItem(?SplCloseAuthCOpt:Value)                        // Account.close_authority: COption<Pubkey>
                 )
-              ))))
+              ),
+                  true
+                ))
+              )
               ListItem(Range(?SplOwnerKey))                                // owner: &'a Pubkey
               ListItem(Integer(?SplRentEpoch:Int, 64, false))              // rent_epoch: u64
               ListItem(BoolVal(?_SplIsSigner:Bool))                        // is_signer: bool
@@ -199,7 +213,7 @@ expose the wrapped payload directly.
 ```k
   // rule <k> #traverseProjection(
   //            DEST,
-  //            SPLRefCell(VALUE),
+  //            SPLRefCell(_, VALUE, _),
   //            projectionElemField(fieldIdx(2), TY) PROJS,
   //            CTXTS
   //          )
@@ -215,7 +229,7 @@ expose the wrapped payload directly.
 
   // syntax Context ::= CtxSPLRefCell ( Ty )
 
-  // rule #buildUpdate(VAL, CtxSPLRefCell(_) CTXS) => #buildUpdate(SPLRefCell(VAL), CTXS)
+  // rule #buildUpdate(VAL, CtxSPLRefCell(_) CTXS) => #buildUpdate(SPLRefCell(_, VAL, _), CTXS)
   // rule #projectionsFor(CtxSPLRefCell(TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(fieldIdx(2), TY) PROJS)
 ```
 
@@ -317,13 +331,13 @@ expose the wrapped payload directly.
        ...
       </k>
 
-  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(BUF), SRC, false)
-        => #setLocalValue(DEST, SPLDataBorrow(SRC, BUF))
+  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(PLACE, BUF, _), _SRC, false)
+        => #setLocalValue(DEST, SPLDataBorrow(PLACE, BUF))
         ...
        </k>
 
-  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(BUF), SRC, true)
-        => #setLocalValue(DEST, SPLDataBorrowMut(SRC, BUF))
+  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(PLACE, BUF, true), _SRC, true)
+        => #setLocalValue(DEST, SPLDataBorrowMut(PLACE, BUF))
         ...
        </k>
 ```
@@ -587,7 +601,7 @@ expose the wrapped payload directly.
   rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)), DEST)
         => #forceSetPlaceValue(
              PLACE,
-             SPLRc(SPLRefCell(SPLDataBuffer(ACCOUNT)))
+             SPLRc(SPLRefCell(PLACE, SPLDataBuffer(ACCOUNT), true))
            )
          ~> #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List))))
         ...
