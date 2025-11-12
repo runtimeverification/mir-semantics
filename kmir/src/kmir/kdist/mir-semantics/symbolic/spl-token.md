@@ -312,6 +312,11 @@ expose the wrapped payload directly.
 
   syntax KItem ::= #mkSPLBorrowData ( Place , Evaluation , Place , Bool ) [seqstrict(2)]
 
+  rule <k> #mkSPLBorrowData(DEST, SPLRc(VAL), SRC, MUT)
+        => #mkSPLBorrowData(DEST, VAL, SRC, MUT)
+       ...
+      </k>
+
   rule <k> #mkSPLBorrowData(DEST, SPLRefCell(BUF), SRC, false)
         => #setLocalValue(DEST, SPLDataBorrow(SRC, BUF))
         ...
@@ -344,6 +349,26 @@ expose the wrapped payload directly.
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<std::vec::Vec<u8> as std::ops::Deref>::deref"
     [priority(30), preserves-definedness]
 
+  rule [spl-vec-index-mut-copy]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(ARG) _OPS:Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLVecAsSlice(DEST, operandCopy(ARG))
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<std::vec::Vec<u8> as std::ops::IndexMut<std::ops::RangeFull>>::index_mut"
+    [priority(30), preserves-definedness]
+
+  rule [spl-vec-index-mut-move]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandMove(ARG) _OPS:Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLVecAsSlice(DEST, operandMove(ARG))
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<std::vec::Vec<u8> as std::ops::IndexMut<std::ops::RangeFull>>::index_mut"
+    [priority(30), preserves-definedness]
+
   syntax KItem ::= #mkSPLVecAsSlice ( Place , Evaluation ) [seqstrict(2)]
 
   rule <k> #mkSPLVecAsSlice(DEST, SPLDataBorrow(PLACE, BUF))
@@ -367,8 +392,8 @@ expose the wrapped payload directly.
 ## `Ref`/`RefMut` deref shortcuts
 
 ```k
-  rule [spl-ref-deref]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(ARG) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+  rule [spl-ref-deref-copy]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(ARG) _OPS:Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkSPLRefDeref(DEST, operandCopy(ARG))
          ~> #execBlockIdx(TARGET)
     ...
@@ -379,9 +404,61 @@ expose the wrapped payload directly.
               ==String "<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::Deref>::deref"
          orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
               ==String "<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<core::cell::RefMut<'_, alloc::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<std::cell::RefMut<'_, alloc::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<core::cell::RefMut<'_, std::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "_ZN74_$LT$core..cell..RefMut$LT$T$GT$$u20$as$u20$core..ops..deref..DerefMut$GT$9deref_mut17h1f6c73b55db865d0E"
+    [priority(30), preserves-definedness]
+
+  rule [spl-ref-deref-move]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandMove(ARG) _OPS:Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLRefDeref(DEST, operandMove(ARG))
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<std::cell::Ref<'_, std::vec::Vec<u8>> as std::ops::Deref>::deref"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::Deref>::deref"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<core::cell::RefMut<'_, alloc::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<std::cell::RefMut<'_, alloc::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<core::cell::RefMut<'_, std::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut"
+         orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "_ZN74_$LT$core..cell..RefMut$LT$T$GT$$u20$as$u20$core..ops..deref..DerefMut$GT$9deref_mut17h1f6c73b55db865d0E"
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #mkSPLRefDeref ( Place , Evaluation ) [seqstrict(2)]
+
+  rule <k> #mkSPLRefDeref(DEST, Reference(0, place(local(I), .ProjectionElems), _, _))
+        => #mkSPLRefDeref(DEST, getValue(LOCALS, I))
+       ...
+      </k>
+      <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+
+  rule <k> #mkSPLRefDeref(DEST, Reference(OFFSET, place(local(I), .ProjectionElems), _, _))
+        => #mkSPLRefDeref(
+             DEST,
+             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET)
+           )
+       ...
+      </k>
+      <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool 0 <=Int I
 
   rule <k> #mkSPLRefDeref(DEST, SPLDataBorrow(_, _) #as BORROW)
         => #setLocalValue(DEST, BORROW)
@@ -453,7 +530,7 @@ expose the wrapped payload directly.
         ...
        </k>
 
-  rule [spl-account-pack]:
+  rule [spl-account-pack-copy-copy]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(SRC) operandCopy(BUF) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkSPLAccountPack(operandCopy(SRC), operandCopy(BUF), DEST)
          ~> #execBlockIdx(TARGET)
@@ -466,10 +543,49 @@ expose the wrapped payload directly.
     )
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation , Place ) [seqstrict(2)]
+  rule [spl-account-pack-move-copy]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandMove(SRC) operandCopy(BUF) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLAccountPack(operandMove(SRC), operandCopy(BUF), DEST)
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires (
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::pack"
+      orBool
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "Account::pack"
+    )
+    [priority(30), preserves-definedness]
+
+  rule [spl-account-pack-copy-move]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(SRC) operandMove(BUF) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLAccountPack(operandCopy(SRC), operandMove(BUF), DEST)
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires (
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::pack"
+      orBool
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "Account::pack"
+    )
+    [priority(30), preserves-definedness]
+
+  rule [spl-account-pack-move-move]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandMove(SRC) operandMove(BUF) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLAccountPack(operandMove(SRC), operandMove(BUF), DEST)
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires (
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::state::Account::pack"
+      orBool
+        #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "Account::pack"
+    )
+    [priority(30), preserves-definedness]
+
+  syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation , Place ) [seqstrict(1,2)]
 
   rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)), DEST)
-        => #setLocalValue(
+        => #forceSetPlaceValue(
              PLACE,
              SPLRc(SPLRefCell(SPLDataBuffer(ACCOUNT)))
            )
