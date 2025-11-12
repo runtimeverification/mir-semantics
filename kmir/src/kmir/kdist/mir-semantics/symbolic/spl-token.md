@@ -340,6 +340,24 @@ expose the wrapped payload directly.
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "std::vec::Vec::<u8>::as_slice"
     [priority(30), preserves-definedness]
 
+  rule [spl-vec-as-mut-slice-copy]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(ARG) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLVecAsSlice(DEST, operandCopy(ARG))
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "std::vec::Vec::<u8>::as_mut_slice"
+    [priority(30), preserves-definedness]
+
+  rule [spl-vec-as-mut-slice-move]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandMove(ARG) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLVecAsSlice(DEST, operandMove(ARG))
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "std::vec::Vec::<u8>::as_mut_slice"
+    [priority(30), preserves-definedness]
+
   rule [spl-vec-deref]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(ARG) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkSPLVecAsSlice(DEST, operandCopy(ARG))
@@ -347,6 +365,24 @@ expose the wrapped payload directly.
     ...
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<std::vec::Vec<u8> as std::ops::Deref>::deref"
+    [priority(30), preserves-definedness]
+
+  rule [spl-vec-deref-mut-copy]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(ARG) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLVecAsSlice(DEST, operandCopy(ARG))
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<std::vec::Vec<u8> as std::ops::DerefMut>::deref_mut"
+    [priority(30), preserves-definedness]
+
+  rule [spl-vec-deref-mut-move]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandMove(ARG) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLVecAsSlice(DEST, operandMove(ARG))
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<std::vec::Vec<u8> as std::ops::DerefMut>::deref_mut"
     [priority(30), preserves-definedness]
 
   rule [spl-vec-index-mut-copy]:
