@@ -428,6 +428,12 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     => Range(#mapOffset(ELEMS, OFFSET))
   rule #adjustRef(TL, _) => TL [owise]
 
+  rule #adjustRef(#adjustRef(VAL, OFFSET1), OFFSET2)
+    => #adjustRef(VAL, OFFSET1 +Int OFFSET2)
+    [simplification]
+
+  rule #adjustRef(VAL:Value, 0) => VAL [simplification]
+
   syntax List ::= #mapOffset ( List, Int ) [function, total]
   // -------------------------------------------------------
   rule #mapOffset(.List, _)
