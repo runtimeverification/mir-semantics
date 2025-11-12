@@ -429,6 +429,9 @@ def _arg_parser() -> ArgumentParser:
     prove_rs_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
+    prove_rs_parser.add_argument(
+        '--cfg-roots', type=Path, metavar='CFG_ROOTS', help='Path to file containing newline-separated possible control flow graph roots (used to prune `rustc` generated MIR symbol table)'
+    )
 
     link_parser = command_parser.add_parser(
         'link', help='Link together 2 or more SMIR JSON files', parents=[kcli_args.logging_args]
@@ -499,6 +502,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
+                cfg_roots=ns.cfg_roots,
                 break_on_calls=ns.break_on_calls,
                 break_on_function_calls=ns.break_on_function_calls,
                 break_on_intrinsic_calls=ns.break_on_intrinsic_calls,
