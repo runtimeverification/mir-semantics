@@ -263,6 +263,12 @@ EXEC_DATA = [
         1000,
     ),
     (
+        'pointer-cast-zst',
+        EXEC_DATA_DIR / 'pointers' / 'pointer-cast-zst.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'pointer-cast-zst.state',
+        48,
+    ),
+    (
         'ref-ptr-cases',
         EXEC_DATA_DIR / 'pointers' / 'ref_ptr_cases.smir.json',
         EXEC_DATA_DIR / 'pointers' / 'ref_ptr_cases.state',
