@@ -164,8 +164,8 @@ expose the wrapped payload directly.
 
 ```k
   rule [spl-rc-deref]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand OPS:Operands, DEST, TARGET, UNWIND), _SPAN))
-      => #finishSPLRcDeref(OP, DEST, TARGET, FUNC, OP OPS, UNWIND)
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand _OPS:Operands, DEST, TARGET, _UNWIND), _SPAN))
+      => #finishSPLRcDeref(OP, DEST, TARGET)
     ...
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC)))
@@ -174,16 +174,16 @@ expose the wrapped payload directly.
               ==String "<std::rc::Rc<std::cell::RefCell<&mut [u8]>> as std::ops::Deref>::deref"
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #finishSPLRcDeref ( Evaluation , Place , MaybeBasicBlockIdx , Operand , Operands , UnwindAction ) [seqstrict(1)]
-                  | #resolveSPLRcRef ( Value , Place , MaybeBasicBlockIdx , Operand , Operands , UnwindAction )
-                  | #finishResolvedSPLRc ( Place , MaybeBasicBlockIdx , Operand , Operands , UnwindAction )
+  syntax KItem ::= #finishSPLRcDeref ( Evaluation , Place , MaybeBasicBlockIdx ) [seqstrict(1)]
+                  | #resolveSPLRcRef ( Value , Place , MaybeBasicBlockIdx )
+                  | #finishResolvedSPLRc ( Place , MaybeBasicBlockIdx )
 
-  rule <k> #finishSPLRcDeref(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET, FUNC, ARGS, UNWIND)
-        => #resolveSPLRcRef(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET, FUNC, ARGS, UNWIND)
+  rule <k> #finishSPLRcDeref(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET)
+        => #resolveSPLRcRef(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET)
        ...
       </k>
 
-  rule <k> #resolveSPLRcRef(Reference(0, place(local(I), PROJS), _, _), DEST, TARGET, FUNC, ARGS, UNWIND)
+  rule <k> #resolveSPLRcRef(Reference(0, place(local(I), PROJS), _, _), DEST, TARGET)
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
@@ -191,7 +191,7 @@ expose the wrapped payload directly.
              .Contexts
            )
            ~> #readProjection(false)
-           ~> #finishResolvedSPLRc(DEST, TARGET, FUNC, ARGS, UNWIND)
+           ~> #finishResolvedSPLRc(DEST, TARGET)
        ...
       </k>
       <locals> LOCALS </locals>
@@ -199,7 +199,7 @@ expose the wrapped payload directly.
      andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
 
-  rule <k> #resolveSPLRcRef(Reference(OFFSET, place(local(I), PROJS), _, _), DEST, TARGET, FUNC, ARGS, UNWIND)
+  rule <k> #resolveSPLRcRef(Reference(OFFSET, place(local(I), PROJS), _, _), DEST, TARGET)
         => #traverseProjection(
              toStack(OFFSET, local(I)),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET),
@@ -207,7 +207,7 @@ expose the wrapped payload directly.
              .Contexts
            )
            ~> #readProjection(false)
-           ~> #finishResolvedSPLRc(DEST, TARGET, FUNC, ARGS, UNWIND)
+           ~> #finishResolvedSPLRc(DEST, TARGET)
        ...
       </k>
       <stack> STACK </stack>
@@ -216,7 +216,7 @@ expose the wrapped payload directly.
      andBool isStackFrame(STACK[OFFSET -Int 1])
      andBool 0 <=Int I
   
-  rule <k> SPLRefCell(PLACE, VALUE) ~> #finishResolvedSPLRc(DEST, TARGET, _FUNC, _ARGS, _UNWIND)
+  rule <k> SPLRefCell(PLACE, VALUE) ~> #finishResolvedSPLRc(DEST, TARGET)
         => #setLocalValue(DEST, SPLRefCell(PLACE, VALUE)) ~> #continueAt(TARGET)
        ...
       </k>
