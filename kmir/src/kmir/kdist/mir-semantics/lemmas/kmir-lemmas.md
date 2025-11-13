@@ -118,6 +118,21 @@ power of two but the semantics will always operate with these particular ones.
   rule VAL &Int bitmask128 => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask128 [simplification, preserves-definedness, smt-lemma]
 ```
 
+Repeated bit-masking can be simplified in an even more general way:
+
+```k
+     rule (X &Int MASK1 &Int MASK2) => X &Int MASK2
+       requires 0 <Int MASK1
+        andBool 0 <Int MASK2
+        andBool MASK2 <=Int MASK1
+       [simplification, concrete(MASK1, MASK2), smt-lemma]
+     rule (X &Int MASK2 &Int MASK1) => X &Int MASK2
+       requires 0 <Int MASK1
+        andBool 0 <Int MASK2
+        andBool MASK2 <Int MASK1 // not <=Int; uses rule above when MASK1 == MASK2
+       [simplification, concrete(MASK1, MASK2), smt-lemma]
+```
+
 Support for `transmute` between byte arrays and numbers (and vice-versa) uses computations involving bit masks with 255 and 8-bit shifts.
 To support simplifying round-trip conversion, the following simplifications are essential.
 
@@ -152,6 +167,24 @@ To support simplifying round-trip conversion, the following simplifications are 
     requires 0 <=Int VAL andBool VAL <=Int bitmask64
     [simplification, preserves-definedness, symbolic(VAL)]
 ```
+
+More generally, a value which is composed of sliced bytes can generally be assumed to be in range of a suitable bitmask for the byte length.
+This avoids building up large expressions related to overflow checks and vacuous branches leading to overflow errors.
+
+```k
+  rule ((( _X0 )                                                                     &Int 255) +Int 256 *Int (
+         (( _X1 >>Int 8)                                                              &Int 255) +Int 256 *Int (
+           (( _X2 >>Int 8 >>Int 8)                                                    &Int 255) +Int 256 *Int (
+              (( _X3 >>Int 8 >>Int 8 >>Int 8)                                         &Int 255) +Int 256 *Int (
+                (( _X4 >>Int 8 >>Int 8 >>Int 8 >>Int 8)                               &Int 255) +Int 256 *Int (
+                  (( _X5 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8)                     &Int 255) +Int 256 *Int (
+                    (( _X6 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8)           &Int 255) +Int 256 *Int (
+                      (( _X7 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8) &Int 255)))))))))
+          <=Int bitmask64
+        => true
+    [simplification, preserves-definedness, symbolic]
+```
+
 
 For the case where the (symbolic) byte values are first converted to a number, the round-trip simplification requires different matching.
 First, the bit-masking with `&Int 255` eliminates `Bytes2Int(Int2Bytes(1, ..) +Bytes ..)` enclosing a byte-valued variable:
