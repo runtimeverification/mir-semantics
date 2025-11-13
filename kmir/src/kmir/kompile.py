@@ -250,6 +250,7 @@ def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[Axiom]:
 
 def _default_equations(kmir) -> list[Axiom]:
     from pyk.kast.inner import KToken, KVariable
+    from pyk.kore.syntax import App
 
     unknown_function = KApply(
         'MonoItemKind::MonoItemFn',
@@ -261,13 +262,18 @@ def _default_equations(kmir) -> list[Axiom]:
     )
     default_function = _mk_equation(
         kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
-    )
+    ).let_attrs(((App('owise')),))
     default_alloc = _mk_equation(
-        kmir, 'lookupAlloc', KVariable('ID'), 'AllocId', KApply('InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KVariable('ID'),)), 'Evaluation'
-    )
+        kmir,
+        'lookupAlloc',
+        KVariable('ID'),
+        'AllocId',
+        KApply('InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KVariable('ID'),)),
+        'Evaluation',
+    ).let_attrs(((App('owise')),))
     default_ty = _mk_equation(
         kmir, 'lookupTy', KApply('ty', (KVariable('_TY'),)), 'Ty', KApply('TypeInfo::VoidType', ()), 'TypeInfo'
-    ).let_attrs("priority(99)")
+    ).let_attrs(((App('owise')),))
 
     return [default_function, default_alloc, default_ty]
 
