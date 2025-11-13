@@ -53,7 +53,7 @@ PROVE_RS_SHOW_SPECS = [
     'pointer-cast-length-test-fail',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
-    'spl_token_domain_data',
+    'raw-ptr-cast-fail',
 ]
 
 
