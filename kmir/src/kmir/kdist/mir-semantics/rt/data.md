@@ -1499,7 +1499,8 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
 
 Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
 (see `#discriminant` and `rvalueDiscriminant`).
-If none of the `enum` variants has any fields, the `Transmute` of a number to the `enum` data is necessarily just the discriminant itself., and can be returned as the integer value afgter adjusting to the byte length of the discriminant:
+If none of the `enum` variants has any fields, the `Transmute` of a number to the `enum` data is necessarily just the discriminant itself., and can be returned as the integer value after adjusting to the byte length of the discriminant:
+
 
 ```k
   rule <k> #discriminant(
@@ -1514,6 +1515,21 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
   // ----------------------------------------------------------------
   rule #isEnumWithoutFields(typeInfoEnumType(_, _, _, FIELDSS, _)) => #noFields(FIELDSS)
   rule #isEnumWithoutFields(_OTHER) => false [owise]
+```
+
+```k
+  rule <k>
+           #cast( Integer ( VAL , 8 , false ) , castKindTransmute , _TY_FROM , TY_TO )
+        =>
+           Aggregate( variantIdx(VAL) , .List )
+       ...
+      </k>
+      requires #isEnumWithoutFields(lookupTy(TY_TO)) andBool #validDiscriminant(VAL, lookupTy(TY_TO))
+
+  syntax Bool ::= #validDiscriminant    ( Int , TypeInfo )      [function, total]
+  // ------------------------------------------------------------------
+  rule #validDiscriminant( VAL , typeInfoEnumType(_, _, DISCRIMINANTS, _, _) ) => variantIdx(VAL) ==K #findVariantIdx(VAL, DISCRIMINANTS)
+  rule #validDiscriminant(_, _) => false [owise]
 ```
 
 
