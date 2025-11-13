@@ -21,7 +21,7 @@ module KMIR-SPL-TOKEN
 
 ```k
   syntax Value ::= SPLRc ( Value ) // work as reference to data and lamports
-                 | SPLRefCell ( Value )
+                 | SPLRefCell ( Place , Value )
                  | SPLDataBuffer ( Value )
                  | SPLDataBorrow ( Place , Value )
                  | SPLDataBorrowMut ( Place , Value )
@@ -36,20 +36,39 @@ module KMIR-SPL-TOKEN
             place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
             Aggregate(variantIdx(0),
               ListItem(Range(?SplAccountKey:List))                         // pub key: &'a Pubkey
-              ListItem(SPLRc(SPLRefCell(Integer(?SplLamports:Int, 64, false)))) // lamports: Rc<RefCell<&'a mut u64>>
-              ListItem( // data: Rc<RefCell<&'a mut [u8]>>
-                SPLRc(SPLRefCell(SPLDataBuffer( // data: Rc<RefCell<&'a mut [u8]>>, Aggregate is for &account.data
-                Aggregate(variantIdx(0),
-                  ListItem(Range(?SplMintKey:List))                        // Account.mint: Pubkey
-                  ListItem(Range(?SplTokenOwnerKey:List))                  // Account.owner: Pubkey
-                  ListItem(Integer(?SplAmount:Int, 64, false))             // Account.amount: u64
-                  ListItem(?SplDelegateCOpt:Value)                         // Account.delegate: COption<Pubkey>
-                  ListItem(Integer(?SplAccountState:Int, 8, false))        // Account.state: AccountState (repr u8)
-                  ListItem(?SplIsNativeCOpt:Value)                         // Account.is_native: COption<u64>
-                  ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
-                  ListItem(?SplCloseAuthCOpt:Value)                        // Account.close_authority: COption<Pubkey>
+              ListItem(
+                SPLRc(
+                  SPLRefCell(
+                    place(
+                      LOCAL,
+                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
+                    ),
+                    Integer(?SplLamports:Int, 64, false)
+                  )
                 )
-              ))))
+              ) // lamports: Rc<RefCell<&'a mut u64>>
+              ListItem( // data: Rc<RefCell<&'a mut [u8]>>
+                SPLRc(
+                  SPLRefCell(
+                    place(
+                      LOCAL,
+                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
+                    ),
+                    SPLDataBuffer( // data: Rc<RefCell<&'a mut [u8]>>, Aggregate is for &account.data
+                      Aggregate(variantIdx(0),
+                        ListItem(Range(?SplMintKey:List))                        // Account.mint: Pubkey
+                        ListItem(Range(?SplTokenOwnerKey:List))                  // Account.owner: Pubkey
+                        ListItem(Integer(?SplAmount:Int, 64, false))             // Account.amount: u64
+                        ListItem(?SplDelegateCOpt:Value)                         // Account.delegate: COption<Pubkey>
+                        ListItem(Integer(?SplAccountState:Int, 8, false))        // Account.state: AccountState (repr u8)
+                        ListItem(?SplIsNativeCOpt:Value)                         // Account.is_native: COption<u64>
+                        ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
+                        ListItem(?SplCloseAuthCOpt:Value)                        // Account.close_authority: COption<Pubkey>
+                      )
+                    )
+                  )
+                )
+              )
               ListItem(Range(?SplOwnerKey))                                // owner: &'a Pubkey
               ListItem(Integer(?SplRentEpoch:Int, 64, false))              // rent_epoch: u64
               ListItem(BoolVal(?_SplIsSigner:Bool))                        // is_signer: bool
@@ -317,13 +336,13 @@ expose the wrapped payload directly.
        ...
       </k>
 
-  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(BUF), SRC, false)
-        => #setLocalValue(DEST, SPLDataBorrow(SRC, BUF))
+  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(PLACE, BUF), _SRC, false)
+        => #setLocalValue(DEST, SPLDataBorrow(PLACE, BUF))
         ...
        </k>
 
-  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(BUF), SRC, true)
-        => #setLocalValue(DEST, SPLDataBorrowMut(SRC, BUF))
+  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(PLACE, BUF), _SRC, true)
+        => #setLocalValue(DEST, SPLDataBorrowMut(PLACE, BUF))
         ...
        </k>
 ```
@@ -623,7 +642,7 @@ expose the wrapped payload directly.
   rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)), DEST)
         => #forceSetPlaceValue(
              PLACE,
-             SPLRc(SPLRefCell(SPLDataBuffer(ACCOUNT)))
+             SPLRc(SPLRefCell(PLACE, SPLDataBuffer(ACCOUNT)))
            )
          ~> #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List))))
         ...
