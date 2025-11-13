@@ -267,7 +267,7 @@ class KMIR(KProve, KRun, KParse):
 
             equations = make_kore_rules(kmir, smir_info)
             _LOGGER.debug(f'Made {len(equations)} equations')
-            prog_module = KFlatModule(name='KMIR-PROGRAM', imports=(KImport('KMIR'),))
+            prog_module = KFlatModule(name='KMIR-PROGRAM', sentences=equations, imports=(KImport('KMIR'),))
 
             with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
                 prover = APRProver(
