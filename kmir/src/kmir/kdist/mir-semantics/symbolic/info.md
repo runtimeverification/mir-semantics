@@ -1,5 +1,8 @@
 **AccountInfo**
-- P-Token: `pinocchio::account_info::AccountInfo` stores its data in two layers: `Account` (raw bytes, borrow state, Pubkey, etc.) and `AccountInfo`, which merely keeps a raw pointer to it. The definition is located at `~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pinocchio-0.9.0/src/account_info.rs:18-120`.  
+- P-Token: `pinocchio::account_info::AccountInfo` stores its data in two layers:
+  - `Account` (raw bytes, borrow state, Pubkey, etc.)
+  - `AccountInfo`, which merely keeps a raw pointer to it
+  - See `pinocchio-0.9.0/src/account_info.rs:18-120`.  
 ```rust
 #[repr(C)]
 pub(crate) struct Account {
@@ -21,7 +24,7 @@ pub struct AccountInfo {
 }
 ```
 Every `AccountInfo` method (`key()`, `owner()`, `lamports()`, etc.) directly dereferences with `unsafe { (*self.raw).... }`, so the Pinocchio pipeline’s `load::<T>` can reinterpret `AccountInfo.data` as a `#[repr(C)]` struct while remaining consistent with the borrow flags.
-- SPL Token: `solana_account_info::AccountInfo<'a>` in `~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/solana-account-info-2.3.0/src/lib.rs:15-56` exposes every field and wraps lamports/data inside `Rc<RefCell<...>>`, integrating with the runtime `next_account_info`/`Pack` borrow checks.  
+- SPL Token: `solana_account_info::AccountInfo<'a>` exposes every field and wraps lamports/data inside `Rc<RefCell<...>>`, integrating with the runtime `next_account_info`/`Pack` borrow checks (see `solana-account-info-2.3.0/src/lib.rs:15-56`).  
 ```rust
 #[derive(Clone)]
 #[repr(C)]
