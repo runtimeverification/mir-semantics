@@ -249,6 +249,22 @@ expose the wrapped payload directly.
   rule <k> #traverseProjection(
              DEST,
              SPLDataBorrow(PLACE, SPLDataBuffer(VALUE)),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             VALUE,
+             PROJS,
+             CtxSPLDataBorrow(PLACE) CTXTS
+           )
+        ...
+       </k>
+    [priority(25)]
+
+  rule <k> #traverseProjection(
+             DEST,
+             SPLDataBorrow(PLACE, SPLDataBuffer(VALUE)),
              PROJS,
              CTXTS
            )
@@ -262,6 +278,22 @@ expose the wrapped payload directly.
        </k>
     requires PROJS =/=K .ProjectionElems
     [priority(30)]
+
+  rule <k> #traverseProjection(
+             DEST,
+             SPLDataBorrowMut(PLACE, SPLDataBuffer(VALUE)),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             VALUE,
+             PROJS,
+             CtxSPLDataBorrowMut(PLACE) CTXTS
+           )
+        ...
+       </k>
+    [priority(25)]
 
   rule <k> #traverseProjection(
              DEST,
