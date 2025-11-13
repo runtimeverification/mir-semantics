@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from typing import Any, Final
 
     from pyk.kast import KInner
+    from pyk.kore.syntax import Axiom
 
     from .smir import SMIRInfo
 
@@ -117,7 +118,7 @@ def kompile_smir(
     target_dir.mkdir(parents=True, exist_ok=True)
 
     kmir = KMIR(HASKELL_DEF_DIR)
-    rules = _make_kore_rules(kmir, smir_info)
+    rules = make_kore_rules(kmir, smir_info)
     _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
     if symbolic:
@@ -216,7 +217,7 @@ def kompile_smir(
         return KompiledConcrete(llvm_dir=target_llvm_path)
 
 
-def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates kore syntax directly as string
+def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[Axiom]:
     equations = []
 
     # kprint tool is too chatty
@@ -271,7 +272,7 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
     return functions
 
 
-def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> str:
+def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> Axiom:
     from pyk.kore.rule import FunctionRule
     from pyk.kore.syntax import App, SortApp
 
@@ -292,17 +293,7 @@ def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInne
         uid='fubar',
         label='fubaz',
     )
-    return '\n'.join(
-        [
-            '',
-            '',
-            (
-                f'// {fun}({kmir.pretty_print(arg)})'
-                + (f' => {kmir.pretty_print(result)}' if len(kmir.pretty_print(result)) < 1000 else '')
-            ),
-            rule.to_axiom().text,
-        ]
-    )
+    return rule.to_axiom()
 
 
 def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
@@ -322,7 +313,7 @@ def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
     return alloc_id_term, value.to_kast()
 
 
-def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
+def _insert_rules_and_write(input_file: Path, rules: list[Axiom], output_file: Path) -> None:
     with open(input_file, 'r') as f:
         lines = f.readlines()
 
@@ -333,7 +324,7 @@ def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Pat
 
     # Insert rules before the endmodule line
     new_lines.append(f'\n// Generated from file {input_file}\n\n')
-    new_lines.extend(rules)
+    new_lines.extend([ax.text for ax in rules])
     new_lines.append('\n' + last_line)
 
     # Write to output file
