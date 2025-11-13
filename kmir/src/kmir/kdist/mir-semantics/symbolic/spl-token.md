@@ -55,9 +55,12 @@ module KMIR-SPL-TOKEN
 
   rule #isSPLBorrowFunc("std::cell::RefCell::<std::vec::Vec<u8>>::borrow") => true
   rule #isSPLBorrowFunc("std::cell::RefCell::<std::vec::Vec<u8>>::borrow_mut") => true
+  rule #isSPLBorrowFunc("std::cell::RefCell::<&mut [u8]>::borrow") => true
+  rule #isSPLBorrowFunc("std::cell::RefCell::<&mut [u8]>::borrow_mut") => true
   rule #isSPLBorrowFunc(_) => false [owise]
 
   rule #isSPLBorrowMutFunc("std::cell::RefCell::<std::vec::Vec<u8>>::borrow_mut") => true
+  rule #isSPLBorrowMutFunc("std::cell::RefCell::<&mut [u8]>::borrow_mut") => true
   rule #isSPLBorrowMutFunc(_) => false [owise]
 
   rule #isSPLVecSliceFunc("std::vec::Vec::<u8>::as_slice") => true
@@ -67,9 +70,13 @@ module KMIR-SPL-TOKEN
   rule #isSPLVecSliceFunc("<std::vec::Vec<u8> as std::ops::IndexMut<std::ops::RangeFull>>::index_mut") => true
   rule #isSPLVecSliceFunc(_) => false [owise]
 
+
   rule #isSPLRefDerefFunc("<std::cell::Ref<'_, std::vec::Vec<u8>> as std::ops::Deref>::deref") => true
   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::Deref>::deref") => true
   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut") => true
+  rule #isSPLRefDerefFunc("<std::cell::Ref<'_, &mut [u8]> as std::ops::Deref>::deref") => true
+  rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut [u8]> as std::ops::Deref>::deref") => true
+  rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut [u8]> as std::ops::DerefMut>::deref_mut") => true
   rule #isSPLRefDerefFunc("<core::cell::RefMut<'_, alloc::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut") => true
   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, alloc::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut") => true
   rule #isSPLRefDerefFunc("<core::cell::RefMut<'_, std::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut") => true
@@ -163,6 +170,8 @@ expose the wrapped payload directly.
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC)))
               ==String "<std::rc::Rc<std::cell::RefCell<std::vec::Vec<u8>>> as std::ops::Deref>::deref"
+      orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
+              ==String "<std::rc::Rc<std::cell::RefCell<&mut [u8]>> as std::ops::Deref>::deref"
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #finishSPLRcDeref ( Evaluation , Place , MaybeBasicBlockIdx , Operand , Operands , UnwindAction ) [seqstrict(1)]
