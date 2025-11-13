@@ -218,7 +218,7 @@ def kompile_smir(
 
 
 def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[Axiom]:
-    equations = []
+    equations = _default_equations(kmir)
 
     # kprint tool is too chatty
     kprint_logger = logging.getLogger('pyk.ktool.kprint')
@@ -242,6 +242,36 @@ def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[Axiom]:
         equations.append(_mk_equation(kmir, 'lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
 
     return equations
+
+
+def _default_equations(kmir) -> list[Axiom]:
+    from pyk.kast.inner import KToken, KVariable
+    from pyk.kore.syntax import App
+
+    unknown_function = KApply(
+        'MonoItemKind::MonoItemFn',
+        (
+            KApply('symbol(_)_LIB_Symbol_String', (KToken('"** UNKNOWN FUNCTION **"', KSort('String')),)),
+            KApply('defId(_)_BODY_DefId_Int', (KVariable('TY', KSort('Int')),)),
+            KApply('noBody_BODY_MaybeBody', ()),
+        ),
+    )
+    default_function = _mk_equation(
+        kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
+    ).let_attrs(((App('owise')),))
+    default_alloc = _mk_equation(
+        kmir,
+        'lookupAlloc',
+        KVariable('ID'),
+        'AllocId',
+        KApply('InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KVariable('ID'),)),
+        'Evaluation',
+    ).let_attrs(((App('owise')),))
+    default_ty = _mk_equation(
+        kmir, 'lookupTy', KApply('ty', (KVariable('_TY'),)), 'Ty', KApply('TypeInfo::VoidType', ()), 'TypeInfo'
+    ).let_attrs(((App('owise')),))
+
+    return [default_function, default_alloc, default_ty]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
