@@ -1519,17 +1519,54 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
 
 ```k
   rule <k>
-           #cast( Integer ( VAL , 8 , false ) , castKindTransmute , _TY_FROM , TY_TO )
+           #cast( Integer ( VAL , WIDTH , SIGNED ) , castKindTransmute , _TY_FROM , TY_TO )
         =>
            Aggregate( variantIdx(VAL) , .List )
        ...
       </k>
-      requires #isEnumWithoutFields(lookupTy(TY_TO)) andBool #validDiscriminant(VAL, lookupTy(TY_TO))
+      requires #isEnumWithoutFields(lookupTy(TY_TO))
+        andBool #tagCompatible(WIDTH, SIGNED, lookupTy(TY_TO))
+        andBool #validDiscriminant(VAL, lookupTy(TY_TO))
 
   syntax Bool ::= #validDiscriminant    ( Int , TypeInfo )      [function, total]
-  // ------------------------------------------------------------------
+  // ----------------------------------------------------------------------------
   rule #validDiscriminant( VAL , typeInfoEnumType(_, _, DISCRIMINANTS, _, _) ) => variantIdx(VAL) ==K #findVariantIdx(VAL, DISCRIMINANTS)
   rule #validDiscriminant(_, _) => false [owise]
+
+  syntax Bool ::= #tagCompatible ( Int, Bool, TypeInfo )  [function, total]
+  // ----------------------------------------------------------------------
+  rule #tagCompatible(
+    WIDTH,
+    SIGNED,
+    typeInfoEnumType(...
+               name: _
+             , adtDef: _
+             , discriminants: _
+             , fields: _
+             , layout:
+                someLayoutShape(layoutShape(...
+                    fields: _
+                  , variants:
+                      variantsShapeMultiple(
+                        mk(...
+                            tag: scalarInitialized(
+                              mk(...
+                                  value: primitiveInt(mk(... length: TAG_WIDTH, signed: TAG_SIGNED))
+                                , validRange: _
+                              )
+                            )
+                          , tagEncoding: _
+                          , tagField: _
+                          , variants: _
+                          )
+                        )
+                  , abi: _
+                  , abiAlign: _
+                  , size: _
+                ))
+             )
+  ) => WIDTH ==Int #byteLength(TAG_WIDTH) andBool SIGNED ==Bool TAG_SIGNED
+  rule #tagCompatible( _ , _ , _ ) => false [owise]
 ```
 
 
