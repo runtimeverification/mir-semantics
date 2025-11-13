@@ -1,0 +1,70 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (65 steps)
+├─ 3 (split)
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 1 ) )
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool ARG_UINT1:Int <=Int 2
+┃  │
+┃  ├─ 4
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 1 ) )
+┃  │
+┃  │  (144 steps)
+┃  ├─ 6 (terminal)
+┃  │   #EndProgram ~> .K
+┃  │
+┃  ┊  constraint: true
+┃  ┊  subst: ...
+┃  └─ 2 (leaf, target, terminal)
+┃      #EndProgram ~> .K
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     ARG_UINT1:Int <=Int 2
+   │
+   ├─ 5
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 1 ) )
+   │
+   │  (12 steps)
+   ├─ 7 (split)
+   │   #cast ( Integer ( ARG_UINT1:Int , 8 , false ) , castKindTransmute , ty ( 9 ) , t
+   │   span: 72
+   ┃
+   ┃ (branch)
+   ┣━━┓ subst: .Subst
+   ┃  ┃ constraint:
+   ┃  ┃     #validDiscriminantAux ( ARG_UINT1:Int , discriminant ( 0 )  discriminant ( 1 )  discriminant ( 2 )  .Discriminants )
+   ┃  │
+   ┃  ├─ 8
+   ┃  │   #cast ( Integer ( ARG_UINT1:Int , 8 , false ) , castKindTransmute , ty ( 9 ) , t
+   ┃  │   span: 72
+   ┃  │
+   ┃  │  (125 steps)
+   ┃  ├─ 10 (terminal)
+   ┃  │   #EndProgram ~> .K
+   ┃  │
+   ┃  ┊  constraint: true
+   ┃  ┊  subst: ...
+   ┃  └─ 2 (leaf, target, terminal)
+   ┃      #EndProgram ~> .K
+   ┃
+   ┗━━┓ subst: .Subst
+      ┃ constraint:
+      ┃     notBool #validDiscriminantAux ( ARG_UINT1:Int , discriminant ( 0 )  discriminant ( 1 )  discriminant ( 2 )  .Discriminants )
+      │
+      ├─ 9
+      │   #cast ( Integer ( ARG_UINT1:Int , 8 , false ) , castKindTransmute , ty ( 9 ) , t
+      │   span: 72
+      │
+      │  (1 step)
+      └─ 11 (stuck, leaf)
+          #UBErrorInvalidDiscriminantsInEnumCast ~> .K
+
+
+

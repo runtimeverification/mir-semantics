@@ -37,7 +37,7 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode': ['check_assume'],
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
-    'transmute-try-from-symbolic': ['num_into_state'],
+    'transmute-try-from-symbolic-fail': ['num_into_state'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -54,6 +54,8 @@ PROVE_RS_SHOW_SPECS = [
     'niche-enum',
     'assume-cheatcode-conflict-fail',
     'raw-ptr-cast-fail',
+    'transmute-u8-to-enum-fail',
+    'transmute-try-from-symbolic-fail',
 ]
 
 

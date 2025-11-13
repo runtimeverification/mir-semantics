@@ -1518,20 +1518,47 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
 ```
 
 ```k
+  // Rough as but I just want to stop it thunking
+  syntax Value ::= "#UBErrorInvalidDiscriminantsInEnumCast"
+  rule <k>
+           #cast( Integer ( VAL , _WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) ~> _REST
+        =>
+           #UBErrorInvalidDiscriminantsInEnumCast
+      </k>
+      requires #isEnumWithoutFields(lookupTy(TY_TO))
+        andBool notBool #validDiscriminant(VAL, lookupTy(TY_TO))
+
   rule <k>
            #cast( Integer ( VAL , WIDTH , SIGNED ) , castKindTransmute , _TY_FROM , TY_TO )
         =>
-           Aggregate( variantIdx(VAL) , .List )
+           Aggregate( #findVariantIdxFromTy( VAL, lookupTy(TY_TO) ) , .List )
        ...
       </k>
       requires #isEnumWithoutFields(lookupTy(TY_TO))
         andBool #tagCompatible(WIDTH, SIGNED, lookupTy(TY_TO))
         andBool #validDiscriminant(VAL, lookupTy(TY_TO))
 
+  syntax VariantIdx ::= #findVariantIdxFromTy ( Int , TypeInfo ) [function, total]
+  //------------------------------------------------------------------------------
+  rule #findVariantIdxFromTy( VAL , typeInfoEnumType(_, _, DISCRIMINANTS, _, _) ) => #findVariantIdx( VAL, DISCRIMINANTS)
+  rule #findVariantIdxFromTy( _ , _ ) => err("NotAnEnum") [owise]
+
   syntax Bool ::= #validDiscriminant    ( Int , TypeInfo )      [function, total]
   // ----------------------------------------------------------------------------
-  rule #validDiscriminant( VAL , typeInfoEnumType(_, _, DISCRIMINANTS, _, _) ) => variantIdx(VAL) ==K #findVariantIdx(VAL, DISCRIMINANTS)
-  rule #validDiscriminant(_, _) => false [owise]
+  rule #validDiscriminant( VAL , typeInfoEnumType(_, _, DISCRIMINANTS, _, _) ) => #validDiscriminantAux( VAL , DISCRIMINANTS )
+  rule #validDiscriminant( _ , _ ) => false [owise]
+
+  syntax Bool ::= #validDiscriminantAux ( Int , Discriminants ) [function, total]
+  // ----------------------------------------------------------------------------
+  rule #validDiscriminantAux( VAL, discriminant(DISCRIMINANT) _REST ) => true
+    requires VAL ==Int DISCRIMINANT
+  rule #validDiscriminantAux( VAL, discriminant(mirInt(DISCRIMINANT)) _REST ) => true
+    requires VAL ==Int DISCRIMINANT
+  rule #validDiscriminantAux( VAL, discriminant(DISCRIMINANT) REST ) => #validDiscriminantAux( VAL, REST )
+    requires VAL =/=Int DISCRIMINANT
+  rule #validDiscriminantAux( VAL, discriminant(mirInt(DISCRIMINANT)) REST ) => #validDiscriminantAux( VAL, REST )
+    requires VAL =/=Int DISCRIMINANT
+  rule #validDiscriminantAux( _VAL, .Discriminants ) => false
 
   syntax Bool ::= #tagCompatible ( Int, Bool, TypeInfo )  [function, total]
   // ----------------------------------------------------------------------
