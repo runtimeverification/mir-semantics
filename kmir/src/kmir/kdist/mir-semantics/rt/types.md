@@ -77,14 +77,15 @@ Pointers to structs with a single zero-offset field are compatible with pointers
   syntax Bool ::= #zeroFieldOffset ( MaybeLayoutShape ) [function, total]
 
   rule #zeroFieldOffset(LAYOUT)
-    =>      #structOffsets(LAYOUT) ==K .MachineSizes
-     orBool #structOffsets(LAYOUT) ==K machineSize(mirInt(0)) .MachineSizes
-     orBool #structOffsets(LAYOUT) ==K machineSize(0) .MachineSizes
+    =>      #layoutOffsets(LAYOUT) ==K .MachineSizes
+     orBool #layoutOffsets(LAYOUT) ==K machineSize(mirInt(0)) .MachineSizes
+     orBool #layoutOffsets(LAYOUT) ==K machineSize(0) .MachineSizes
 
   // Extract field offsets from the struct layout when available (Arbitrary only).
-  syntax MachineSizes ::= #structOffsets ( MaybeLayoutShape ) [function, total]
-  rule #structOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
-  rule #structOffsets(_) => .MachineSizes [owise]
+  syntax MachineSizes ::= #layoutOffsets ( MaybeLayoutShape ) [function, total]
+  rule #layoutOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
+  rule #layoutOffsets(noLayoutShape) => .MachineSizes
+  rule #layoutOffsets(_) => .MachineSizes [owise]
 ```
 
 ## Determining types of places with projection
