@@ -1539,14 +1539,8 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
 
   syntax Bool ::= #validDiscriminantAux ( Int , Discriminants ) [function, total]
   // ----------------------------------------------------------------------------
-  rule #validDiscriminantAux( VAL, discriminant(DISCRIMINANT) _REST ) => true
-    requires VAL ==Int DISCRIMINANT
-  rule #validDiscriminantAux( VAL, discriminant(mirInt(DISCRIMINANT)) _REST ) => true
-    requires VAL ==Int DISCRIMINANT
-  rule #validDiscriminantAux( VAL, discriminant(DISCRIMINANT) REST ) => #validDiscriminantAux( VAL, REST )
-    requires VAL =/=Int DISCRIMINANT
-  rule #validDiscriminantAux( VAL, discriminant(mirInt(DISCRIMINANT)) REST ) => #validDiscriminantAux( VAL, REST )
-    requires VAL =/=Int DISCRIMINANT
+  rule #validDiscriminantAux( VAL, discriminant(mirInt(DISCRIMINANT)) REST ) => VAL ==Int DISCRIMINANT orBool #validDiscriminantAux( VAL, REST )
+  rule #validDiscriminantAux( VAL, discriminant(    DISCRIMINANT    ) REST ) => VAL ==Int DISCRIMINANT orBool #validDiscriminantAux( VAL, REST )
   rule #validDiscriminantAux( _VAL, .Discriminants ) => false
 ```
 
