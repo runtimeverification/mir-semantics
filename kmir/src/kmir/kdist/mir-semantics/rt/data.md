@@ -1511,21 +1511,21 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
   // Rough as but I just want to stop it thunking
   syntax Evaulation ::= "#UBErrorInvalidDiscriminantsInEnumCast"
   rule <k>
-           #cast( Integer ( VAL , _WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) ~> _REST
+           #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) ~> _REST
         =>
            #UBErrorInvalidDiscriminantsInEnumCast
       </k>
       requires #isEnumWithoutFields(lookupTy(TY_TO))
-        andBool notBool #validDiscriminant(VAL, lookupTy(TY_TO))
+        andBool notBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO) )
 
   rule <k>
-           #cast( Integer ( VAL , _WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) // TODO: CONVERT SIGNED
+           #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO )
         =>
-           Aggregate( #findVariantIdxFromTy( VAL, lookupTy(TY_TO) ) , .List )
+           Aggregate( #findVariantIdxFromTy( truncate(VAL, WIDTH, Unsigned), lookupTy(TY_TO) ) , .List )
        ...
       </k>
       requires #isEnumWithoutFields(lookupTy(TY_TO))
-        andBool #validDiscriminant(VAL, lookupTy(TY_TO))
+        andBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO))
 
   syntax VariantIdx ::= #findVariantIdxFromTy ( Int , TypeInfo ) [function, total]
   //------------------------------------------------------------------------------
