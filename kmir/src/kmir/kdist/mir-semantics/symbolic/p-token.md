@@ -897,54 +897,89 @@ Only the system Rent will be stored as a value directly. The `SysRent` wrapper i
   syntax Value ::= SysRent ( PRent )
 ```
 
-```{.k .symbolic}
+Note that in case of the system-global `Rest`, it is important to always return _the same_ symbolic value.
+Therefore, the value gets created in a dedicated place on first access.
+
+```k
   rule [cheatcode-get-sys-prent]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #setLocalValue(
-          DEST,
-          Aggregate(variantIdx(0), // returns a Result type
-            ListItem(
+      => #writeSysRent(DEST)
+      ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<sysvars::rent::Rent as sysvars::Sysvar>::get"
+    [priority(30), preserves-definedness]
+
+  syntax KItem ::= #writeSysRent ( Place )
+```
+
+If the system-global `SysRent` has already been created, it is simplify written to the destination (in a `Result` type).
+The `SysRent` is stored in the outermost stack frame's return slot (local _0), which is otherwise unused as there is no caller to return to.
+
+```k
+  rule <k> #writeSysRent(DEST) => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(SYSRENT))) ... </k>
+       <stack>
+          STACK:List // sys-rent is stored in the outermost stack frame's return slot (local _0)
+          ListItem(StackFrame(_, _, _, _, ListItem(typedValue(SysRent(_) #as SYSRENT, _, _)) _REST))
+       </stack>
+    requires 0 <Int size(STACK)
+    [preserves-definedness]
+
+  rule <k> #writeSysRent(DEST) => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(SYSRENT))) ... </k>
+       <stack> // singleton case
+          ListItem(StackFrame(_, _, _, _, ListItem(typedValue(SysRent(_) #as SYSRENT, _, _)) _REST))
+       </stack>
+    [preserves-definedness]
+```
+If this is the first access to the `SysRent`, it will be created (symbolically or using random values).
+
+```{.k .symbolic}
+  rule [mk-sys-prent]:
+      <k> #writeSysRent(_DEST) ~> _CONT </k>
+      <stack>
+        _:List
+        ListItem(StackFrame(_, _, _, _,
+          ListItem(newLocal(_, _) =>
+            typedValue(
               SysRent(
                 PRent(
                   U64(?SYS_LMP_PER_BYTEYEAR),
                   F64(2.0),                   // fixed exempt_threshold 2.0 (default)
                   U8(?SYS_BURN_PCT)
                 )
-              )
+              ),
+              ty(0),
+              mutabilityNot
             )
-          )
-        )
-      ~> #execBlockIdx(TARGET)
-    ...
-    </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<sysvars::rent::Rent as sysvars::Sysvar>::get"
+          ) _:List
+        ))
+      </stack>
     ensures 0 <=Int ?SYS_LMP_PER_BYTEYEAR andBool ?SYS_LMP_PER_BYTEYEAR <Int 1 <<Int 32 // limited arbitrarily to avoid overflows on fixed concrete values
     andBool 0 <=Int ?SYS_BURN_PCT andBool ?SYS_BURN_PCT <=Int 100                       // limited so that it is a true percentage
-    [priority(30), preserves-definedness]
+    [preserves-definedness]
 ```
 
 ```{.k .concrete}
-  rule [cheatcode-get-sys-prent]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-    => #setLocalValue(
-          DEST,
-          Aggregate(variantIdx(0), // returns a Result type
-            ListItem(
+  rule [mk-sys-prent]:
+      <k> #writeSysRent(_DEST) ~> _CONT </k>
+      <stack>
+        _:List
+        ListItem(StackFrame(_, _, _, _,
+          ListItem(newLocal(_, _) =>
+            typedValue(
               SysRent(
                 PRent(
                   U64(#randU64()),              // sys_lmp_per_byteyear
                   F64(#randExemptThreshold()),  // sys_exempt_threshold
                   U8(#randU8())                 // sys_burn_pct
                 )
-              )
+              ),
+              ty(0),
+              mutabilityNot
             )
-          )
-        )
-      ~> #execBlockIdx(TARGET)
-    ...
-    </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "<sysvars::rent::Rent as sysvars::Sysvar>::get"
-    [priority(30)]
+          ) _:List
+        ))
+      </stack>
 ```
 
 ### Access to the `Rent` struct
