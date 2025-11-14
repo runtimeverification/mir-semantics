@@ -8,6 +8,8 @@ requires "value.md"
 
 module RT-TYPES
   imports BOOL
+  imports INT
+  imports STRING
   imports MAP
   imports K-EQUAL
 
@@ -144,6 +146,21 @@ To make this function total, an optional `MaybeTy` is used.
   rule pointeeTy(     _             ) => TyUnknown [owise]
   rule elemTy(typeInfoArrayType(TY, _)) => TY
   rule elemTy(     _                  ) => TyUnknown [owise]
+```
+
+## Interior Mutability
+
+Rust models interior mutability with `UnsafeCell`. When the runtime determines whether a projected write can observe mutation through a shared reference, it relies on `#allowsInteriorMutation` to detect that marker inside Stable MIR type metadata.
+
+```k
+  syntax Bool ::= #allowsInteriorMutation(TypeInfo) [function, total]
+  // ------------------------------------------------------
+  // Stable MIR serializes struct names as either `mirString` or a plain `String`.
+  rule #allowsInteriorMutation(typeInfoStructType(mirString(NAME), _, _, _))
+    => findString(NAME, "UnsafeCell", 0) =/=Int -1
+  rule #allowsInteriorMutation(typeInfoStructType(NAME:String, _, _, _))
+    => findString(NAME, "UnsafeCell", 0) =/=Int -1
+  rule #allowsInteriorMutation(_) => false [owise]
 ```
 
 ## Static and Dynamic Metadata for Types
