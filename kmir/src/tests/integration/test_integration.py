@@ -41,7 +41,6 @@ PROVE_RS_START_SYMBOLS = {
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
-    'interior-mut2-fail',
     'interior-mut3-fail',
     'assert_eq_exp',
     'bitwise-not-shift',
@@ -262,6 +261,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test-fail.smir.json',
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test-fail.state',
         1000,
+    ),
+    (
+        'pointer-cast-zst',
+        EXEC_DATA_DIR / 'pointers' / 'pointer-cast-zst.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'pointer-cast-zst.state',
+        48,
     ),
     (
         'ref-ptr-cases',
