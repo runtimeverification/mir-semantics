@@ -1506,6 +1506,7 @@ Casting a byte array/slice to an integer reinterprets the bytes in little-endian
   rule #littleEndianFromBytes(.List) => 0
   rule #littleEndianFromBytes(ListItem(Integer(BYTE, 8, false)) REST)
     => BYTE +Int 256 *Int #littleEndianFromBytes(REST)
+    [preserves-definedness]
 ```
 
 Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
