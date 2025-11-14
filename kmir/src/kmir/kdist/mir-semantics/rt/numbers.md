@@ -137,13 +137,25 @@ This truncation function is instrumental in the implementation of Integer arithm
     [preserves-definedness]
 
   // converting to unsigned int types (simple bitmask)
-  rule #intAsType(VAL, _, UINTTYPE:UintTy)
+  rule #intAsType(VAL, WIDTH, UINTTYPE:UintTy)
       =>
         Integer(
           truncate(VAL, #bitWidth(UINTTYPE), Unsigned),
           #bitWidth(UINTTYPE),
           false
         )
+    requires #bitWidth(UINTTYPE) <Int WIDTH
+    [preserves-definedness]
+
+  // widening or same width: nothing to do
+  rule #intAsType(VAL, WIDTH, UINTTYPE:UintTy)
+      =>
+        Integer(
+          VAL,
+          #bitWidth(UINTTYPE),
+          false
+        )
+    requires WIDTH <=Int #bitWidth(UINTTYPE)
     [preserves-definedness]
 ```
 
