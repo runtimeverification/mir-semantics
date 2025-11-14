@@ -1503,23 +1503,13 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
 
 
 ```k
-  rule <k> #discriminant(
-              thunk(#cast (Integer(DATA, _, false), castKindTransmute, _, TY)),
-              TY
-            ) => Integer(DATA, 0, false) // HACK: bit width 0 means "flexible"
-          ...
-        </k>
-    requires #isEnumWithoutFields(lookupTy(TY))
-
   syntax Bool ::= #isEnumWithoutFields ( TypeInfo ) [function, total]
   // ----------------------------------------------------------------
   rule #isEnumWithoutFields(typeInfoEnumType(_, _, _, FIELDSS, _)) => #noFields(FIELDSS)
   rule #isEnumWithoutFields(_OTHER) => false [owise]
-```
 
-```k
   // Rough as but I just want to stop it thunking
-  syntax Value ::= "#UBErrorInvalidDiscriminantsInEnumCast"
+  syntax Evaulation ::= "#UBErrorInvalidDiscriminantsInEnumCast"
   rule <k>
            #cast( Integer ( VAL , _WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) ~> _REST
         =>
@@ -1529,13 +1519,12 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
         andBool notBool #validDiscriminant(VAL, lookupTy(TY_TO))
 
   rule <k>
-           #cast( Integer ( VAL , WIDTH , SIGNED ) , castKindTransmute , _TY_FROM , TY_TO )
+           #cast( Integer ( VAL , _WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) // TODO: CONVERT SIGNED
         =>
            Aggregate( #findVariantIdxFromTy( VAL, lookupTy(TY_TO) ) , .List )
        ...
       </k>
       requires #isEnumWithoutFields(lookupTy(TY_TO))
-        andBool #tagCompatible(WIDTH, SIGNED, lookupTy(TY_TO))
         andBool #validDiscriminant(VAL, lookupTy(TY_TO))
 
   syntax VariantIdx ::= #findVariantIdxFromTy ( Int , TypeInfo ) [function, total]
@@ -1559,41 +1548,6 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
   rule #validDiscriminantAux( VAL, discriminant(mirInt(DISCRIMINANT)) REST ) => #validDiscriminantAux( VAL, REST )
     requires VAL =/=Int DISCRIMINANT
   rule #validDiscriminantAux( _VAL, .Discriminants ) => false
-
-  syntax Bool ::= #tagCompatible ( Int, Bool, TypeInfo )  [function, total]
-  // ----------------------------------------------------------------------
-  rule #tagCompatible(
-    WIDTH,
-    SIGNED,
-    typeInfoEnumType(...
-               name: _
-             , adtDef: _
-             , discriminants: _
-             , fields: _
-             , layout:
-                someLayoutShape(layoutShape(...
-                    fields: _
-                  , variants:
-                      variantsShapeMultiple(
-                        mk(...
-                            tag: scalarInitialized(
-                              mk(...
-                                  value: primitiveInt(mk(... length: TAG_WIDTH, signed: TAG_SIGNED))
-                                , validRange: _
-                              )
-                            )
-                          , tagEncoding: _
-                          , tagField: _
-                          , variants: _
-                          )
-                        )
-                  , abi: _
-                  , abiAlign: _
-                  , size: _
-                ))
-             )
-  ) => WIDTH ==Int #byteLength(TAG_WIDTH) andBool SIGNED ==Bool TAG_SIGNED
-  rule #tagCompatible( _ , _ , _ ) => false [owise]
 ```
 
 
