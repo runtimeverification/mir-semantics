@@ -1497,10 +1497,17 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
   rule #staticArrayLenBits(_OTHER) => 0 [owise]
 ```
 
-Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
-(see `#discriminant` and `rvalueDiscriminant`).
-If none of the `enum` variants has any fields, the `Transmute` of a number to the `enum` data is necessarily just the discriminant itself., and can be returned as the integer value after adjusting to the byte length of the discriminant:
+A transmutation from an integer to an enum is wellformed if:
+- The bit width of the incoming integer is the same as the discriminant type of the enum
+    (e.g. `u8 -> i8` fine, `u8 -> u16` not fine) - this is guaranteed by the compiler;
+- The incoming integer has a bit pattern that matches a discriminant of the enum
+    (e.g. `255_u8` and `-1_i8` fine iff `0b1111_1111` is a discriminant of the enum);
 
+Note that discriminants are stored as `u128` in the type data even if they are signed
+or unsigned at the source level. This means that our approach to soundly transmute an
+integer into a enum is to treat the incoming integer as unsigned (converting if signed),
+and check if the value is in the discriminants. If yes, find the corresponding variant
+index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
 
 ```k
   syntax Bool ::= #isEnumWithoutFields ( TypeInfo ) [function, total]
@@ -1508,7 +1515,7 @@ If none of the `enum` variants has any fields, the `Transmute` of a number to th
   rule #isEnumWithoutFields(typeInfoEnumType(_, _, _, FIELDSS, _)) => #noFields(FIELDSS)
   rule #isEnumWithoutFields(_OTHER) => false [owise]
 
-  // Rough as but I just want to stop it thunking
+  // TODO: Connect this with MirError
   syntax Evaulation ::= "#UBErrorInvalidDiscriminantsInEnumCast"
   rule <k>
            #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) ~> _REST
