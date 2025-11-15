@@ -52,6 +52,8 @@ PROVE_RS_SHOW_SPECS = [
     'niche-enum',
     'assume-cheatcode-conflict-fail',
     'raw-ptr-cast-fail',
+    'transmute-u8-to-enum-fail',
+    'transmute-u8-to-enum-changed-discriminant-signed-fail',
 ]
 
 
