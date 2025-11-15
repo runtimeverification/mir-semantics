@@ -3,10 +3,10 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (198 steps)
+│  (866 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 11 ) , thunk ( #cast ( PtrLocal ( 3 , place ( ..
-    span: 91
+    #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
+    span: 32
 
 
 ┌─ 2 (root, leaf, target, terminal)

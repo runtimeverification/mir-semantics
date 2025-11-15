@@ -1265,14 +1265,77 @@ the `Value` sort.
 Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
 which have the same representation `Value::Range`.
 
+When the cast crosses transparent wrappers (newtypes that just forward field `0` e.g. `struct Wrapper<T>(T)`), the pointer's
+`Place` must be realigned. `#alignTransparentPlace` rewrites the projection list until the source and target
+expose the same inner value:
+- if the source unwraps more than the target, append an explicit `field(0)` so the target still sees that field;
+- if the target unwraps more, strip any redundant tail projections with `#popTransparentTailTo`, leaving the
+  canonical prefix shared by both sides.
+
 ```k
   rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
-            PtrLocal(OFFSET, PLACE, MUT, #convertMetadata(META, lookupTy(TY_TARGET)))
+            PtrLocal(
+              OFFSET,
+              #alignTransparentPlace(
+                PLACE,
+                #lookupMaybeTy(pointeeTy(lookupTy(TY_SOURCE))),
+                #lookupMaybeTy(pointeeTy(lookupTy(TY_TARGET)))
+              ),
+              MUT,
+              #convertMetadata(META, lookupTy(TY_TARGET))
+            )
           ...
         </k>
       requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
       [preserves-definedness] // valid map lookups checked
+
+  syntax Place ::= #alignTransparentPlace ( Place , TypeInfo , TypeInfo ) [function, total]
+  syntax ProjectionElems ::= #popTransparentTailTo ( ProjectionElems , TypeInfo ) [function, total]
+
+  rule #alignTransparentPlace(place(LOCAL, PROJS), typeInfoStructType(_, _, FIELD_TY .Tys, LAYOUT) #as SOURCE, TARGET)
+    => #alignTransparentPlace(
+         place(
+           LOCAL,
+           appendP(PROJS, projectionElemField(fieldIdx(0), FIELD_TY) .ProjectionElems)
+         ),
+         lookupTy(FIELD_TY),
+         TARGET
+       )
+    requires #transparentDepth(SOURCE) >Int #transparentDepth(TARGET)
+     andBool #zeroFieldOffset(LAYOUT)
+
+  rule #alignTransparentPlace(
+         place(LOCAL, PROJS),
+         SOURCE,
+         typeInfoStructType(_, _, FIELD_TY .Tys, LAYOUT) #as TARGET
+       )
+    => #alignTransparentPlace(
+         place(LOCAL, #popTransparentTailTo(PROJS, lookupTy(FIELD_TY))),
+         SOURCE,
+         lookupTy(FIELD_TY)
+       )
+    requires #transparentDepth(SOURCE) <Int #transparentDepth(TARGET)
+     andBool #zeroFieldOffset(LAYOUT)
+     andBool PROJS =/=K #popTransparentTailTo(PROJS, lookupTy(FIELD_TY))
+
+  rule #alignTransparentPlace(PLACE, _, _) => PLACE [owise]
+
+  rule #popTransparentTailTo(
+         projectionElemField(fieldIdx(0), FIELD_TY) .ProjectionElems,
+         TARGET
+       )
+    => .ProjectionElems
+    requires lookupTy(FIELD_TY) ==K TARGET
+
+  rule #popTransparentTailTo(
+         X:ProjectionElem REST:ProjectionElems,
+         TARGET
+       )
+    => X #popTransparentTailTo(REST, TARGET)
+    requires REST =/=K .ProjectionElems
+
+  rule #popTransparentTailTo(PROJS, _) => PROJS [owise]
 
   syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
   // -------------------------------------------------------------------------------------
