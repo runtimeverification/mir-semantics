@@ -62,6 +62,24 @@ Definedness of the list and list elements is also guaranteed.
   rule #Ceil(#mapOffset(L, _)) => #Ceil(L) [simplification]
 ```
 
+## Simplifications for `enum` Discriminants and Variant Indexes
+
+For symbolic enum values, the variant index remains unevaluated but the original (symbolic) discriminant can be restored:
+
+```k
+  rule #lookupDiscriminant(typeInfoEnumType(_, _, _, _, _), #findVariantIdxAux(DISCR, DISCRS, _IDX)) => DISCR
+    requires isOneOf(DISCR, DISCRS)
+    [simplification, preserves-definedness, symbolic(DISCR)]
+
+  syntax Bool ::= isOneOf ( Int , Discriminants ) [function, total]
+  // --------------------------------------------------------------
+  rule isOneOf( _,                       .Discriminants                      ) => false
+  rule isOneOf( I, discriminant(D)                     .Discriminants        ) => I ==Int D
+  rule isOneOf( I, discriminant(mirInt(D))             .Discriminants        ) => I ==Int D
+  rule isOneOf( I, discriminant(D)         ((discriminant(_) _MORE) #as REST)) => I ==Int D orBool isOneOf(I, REST)
+  rule isOneOf( I, discriminant(mirInt(D)) ((discriminant(_) _MORE) #as REST)) => I ==Int D orBool isOneOf(I, REST)
+```
+
 ## Simplifications for Int
 
 These are trivial simplifications driven by syntactic equality, which should be present upstream.
