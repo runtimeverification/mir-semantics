@@ -4,17 +4,17 @@ use std::rc::Rc;
 
 fn main() {
     let base_account = Account::default();
-    let acc = AccountInfo::from_account(base_account.clone());
-    let mint = acc.clone();
-    let rent = acc.clone();
-    test_spltoken_domain_data(&acc, &mint, &rent);
+    let mut data = [0u8; Account::LEN];
+    let acc = AccountInfo::from_account(base_account.clone(), &mut data[..]);
+    // Mirror the SPL runtime harness: same account for all three params.
+    test_spltoken_domain_data(&acc, &acc, &acc);
 }
 
 #[derive(Clone)]
-struct AccountInfo {
+struct AccountInfo<'a> {
     key: Pubkey,
     lamports: Rc<RefCell<u64>>,
-    data: Rc<RefCell<Vec<u8>>>,
+    data: Rc<RefCell<&'a mut [u8]>>,
     owner: Pubkey,
     rent_epoch: u64,
     is_signer: bool,
@@ -22,10 +22,9 @@ struct AccountInfo {
     executable: bool,
 }
 
-impl AccountInfo {
-    fn from_account(account: Account) -> Self {
-        let mut data = vec![0u8; Account::LEN];
-        Account::pack(account, &mut data[..]).unwrap();
+impl<'a> AccountInfo<'a> {
+    fn from_account(account: Account, data: &'a mut [u8]) -> Self {
+        Account::pack(account, data).unwrap();
         Self {
             key: Pubkey::new([0; 32]),
             lamports: Rc::new(RefCell::new(0)),
@@ -39,7 +38,7 @@ impl AccountInfo {
     }
 }
 
-fn test_spltoken_domain_data(acc: &AccountInfo, _mint: &AccountInfo, _rent: &AccountInfo) {
+fn test_spltoken_domain_data(acc: &AccountInfo<'_>, _mint: &AccountInfo<'_>, _rent: &AccountInfo<'_>) {
     cheatcode_is_spl_account(acc);
 
     let mut account = get_account(acc);
@@ -53,12 +52,12 @@ fn test_spltoken_domain_data(acc: &AccountInfo, _mint: &AccountInfo, _rent: &Acc
     assert!(unpacked.is_native());
 }
 
-fn get_account(acc: &AccountInfo) -> Account {
+fn get_account(acc: &AccountInfo<'_>) -> Account {
     Account::unpack_unchecked(&acc.data.borrow()).unwrap()
 }
 
 #[inline(never)]
-fn cheatcode_is_spl_account(_: &AccountInfo) {}
+fn cheatcode_is_spl_account(_: &AccountInfo<'_>) {}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Pubkey([u8; 32]);
