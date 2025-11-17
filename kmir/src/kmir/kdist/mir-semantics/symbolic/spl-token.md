@@ -12,6 +12,20 @@ contains the real SPL `Account` struct layout described in `info.md`
 `delegated_amount`, `COption<Pubkey>`).  No Pinocchio-specific payloads are
 embedded.
 
+## Data Access Overview
+
+```
+cheatcode_is_spl_account(acc)
+Account::unpack_unchecked(&acc.data.borrow())
+Account::pack(a, &mut acc.data.borrow_mut())
+  -> #isSPLRcRefCellDerefFunc                        (rule [spl-rc-deref])
+  -> #isSPLBorrowFunc                                (rule [spl-borrow-data])
+  -> #isSPLRefDerefFunc                              (rule [spl-ref-deref])
+  -> Borrowed buffer projections
+  -> #isSPLAccountUnpackFunc / #isSPLAccountPackFunc (rule [spl-account-unpack])
+```
+
+
 ```k
 module KMIR-SPL-TOKEN
   imports KMIR-P-TOKEN
@@ -46,48 +60,62 @@ module KMIR-SPL-TOKEN
     requires REST ==K .List
   rule #isSplCOptionU64(_) => false [owise]
 
-  syntax Bool ::= #isSPLBorrowFunc        ( String ) [function, total]
-                | #isSPLBorrowMutFunc     ( String ) [function, total]
-                | #isSPLVecSliceFunc      ( String ) [function, total]
-                | #isSPLRefDerefFunc      ( String ) [function, total]
-                | #isSPLAccountUnpackFunc ( String ) [function, total]
-                | #isSPLAccountPackFunc   ( String ) [function, total]
+  syntax Bool ::= #isSPLRcRefCellDerefFunc ( String ) [function, total]
+  // mock
+  rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<std::vec::Vec<u8>>> as std::ops::Deref>::deref") => true
+  // real
+  rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<&mut [u8]>> as std::ops::Deref>::deref") => true
+  rule #isSPLRcRefCellDerefFunc(_) => false [owise]
 
+  syntax Bool ::= #isSPLBorrowFunc ( String ) [function, total]
+  // mock
   rule #isSPLBorrowFunc("std::cell::RefCell::<std::vec::Vec<u8>>::borrow") => true
   rule #isSPLBorrowFunc("std::cell::RefCell::<std::vec::Vec<u8>>::borrow_mut") => true
+  // real
   rule #isSPLBorrowFunc("std::cell::RefCell::<&mut [u8]>::borrow") => true
   rule #isSPLBorrowFunc("std::cell::RefCell::<&mut [u8]>::borrow_mut") => true
   rule #isSPLBorrowFunc(_) => false [owise]
 
+  syntax Bool ::= #isSPLBorrowMutFunc ( String ) [function, total]
+  // mock
   rule #isSPLBorrowMutFunc("std::cell::RefCell::<std::vec::Vec<u8>>::borrow_mut") => true
+  // real
   rule #isSPLBorrowMutFunc("std::cell::RefCell::<&mut [u8]>::borrow_mut") => true
   rule #isSPLBorrowMutFunc(_) => false [owise]
 
-  rule #isSPLVecSliceFunc("std::vec::Vec::<u8>::as_slice") => true
-  rule #isSPLVecSliceFunc("std::vec::Vec::<u8>::as_mut_slice") => true
-  rule #isSPLVecSliceFunc("<std::vec::Vec<u8> as std::ops::Deref>::deref") => true
-  rule #isSPLVecSliceFunc("<std::vec::Vec<u8> as std::ops::DerefMut>::deref_mut") => true
-  rule #isSPLVecSliceFunc("<std::vec::Vec<u8> as std::ops::IndexMut<std::ops::RangeFull>>::index_mut") => true
-  rule #isSPLVecSliceFunc(_) => false [owise]
+//                 | #isSPLVecSliceFunc      ( String ) [function, total]
+
+//   rule #isSPLVecSliceFunc("std::vec::Vec::<u8>::as_slice") => true
+//   rule #isSPLVecSliceFunc("std::vec::Vec::<u8>::as_mut_slice") => true
+//   rule #isSPLVecSliceFunc("<std::vec::Vec<u8> as std::ops::Deref>::deref") => true
+//   rule #isSPLVecSliceFunc("<std::vec::Vec<u8> as std::ops::DerefMut>::deref_mut") => true
+//   rule #isSPLVecSliceFunc("<std::vec::Vec<u8> as std::ops::IndexMut<std::ops::RangeFull>>::index_mut") => true
+//   rule #isSPLVecSliceFunc(_) => false [owise]
 
 
+  syntax Bool ::= #isSPLRefDerefFunc      ( String ) [function, total]
+  // mock
   rule #isSPLRefDerefFunc("<std::cell::Ref<'_, std::vec::Vec<u8>> as std::ops::Deref>::deref") => true
-  rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::Deref>::deref") => true
-  rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut") => true
+  // real
   rule #isSPLRefDerefFunc("<std::cell::Ref<'_, &mut [u8]> as std::ops::Deref>::deref") => true
-  rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut [u8]> as std::ops::Deref>::deref") => true
   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut [u8]> as std::ops::DerefMut>::deref_mut") => true
-  rule #isSPLRefDerefFunc("<core::cell::RefMut<'_, alloc::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut") => true
-  rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, alloc::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut") => true
-  rule #isSPLRefDerefFunc("<core::cell::RefMut<'_, std::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut") => true
   rule #isSPLRefDerefFunc(_) => false [owise]
+//   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::Deref>::deref") => true
+//   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, std::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut") => true
+//   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut [u8]> as std::ops::Deref>::deref") => true
+//   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut [u8]> as std::ops::DerefMut>::deref_mut") => true
+//   rule #isSPLRefDerefFunc("<core::cell::RefMut<'_, alloc::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut") => true
+//   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, alloc::vec::Vec<u8>> as std::ops::DerefMut>::deref_mut") => true
+//   rule #isSPLRefDerefFunc("<core::cell::RefMut<'_, std::vec::Vec<u8>> as core::ops::DerefMut>::deref_mut") => true
 
-  rule #isSPLAccountUnpackFunc("spl_token::state::Account::unpack_unchecked") => true
-  rule #isSPLAccountUnpackFunc("spl_token::state::Account::unpack") => true
+  syntax Bool ::= #isSPLAccountUnpackFunc ( String ) [function, total]
+  rule #isSPLAccountUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack_unchecked") => true
+  rule #isSPLAccountUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack") => true
   rule #isSPLAccountUnpackFunc("Account::unpack_unchecked") => true
   rule #isSPLAccountUnpackFunc(_) => false [owise]
 
-  rule #isSPLAccountPackFunc("spl_token::state::Account::pack") => true
+   syntax Bool ::= #isSPLAccountPackFunc   ( String ) [function, total]
+  rule #isSPLAccountPackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::pack") => true
   rule #isSPLAccountPackFunc("Account::pack") => true
   rule #isSPLAccountPackFunc(_) => false [owise]
 ```
@@ -168,10 +196,7 @@ expose the wrapped payload directly.
       => #finishSPLRcDeref(OP, DEST, TARGET)
     ...
     </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC)))
-              ==String "<std::rc::Rc<std::cell::RefCell<std::vec::Vec<u8>>> as std::ops::Deref>::deref"
-      orBool #functionName(lookupFunction(#tyOfCall(FUNC)))
-              ==String "<std::rc::Rc<std::cell::RefCell<&mut [u8]>> as std::ops::Deref>::deref"
+    requires #isSPLRcRefCellDerefFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #finishSPLRcDeref ( Evaluation , Place , MaybeBasicBlockIdx ) [seqstrict(1)]
@@ -215,9 +240,11 @@ expose the wrapped payload directly.
      andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
      andBool 0 <=Int I
-  
-  rule <k> SPLRefCell(PLACE, VALUE) ~> #finishResolvedSPLRc(DEST, TARGET)
-        => #setLocalValue(DEST, SPLRefCell(PLACE, VALUE)) ~> #continueAt(TARGET)
+
+  // If the deref doesn't return `SPLRefCell`, it will stuck there;
+  // TODO: fallback to ordinary call when it's not `SPLRefCell`
+  rule <k> SPLRefCell(PLACE, VAL) ~> #finishResolvedSPLRc(DEST, TARGET)
+        => #setLocalValue(DEST, SPLRefCell(PLACE, VAL)) ~> #continueAt(TARGET)
        ...
       </k>
 ```
@@ -225,7 +252,88 @@ expose the wrapped payload directly.
 ## Borrowed buffer projections
 
 ```k
+  // Step 1
+  syntax Context ::= CtxSPLRefCell ( Place )
+  rule <k> #traverseProjection(
+             DEST,
+             SPLRefCell(PLACE, VAL),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             VAL,
+             PROJS,
+             CtxSPLRefCell(PLACE) CTXTS
+           )
+        ...
+       </k>
+    [priority(30)]
+  rule #buildUpdate(VAL, CtxSPLRefCell(PLACE) CTXS) => #buildUpdate(SPLRefCell(PLACE, VAL), CTXS)
+  rule #projectionsFor(CtxSPLRefCell(_) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
+
+  // Step 2 
+  syntax Context ::= CtxSPLDataBorrow ( Place )
+  rule <k> #traverseProjection(
+             DEST,
+             SPLDataBorrow(PLACE, VAL),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             VAL,
+             PROJS,
+             CtxSPLDataBorrow(PLACE) CTXTS
+           )
+        ...
+       </k>
+    [priority(30)]
+  rule #buildUpdate(VAL, CtxSPLDataBorrow(PLACE) CTXS) => #buildUpdate(SPLDataBorrow(PLACE, SPLDataBuffer(VAL)), CTXS)
+  rule #projectionsFor(CtxSPLDataBorrow(_) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
+
+  syntax Context ::= CtxSPLDataBorrowMut ( Place )
+  rule <k> #traverseProjection(
+             DEST,
+             SPLDataBorrowMut(PLACE, VAL),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             VAL,
+             PROJS,
+             CtxSPLDataBorrowMut(PLACE) CTXTS
+           )
+        ...
+       </k>
+    [priority(30)]
+  rule #buildUpdate(VAL, CtxSPLDataBorrowMut(PLACE) CTXS) => #buildUpdate(SPLDataBorrowMut(PLACE, SPLDataBuffer(VAL)), CTXS)
+  rule #projectionsFor(CtxSPLDataBorrowMut(_) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
+
+  // Step 3
   syntax Context ::= "CtxSPLDataBuffer"
+  rule <k> #traverseProjection(
+             DEST,
+             SPLDataBuffer(VALUE),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             VALUE,
+             PROJS,
+             CtxSPLDataBuffer CTXTS
+           )
+        ...
+       </k>
+    [priority(30)]
+  rule #buildUpdate(VAL, CtxSPLDataBuffer CTXS) => #buildUpdate(SPLDataBuffer(VAL), CTXS)
+  rule #projectionsFor(CtxSPLDataBuffer CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
+```
+
+``` 
+                   | CtxSPLRefCell       ( Place )
                    | CtxSPLDataBorrow    ( Place )
                    | CtxSPLDataBorrowMut ( Place )
 
@@ -279,6 +387,7 @@ expose the wrapped payload directly.
     requires PROJS =/=K .ProjectionElems
     [priority(30)]
 
+  // real
   rule <k> #traverseProjection(
              DEST,
              SPLDataBorrowMut(PLACE, SPLDataBuffer(VALUE)),
@@ -312,6 +421,8 @@ expose the wrapped payload directly.
     requires PROJS =/=K .ProjectionElems
     [priority(30)]
 
+  rule #buildUpdate(VAL, CtxSPLRefCell(PLACE) CTXS)
+    => #buildUpdate(SPLRefCell(PLACE, VAL), CTXS)
   rule #buildUpdate(VAL, CtxSPLDataBuffer CTXS)
     => #buildUpdate(SPLDataBuffer(VAL), CTXS)
   rule #buildUpdate(VAL, CtxSPLDataBorrow(PLACE) CTXS)
@@ -319,6 +430,7 @@ expose the wrapped payload directly.
   rule #buildUpdate(VAL, CtxSPLDataBorrowMut(PLACE) CTXS)
     => #buildUpdate(SPLDataBorrowMut(PLACE, SPLDataBuffer(VAL)), CTXS)
 
+  rule #projectionsFor(CtxSPLRefCell(_) CTXS, PROJS) => #projectionsFor(CTXS, PROJS)
   rule #projectionsFor(CtxSPLDataBuffer CTXS, PROJS) => #projectionsFor(CTXS, PROJS)
   rule #projectionsFor(CtxSPLDataBorrow(_) CTXS, PROJS) => #projectionsFor(CTXS, PROJS)
   rule #projectionsFor(CtxSPLDataBorrowMut(_) CTXS, PROJS) => #projectionsFor(CTXS, PROJS)
@@ -344,19 +456,19 @@ expose the wrapped payload directly.
   syntax KItem ::= #mkSPLBorrowData ( Place , Evaluation , Place , Bool ) [seqstrict(2)]
 
   rule <k> #mkSPLBorrowData(DEST, SPLRefCell(PLACE, BUF), _SRC, false)
-        => #setLocalValue(DEST, SPLDataBorrow(PLACE, BUF))
+        => #setLocalValue(DEST, SPLRefCell(PLACE, SPLDataBorrow(PLACE, BUF)))
         ...
        </k>
 
   rule <k> #mkSPLBorrowData(DEST, SPLRefCell(PLACE, BUF), _SRC, true)
-        => #setLocalValue(DEST, SPLDataBorrowMut(PLACE, BUF))
+        => #setLocalValue(DEST, SPLRefCell(PLACE, SPLDataBorrowMut(PLACE, BUF)))
         ...
        </k>
 ```
 
 ## Vec::<u8> helpers
 
-```k
+``` 
   rule [spl-vec-as-slice-copy]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand _OPS:Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #setLocalValue(DEST, OP) ~> #execBlockIdx(TARGET)
@@ -421,11 +533,10 @@ expose the wrapped payload directly.
 ```
 
 ## Account::unpack / Account::pack
-
 ```k
   rule [spl-account-unpack]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(ARG) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLAccountUnpack(DEST, operandCopy(ARG))
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLAccountUnpack(DEST, OP)
          ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -434,7 +545,7 @@ expose the wrapped payload directly.
 
   syntax KItem ::= #mkSPLAccountUnpack ( Place , Evaluation ) [seqstrict(2)]
 
-  rule <k> #mkSPLAccountUnpack(DEST, Reference(0, place(local(I), .ProjectionElems), _, _))
+  rule <k> #mkSPLAccountUnpack(DEST, Reference(0, place(local(I), projectionElemDeref .ProjectionElems), _, _))
         => #mkSPLAccountUnpack(DEST, getValue(LOCALS, I))
        ...
       </k>
@@ -443,7 +554,7 @@ expose the wrapped payload directly.
      andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
 
-  rule <k> #mkSPLAccountUnpack(DEST, Reference(OFFSET, place(local(I), .ProjectionElems), _, _))
+  rule <k> #mkSPLAccountUnpack(DEST, Reference(OFFSET, place(local(I), projectionElemDeref .ProjectionElems), _, _))
         => #mkSPLAccountUnpack(
              DEST,
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET)
@@ -457,15 +568,17 @@ expose the wrapped payload directly.
      andBool 0 <=Int I
 
   rule <k> #mkSPLAccountUnpack(DEST, SPLDataBorrow(_, SPLDataBuffer(ACCOUNT)))
-        => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(ACCOUNT)))
-        ...
-       </k>
+      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(ACCOUNT)))
+      ...
+      </k>
 
   rule <k> #mkSPLAccountUnpack(DEST, SPLDataBorrowMut(_, SPLDataBuffer(ACCOUNT)))
         => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(ACCOUNT)))
         ...
        </k>
+```
 
+```k
   rule [spl-account-pack]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC_OP:Operand BUF_OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkSPLAccountPack(SRC_OP, BUF_OP, DEST)
