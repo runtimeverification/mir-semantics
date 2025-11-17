@@ -1465,12 +1465,12 @@ Transmuting a pointer to an integer discards provenance and reinterprets the poi
   rule #ptrOffsetBytes(PTR_OFFSET, TY:Ty)
     => PTR_OFFSET *Int #elemSize(#lookupMaybeTy(elemTy(lookupTy(TY))))
     requires PTR_OFFSET =/=Int 0
-     andBool #isUnsizedArrayType(lookupTy(TY))
+     andBool #isArrayType(lookupTy(TY))
   rule #ptrOffsetBytes(_, _) => -1 [owise] // should not happen
 
-  syntax Bool ::= #isUnsizedArrayType ( TypeInfo ) [function, total]
-  rule #isUnsizedArrayType(typeInfoArrayType(_, noTyConst)) => true
-  rule #isUnsizedArrayType(_) => false [owise]
+  syntax Bool ::= #isArrayType ( TypeInfo ) [function, total]
+  rule #isArrayType(typeInfoArrayType(_, _)) => true
+  rule #isArrayType(_) => false [owise]
 ```
 
 ```k
