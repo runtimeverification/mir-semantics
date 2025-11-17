@@ -10,7 +10,6 @@ requires "./types.md"
 requires "./value.md"
 requires "./numbers.md"
 requires "./decoding.md"
-requires "./pointer-int.md" // pointer/int encoding helpers live separately for readability
 
 module RT-DATA
   imports INT
@@ -28,7 +27,6 @@ module RT-DATA
   imports RT-NUMBERS
   imports RT-DECODING
   imports RT-TYPES
-  imports RT-POINTER-INT // shared pointer/int encoding + decoding helpers
   imports KMIR-CONFIGURATION
 
 ```
@@ -317,6 +315,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | CtxIndex( List , Int ) // array index constant or has been read before
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
+
+  syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
 
   syntax Contexts ::= List{Context, ""}
 
@@ -1456,6 +1456,45 @@ What can be supported without additional layout consideration is trivial casts b
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
 
+Transmuting a pointer to an integer discards provenance and reinterprets the pointer’s offset as a value of the target integer type.
+
+```k
+  syntax Int ::= #ptrOffsetBytes ( Int , MaybeTy ) [function, total]
+  rule #ptrOffsetBytes(PTR_OFFSET, _TY:Ty) => 0
+    requires PTR_OFFSET ==Int 0
+  rule #ptrOffsetBytes(PTR_OFFSET, TY:Ty)
+    => PTR_OFFSET *Int #elemSize(#lookupMaybeTy(elemTy(lookupTy(TY))))
+    requires PTR_OFFSET =/=Int 0
+     andBool #isUnsizedArrayType(lookupTy(TY))
+  rule #ptrOffsetBytes(_, _) => -1 [owise] // should not happen
+
+  syntax Bool ::= #isUnsizedArrayType ( TypeInfo ) [function, total]
+  rule #isUnsizedArrayType(typeInfoArrayType(_, noTyConst)) => true
+  rule #isUnsizedArrayType(_) => false [owise]
+```
+
+```k
+  rule <k> #cast(
+              PtrLocal(_, _, _, metadata(_, PTR_OFFSET, _)),
+              castKindTransmute,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              #ptrOffsetBytes(
+                PTR_OFFSET,
+                pointeeTy(#lookupMaybeTy(TY_SOURCE))
+              ),
+              #bitWidth(#numTypeOf(lookupTy(TY_TARGET))),
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool 0 <=Int #ptrOffsetBytes(PTR_OFFSET,pointeeTy(#lookupMaybeTy(TY_SOURCE)))
+```
+
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
 The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
 
@@ -1558,56 +1597,6 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     => readTyConstInt(KIND) *Int 8
     [preserves-definedness]
   rule #staticArrayLenBits(_OTHER) => 0 [owise]
-```
-
-Transmuting a raw pointer to an integer (and back) uses the reversible encoding defined in `RT-POINTER-INT`.
-Keeping these helpers in a dedicated module keeps this file focused on semantics while still reusing the canonical encoding.
-The encoding serialises the pointer provenance, its place/projection, mutability and metadata into a natural number;
-decoding rehydrates the pointer metadata and reinterprets the byte offset for the target pointee type.
-
-```k
-  syntax Value ::= #ptrWithOffset ( Value , Int , TypeInfo ) [function, total]
-  rule #ptrWithOffset(PtrLocal(STACK, PLACE, MUT, metadata(SIZE, _, ORIGIN)), OFFSET, TYINFO)
-    => PtrLocal(STACK, PLACE, MUT, #convertMetadata(metadata(SIZE, OFFSET, ORIGIN), TYINFO))
-  rule #ptrWithOffset(VAL:Value, _, _) => VAL [owise]
-```
-
-```k
-  rule <k> #cast(
-              PtrLocal(_, _, _, _) #as PTR,
-              castKindTransmute,
-              TY_SOURCE,
-              TY_TARGET
-            )
-          =>
-            #ptrIntValue(
-              #encodePtrInt(PTR, pointeeTy(lookupTy(TY_SOURCE))), // full Cantor encoding
-              #numTypeOf(lookupTy(TY_TARGET))                    // signedness + width
-            )
-          ...
-        </k>
-      requires #isIntType(lookupTy(TY_TARGET))
-       andBool pointeeTy(lookupTy(TY_SOURCE)) =/=K TyUnknown
-
-  rule <k> #cast(
-              Integer(VAL, WIDTH, SIGNED) #as _INT,
-              castKindTransmute,
-              TY_SOURCE,
-              TY_TARGET
-            )
-          =>
-            #ptrWithOffset(
-              #decodePtrBase(#cantorUnpairLeft(#unsignedFromIntValue(VAL, WIDTH, SIGNED))),
-              #bytesToPtrOffset(
-                #cantorUnpairRight(#unsignedFromIntValue(VAL, WIDTH, SIGNED)),
-                pointeeTy(lookupTy(TY_TARGET))
-              ),
-              lookupTy(TY_TARGET)
-            )
-          ...
-        </k>
-      requires #isIntType(lookupTy(TY_SOURCE))
-       andBool pointeeTy(lookupTy(TY_TARGET)) =/=K TyUnknown
 ```
 
 A transmutation from an integer to an enum is wellformed if:
@@ -2225,7 +2214,7 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)) )
-   requires OFFSET_VAL >=Int 0
+    requires OFFSET_VAL >=Int 0
      andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
    [preserves-definedness]
 ```
