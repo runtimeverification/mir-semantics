@@ -52,21 +52,22 @@ If nothing is removed, the list remains the same. If all elements are removed, n
 ```
 
 The `#mapOffset` function maps `#adjustRef` over a lists of `Value`s, leaving the list length unchanged.
-Definedness of the list and list elements is also guaranteed.  
-The helper `#adjustRef` reduces to the original value when the offset is zero and merges nested offset adjustments.
+Definedness of the list and list elements is also guaranteed.
 
 ```k
+  rule size(#mapOffset(L, _)) => size(L) [simplification, preserves-definedness]
+
+  rule #Ceil(#mapOffset(L, _)[I]) => #Ceil(L) #And {true #Equals 0 <=Int I} #And {true #Equals I <Int size(L)} [simplification]
+
+  rule #Ceil(#mapOffset(L, _)) => #Ceil(L) [simplification]
+
   rule #adjustRef(VAL:Value, 0) => VAL [simplification]
 
   rule #adjustRef(#adjustRef(VAL, OFFSET1), OFFSET2)
     => #adjustRef(VAL, OFFSET1 +Int OFFSET2)
     [simplification]
 
-  rule size(#mapOffset(L, _)) => size(L) [simplification, preserves-definedness]
-
-  rule #Ceil(#mapOffset(L, _)[I]) => #Ceil(L) #And {true #Equals 0 <=Int I} #And {true #Equals I <Int size(L)} [simplification]
-
-  rule #Ceil(#mapOffset(L, _)) => #Ceil(L) [simplification]
+  rule #mapOffset(L, 0) => L [simplification]
 
   rule #mapOffset(#mapOffset(L, OFFSET1), OFFSET2)
     => #mapOffset(L, OFFSET1 +Int OFFSET2)

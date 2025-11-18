@@ -269,16 +269,16 @@ A `Deref` projection in the projections list changes the target of the write ope
        </k>
        <stack> STACK
             => STACK[(FRAME -Int 1) <-
-        #updateStackLocal(
-          {STACK[FRAME -Int 1]}:>StackFrame,
-          I,
-          #adjustRef(#buildUpdate(NEW, CONTEXTS), 0 -Int FRAME)
-        )
-      ]
-    </stack>
+                      #updateStackLocal(
+                        {STACK[FRAME -Int 1]}:>StackFrame,
+                        I,
+                        #adjustRef(#buildUpdate(NEW, CONTEXTS), 0 -Int FRAME)
+                      )
+                    ]
+       </stack>
     requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
-    [preserves-definedness] // valid context ensured upon context construction
+     [preserves-definedness] // valid context ensured upon context construction
 
   rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeMoved
