@@ -261,46 +261,12 @@ def kompile_smir(
     all_rules = smir_rules + extra_rules
 
     if symbolic:
-        # Create output directories
-        target_llvmdt_path = target_llvm_lib_path / 'dt'
-
-        _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
-        target_llvmdt_path.mkdir(parents=True, exist_ok=True)
+        # no llvm-kompile required, HS backend will evaluate the static data lookups
+        # Create output directory
+        _LOGGER.info(f'Creating directory {target_hs_path}')
         target_hs_path.mkdir(parents=True, exist_ok=True)
 
-        # Process LLVM definition (only SMIR rules, not extra module rules)
-        # Extra module rules are configuration rewrites that LLVM backend doesn't support
-        _LOGGER.info('Writing LLVM definition file')
-        llvm_lib_dir = kdist.which(llvm_lib_target)
-        llvm_def_file = llvm_lib_dir / 'definition.kore'
-        llvm_def_output = target_llvm_lib_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, smir_rules, llvm_def_output)
-
-        # Run llvm-kompile-matching and llvm-kompile for LLVM
-        # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
-        # TODO align compilation options to what we use in plugin.py
-        import subprocess
-
-        _LOGGER.info('Running llvm-kompile-matching')
-        subprocess.run(
-            ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
-        )
-        _LOGGER.info('Running llvm-kompile')
-        subprocess.run(
-            [
-                'llvm-kompile',
-                str(llvm_def_output),
-                str(target_llvmdt_path),
-                'c',
-                '-O2',
-                '--',
-                '-o',
-                target_llvm_lib_path / 'interpreter',
-            ],
-            check=True,
-        )
-
-        # Process Haskell definition (includes both SMIR rules and extra module rules)
+        # Process Haskell definition
         _LOGGER.info('Writing Haskell definition file')
         hs_def_file = haskell_def_dir / 'definition.kore'
         _insert_rules_and_write(hs_def_file, all_rules, target_hs_path / 'definition.kore')
@@ -315,7 +281,7 @@ def kompile_smir(
                     shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
 
         kompile_digest.write(target_dir)
-        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
+        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=LLVM_LIB_DIR)
 
     else:
         target_llvmdt_path = target_llvm_path / 'dt'
