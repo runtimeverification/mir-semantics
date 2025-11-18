@@ -122,42 +122,10 @@ def kompile_smir(
     _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
     if symbolic:
-        # Create output directories
-        target_llvmdt_path = target_llvm_lib_path / 'dt'
-
-        _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
-        target_llvmdt_path.mkdir(parents=True, exist_ok=True)
+        # no llvm-kompile required, HS backend will evaluate the static data lookups
+        # Create output directory
+        _LOGGER.info(f'Creating directory {target_hs_path}')
         target_hs_path.mkdir(parents=True, exist_ok=True)
-
-        # Process LLVM definition
-        _LOGGER.info('Writing LLVM definition file')
-        llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
-        llvm_def_output = target_llvm_lib_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
-
-        # Run llvm-kompile-matching and llvm-kompile for LLVM
-        # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
-        # TODO align compilation options to what we use in plugin.py
-        import subprocess
-
-        _LOGGER.info('Running llvm-kompile-matching')
-        subprocess.run(
-            ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
-        )
-        _LOGGER.info('Running llvm-kompile')
-        subprocess.run(
-            [
-                'llvm-kompile',
-                str(llvm_def_output),
-                str(target_llvmdt_path),
-                'c',
-                '-O2',
-                '--',
-                '-o',
-                target_llvm_lib_path / 'interpreter',
-            ],
-            check=True,
-        )
 
         # Process Haskell definition
         _LOGGER.info('Writing Haskell definition file')
@@ -174,7 +142,7 @@ def kompile_smir(
                     shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
 
         kompile_digest.write(target_dir)
-        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
+        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=LLVM_LIB_DIR)
 
     else:
         target_llvmdt_path = target_llvm_path / 'dt'
