@@ -3,9 +3,10 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (465 steps)
+│  (487 steps)
 └─ 3 (stuck, leaf)
-    #execIntrinsic ( IntrinsicFunction ( symbol ( "assert_inhabited" ) ) , .Operands
+    #traverseProjection ( toLocal ( 24 ) , thunk ( #cast ( PtrLocal ( 1 , place ( ..
+    span: 219
 
 
 ┌─ 2 (root, leaf, target, terminal)

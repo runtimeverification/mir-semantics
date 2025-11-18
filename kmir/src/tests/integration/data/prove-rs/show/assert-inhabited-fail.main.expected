@@ -3,9 +3,9 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (6 steps)
+│  (7 steps)
 └─ 3 (stuck, leaf)
-    #execIntrinsic ( IntrinsicFunction ( symbol ( "assert_inhabited" ) ) , .Operands
+    #AssertInhabitedFailure ~> .K
     function: main
 
 

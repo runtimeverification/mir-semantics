@@ -53,6 +53,29 @@ before it's used. They have no effect on program semantics, and are implemented 
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_instruction")), _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
 ```
 
+#### Assert Inhabited (`std::intrinsics::assert_inhabited`)
+
+The `assert_inhabited` instrinsic asserts that a type is "inhabited" (able to be instantiated). Types such as
+`Never` (`!`) cannot be instantiated and are uninhabited types. The target / codegen decides how to handle this
+intrinsic, it is not required to panic if the type is not inhabited, it could also perform a NO OP. We have witnessed
+in the case that there is an uninhabited type that the following basic block is `noBasicBlockIdx`, and so we
+error with `#AssertInhabitedFailure` if we see that following the intrinsic. Otherwise, we perform a NO OP.
+
+```k
+  syntax MirError ::= "#AssertInhabitedFailure"
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST)
+            ~> #continueAt(noBasicBlockIdx)
+        => #AssertInhabitedFailure
+       ...
+      </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST)
+        => .K
+       ...
+      </k>
+      [owise]
+```
+
 #### Raw Eq (`std::intrinsics::raw_eq`)
 
 The `raw_eq` intrinsic performs byte-by-byte equality comparison of the memory contents pointed to by two references.
