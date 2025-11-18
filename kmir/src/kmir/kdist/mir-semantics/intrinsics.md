@@ -62,10 +62,10 @@ in the case that there is an uninhabited type that the following basic block is 
 error with `#AssertInhabitedFailure` if we see that following the intrinsic. Otherwise, we perform a NO OP.
 
 ```k
-  syntax MirError ::= "#AssertInhabitedFailure"
+  syntax MIRError ::= "AssertInhabitedFailure"
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST)
             ~> #continueAt(noBasicBlockIdx)
-        => #AssertInhabitedFailure
+        => AssertInhabitedFailure
        ...
       </k>
 
