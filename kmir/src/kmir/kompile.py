@@ -8,10 +8,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply, KSort
-from pyk.kast.outer import KRule
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.string import stringToken
-from pyk.konvert import krule_to_kore
 
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR
@@ -120,7 +118,7 @@ def kompile_smir(
     target_dir.mkdir(parents=True, exist_ok=True)
 
     kmir = KMIR(HASKELL_DEF_DIR)
-    rules = [krule_to_kore(kmir.definition, r) for r in make_kore_rules(kmir, smir_info)]
+    rules = make_kore_rules(kmir, smir_info)
     _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
     if symbolic:
@@ -219,7 +217,7 @@ def kompile_smir(
         return KompiledConcrete(llvm_dir=target_llvm_path)
 
 
-def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[KRule]:
+def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[Axiom]:
     equations = _default_equations(kmir)
 
     # kprint tool is too chatty
@@ -250,9 +248,9 @@ def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[KRule]:
     return equations
 
 
-def _default_equations(kmir) -> list[KRule]:
-    from pyk.kast.att import AttEntry, Atts, KAtt
+def _default_equations(kmir) -> list[Axiom]:
     from pyk.kast.inner import KToken, KVariable
+    from pyk.kore.syntax import App
 
     unknown_function = KApply(
         'MonoItemKind::MonoItemFn',
@@ -264,7 +262,7 @@ def _default_equations(kmir) -> list[KRule]:
     )
     default_function = _mk_equation(
         kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
-    ).let_att(KAtt((AttEntry(Atts.OWISE, ()),)))
+    ).let_attrs(((App('owise')),))
     default_alloc = _mk_equation(
         kmir,
         'lookupAlloc',
@@ -272,10 +270,10 @@ def _default_equations(kmir) -> list[KRule]:
         'AllocId',
         KApply('InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KVariable('ID'),)),
         'Evaluation',
-    ).let_att(KAtt((AttEntry(Atts.OWISE, ()),)))
+    ).let_attrs(((App('owise')),))
     default_ty = _mk_equation(
         kmir, 'lookupTy', KApply('ty', (KVariable('_TY'),)), 'Ty', KApply('TypeInfo::VoidType', ()), 'TypeInfo'
-    ).let_att(KAtt((AttEntry(Atts.OWISE, ()),)))
+    ).let_attrs(((App('owise')),))
 
     return [default_function, default_alloc, default_ty]
 
@@ -308,11 +306,28 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
     return functions
 
 
-def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> KRule:
-    from pyk.kast.inner import KRewrite
+def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> Axiom:
+    from pyk.kore.rule import FunctionRule
+    from pyk.kore.syntax import App, SortApp
 
-    fun_app = KApply(fun, (arg,))
-    return KRule(body=KRewrite(fun_app, result))
+    arg_kore = kmir.kast_to_kore(arg, KSort(arg_sort))
+    fun_app = App('Lbl' + fun, (), (arg_kore,))
+    result_kore = kmir.kast_to_kore(result, KSort(result_sort))
+
+    assert isinstance(fun_app, App)
+    rule = FunctionRule(
+        lhs=fun_app,
+        rhs=result_kore,
+        req=None,
+        ens=None,
+        sort=SortApp('Sort' + result_sort),
+        arg_sorts=(SortApp('Sort' + arg_sort),),
+        anti_left=None,
+        priority=50,
+        uid='fubar',
+        label='fubaz',
+    )
+    return rule.to_axiom()
 
 
 def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
