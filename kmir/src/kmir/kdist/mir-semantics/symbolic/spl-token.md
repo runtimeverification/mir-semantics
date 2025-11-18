@@ -31,6 +31,61 @@ module KMIR-SPL-TOKEN
   imports KMIR-P-TOKEN
 ```
 
+## Helper operations for projected writes
+
+```k
+  syntax KItem ::= #forceSetPlaceValue ( Place , Evaluation ) [seqstrict(2)]
+                 | #writeProjectionForce ( Value )
+
+  rule <k> #forceSetPlaceValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
+       <locals>
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
+       </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+
+  rule <k> #forceSetPlaceValue(place(local(I), PROJ), VAL)
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJ, .Contexts)
+        ~> #writeProjectionForce(VAL)
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool PROJ =/=K .ProjectionElems
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjectionForce(NEW)
+        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     [preserves-definedness]
+
+  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjectionForce(NEW)
+        => .K
+       ...
+       </k>
+       <stack> STACK
+            => STACK[(FRAME -Int 1) <-
+                      #updateStackLocal(
+                        {STACK[FRAME -Int 1]}:>StackFrame,
+                        I,
+                        #adjustRef(#buildUpdate(NEW, CONTEXTS), 0 -Int FRAME)
+                      )
+                    ]
+       </stack>
+    requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
+     andBool isStackFrame(STACK[FRAME -Int 1])
+    [preserves-definedness]
+```
+
 ## Helper syntax
 
 ```k
@@ -164,7 +219,7 @@ expose the wrapped payload directly.
 
 ```k
   rule [spl-rc-deref]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand _OPS:Operands, DEST, TARGET, _UNWIND), _SPAN))
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND), _SPAN))
       => #finishSPLRcDeref(OP, DEST, TARGET)
     ...
     </k>
@@ -338,7 +393,7 @@ expose the wrapped payload directly.
 
 ```k
   rule [spl-ref-deref]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARG_OP:Operand _OPS:Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARG_OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #mkSPLRefDeref(DEST, ARG_OP)
          ~> #execBlockIdx(TARGET)
     ...

@@ -173,8 +173,6 @@ A variant `#forceSetLocal` is provided for setting the local value without check
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
                  | #forceSetLocal ( Local , Evaluation ) [strict(2)]
-                 | #forceSetPlaceValue ( Place , Evaluation ) [seqstrict(2)]
-                 | #writeProjectionForce ( Value )
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
@@ -210,26 +208,6 @@ A variant `#forceSetLocal` is provided for setting the local value without check
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
-
-  rule <k> #forceSetPlaceValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
-       </locals>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
-    [preserves-definedness]
-
-  rule <k> #forceSetPlaceValue(place(local(I), PROJ), VAL)
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJ, .Contexts)
-        ~> #writeProjectionForce(VAL)
-       ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool PROJ =/=K .ProjectionElems
-     andBool isTypedLocal(LOCALS[I])
-    [preserves-definedness]
 ```
 
 ### Traversing Projections for Reads and Writes
@@ -301,34 +279,6 @@ A `Deref` projection in the projections list changes the target of the write ope
     requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
      andBool isStackFrame(STACK[FRAME -Int 1])
     [preserves-definedness] // valid context ensured upon context construction
-
-  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjectionForce(NEW)
-        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
-       ...
-       </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     [preserves-definedness]
-
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjectionForce(NEW)
-        => .K
-       ...
-       </k>
-       <stack> STACK
-            => STACK[(FRAME -Int 1) <-
-                      #updateStackLocal(
-                        {STACK[FRAME -Int 1]}:>StackFrame,
-                        I,
-                        #adjustRef(#buildUpdate(NEW, CONTEXTS), 0 -Int FRAME)
-                      )
-                    ]
-       </stack>
-    requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
-     andBool isStackFrame(STACK[FRAME -Int 1])
-    [preserves-definedness]
 
   rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeMoved
