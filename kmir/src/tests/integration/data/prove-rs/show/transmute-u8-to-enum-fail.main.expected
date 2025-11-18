@@ -3,10 +3,10 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (185 steps)
+│  (13 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 2 ) , thunk ( #cast ( PtrLocal ( 3 , place ( ...
-    span: 53
+    #UBErrorInvalidDiscriminantsInEnumCast ~> .K
+    function: main
 
 
 ┌─ 2 (root, leaf, target, terminal)
