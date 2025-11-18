@@ -16,11 +16,13 @@ from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kcfg.show import NodePrinter
+from pyk.kore.syntax import Import, Module
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRun
 from pyk.proof.reachability import APRProof, APRProver
 from pyk.proof.show import APRProofNodePrinter
 
+from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR
 from .cargo import cargo_get_smir_json
 from .kast import ConcreteMode, RandomMode, SymbolicMode, make_call_config
 from .kparse import KParse
@@ -33,7 +35,7 @@ if TYPE_CHECKING:
 
     from pyk.cterm.show import CTermShow
     from pyk.kast.inner import KInner
-    from pyk.kore.syntax import Pattern
+    from pyk.kore.syntax import Axiom, Pattern, Sentence
     from pyk.utils import BugReport
 
     from .options import DisplayOpts, ProveRSOpts
@@ -136,7 +138,9 @@ class KMIR(KProve, KRun, KParse):
         return Parser(self.definition)
 
     @contextmanager
-    def kcfg_explore(self, label: str | None = None, terminate_on_thunk: bool = False) -> Iterator[KCFGExplore]:
+    def kcfg_explore(
+        self, label: str | None = None, terminate_on_thunk: bool = False, equations: list[Axiom] | None = None
+    ) -> Iterator[KCFGExplore]:
         with cterm_symbolic(
             self.definition,
             self.definition_dir,
@@ -145,6 +149,9 @@ class KMIR(KProve, KRun, KParse):
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
             simplify_each=30,
         ) as cts:
+            if equations is not None:
+                sentences: list[Sentence] = [Import('KMIR'), *equations]
+                cts._kore_client.add_module(Module('KMIR-PROGRAM', sentences), name_as_id=True)
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics(terminate_on_thunk=terminate_on_thunk))
 
     def run_smir(
@@ -208,9 +215,7 @@ class KMIR(KProve, KRun, KParse):
                 apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
 
                 smir_info = SMIRInfo.from_file(target_path / 'smir.json')
-                kmir = KMIR.from_kompiled_kore(
-                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path
-                )
+                kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
             else:
                 _LOGGER.info(f'Constructing initial proof: {label}')
                 if opts.smir:
@@ -232,9 +237,7 @@ class KMIR(KProve, KRun, KParse):
                     _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
                     _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
-                kmir = KMIR.from_kompiled_kore(
-                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path
-                )
+                kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR, bug_report=opts.bug_report)
 
                 apr_proof = kmir.apr_proof_from_smir(
                     label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
@@ -266,15 +269,19 @@ class KMIR(KProve, KRun, KParse):
             from .kompile import make_kore_rules
 
             equations = make_kore_rules(kmir, smir_info)
-            _LOGGER.debug(f'Made {len(equations)} equations')
-            prog_module = KFlatModule(name='KMIR-PROGRAM', imports=(KImport('KMIR'),))
+            _LOGGER.info(f'Adding {len(equations)} equations in a fresh module')
+            # kcfg_explore will auto-add a module `KMIR-PROGRAM`,
+            # use that module for the proof by uploading another one that imports it
+            proof_module = KFlatModule('KMIR-PROVE', imports=(KImport('KMIR-PROGRAM'),))
 
-            with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
+            with kmir.kcfg_explore(
+                label, equations=equations, terminate_on_thunk=opts.terminate_on_thunk
+            ) as kcfg_explore:
                 prover = APRProver(
                     kcfg_explore,
                     execute_depth=opts.max_depth,
                     cut_point_rules=cut_point_rules,
-                    extra_module=prog_module,
+                    extra_module=proof_module,
                 )
                 prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
                 return apr_proof
