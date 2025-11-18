@@ -41,14 +41,14 @@
    ┃  │
    ┃  │  (6 steps)
    ┃  ├─ 10
-   ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( #mapOffset ( #mapOff
+   ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
    ┃  │   span: 87
    ┃  ┃
    ┃  ┃ (1 step)
    ┃  ┣━━┓
    ┃  ┃  │
    ┃  ┃  ├─ 11
-   ┃  ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
+   ┃  ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( range ( #map
    ┃  ┃  │   span: 87
    ┃  ┃  │
    ┃  ┃  │  (113 steps)
@@ -59,7 +59,7 @@
    ┃  ┗━━┓
    ┃     │
    ┃     └─ 12 (stuck, leaf)
-   ┃         #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( #mapOffset ( #mapOff
+   ┃         #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
    ┃         span: 87
    ┃
    ┗━━┓
