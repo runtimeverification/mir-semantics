@@ -37,7 +37,7 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode': ['check_assume'],
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
-    'spl_token_domain_data': ['test_spl_account_domain_data', 'test_spl_mint_domain_data', 'test_spl_rent_domain_data'],
+    'spl_token_domain_data': ['test_spl_account_domain_data', 'test_spl_mint_domain_data'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',

@@ -507,6 +507,11 @@ impl Rent {
         }
     }
 
+    fn calculate_burn(&self, rent_collected: u64) -> (u64, u64) {
+        let burned = (rent_collected * u64::from(self.burn_percent)) / 100;
+        (burned, rent_collected - burned)
+    }
+
     fn unpack(data: &[u8]) -> Result<Self, ProgramError> {
         if data.len() < Self::LEN {
             return Err(ProgramError::InvalidAccountData);
