@@ -1,5 +1,5 @@
 #![feature(core_intrinsics)]
-use std::intrinsics;
+use std::intrinsics::{self, assert_inhabited};
 
 fn main() {
     intrinsics::cold_path();
@@ -7,6 +7,10 @@ fn main() {
     intrinsics::likely(b);
     intrinsics::unlikely(b);
     prefetch();
+    assert_inhabited::<i32>(); // Up to compiler/CodegenBackend to panic or NOOP
+    std::hint::black_box(
+        assert_inhabited::<()>() // Trying to stop being optimised away
+    );
 }
 
 fn prefetch() {

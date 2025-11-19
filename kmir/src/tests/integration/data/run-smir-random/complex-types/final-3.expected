@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execIntrinsic ( IntrinsicFunction ( symbol ( "assert_inhabited" ) ) , .Operands , place (... local: local ( 23 ) , projection: .ProjectionElems ) ) ~> #continueAt ( someBasicBlockIdx ( basicBlockIdx ( 8 ) ) ) ~> .K
+    #traverseProjection ( toLocal ( 24 ) , thunk ( #cast ( PtrLocal ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , dynamicSize ( 8 ) ) ) , castKindPtrToPtr , ty ( 53 ) , ty ( 54 ) ) ) , projectionElemDeref  .ProjectionElems , .Contexts ) ~> #readProjection ( false ) ~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_ ( place (... local: local ( 15 ) , projection: .ProjectionElems ) ~> .K ) ~> #execStmts ( statement (... kind: statementKindStorageDead ( local ( 24 ) ) , span: span ( 299 ) )  statement (... kind: statementKindStorageDead ( local ( 17 ) ) , span: span ( 277 ) )  statement (... kind: statementKindStorageDead ( local ( 16 ) ) , span: span ( 277 ) )  statement (... kind: statementKindStorageDead ( local ( 25 ) ) , span: span ( 300 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 0 ) , projection: .ProjectionElems ) , rvalue: rvalueAggregate ( aggregateKindAdt ( adtDef ( 15 ) , variantIdx ( 1 ) , genericArgKindType ( ty ( 23 ) )  .GenericArgs , noUserTypeAnnotationIndex , noFieldIdx ) , operandMove ( place (... local: local ( 15 ) , projection: .ProjectionElems ) )  .Operands ) ) , span: span ( 301 ) )  statement (... kind: statementKindStorageDead ( local ( 15 ) ) , span: span ( 295 ) )  .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindGoto (... target: basicBlockIdx ( 5 ) ) , span: span ( 295 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -57,7 +57,7 @@
       ListItem ( typedValue ( Moved , ty ( 4 ) , mutabilityMut ) )
       ListItem ( typedValue ( PtrLocal ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , dynamicSize ( 8 ) ) ) , ty ( 53 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 2 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 54 ) , mutabilityMut ) )
+      ListItem ( typedValue ( thunk ( #cast ( PtrLocal ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , dynamicSize ( 8 ) ) ) , castKindPtrToPtr , ty ( 53 ) , ty ( 54 ) ) ) , ty ( 54 ) , mutabilityMut ) )
       ListItem ( typedValue ( Reference ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  .ProjectionElems ) , mutabilityNot , metadata ( staticSize ( 8 ) , 0 , noMetadataSize ) ) , ty ( 57 ) , mutabilityMut ) )
       ListItem ( typedValue ( Reference ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  .ProjectionElems ) , mutabilityNot , metadata ( staticSize ( 8 ) , 0 , noMetadataSize ) ) , ty ( 57 ) , mutabilityMut ) )
     </locals>
