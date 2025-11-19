@@ -151,16 +151,9 @@ power of two but the semantics will always operate with these particular ones.
 Repeated bit-masking can be simplified in an even more general way:
 
 ```k
-     rule (X &Int MASK1 &Int MASK2) => X &Int MASK2
-       requires 0 <Int MASK1
-        andBool 0 <Int MASK2
-        andBool MASK2 <=Int MASK1
-       [simplification, concrete(MASK1, MASK2), smt-lemma]
-     rule (X &Int MASK2 &Int MASK1) => X &Int MASK2
-       requires 0 <Int MASK1
-        andBool 0 <Int MASK2
-        andBool MASK2 <Int MASK1 // not <=Int; uses rule above when MASK1 == MASK2
-       [simplification, concrete(MASK1, MASK2), smt-lemma]
+     rule (X &Int MASK &Int MASK) => X &Int MASK
+       requires 0 <Int MASK
+       [simplification, smt-lemma]
 ```
 
 Support for `transmute` between byte arrays and numbers (and vice-versa) uses computations involving bit masks with 255 and 8-bit shifts.
