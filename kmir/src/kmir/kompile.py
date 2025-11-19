@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from typing import Any, Final
 
     from pyk.kast import KInner
+    from pyk.kore.syntax import Axiom
 
     from .smir import SMIRInfo
 
@@ -117,46 +118,14 @@ def kompile_smir(
     target_dir.mkdir(parents=True, exist_ok=True)
 
     kmir = KMIR(HASKELL_DEF_DIR)
-    rules = _make_kore_rules(kmir, smir_info)
+    rules = make_kore_rules(kmir, smir_info)
     _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
 
     if symbolic:
-        # Create output directories
-        target_llvmdt_path = target_llvm_lib_path / 'dt'
-
-        _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
-        target_llvmdt_path.mkdir(parents=True, exist_ok=True)
+        # no llvm-kompile required, HS backend will evaluate the static data lookups
+        # Create output directory
+        _LOGGER.info(f'Creating directory {target_hs_path}')
         target_hs_path.mkdir(parents=True, exist_ok=True)
-
-        # Process LLVM definition
-        _LOGGER.info('Writing LLVM definition file')
-        llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
-        llvm_def_output = target_llvm_lib_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
-
-        # Run llvm-kompile-matching and llvm-kompile for LLVM
-        # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
-        # TODO align compilation options to what we use in plugin.py
-        import subprocess
-
-        _LOGGER.info('Running llvm-kompile-matching')
-        subprocess.run(
-            ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
-        )
-        _LOGGER.info('Running llvm-kompile')
-        subprocess.run(
-            [
-                'llvm-kompile',
-                str(llvm_def_output),
-                str(target_llvmdt_path),
-                'c',
-                '-O2',
-                '--',
-                '-o',
-                target_llvm_lib_path / 'interpreter',
-            ],
-            check=True,
-        )
 
         # Process Haskell definition
         _LOGGER.info('Writing Haskell definition file')
@@ -173,7 +142,7 @@ def kompile_smir(
                     shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
 
         kompile_digest.write(target_dir)
-        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
+        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=LLVM_LIB_DIR)
 
     else:
         target_llvmdt_path = target_llvm_path / 'dt'
@@ -216,8 +185,8 @@ def kompile_smir(
         return KompiledConcrete(llvm_dir=target_llvm_path)
 
 
-def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates kore syntax directly as string
-    equations = []
+def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[Axiom]:
+    equations = _default_equations(kmir)
 
     # kprint tool is too chatty
     kprint_logger = logging.getLogger('pyk.ktool.kprint')
@@ -245,6 +214,36 @@ def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates
         equations.append(_mk_equation(kmir, 'lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
 
     return equations
+
+
+def _default_equations(kmir) -> list[Axiom]:
+    from pyk.kast.inner import KToken, KVariable
+    from pyk.kore.syntax import App
+
+    unknown_function = KApply(
+        'MonoItemKind::MonoItemFn',
+        (
+            KApply('symbol(_)_LIB_Symbol_String', (KToken('"** UNKNOWN FUNCTION **"', KSort('String')),)),
+            KApply('defId(_)_BODY_DefId_Int', (KVariable('TY', KSort('Int')),)),
+            KApply('noBody_BODY_MaybeBody', ()),
+        ),
+    )
+    default_function = _mk_equation(
+        kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
+    ).let_attrs(((App('owise')),))
+    default_alloc = _mk_equation(
+        kmir,
+        'lookupAlloc',
+        KVariable('ID'),
+        'AllocId',
+        KApply('InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KVariable('ID'),)),
+        'Evaluation',
+    ).let_attrs(((App('owise')),))
+    default_ty = _mk_equation(
+        kmir, 'lookupTy', KApply('ty', (KVariable('_TY'),)), 'Ty', KApply('TypeInfo::VoidType', ()), 'TypeInfo'
+    ).let_attrs(((App('owise')),))
+
+    return [default_function, default_alloc, default_ty]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
@@ -275,7 +274,7 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
     return functions
 
 
-def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> str:
+def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> Axiom:
     from pyk.kore.rule import FunctionRule
     from pyk.kore.syntax import App, SortApp
 
@@ -296,17 +295,7 @@ def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInne
         uid='fubar',
         label='fubaz',
     )
-    return '\n'.join(
-        [
-            '',
-            '',
-            (
-                f'// {fun}({kmir.pretty_print(arg)})'
-                + (f' => {kmir.pretty_print(result)}' if len(kmir.pretty_print(result)) < 1000 else '')
-            ),
-            rule.to_axiom().text,
-        ]
-    )
+    return rule.to_axiom()
 
 
 def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
@@ -326,7 +315,7 @@ def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
     return alloc_id_term, value.to_kast()
 
 
-def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Path) -> None:
+def _insert_rules_and_write(input_file: Path, rules: list[Axiom], output_file: Path) -> None:
     with open(input_file, 'r') as f:
         lines = f.readlines()
 
@@ -337,7 +326,7 @@ def _insert_rules_and_write(input_file: Path, rules: list[str], output_file: Pat
 
     # Insert rules before the endmodule line
     new_lines.append(f'\n// Generated from file {input_file}\n\n')
-    new_lines.extend(rules)
+    new_lines.extend([ax.text + '\n' for ax in rules])
     new_lines.append('\n' + last_line)
 
     # Write to output file
