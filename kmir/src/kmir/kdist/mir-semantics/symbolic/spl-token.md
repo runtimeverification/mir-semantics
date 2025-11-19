@@ -139,12 +139,12 @@ module KMIR-SPL-TOKEN
   rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack_unchecked") => true
   rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack") => true
   // mock account
-  rule #isSPLUnpackFunc("Account::unpack") => true
+  rule #isSPLUnpackFunc("Account::unpack_unchecked") => true
   // spl-token mint
   rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Mint as solana_program_pack::Pack>::unpack_unchecked") => true
   rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Mint as solana_program_pack::Pack>::unpack") => true
   // mock mint
-  rule #isSPLUnpackFunc("Mint::unpack") => true
+  rule #isSPLUnpackFunc("Mint::unpack_unchecked") => true
 
   syntax Bool ::= #isSPLPackFunc   ( String ) [function, total]
   rule #isSPLPackFunc(_) => false [owise]
