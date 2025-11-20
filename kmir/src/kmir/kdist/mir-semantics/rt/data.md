@@ -2075,12 +2075,18 @@ Since our arithmetic operations signal undefined behaviour on overflow independe
 
 #### "Nullary" operations reifying type information
 
-`nullOpSizeOf`
-`nullOpAlignOf`
-`nullOpOffsetOf(VariantAndFieldIndices)`
+Operation `nullOpSizeOf` returns the size in bytes of a data structure or primitive type, as a `usize`.
+Operation `nullOpAlignOf` returns the required alignment of a data structure or primitive type, as a `usize`.
+This information is read from the layout in the `TypeInfo` if available, or a fixed constant for primitive types.
 
 ```k
 // FIXME: 64 is hardcoded since usize not supported
+rule <k> rvalueNullaryOp(nullOpSizeOf, TY)
+      =>
+           Integer(#sizeOf(lookupTy(TY)), 64, false)
+         ...
+     </k>
+    requires lookupTy(TY) =/=K typeInfoVoidType
 rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
       =>
            Integer(#alignOf(lookupTy(TY)), 64, false)
@@ -2088,6 +2094,8 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
      </k>
     requires lookupTy(TY) =/=K typeInfoVoidType
 ```
+
+`nullOpOffsetOf(VariantAndFieldIndices)`
 
 #### Other operations
 

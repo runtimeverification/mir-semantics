@@ -203,6 +203,69 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
   rule #zeroSizedType(_) => false [owise]
 ```
 
+## Alignment and Size of Types as per `TypeInfo`
+
+The `alignOf` and `sizeOf` nullary operations return the alignment / size in bytes as a `usize`.
+This information is either hard-wired for primitive types (numbers, first and foremost), or read from the layout in `TypeInfo`.
+
+```k
+  syntax Int ::= #sizeOf ( TypeInfo )  [function, total]
+               | #alignOf ( TypeInfo ) [function, total]
+
+  // primitive int types: use bit width (both for size and alignment)
+  rule #sizeOf(typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #alignOf(typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #sizeOf(typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #alignOf(typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #sizeOf(typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #alignOf(typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  // bool and char
+  rule #sizeOf(typeInfoPrimitiveType(primTypeBool))  => 1
+  rule #alignOf(typeInfoPrimitiveType(primTypeBool)) => 1
+  rule #sizeOf(typeInfoPrimitiveType(primTypeChar))  => 4
+  rule #alignOf(typeInfoPrimitiveType(primTypeChar)) => 4
+  // The str primitive has alignment of a Char but size 0 (indicating dynamic size)
+  rule #sizeOf(typeInfoPrimitiveType(primTypeStr))  => 0
+  rule #alignOf(typeInfoPrimitiveType(primTypeStr)) => 4
+  // enums, structs , and tuples provide the values from their layout information
+  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8
+  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8
+  rule #sizeOf(typeInfoEnumType(_, _, _, _, noLayoutShape)) => 0
+  rule #alignOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(typeInfoEnumType(_, _, _, _, noLayoutShape)) => 1
+  // struct
+  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8
+  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8
+  rule #sizeOf(typeInfoStructType(_, _, _, noLayoutShape)) => 0
+  rule #alignOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(typeInfoStructType(_, _, _, noLayoutShape)) => 1
+  // tuple
+  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8
+  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8
+  rule #sizeOf(typeInfoTupleType(_, noLayoutShape)) => 0
+  rule #alignOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(typeInfoTupleType(_, noLayoutShape)) => 1
+  // size of union types: FIXME use layout (currently not in K AST)
+  // rule #sizeOf(typeInfoUnionType(_, _)) => FIXME
+  // rule #alignOf(typeInfoUnionType(_, _)) => FIXME
+  // arrays with known length have the alignment of the element type, and a size multiplying element count and element size
+  rule #sizeOf(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(lookupTy(ELEM_TY)) *Int readTyConstInt(KIND)
+  rule #sizeOf(typeInfoArrayType(  _    ,    noTyConst                 )) => 0
+  rule #alignOf(typeInfoArrayType(ELEM_TY, _)) => #alignOf(lookupTy(ELEM_TY))
+  // thin ptr and ref types have the size of `usize` and twice that for fat pointers/refs. Alignment is that of `usize`
+  rule #sizeOf(typeInfoPtrType(POINTEE_TY))
+    => #sizeOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+          *Int (#if #metadataSize(POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
+  rule #sizeOf(typeInfoRefType(POINTEE_TY))
+    => #sizeOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+          *Int (#if #metadataSize(POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
+  rule #alignOf(typeInfoPtrType(_)) => #alignOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+  rule #alignOf(typeInfoRefType(_)) => #alignOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+  // other types (fun and void types) have size and alignment 0
+  rule #sizeOf(_)  => 0 [owise]
+  rule #alignOf(_) => 0 [owise]
+```
+
 ```k
 endmodule
 ```
