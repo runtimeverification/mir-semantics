@@ -228,20 +228,20 @@ This information is either hard-wired for primitive types (numbers, first and fo
   rule #sizeOf(typeInfoPrimitiveType(primTypeStr))  => 0
   rule #alignOf(typeInfoPrimitiveType(primTypeStr)) => 4
   // enums, structs , and tuples provide the values from their layout information
-  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8
-  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8
+  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
   rule #sizeOf(typeInfoEnumType(_, _, _, _, noLayoutShape)) => 0
   rule #alignOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
   rule #alignOf(typeInfoEnumType(_, _, _, _, noLayoutShape)) => 1
   // struct
-  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8
-  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8
+  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
   rule #sizeOf(typeInfoStructType(_, _, _, noLayoutShape)) => 0
   rule #alignOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
   rule #alignOf(typeInfoStructType(_, _, _, noLayoutShape)) => 1
   // tuple
-  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8
-  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8
+  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
   rule #sizeOf(typeInfoTupleType(_, noLayoutShape)) => 0
   rule #alignOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
   rule #alignOf(typeInfoTupleType(_, noLayoutShape)) => 1
