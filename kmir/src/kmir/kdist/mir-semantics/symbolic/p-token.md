@@ -34,10 +34,14 @@ We model this special assumption through a special subsort of `Value` with rules
   syntax Value ::= PAccount
 
   syntax PAccount ::=
-      PAccountAccount( PAcc , IAcc )    // p::Account and iface::Account structs
-    | PAccountMint( PAcc , IMint )      // p::Account and iface::Mint structs
-    | PAccountMultisig( PAcc , IMulti ) // p::Account and iface::Multisig structs
-    | PAccountRent ( PAcc, PRent )      // p::Account and p::sysvars::rent::Rent
+      PAccountAccount( PAcc , IAcc )    [symbol(PAccount::Account)]
+      // p::Account and iface::Account structs
+    | PAccountMint( PAcc , IMint )      [symbol(PAccount::Mint)]
+      // p::Account and iface::Mint structs
+    | PAccountMultisig( PAcc , IMulti ) [symbol(PAccount::Multisig)]
+      // p::Account and iface::Multisig structs
+    | PAccountRent ( PAcc, PRent )      [symbol(PAccount::Rent)]
+      // p::Account and p::sysvars::rent::Rent
 
   syntax PAccount2nd ::= IAcc | IMint | IMulti | PRent // all sorts that can be 2nd component
 ```
@@ -92,12 +96,13 @@ The code uses some helper sorts for better readability.
   rule #toPAcc(#fromPAcc(PACC)) => PACC [simplification, preserves-definedness]
   rule #fromPAcc(#toPAcc(PACC)) => PACC [simplification, preserves-definedness]
 
-  syntax U8 ::= U8( Int )
-  syntax I32 ::= I32 ( Int )
-  syntax U64 ::= U64 ( Int )
+  syntax U8 ::= U8( Int )    [symbol(PToken::U8)]
+  syntax I32 ::= I32 ( Int ) [symbol(PToken::I32)]
+  syntax U64 ::= U64 ( Int ) [symbol(PToken::U64)]
 
-  syntax Key ::= Key( List ) // 32 bytes
-               | KeyError ( Value )
+  syntax Key ::= Key( List )        [symbol(PToken::Key)]
+                 // 32 bytes
+               | KeyError ( Value ) [symbol(PToken::KeyError)]
 
   syntax Key ::= toKey ( Value ) [function, total]
   // -----------------------------------------------------------
@@ -125,8 +130,9 @@ This ensures that branches on the key value are not duplicated.
 
 ```k
 
-  syntax Signers ::= Signers ( List ) // 11 Pubkeys, each List of 32 bytes
-                   | SignersError ( Value )
+  syntax Signers ::= Signers ( List )       [symbol(PToken::Signers)]
+                     // 11 Pubkeys, each List of 32 bytes
+                   | SignersError ( Value ) [symbol(PToken::SignersError)]
 
   syntax Signers ::= toSigners ( Value ) [function, total]
   // -----------------------------------------------------------
@@ -1036,7 +1042,10 @@ This ensures that the data structure can be written to (by constructing and writ
 NB The projection rule must have higher priority than the one which auto-projects to the `PAcc` part of the `PAccount`.
 
 ```k
-  syntax ProjectionElem ::= "PAccountIAcc" | "PAccountIMint" | "PAccountIMulti" | "PAccountPRent"
+  syntax ProjectionElem ::= "PAccountIAcc"   [symbol(PAccountIAcc)]
+                          | "PAccountIMint"  [symbol(PAccountIMint)]
+                          | "PAccountIMulti" [symbol(PAccountIMulti)]
+                          | "PAccountPRent"  [symbol(PAccountPRent)]
 
   // special traverseProjection rules that call fromPAcc on demand when needed
   rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PAccountIAcc PROJS, CTXTS)

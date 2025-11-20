@@ -92,12 +92,15 @@ def _kmir_show(opts: ShowOpts) -> None:
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
 
+    # load smir if path is defined
+    smir = SMIRInfo.from_file(Path(opts.smir)) if opts.smir else None
+
     # Use custom KMIR printer by default, switch to standard printer if requested
     if opts.use_default_printer:
         printer = PrettyPrinter(kmir.definition)
         _LOGGER.info('Using standard PrettyPrinter')
     else:
-        printer = KMIRPrettyPrinter(kmir.definition)
+        printer = KMIRPrettyPrinter(kmir.definition, smir)
         _LOGGER.info('Using custom KMIRPrettyPrinter')
 
     all_omit_cells = list(opts.omit_cells or ())
@@ -394,7 +397,11 @@ def _arg_parser() -> ArgumentParser:
         action='store_true',
         help='Print the <k> cell for each leaf node in the proof graph',
     )
-
+    show_parser.add_argument(
+        '--smir',
+        metavar='SMIR_PATH',
+        help='Path to smir.json file'
+    )
     show_parser.add_argument('--rules', metavar='EDGES', help='Comma separated list of edges in format "source:target"')
 
     command_parser.add_parser(
@@ -470,6 +477,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 use_default_printer=ns.use_default_printer,
                 statistics=ns.statistics,
                 leaves=ns.leaves,
+                smir=ns.smir,
             )
         case 'view':
             proof_dir = Path(ns.proof_dir)

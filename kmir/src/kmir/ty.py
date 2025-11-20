@@ -13,6 +13,54 @@ if TYPE_CHECKING:
 
 Ty = NewType('Ty', int)
 
+def find_first(input: str, seps) -> int | None:
+    first_pos = None
+    head = input
+    first_sep = None
+    tail = None
+    for sep in reversed(seps):
+        curr_pos = input.find(sep)
+        if 0 <= curr_pos and (first_pos == None or curr_pos < first_pos):
+            first_pos = curr_pos
+            head,first_sep,tail = input[:curr_pos].strip(),sep,input[curr_pos+1:].strip()
+    return head,first_sep,tail
+
+def abbreviate_type_inner(type_str: str, abbrev_fn) -> str:
+    ret = ''
+    to_process = type_str
+    while to_process != None:
+        head,sep,to_process = find_first(to_process, ['<',',','>'])
+        ret += abbrev_fn(head)
+        if sep != None: ret += sep
+    return ret
+
+def abbreviate_simple_type(type_str):
+    if type_str.find('::') == -1:
+        return type_str
+    if type_str.startswith('core::'):
+        _,tail = type_str.rsplit('::',1)
+        return tail
+    else:
+        head,_ = type_str.split('::',1)
+        _,tail = type_str.rsplit('::',1)
+        return head+'::'+tail
+
+def abbreviate_type(type_str):
+    import sys
+    ret = abbreviate_type_inner(type_str, abbreviate_simple_type)
+    return ret
+
+def show_type(smir: SMIRInfo, ty: Ty | str) -> str:
+    if isinstance(ty, str): ty = int(ty)
+    # print('Type Lookup:', smir.types.get(ty))
+    # print('Func Lookup:', smir.function_tys.get(ty))
+    if metadata := smir.types.get(ty):
+        return metadata.show(smir)
+    elif fun_ty := smir.function_tys.get(ty):
+        if metadata := smir.types.get(fun_ty):
+            return metadata.show(smir)
+    else:
+        return f'#{ty}'
 
 class IntTy(Enum):
     I8 = 1
@@ -65,6 +113,8 @@ class TypeMetadata(ABC):  # noqa: B024
     def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         raise ValueError(f'Method nbytes() is unsupported for type: {self}')
 
+    def show(self, smir: SMIRInfo | None) -> str:
+        raise ValueError(f'Method show() is unsupported for type: {self}')
 
 class PrimitiveT(TypeMetadata, ABC):
     @staticmethod
@@ -91,19 +141,24 @@ class BoolT(PrimitiveT):
     def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         return 1
 
+    def show(self, smir: SMIRInfo | None) -> str:
+        return 'bool'
 
 @dataclass
-class CharT(PrimitiveT): ...
-
+class CharT(PrimitiveT):
+    def show(self, smir: SMIRInfo | None) -> str:
+        return 'char'
 
 @dataclass
-class StrT(PrimitiveT): ...
-
+class StrT(PrimitiveT):
+    def show(self, smir: SMIRInfo | None) -> str:
+        return 'str'
 
 @dataclass
 class FloatT(PrimitiveT):
     info: FloatTy
-
+    def show(self, smir: SMIRInfo | None) -> str:
+        return self.info.name.lower()
 
 @dataclass
 class IntT(PrimitiveT):
@@ -124,6 +179,8 @@ class IntT(PrimitiveT):
     def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         return self.info.value
 
+    def show(self, smir: SMIRInfo | None) -> str:
+        return self.info.name.lower()
 
 @dataclass
 class UintT(PrimitiveT):
@@ -144,6 +201,8 @@ class UintT(PrimitiveT):
     def nbytes(self, types: Mapping[Ty, TypeMetadata]) -> int:
         return self.info.value
 
+    def show(self, smir: SMIRInfo | None) -> str:
+        return self.info.name.lower()
 
 @dataclass
 class EnumT(TypeMetadata):
@@ -182,6 +241,8 @@ class EnumT(TypeMetadata):
             case LayoutShape(size=size):
                 return size.in_bytes
 
+    def show(self, smir: SMIRInfo | None):
+        return abbreviate_type(self.name)
 
 @dataclass
 class LayoutShape:
@@ -520,6 +581,8 @@ class StructT(TypeMetadata):
             case LayoutShape(size=size):
                 return size.in_bytes
 
+    def show(self, smir: SMIRInfo | None):
+        return abbreviate_type(self.name)
 
 @dataclass
 class UnionT(TypeMetadata):
@@ -542,6 +605,8 @@ class UnionT(TypeMetadata):
             case _:
                 raise _cannot_parse_as('UnionT', data)
 
+    def show(self, smir: SMIRInfo | None):
+        return abbreviate_type(self.name)
 
 @dataclass
 class ArrayT(TypeMetadata):
@@ -582,6 +647,8 @@ class ArrayT(TypeMetadata):
 
         return elem_info.nbytes(types) * self.length
 
+    def show(self, smir: SMIRInfo | None) -> str:
+        return f'[{show_type(smir, self.element_type)}]'
 
 @dataclass
 class PtrT(TypeMetadata):
@@ -599,6 +666,8 @@ class PtrT(TypeMetadata):
             case _:
                 raise _cannot_parse_as('PtrT', data)
 
+    def show(self, smir: SMIRInfo) -> str:
+        return f'*{show_type(smir, self.pointee_type)}'
 
 @dataclass
 class RefT(TypeMetadata):
@@ -616,6 +685,8 @@ class RefT(TypeMetadata):
             case _:
                 raise _cannot_parse_as('RefT', data)
 
+    def show(self, smir: SMIRInfo) -> str:
+        return f'&{show_type(smir, self.pointee_type)}'
 
 @dataclass
 class TupleT(TypeMetadata):
@@ -661,6 +732,9 @@ class TupleT(TypeMetadata):
             case LayoutShape(size=size):
                 return size.in_bytes
 
+    def show(self, smir: SMIRInfo) -> str:
+        tystr = ','.join(show_type(smir, ty) for ty in self.components)
+        return f'({tystr})'
 
 @dataclass
 class FunT(TypeMetadata):
@@ -674,9 +748,14 @@ class FunT(TypeMetadata):
             case _:
                 raise _cannot_parse_as('FunT', data)
 
+    def show(self, smir: SMIRInfo) -> str:
+        return f'fn {type_str}'
+
 
 @dataclass
-class VoidT(TypeMetadata): ...
+class VoidT(TypeMetadata):
+    def show(self, smir: SMIRInfo) -> str:
+        return f'void'
 
 
 VOID_T: Final = VoidT()

@@ -51,7 +51,7 @@ The special `Moved` value represents values that have been used and should not b
                  | AllocRef ( AllocId , ProjectionElems , Metadata )
                                                           [symbol(Value::AllocRef)]
                    // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
-                 | "Moved"
+                 | "Moved" [symbol(Value::Moved)]
                    // The value has been used and is gone now
 ```
 

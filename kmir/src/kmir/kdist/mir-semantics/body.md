@@ -156,7 +156,7 @@ syntax UserTypeAnnotationIndex ::= userTypeAnnotationIndex(Int)                 
 syntax MaybeUserTypeAnnotationIndex ::= someUserTypeAnnotationIndex(UserTypeAnnotationIndex) [group(mir-option)]
                                       | "noUserTypeAnnotationIndex"                          [group(mir-option)]
 
-syntax FieldIdx ::= fieldIdx(Int)                [group(mir-int)]
+syntax FieldIdx ::= fieldIdx(Int)                [group(mir-int), symbol(fieldIdx)]
 syntax MaybeFieldIdx ::= someFieldIdx(FieldIdx)  [group(mir-option)]
                       | "noFieldIdx"             [group(mir-option)]
 

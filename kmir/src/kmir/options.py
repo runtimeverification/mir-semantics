@@ -194,6 +194,7 @@ class ShowOpts(DisplayOpts):
     use_default_printer: bool
     statistics: bool
     leaves: bool
+    smir: str | None
 
     def __init__(
         self,
@@ -211,6 +212,7 @@ class ShowOpts(DisplayOpts):
         use_default_printer: bool = False,
         statistics: bool = False,
         leaves: bool = False,
+        smir: str | None = None,
     ) -> None:
         super().__init__(proof_dir, id, full_printer, smir_info, omit_current_body)
         self.omit_static_info = omit_static_info
@@ -218,6 +220,7 @@ class ShowOpts(DisplayOpts):
         self.statistics = statistics
         self.leaves = leaves
         self.nodes = tuple(int(n.strip()) for n in nodes.split(',')) if nodes is not None else None
+        self.smir = smir
 
         def _parse_pairs(text: str | None) -> tuple[tuple[int, int], ...] | None:
             if text is None:
