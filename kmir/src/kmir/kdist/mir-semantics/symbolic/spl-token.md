@@ -22,7 +22,7 @@ Account::pack(a, &mut acc.data.borrow_mut())
   -> #isSPLBorrowFunc                                (rule [spl-borrow-data])
   -> #isSPLRefDerefFunc                              (rule [spl-ref-deref])
   -> Borrowed buffer projections
-  -> #isSPLAccountUnpackFunc / #isSPLAccountPackFunc (rule [spl-account-unpack])
+  -> #isSPLUnpackFunc / #isSPLPackFunc (rule [spl-account-unpack])
 ```
 
 
@@ -133,18 +133,29 @@ module KMIR-SPL-TOKEN
   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut [u8]> as std::ops::DerefMut>::deref_mut") => true
   rule #isSPLRefDerefFunc(_) => false [owise]
 
-  syntax Bool ::= #isSPLAccountUnpackFunc ( String ) [function, total]
-  rule #isSPLAccountUnpackFunc(_) => false [owise]
-  rule #isSPLAccountUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack_unchecked") => true
-  rule #isSPLAccountUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack") => true
-  // mock
-  rule #isSPLAccountUnpackFunc("Account::unpack_unchecked") => true
+  syntax Bool ::= #isSPLUnpackFunc ( String ) [function, total]
+  rule #isSPLUnpackFunc(_) => false [owise]
+  // spl-token account
+  rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack_unchecked") => true
+  rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack") => true
+  // mock account
+  rule #isSPLUnpackFunc("Account::unpack_unchecked") => true
+  // spl-token mint
+  rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Mint as solana_program_pack::Pack>::unpack_unchecked") => true
+  rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Mint as solana_program_pack::Pack>::unpack") => true
+  // mock mint
+  rule #isSPLUnpackFunc("Mint::unpack_unchecked") => true
 
-  syntax Bool ::= #isSPLAccountPackFunc   ( String ) [function, total]
-  rule #isSPLAccountPackFunc(_) => false [owise]
-  rule #isSPLAccountPackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::pack") => true
-  // mock
-  rule #isSPLAccountPackFunc("Account::pack") => true
+  syntax Bool ::= #isSPLPackFunc   ( String ) [function, total]
+  rule #isSPLPackFunc(_) => false [owise]
+  // spl-token account
+  rule #isSPLPackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::pack") => true
+  // mock account
+  rule #isSPLPackFunc("Account::pack") => true
+  // spl-token mint
+  rule #isSPLPackFunc("solana_program_pack::<spl_token_interface::state::Mint as solana_program_pack::Pack>::pack") => true
+  // mock mint
+  rule #isSPLPackFunc("Mint::pack") => true
 ```
 
 
@@ -209,6 +220,60 @@ module KMIR-SPL-TOKEN
       andBool #isSplCOptionPubkey(?SplDelegateCOpt)
       andBool #isSplCOptionPubkey(?SplCloseAuthCOpt)
       andBool #isSplCOptionU64(?SplIsNativeCOpt)
+    [priority(30), preserves-definedness]
+
+  rule [cheatcode-is-spl-mint]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #setLocalValue(
+            place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
+            Aggregate(variantIdx(0),
+              ListItem(Range(?SplMintAccountKey:List))
+              ListItem(
+                  SPLRefCell(
+                    place(
+                      LOCAL,
+                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
+                    ),
+                    Integer(?SplMintLamports:Int, 64, false)
+                  )
+              )
+              ListItem(
+                  SPLRefCell(
+                    place(
+                      LOCAL,
+                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
+                    ),
+                    SPLDataBuffer(
+                      Aggregate(variantIdx(0),
+                        ListItem(?SplMintAuthorityCOpt:Value)
+                        ListItem(Integer(?SplMintSupply:Int, 64, false))
+                        ListItem(Integer(?SplMintDecimals:Int, 8, false))
+                        ListItem(BoolVal(false))
+                        ListItem(?SplMintFreezeAuthorityCOpt:Value)
+                      )
+                    )
+                  )
+              )
+              ListItem(Range(?SplMintOwnerKey:List))
+              ListItem(Integer(?SplMintRentEpoch:Int, 64, false))
+              ListItem(BoolVal(?_SplMintIsSigner:Bool))
+              ListItem(BoolVal(?_SplMintIsWritable:Bool))
+              ListItem(BoolVal(?_SplMintExecutable:Bool))
+            )
+         )
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_mint"
+      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_mint"
+    ensures #isSplPubkey(?SplMintAccountKey)
+      andBool #isSplPubkey(?SplMintOwnerKey)
+      andBool 0 <=Int ?SplMintLamports andBool ?SplMintLamports <Int 18446744073709551616
+      andBool 0 <=Int ?SplMintRentEpoch andBool ?SplMintRentEpoch <Int 18446744073709551616
+      andBool #isSplCOptionPubkey(?SplMintAuthorityCOpt)
+      andBool 0 <=Int ?SplMintSupply andBool ?SplMintSupply <Int (1 <<Int 64)
+      andBool 0 <=Int ?SplMintDecimals andBool ?SplMintDecimals <Int 256
+      andBool #isSplCOptionPubkey(?SplMintFreezeAuthorityCOpt)
     [priority(30), preserves-definedness]
 ```
 
@@ -451,7 +516,7 @@ expose the wrapped payload directly.
          ~> #execBlockIdx(TARGET)
     ...
     </k>
-    requires #isSPLAccountUnpackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
+    requires #isSPLUnpackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #mkSPLAccountUnpack ( Place , Evaluation ) [seqstrict(2)]
@@ -496,7 +561,7 @@ expose the wrapped payload directly.
          ~> #execBlockIdx(TARGET)
     ...
     </k>
-    requires #isSPLAccountPackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
+    requires #isSPLPackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation , Place ) [seqstrict(1,2)]
