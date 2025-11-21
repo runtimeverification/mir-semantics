@@ -93,8 +93,8 @@ will not create an `Aggregate` instead of a `Union` `Value`.
 ```k
   syntax Bool ::= #isUnionType ( TypeInfo ) [function, total]
   // --------------------------------------------------------
-  rule #isUnionType(typeInfoUnionType(_NAME, _ADTDEF) )  => true
-  rule #isUnionType(_)                                   => false [owise]
+  rule #isUnionType(typeInfoUnionType(_NAME, _ADTDEF, _FIELDS, _LAYOUT) ) => true
+  rule #isUnionType(_)                                                    => false [owise]
 ```
 
 ## Determining types of places with projection
@@ -254,9 +254,12 @@ This information is either hard-wired for primitive types (numbers, first and fo
   rule #sizeOf(typeInfoTupleType(_, noLayoutShape)) => 0
   rule #alignOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
   rule #alignOf(typeInfoTupleType(_, noLayoutShape)) => 1
-  // size of union types: FIXME use layout (currently not in K AST)
-  // rule #sizeOf(typeInfoUnionType(_, _)) => FIXME
-  // rule #alignOf(typeInfoUnionType(_, _)) => FIXME
+  // union
+  rule #sizeOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(typeInfoUnionType(_, _, _, noLayoutShape)) => 0
+  rule #alignOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(typeInfoUnionType(_, _, _, noLayoutShape)) => 1
   // arrays with known length have the alignment of the element type, and a size multiplying element count and element size
   rule #sizeOf(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(lookupTy(ELEM_TY)) *Int readTyConstInt(KIND)
   rule #sizeOf(typeInfoArrayType(  _    ,    noTyConst                 )) => 0
