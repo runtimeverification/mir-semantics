@@ -8,9 +8,9 @@ fn main() {
     let u = Union { unsigned: 255 };
     unsafe {
         assert!(s.signed == -1);
-        assert!(s.unsigned == 255);
-
-        assert!(u.signed == -1);
         assert!(u.unsigned == 255);
+
+        assert!(s.unsigned == 255);
+        assert!(u.signed == -1);
     }
 }

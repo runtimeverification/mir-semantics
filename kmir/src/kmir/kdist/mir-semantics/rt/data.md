@@ -312,6 +312,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   // retains information about the value that was deconstructed by a projection
   syntax Context ::= CtxField( VariantIdx, List, Int , Ty )
+                   | CtxFieldUnion( FieldIdx, Value, Ty )
                    | CtxIndex( List , Int ) // array index constant or has been read before
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
@@ -328,6 +329,10 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule #buildUpdate(VAL, CtxField(IDX, ARGS, I, _) CTXS)
       => #buildUpdate(Aggregate(IDX, ARGS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
+
+  rule #buildUpdate(VAL, CtxFieldUnion(FIELD_IDX, _ARG, _TY) CTXS)
+      => #buildUpdate(Union(FIELD_IDX, VAL), CTXS)
+     [preserves-definedness]
 
   rule #buildUpdate(VAL, CtxIndex(ELEMS, I) CTXS)
       => #buildUpdate(Range(ELEMS[I <- VAL]), CTXS)
@@ -400,7 +405,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule originSize(dynamicSize(SIZE)) => SIZE
 ```
 
-#### Aggregates
+#### Aggregates (not Union)
 
 A `Field` access projection operates on `struct`s and tuples, which are represented as `Aggregate` values.
 The field is numbered from zero (in source order), and the field type is provided (not checked here).
@@ -443,6 +448,28 @@ This is done without consideration of the validity of the Downcast[^downcast].
            )
        ...
        </k>
+```
+
+#### Unions
+```k
+  // Case: Union is in same state as field projection
+  rule <k> #traverseProjection(
+             DEST,
+             Union(FIELD_IDX, ARG),
+             projectionElemField(FIELD_IDX, TY) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             ARG,
+             PROJS,
+             CtxFieldUnion(FIELD_IDX, ARG, TY) CTXTS
+           )
+        ...
+        </k>
+    [preserves-definedness]
+
+  // TODO: Case: Union is in different state as field projection
 ```
 
 #### Ranges
@@ -1084,6 +1111,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   rule #projectionsFor( CtxSubslice(_, I, J) CTXS, PROJS) => #projectionsFor(CTXS,      projectionElemSubslice(I, J, false) PROJS)
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
+  rule #projectionsFor(CtxFieldUnion(F_IDX, _, TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(F_IDX, TY) PROJS)
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
