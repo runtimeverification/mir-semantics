@@ -97,11 +97,25 @@ will effectively be no-ops at this level).
 ```k
 
   // all memory accesses relegated to another module (to be added)
-  rule [execStmt]: <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
+  rule [execStmt]: <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
          =>
             #setLocalValue(PLACE, RVAL)
          ...
        </k>
+       <locals> LOCALS </locals>
+       requires 0 <=Int I andBool I <Int size(LOCALS)
+        andBool notBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+       [preserves-definedness]
+
+  rule [execStmt.union]: <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
+         =>
+            #setLocalValue(PLACE, #evalUnion(RVAL))
+         ...
+       </k>
+       <locals> LOCALS </locals>
+       requires 0 <=Int I andBool I <Int size(LOCALS)
+        andBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+       [preserves-definedness]
 
   // RVAL evaluation is implemented in rt/data.md
 
