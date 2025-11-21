@@ -88,6 +88,15 @@ Pointers to structs with a single zero-offset field are compatible with pointers
   rule #layoutOffsets(_) => .MachineSizes [owise]
 ```
 
+Helper function to identify an `union` type, this is needed so `#setLocalValue`
+will not create an `Aggregate` instead of a `Union` `Value`.
+```k
+  syntax Bool ::= #isUnionType ( TypeInfo ) [function, total]
+  // --------------------------------------------------------
+  rule #isUnionType(typeInfoUnionType(_NAME, _ADTDEF) )  => true
+  rule #isUnionType(_)                                   => false [owise]
+```
+
 ## Determining types of places with projection
 
 A helper function `getTyOf` traverses type metadata (using the type metadata map `Ty -> TypeInfo`) along the applied projections to determine the `Ty` of the projected place.

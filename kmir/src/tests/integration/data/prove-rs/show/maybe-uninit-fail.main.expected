@@ -5,7 +5,7 @@
 │
 │  (74 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem (
+    #traverseProjection ( toLocal ( 1 ) , Union ( fieldIdx ( 1 ) , Aggregate ( varia
     span: 47
 
 

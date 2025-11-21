@@ -934,6 +934,7 @@ Literal arrays are also built using this RValue.
 
   // #mkAggregate produces an aggregate TypedLocal value of given kind from a preceeding list of values
   syntax Value ::= #mkAggregate ( AggregateKind )
+                 | #mkUnion ( FieldIdx )
 
   rule <k> ARGS:List ~> #mkAggregate(aggregateKindAdt(_ADTDEF, VARIDX, _, _, _))
         =>
@@ -975,6 +976,26 @@ Literal arrays are also built using this RValue.
            #readOperandsAux(ACC ListItem(VAL), REST)
         ...
        </k>
+```
+
+While Unions are Aggregate in the MIR, we distinguish between them because the semantics
+are different. For example, field accesses to not access different data, but interpret
+that data as a different type.
+```k
+  syntax Rvalue ::= #evalUnion ( Rvalue )
+
+  rule <k> #evalUnion(rvalueAggregate(aggregateKindAdt( _, _, _, _, someFieldIdx ( FIELD )), ARGS))
+        =>
+           #readOperands(ARGS) ~> #mkUnion(FIELD)
+       ...
+      </k>
+
+  rule <k> ListItem(ARG) .List ~> #mkUnion(FIELD)
+        =>
+            Union(FIELD, ARG)
+        ...
+       </k>
+
 ```
 
 The `AggregateKind::RawPtr`, somewhat as a special case of a `struct` aggregate, constructs a raw pointer

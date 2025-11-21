@@ -74,7 +74,12 @@ class KMIR(KProve, KRun, KParse):
         if break_on_thunk:
             cut_point_rules.append('RT-DATA.thunk')
         if break_every_statement or break_every_step:
-            cut_point_rules.append('KMIR-CONTROL-FLOW.execStmt')
+            cut_point_rules.extend(
+                [
+                    'KMIR-CONTROL-FLOW.execStmt',
+                    'KMIR-CONTROL-FLOW.execStmt.union',
+                ]
+            )
         if break_on_terminator_goto or break_every_terminator or break_every_step:
             cut_point_rules.append('KMIR-CONTROL-FLOW.termGoto')
         if break_on_terminator_switch_int or break_every_terminator or break_every_step:
