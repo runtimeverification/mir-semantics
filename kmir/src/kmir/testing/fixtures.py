@@ -13,6 +13,12 @@ if TYPE_CHECKING:
 
     from pytest import FixtureRequest, Parser
 
+import sys
+
+
+def pytest_configure(config) -> None:
+    sys.setrecursionlimit(1000000)
+
 
 def assert_or_update_show_output(actual_text: str, expected_file: Path, *, update: bool) -> None:
     if update:
