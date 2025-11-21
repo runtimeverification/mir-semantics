@@ -93,6 +93,7 @@ module KMIR-SPL-TOKEN
                  | SPLDataBuffer ( Value )
                  | SPLDataBorrow ( Place , Value )
                  | SPLDataBorrowMut ( Place , Value )
+                 | SPLPubkeyRef ( Value )
 ```
 
 ## Helper predicates
@@ -103,9 +104,8 @@ module KMIR-SPL-TOKEN
 
   syntax Bool ::= #isSplCOptionPubkey ( Value ) [function, total]
   rule #isSplCOptionPubkey(Aggregate(variantIdx(0), .List)) => true
-  rule #isSplCOptionPubkey(Aggregate(variantIdx(1), ListItem(Range(KEY)) REST))
+  rule #isSplCOptionPubkey(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Range(KEY))))))
     => #isSplPubkey(KEY)
-    requires REST ==K .List
   rule #isSplCOptionPubkey(_) => false [owise]
 
   syntax Bool ::= #isSplCOptionU64 ( Value ) [function, total]
@@ -166,7 +166,7 @@ module KMIR-SPL-TOKEN
       => #setLocalValue(
             place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
             Aggregate(variantIdx(0),
-              ListItem(Range(?SplAccountKey:List))                         // pub key: &'a Pubkey
+              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplAccountKey:List)))))              // pub key: &'a Pubkey
               ListItem(
                   SPLRefCell(
                     place(
@@ -184,8 +184,8 @@ module KMIR-SPL-TOKEN
                     ),
                     SPLDataBuffer( // data: Rc<RefCell<&'a mut [u8]>>, Aggregate is for &account.data
                       Aggregate(variantIdx(0),
-                        ListItem(Range(?SplMintKey:List))                        // Account.mint: Pubkey
-                        ListItem(Range(?SplTokenOwnerKey:List))                  // Account.owner: Pubkey
+                        ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintKey:List))))        // Account.mint: Pubkey
+                        ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplTokenOwnerKey:List))))  // Account.owner: Pubkey
                         ListItem(Integer(?SplAmount:Int, 64, false))             // Account.amount: u64
                         ListItem(?SplDelegateCOpt:Value)                         // Account.delegate: COption<Pubkey>
                         ListItem(Integer(?SplAccountState:Int, 8, false))        // Account.state: AccountState (repr u8)
@@ -196,7 +196,7 @@ module KMIR-SPL-TOKEN
                   )
                 )
               )
-              ListItem(Range(?SplOwnerKey))                                // owner: &'a Pubkey
+              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplOwnerKey:List)))))               // owner: &'a Pubkey
               ListItem(Integer(?SplRentEpoch:Int, 64, false))              // rent_epoch: u64
               ListItem(BoolVal(?_SplIsSigner:Bool))                        // is_signer: bool
               ListItem(BoolVal(?_SplIsWritable:Bool))                      // is_writable: bool
@@ -227,7 +227,7 @@ module KMIR-SPL-TOKEN
       => #setLocalValue(
             place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
             Aggregate(variantIdx(0),
-              ListItem(Range(?SplMintAccountKey:List))
+              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplMintAccountKey:List)))))    // pub key: &'a Pubkey
               ListItem(
                   SPLRefCell(
                     place(
@@ -254,7 +254,7 @@ module KMIR-SPL-TOKEN
                     )
                   )
               )
-              ListItem(Range(?SplMintOwnerKey:List))
+              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplMintOwnerKey:List)))))     // owner: &'a Pubkey
               ListItem(Integer(?SplMintRentEpoch:Int, 64, false))
               ListItem(BoolVal(?_SplMintIsSigner:Bool))
               ListItem(BoolVal(?_SplMintIsWritable:Bool))
@@ -339,6 +339,30 @@ expose the wrapped payload directly.
         => #setLocalValue(DEST, SPLRefCell(PLACE, VAL)) ~> #continueAt(TARGET)
        ...
       </k>
+```
+
+## Pubkey references
+
+```k
+  syntax Context ::= "CtxSPLPubkeyRef"
+
+  rule <k> #traverseProjection(
+             DEST,
+             SPLPubkeyRef(VAL),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             VAL,
+             PROJS,
+             CtxSPLPubkeyRef CTXTS
+           )
+        ...
+       </k>
+    [priority(30)]
+  rule #buildUpdate(VAL, CtxSPLPubkeyRef CTXS) => #buildUpdate(SPLPubkeyRef(VAL), CTXS)
+  rule #projectionsFor(CtxSPLPubkeyRef CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
 ```
 
 ## Borrowed buffer projections

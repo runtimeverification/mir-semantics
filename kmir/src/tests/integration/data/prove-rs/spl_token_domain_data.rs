@@ -136,6 +136,9 @@ fn test_spltoken_domain_data(
 fn test_spl_account_domain_data(acc: &AccountInfo<'_>) {
     cheatcode_is_spl_account(acc);
 
+    let owner = acc.owner;
+    assert_eq!(acc.owner, owner);
+
     let mut account = get_account(acc);
     account.is_native = COption::Some(0);
     account.mint = MINT_KEY;
