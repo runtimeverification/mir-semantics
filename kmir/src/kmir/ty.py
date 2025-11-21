@@ -218,6 +218,8 @@ class FieldsShape(ABC):  # noqa: B024
         match data:
             case 'Primitive':
                 return PrimitiveFields()
+            case {'Union': count}:
+                return UnionFields(count=count)
             case {
                 'Arbitrary': {
                     'offsets': offsets,
@@ -232,6 +234,11 @@ class FieldsShape(ABC):  # noqa: B024
 
 @dataclass
 class PrimitiveFields(FieldsShape): ...
+
+
+@dataclass
+class UnionFields(FieldsShape):
+    count: int
 
 
 @dataclass
@@ -525,6 +532,8 @@ class StructT(TypeMetadata):
 class UnionT(TypeMetadata):
     name: str
     adt_def: int
+    fields: list[Ty]
+    layout: LayoutShape | None
 
     @staticmethod
     def from_raw(data: Any) -> UnionT:
@@ -533,11 +542,15 @@ class UnionT(TypeMetadata):
                 'UnionType': {
                     'name': name,
                     'adt_def': adt_def,
+                    'fields': fields,
+                    'layout': layout,
                 }
             }:
                 return UnionT(
                     name=name,
                     adt_def=adt_def,
+                    fields=list(fields),
+                    layout=LayoutShape.from_raw(layout) if layout is not None else None,
                 )
             case _:
                 raise _cannot_parse_as('UnionT', data)

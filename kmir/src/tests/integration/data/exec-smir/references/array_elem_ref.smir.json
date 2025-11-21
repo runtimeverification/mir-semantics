@@ -4,7 +4,7 @@
   "allocs": [
     {
       "alloc_id": 1,
-      "ty": 38,
+      "ty": 37,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -105,7 +105,7 @@
       }
     ],
     [
-      36,
+      39,
       {
         "NoOpSym": ""
       }
@@ -2606,7 +2606,7 @@
       26,
       {
         "RefType": {
-          "pointee_type": 38,
+          "pointee_type": 37,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -2812,10 +2812,10 @@
       }
     ],
     [
-      37,
+      36,
       {
         "RefType": {
-          "pointee_type": 39,
+          "pointee_type": 38,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -2845,17 +2845,17 @@
       }
     ],
     [
-      38,
+      37,
       {
         "PrimitiveType": "Str"
       }
     ],
     [
-      39,
+      38,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 16,
+          "adt_def": 15,
           "fields": [
             26,
             28,

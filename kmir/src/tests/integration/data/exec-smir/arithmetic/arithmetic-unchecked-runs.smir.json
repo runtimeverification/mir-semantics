@@ -41,7 +41,7 @@
             100,
             58,
             32,
-            117,
+            105,
             56,
             58,
             58,
@@ -55,9 +55,9 @@
             101,
             100,
             95,
-            97,
-            100,
-            100,
+            115,
+            117,
+            98,
             32,
             99,
             97,
@@ -122,7 +122,7 @@
             100,
             58,
             32,
-            105,
+            117,
             56,
             58,
             58,
@@ -136,9 +136,9 @@
             101,
             100,
             95,
-            115,
-            117,
-            98,
+            97,
+            100,
+            100,
             32,
             99,
             97,
@@ -239,7 +239,7 @@
       }
     ],
     [
-      38,
+      40,
       {
         "NoOpSym": ""
       }
@@ -3644,7 +3644,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 39,
+          "pointee_type": 38,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -3709,7 +3709,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 40,
+          "pointee_type": 39,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -3751,7 +3751,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 24,
+          "adt_def": 22,
           "discriminants": [
             0,
             1
@@ -3841,7 +3841,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 16,
+          "adt_def": 15,
           "fields": [
             9
           ],
@@ -3897,7 +3897,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 14,
+          "adt_def": 13,
           "fields": [
             15
           ],
@@ -4322,7 +4322,7 @@
       }
     ],
     [
-      40,
+      39,
       {
         "PtrType": {
           "pointee_type": 9,

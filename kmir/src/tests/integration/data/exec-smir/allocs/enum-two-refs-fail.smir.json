@@ -4,7 +4,7 @@
   "allocs": [
     {
       "alloc_id": 0,
-      "ty": 112,
+      "ty": 130,
       "global_alloc": {
         "Memory": {
           "bytes": [],
@@ -18,7 +18,7 @@
     },
     {
       "alloc_id": 1,
-      "ty": 99,
+      "ty": 109,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -43,11 +43,11 @@
             "ptrs": [
               [
                 0,
-                10
+                9
               ],
               [
                 8,
-                11
+                10
               ]
             ]
           },
@@ -58,7 +58,7 @@
     },
     {
       "alloc_id": 2,
-      "ty": 99,
+      "ty": 109,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -83,11 +83,11 @@
             "ptrs": [
               [
                 0,
-                12
+                11
               ],
               [
                 8,
-                13
+                12
               ]
             ]
           },
@@ -98,7 +98,7 @@
     },
     {
       "alloc_id": 3,
-      "ty": 108,
+      "ty": 112,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -123,11 +123,11 @@
             "ptrs": [
               [
                 0,
-                14
+                13
               ],
               [
                 8,
-                15
+                14
               ]
             ]
           },
@@ -138,7 +138,7 @@
     },
     {
       "alloc_id": 4,
-      "ty": 108,
+      "ty": 112,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -163,11 +163,11 @@
             "ptrs": [
               [
                 0,
-                16
+                15
               ],
               [
                 8,
-                17
+                16
               ]
             ]
           },
@@ -178,7 +178,7 @@
     },
     {
       "alloc_id": 5,
-      "ty": 126,
+      "ty": 131,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -203,7 +203,7 @@
             "ptrs": [
               [
                 0,
-                18
+                17
               ]
             ]
           },
@@ -214,7 +214,7 @@
     },
     {
       "alloc_id": 8,
-      "ty": 111,
+      "ty": 99,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -234,22 +234,17 @@
     },
     {
       "alloc_id": 9,
-      "ty": 111,
+      "ty": 0,
       "global_alloc": {
         "Memory": {
           "bytes": [
-            65,
-            110,
-            111,
-            116,
-            104,
-            101,
-            114
+            1,
+            0
           ],
           "provenance": {
             "ptrs": []
           },
-          "align": 1,
+          "align": 2,
           "mutability": "Not"
         }
       }
@@ -260,7 +255,7 @@
       "global_alloc": {
         "Memory": {
           "bytes": [
-            1,
+            2,
             0
           ],
           "provenance": {
@@ -277,7 +272,7 @@
       "global_alloc": {
         "Memory": {
           "bytes": [
-            2,
+            1,
             0
           ],
           "provenance": {
@@ -294,23 +289,6 @@
       "global_alloc": {
         "Memory": {
           "bytes": [
-            1,
-            0
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 2,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 13,
-      "ty": 0,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
             2,
             0
           ],
@@ -323,12 +301,31 @@
       }
     },
     {
-      "alloc_id": 14,
+      "alloc_id": 13,
       "ty": 16,
       "global_alloc": {
         "Memory": {
           "bytes": [
             1,
+            0,
+            0,
+            0
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 4,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 14,
+      "ty": 47,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            2,
             0,
             0,
             0
@@ -343,25 +340,6 @@
     },
     {
       "alloc_id": 15,
-      "ty": 47,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            2,
-            0,
-            0,
-            0
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 4,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 16,
       "ty": 16,
       "global_alloc": {
         "Memory": {
@@ -380,7 +358,7 @@
       }
     },
     {
-      "alloc_id": 17,
+      "alloc_id": 16,
       "ty": 47,
       "global_alloc": {
         "Memory": {
@@ -399,8 +377,8 @@
       }
     },
     {
-      "alloc_id": 18,
-      "ty": 111,
+      "alloc_id": 17,
+      "ty": 99,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -426,6 +404,28 @@
             101,
             100,
             10
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 18,
+      "ty": 99,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            65,
+            110,
+            111,
+            116,
+            104,
+            101,
+            114
           ],
           "provenance": {
             "ptrs": []
@@ -684,7 +684,7 @@
       }
     ],
     [
-      109,
+      129,
       {
         "NoOpSym": ""
       }
@@ -10238,7 +10238,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 130,
+          "pointee_type": 110,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -10303,7 +10303,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 131,
+          "pointee_type": 111,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -10345,7 +10345,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 40,
+          "adt_def": 37,
           "discriminants": [
             0,
             1
@@ -10435,7 +10435,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 83,
+          "adt_def": 56,
           "fields": [
             9
           ],
@@ -10491,7 +10491,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 81,
+          "adt_def": 54,
           "fields": [
             15
           ],
@@ -10572,7 +10572,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<(), std::fmt::Error>",
-          "adt_def": 40,
+          "adt_def": 37,
           "discriminants": [
             0,
             1
@@ -10582,7 +10582,7 @@
               1
             ],
             [
-              107
+              108
             ]
           ],
           "layout": {
@@ -10750,7 +10750,7 @@
       24,
       {
         "RefType": {
-          "pointee_type": 100,
+          "pointee_type": 101,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -10783,7 +10783,7 @@
       25,
       {
         "RefType": {
-          "pointee_type": 99,
+          "pointee_type": 109,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -10981,7 +10981,7 @@
       34,
       {
         "RefType": {
-          "pointee_type": 108,
+          "pointee_type": 112,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -11275,7 +11275,7 @@
       64,
       {
         "RefType": {
-          "pointee_type": 110,
+          "pointee_type": 114,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -11335,7 +11335,7 @@
       65,
       {
         "RefType": {
-          "pointee_type": 112,
+          "pointee_type": 130,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -11368,7 +11368,7 @@
       66,
       {
         "RefType": {
-          "pointee_type": 121,
+          "pointee_type": 119,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -11437,7 +11437,7 @@
           "fields": [
             [],
             [
-              122
+              115
             ]
           ],
           "layout": {
@@ -11630,7 +11630,7 @@
       69,
       {
         "RefType": {
-          "pointee_type": 126,
+          "pointee_type": 131,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -11927,7 +11927,7 @@
       81,
       {
         "RefType": {
-          "pointee_type": 127,
+          "pointee_type": 100,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -12356,7 +12356,7 @@
       96,
       {
         "RefType": {
-          "pointee_type": 111,
+          "pointee_type": 99,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -12415,83 +12415,22 @@
     [
       99,
       {
-        "EnumType": {
-          "name": "Thing<'_>",
-          "adt_def": 25,
-          "discriminants": [
-            0
-          ],
-          "fields": [
-            [
-              37,
-              45
-            ]
-          ],
-          "layout": {
-            "fields": {
-              "Arbitrary": {
-                "offsets": [
-                  {
-                    "num_bits": 0
-                  },
-                  {
-                    "num_bits": 64
-                  }
-                ]
-              }
-            },
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "ScalarPair": [
-                {
-                  "Initialized": {
-                    "value": {
-                      "Pointer": 0
-                    },
-                    "valid_range": {
-                      "start": 1,
-                      "end": 18446744073709551615
-                    }
-                  }
-                },
-                {
-                  "Initialized": {
-                    "value": {
-                      "Pointer": 0
-                    },
-                    "valid_range": {
-                      "start": 1,
-                      "end": 18446744073709551615
-                    }
-                  }
-                }
-              ]
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 128
-            }
-          }
-        }
+        "PrimitiveType": "Str"
       }
     ],
     [
-      100,
+      101,
       {
         "StructType": {
           "name": "std::fmt::Formatter<'_>",
-          "adt_def": 30,
+          "adt_def": 27,
           "fields": [
             47,
-            101,
             102,
             103,
-            103,
-            104
+            104,
+            104,
+            105
           ],
           "layout": {
             "fields": {
@@ -12537,17 +12476,17 @@
       }
     ],
     [
-      101,
+      102,
       {
         "PrimitiveType": "Char"
       }
     ],
     [
-      102,
+      103,
       {
         "EnumType": {
           "name": "core::fmt::rt::Alignment",
-          "adt_def": 37,
+          "adt_def": 34,
           "discriminants": [
             0,
             1,
@@ -12701,7 +12640,7 @@
       }
     ],
     [
-      103,
+      104,
       {
         "EnumType": {
           "name": "std::option::Option<usize>",
@@ -12713,7 +12652,7 @@
           "fields": [
             [],
             [
-              105
+              106
             ]
           ],
           "layout": {
@@ -12854,10 +12793,10 @@
       }
     ],
     [
-      104,
+      105,
       {
         "RefType": {
-          "pointee_type": 106,
+          "pointee_type": 107,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -12911,7 +12850,7 @@
       }
     ],
     [
-      105,
+      106,
       {
         "PrimitiveType": {
           "Uint": "Usize"
@@ -12919,11 +12858,11 @@
       }
     ],
     [
-      107,
+      108,
       {
         "StructType": {
           "name": "std::fmt::Error",
-          "adt_def": 43,
+          "adt_def": 40,
           "fields": [],
           "layout": {
             "fields": {
@@ -12950,11 +12889,111 @@
       }
     ],
     [
-      108,
+      109,
+      {
+        "EnumType": {
+          "name": "Thing<'_>",
+          "adt_def": 41,
+          "discriminants": [
+            0
+          ],
+          "fields": [
+            [
+              37,
+              45
+            ]
+          ],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  },
+                  {
+                    "num_bits": 64
+                  }
+                ]
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "ScalarPair": [
+                {
+                  "Initialized": {
+                    "value": {
+                      "Pointer": 0
+                    },
+                    "valid_range": {
+                      "start": 1,
+                      "end": 18446744073709551615
+                    }
+                  }
+                },
+                {
+                  "Initialized": {
+                    "value": {
+                      "Pointer": 0
+                    },
+                    "valid_range": {
+                      "start": 1,
+                      "end": 18446744073709551615
+                    }
+                  }
+                }
+              ]
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 128
+            }
+          }
+        }
+      }
+    ],
+    [
+      111,
+      {
+        "PtrType": {
+          "pointee_type": 9,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
+      }
+    ],
+    [
+      112,
       {
         "StructType": {
           "name": "Another<'_>",
-          "adt_def": 44,
+          "adt_def": 50,
           "fields": [
             28,
             42
@@ -13012,7 +13051,40 @@
       }
     ],
     [
-      110,
+      113,
+      {
+        "RefType": {
+          "pointee_type": 128,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 1,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
+      }
+    ],
+    [
+      114,
       {
         "ArrayType": {
           "elem_type": 96,
@@ -13045,433 +13117,10 @@
       }
     ],
     [
-      111,
-      {
-        "PrimitiveType": "Str"
-      }
-    ],
-    [
-      112,
-      {
-        "ArrayType": {
-          "elem_type": 113,
-          "size": {
-            "kind": {
-              "Value": [
-                105,
-                {
-                  "bytes": [
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
-                  ],
-                  "provenance": {
-                    "ptrs": []
-                  },
-                  "align": 8,
-                  "mutability": "Mut"
-                }
-              ]
-            },
-            "id": 0
-          },
-          "layout": {
-            "fields": {
-              "Array": {
-                "stride": {
-                  "num_bits": 128
-                },
-                "count": 0
-              }
-            },
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Aggregate": {
-                "sized": true
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 0
-            }
-          }
-        }
-      }
-    ],
-    [
-      113,
-      {
-        "StructType": {
-          "name": "core::fmt::rt::Argument<'_>",
-          "adt_def": 51,
-          "fields": [
-            114
-          ],
-          "layout": {
-            "fields": {
-              "Arbitrary": {
-                "offsets": [
-                  {
-                    "num_bits": 0
-                  }
-                ]
-              }
-            },
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Aggregate": {
-                "sized": true
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 128
-            }
-          }
-        }
-      }
-    ],
-    [
-      114,
-      {
-        "EnumType": {
-          "name": "core::fmt::rt::ArgumentType<'_>",
-          "adt_def": 53,
-          "discriminants": [
-            0,
-            1
-          ],
-          "fields": [
-            [
-              115,
-              116,
-              117
-            ],
-            [
-              105
-            ]
-          ],
-          "layout": {
-            "fields": {
-              "Arbitrary": {
-                "offsets": [
-                  {
-                    "num_bits": 0
-                  }
-                ]
-              }
-            },
-            "variants": {
-              "Multiple": {
-                "tag": {
-                  "Initialized": {
-                    "value": {
-                      "Pointer": 0
-                    },
-                    "valid_range": {
-                      "start": 1,
-                      "end": 0
-                    }
-                  }
-                },
-                "tag_encoding": {
-                  "Niche": {
-                    "untagged_variant": 0,
-                    "niche_variants": {
-                      "start": 1,
-                      "end": 1
-                    },
-                    "niche_start": 0
-                  }
-                },
-                "tag_field": 0,
-                "variants": [
-                  {
-                    "fields": {
-                      "Arbitrary": {
-                        "offsets": [
-                          {
-                            "num_bits": 0
-                          },
-                          {
-                            "num_bits": 64
-                          },
-                          {
-                            "num_bits": 128
-                          }
-                        ]
-                      }
-                    },
-                    "variants": {
-                      "Single": {
-                        "index": 0
-                      }
-                    },
-                    "abi": {
-                      "ScalarPair": [
-                        {
-                          "Initialized": {
-                            "value": {
-                              "Pointer": 0
-                            },
-                            "valid_range": {
-                              "start": 1,
-                              "end": 18446744073709551615
-                            }
-                          }
-                        },
-                        {
-                          "Initialized": {
-                            "value": {
-                              "Pointer": 0
-                            },
-                            "valid_range": {
-                              "start": 1,
-                              "end": 18446744073709551615
-                            }
-                          }
-                        }
-                      ]
-                    },
-                    "abi_align": 8,
-                    "size": {
-                      "num_bits": 128
-                    }
-                  },
-                  {
-                    "fields": {
-                      "Arbitrary": {
-                        "offsets": [
-                          {
-                            "num_bits": 64
-                          }
-                        ]
-                      }
-                    },
-                    "variants": {
-                      "Single": {
-                        "index": 1
-                      }
-                    },
-                    "abi": {
-                      "Aggregate": {
-                        "sized": true
-                      }
-                    },
-                    "abi_align": 8,
-                    "size": {
-                      "num_bits": 128
-                    }
-                  }
-                ]
-              }
-            },
-            "abi": {
-              "Aggregate": {
-                "sized": true
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 128
-            }
-          }
-        }
-      }
-    ],
-    [
       115,
       {
-        "StructType": {
-          "name": "std::ptr::NonNull<()>",
-          "adt_def": 58,
-          "fields": [
-            118
-          ],
-          "layout": {
-            "fields": {
-              "Arbitrary": {
-                "offsets": [
-                  {
-                    "num_bits": 0
-                  }
-                ]
-              }
-            },
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 1,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
-            }
-          }
-        }
-      }
-    ],
-    [
-      117,
-      {
-        "StructType": {
-          "name": "std::marker::PhantomData<&()>",
-          "adt_def": 60,
-          "fields": [],
-          "layout": {
-            "fields": {
-              "Arbitrary": {
-                "offsets": []
-              }
-            },
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Aggregate": {
-                "sized": true
-              }
-            },
-            "abi_align": 1,
-            "size": {
-              "num_bits": 0
-            }
-          }
-        }
-      }
-    ],
-    [
-      118,
-      {
-        "PtrType": {
-          "pointee_type": 1,
-          "layout": {
-            "fields": "Primitive",
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 0,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
-            }
-          }
-        }
-      }
-    ],
-    [
-      120,
-      {
         "RefType": {
-          "pointee_type": 1,
-          "layout": {
-            "fields": "Primitive",
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 1,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
-            }
-          }
-        }
-      }
-    ],
-    [
-      121,
-      {
-        "ArrayType": {
-          "elem_type": 113,
-          "size": null,
-          "layout": {
-            "fields": {
-              "Array": {
-                "stride": {
-                  "num_bits": 128
-                },
-                "count": 0
-              }
-            },
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Aggregate": {
-                "sized": false
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 0
-            }
-          }
-        }
-      }
-    ],
-    [
-      122,
-      {
-        "RefType": {
-          "pointee_type": 123,
+          "pointee_type": 116,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -13528,10 +13177,10 @@
       }
     ],
     [
-      123,
+      116,
       {
         "ArrayType": {
-          "elem_type": 124,
+          "elem_type": 117,
           "size": null,
           "layout": {
             "fields": {
@@ -13561,18 +13210,18 @@
       }
     ],
     [
-      124,
+      117,
       {
         "StructType": {
           "name": "core::fmt::rt::Placeholder",
-          "adt_def": 61,
+          "adt_def": 62,
           "fields": [
-            105,
-            101,
+            106,
             102,
+            103,
             47,
-            125,
-            125
+            118,
+            118
           ],
           "layout": {
             "fields": {
@@ -13618,11 +13267,11 @@
       }
     ],
     [
-      125,
+      118,
       {
         "EnumType": {
           "name": "core::fmt::rt::Count",
-          "adt_def": 68,
+          "adt_def": 69,
           "discriminants": [
             0,
             1,
@@ -13630,10 +13279,10 @@
           ],
           "fields": [
             [
-              105
+              106
             ],
             [
-              105
+              106
             ],
             []
           ],
@@ -13823,14 +13472,476 @@
       }
     ],
     [
-      126,
+      119,
+      {
+        "ArrayType": {
+          "elem_type": 120,
+          "size": null,
+          "layout": {
+            "fields": {
+              "Array": {
+                "stride": {
+                  "num_bits": 128
+                },
+                "count": 0
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Aggregate": {
+                "sized": false
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 0
+            }
+          }
+        }
+      }
+    ],
+    [
+      120,
+      {
+        "StructType": {
+          "name": "core::fmt::rt::Argument<'_>",
+          "adt_def": 72,
+          "fields": [
+            121
+          ],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  }
+                ]
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Aggregate": {
+                "sized": true
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 128
+            }
+          }
+        }
+      }
+    ],
+    [
+      121,
+      {
+        "EnumType": {
+          "name": "core::fmt::rt::ArgumentType<'_>",
+          "adt_def": 74,
+          "discriminants": [
+            0,
+            1
+          ],
+          "fields": [
+            [
+              122,
+              123,
+              124
+            ],
+            [
+              106
+            ]
+          ],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  }
+                ]
+              }
+            },
+            "variants": {
+              "Multiple": {
+                "tag": {
+                  "Initialized": {
+                    "value": {
+                      "Pointer": 0
+                    },
+                    "valid_range": {
+                      "start": 1,
+                      "end": 0
+                    }
+                  }
+                },
+                "tag_encoding": {
+                  "Niche": {
+                    "untagged_variant": 0,
+                    "niche_variants": {
+                      "start": 1,
+                      "end": 1
+                    },
+                    "niche_start": 0
+                  }
+                },
+                "tag_field": 0,
+                "variants": [
+                  {
+                    "fields": {
+                      "Arbitrary": {
+                        "offsets": [
+                          {
+                            "num_bits": 0
+                          },
+                          {
+                            "num_bits": 64
+                          },
+                          {
+                            "num_bits": 128
+                          }
+                        ]
+                      }
+                    },
+                    "variants": {
+                      "Single": {
+                        "index": 0
+                      }
+                    },
+                    "abi": {
+                      "ScalarPair": [
+                        {
+                          "Initialized": {
+                            "value": {
+                              "Pointer": 0
+                            },
+                            "valid_range": {
+                              "start": 1,
+                              "end": 18446744073709551615
+                            }
+                          }
+                        },
+                        {
+                          "Initialized": {
+                            "value": {
+                              "Pointer": 0
+                            },
+                            "valid_range": {
+                              "start": 1,
+                              "end": 18446744073709551615
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "abi_align": 8,
+                    "size": {
+                      "num_bits": 128
+                    }
+                  },
+                  {
+                    "fields": {
+                      "Arbitrary": {
+                        "offsets": [
+                          {
+                            "num_bits": 64
+                          }
+                        ]
+                      }
+                    },
+                    "variants": {
+                      "Single": {
+                        "index": 1
+                      }
+                    },
+                    "abi": {
+                      "Aggregate": {
+                        "sized": true
+                      }
+                    },
+                    "abi_align": 8,
+                    "size": {
+                      "num_bits": 128
+                    }
+                  }
+                ]
+              }
+            },
+            "abi": {
+              "Aggregate": {
+                "sized": true
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 128
+            }
+          }
+        }
+      }
+    ],
+    [
+      122,
+      {
+        "StructType": {
+          "name": "std::ptr::NonNull<()>",
+          "adt_def": 79,
+          "fields": [
+            125
+          ],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  }
+                ]
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 1,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
+      }
+    ],
+    [
+      124,
+      {
+        "StructType": {
+          "name": "std::marker::PhantomData<&()>",
+          "adt_def": 81,
+          "fields": [],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": []
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Aggregate": {
+                "sized": true
+              }
+            },
+            "abi_align": 1,
+            "size": {
+              "num_bits": 0
+            }
+          }
+        }
+      }
+    ],
+    [
+      125,
+      {
+        "PtrType": {
+          "pointee_type": 1,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
+      }
+    ],
+    [
+      127,
+      {
+        "RefType": {
+          "pointee_type": 1,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 1,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
+      }
+    ],
+    [
+      128,
+      {
+        "StructType": {
+          "name": "std::panic::Location<'_>",
+          "adt_def": 82,
+          "fields": [
+            96,
+            47,
+            47
+          ],
+          "layout": {
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  },
+                  {
+                    "num_bits": 128
+                  },
+                  {
+                    "num_bits": 160
+                  }
+                ]
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Aggregate": {
+                "sized": true
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 192
+            }
+          }
+        }
+      }
+    ],
+    [
+      130,
+      {
+        "ArrayType": {
+          "elem_type": 120,
+          "size": {
+            "kind": {
+              "Value": [
+                106,
+                {
+                  "bytes": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "provenance": {
+                    "ptrs": []
+                  },
+                  "align": 8,
+                  "mutability": "Mut"
+                }
+              ]
+            },
+            "id": 0
+          },
+          "layout": {
+            "fields": {
+              "Array": {
+                "stride": {
+                  "num_bits": 128
+                },
+                "count": 0
+              }
+            },
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Aggregate": {
+                "sized": true
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 0
+            }
+          }
+        }
+      }
+    ],
+    [
+      131,
       {
         "ArrayType": {
           "elem_type": 96,
           "size": {
             "kind": {
               "Value": [
-                105,
+                106,
                 {
                   "bytes": [
                     1,
@@ -13874,117 +13985,6 @@
             "abi_align": 8,
             "size": {
               "num_bits": 128
-            }
-          }
-        }
-      }
-    ],
-    [
-      128,
-      {
-        "RefType": {
-          "pointee_type": 129,
-          "layout": {
-            "fields": "Primitive",
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 1,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
-            }
-          }
-        }
-      }
-    ],
-    [
-      129,
-      {
-        "StructType": {
-          "name": "std::panic::Location<'_>",
-          "adt_def": 77,
-          "fields": [
-            96,
-            47,
-            47
-          ],
-          "layout": {
-            "fields": {
-              "Arbitrary": {
-                "offsets": [
-                  {
-                    "num_bits": 0
-                  },
-                  {
-                    "num_bits": 128
-                  },
-                  {
-                    "num_bits": 160
-                  }
-                ]
-              }
-            },
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Aggregate": {
-                "sized": true
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 192
-            }
-          }
-        }
-      }
-    ],
-    [
-      131,
-      {
-        "PtrType": {
-          "pointee_type": 9,
-          "layout": {
-            "fields": "Primitive",
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 0,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
             }
           }
         }
