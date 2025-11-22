@@ -57,7 +57,6 @@ PROVE_RS_SHOW_SPECS = [
     'assert-inhabited-fail',
     'iterator-simple-fail',
     'unions-fail',
-    'transmute-maybe-uninit-fail',
 ]
 
 
