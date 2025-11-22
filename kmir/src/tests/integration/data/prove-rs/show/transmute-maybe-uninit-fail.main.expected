@@ -3,10 +3,12 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (14 steps)
+│  (15 steps)
 └─ 3 (stuck, leaf)
-    #ProgramError ( #UBErrorInvalidDiscriminantsInEnumCast ) ~> .K
+    #ProgramError ( #UBInvalidTransmuteMaybeUninit )
+~> #freezer#setLocalValue(_,_)_
     function: main
+    span: 60
 
 
 ┌─ 2 (root, leaf, target, terminal)
