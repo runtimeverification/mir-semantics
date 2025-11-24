@@ -4,7 +4,7 @@ This file contains basic lemmas required for symbolic execution of MIR programs 
 
 Lemmas are simpliciations of symbolic function application that aims to confirm conditions for rewrite rules to avoid spurious branching on symbolic program parts.
 
-Some of the lemmas relate to the control flow implementation in `kmir.md` and will be needed in various proofs (for instance the simplification of list size for partially-symbolic lists of locals or stack frames).  
+Some of the lemmas relate to the control flow implementation in `kmir.md` and will be needed in various proofs (for instance the simplification of list size for partially-symbolic lists of locals or stack frames).
 Others are related to helper functions used for integer arithmetic.
 
 ```k
@@ -20,7 +20,7 @@ module KMIR-LEMMAS
 ```
 ## Simplifications for lists to avoid spurious branching on error cases in control flow
 
-Rewrite rules that look up locals or stack frames require that an index into the respective `List`s in the configuration be within the bounds of the locals list/stack. Therefore, the `size` function on lists needs to be computed. The following simplifications allow for locals and stacks to have concrete values in the beginning but a symbolic rest (of unknown size).  
+Rewrite rules that look up locals or stack frames require that an index into the respective `List`s in the configuration be within the bounds of the locals list/stack. Therefore, the `size` function on lists needs to be computed. The following simplifications allow for locals and stacks to have concrete values in the beginning but a symbolic rest (of unknown size).
 The lists used in the semantics are cons-lists, so only rules with a head element match are required.
 
 ```k
@@ -208,6 +208,25 @@ This avoids building up large expressions related to overflow checks and vacuous
     [simplification, preserves-definedness, symbolic]
 ```
 
+Another more general simplification relates a `NUMBER` and the bytes from its representation.
+If the number is initially masked at 64 bits (`&Int bitmask64`), it is guaranteed to be positive
+and therefore the masked value equals its bytes taken individually and multiplied.
+Terms like this have been observed as branching conditions in a proof that heavily uses `[u8;8] <--> u64` conversions.
+The simplification eliminates the vacuous branches instantly.
+
+```k
+  rule ((NUMBER &Int bitmask64) &Int bitmask8) +Int 256 *Int (
+         ((NUMBER &Int bitmask64) >>Int 8 &Int bitmask8) +Int 256 *Int (
+           ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+             ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+               ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+                 ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+                   ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+                     ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8))))))))
+         &Int bitmask64
+         => NUMBER &Int bitmask64
+    [simplification, preserves-definedness, symbolic(NUMBER)]
+```
 
 For the case where the (symbolic) byte values are first converted to a number, the round-trip simplification requires different matching.
 First, the bit-masking with `&Int 255` eliminates `Bytes2Int(Int2Bytes(1, ..) +Bytes ..)` enclosing a byte-valued variable:
