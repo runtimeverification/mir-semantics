@@ -126,6 +126,10 @@ To make this function total, an optional `MaybeTy` is used.
   rule #typeName(typeInfoEnumType(NAME, _, _, _, _)) => NAME
   rule #typeName(_) => "" [owise]
 
+  syntax Bool ::= #typeNameIs( TypeInfo, String ) [function, total]
+  // --------------------------------------------------------------
+  rule #typeNameIs( TY_TO, STRING) => findString(#typeName(TY_TO), STRING, 0) ==Int 0
+
   syntax MaybeTy ::= getFieldTy ( TypeInfo , Int ) [function, total]
   // ---------------------------------------------------------------
   rule getFieldTy(typeInfoStructType(_, _, FIELDS, _) , IDX) => getFieldTyFromList(FIELDS, IDX)

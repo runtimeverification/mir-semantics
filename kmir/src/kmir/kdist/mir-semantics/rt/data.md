@@ -1688,7 +1688,7 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
        ...
       </k>
       requires #isUnionType(lookupTy(TY_TO))
-        andBool findString(#typeName(lookupTy(TY_TO)), "std::mem::MaybeUninit<", 0) ==Int 0
+        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
         andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
 
   rule <k>
@@ -1698,7 +1698,7 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
        ...
       </k>
       requires #isUnionType(lookupTy(TY_TO))
-        andBool findString(#typeName(lookupTy(TY_TO)), "std::mem::MaybeUninit<", 0) ==Int 0
+        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
         andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
 ```
 
