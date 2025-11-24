@@ -132,6 +132,7 @@ update-exec-smir:
 
 # Update checked-in smir.json files (using stable-mir-json dependency and jq)
 # file paths for spans in the the updated smir are truncated to known infixes
+# Compiles run-smir-random files as libraries, others as binaries
 .PHONY: update-smir-json
 update-smir-json: TARGETS = $(shell git ls-files | grep -e ".*\.smir\.json$$" | grep -v -e pinocchio)
 update-smir-json: SMIR = cargo -q -Z unstable-options -C deps/stable-mir-json run --
@@ -140,7 +141,11 @@ update-smir-json: stable-mir-json
 		dir=$$(realpath $$(dirname $$file)); \
 		rust=$$dir/$$(basename $${file%.smir.json}.rs); \
 		[ -f "$$rust" ] || (echo "Source file $$rust missing."; exit 1); \
-		${SMIR} -Zno-codegen --out-dir $$dir $$rust; \
+		if echo "$$file" | grep -q "run-smir-random"; then \
+			${SMIR} --crate-type=lib --out-dir $$dir $$rust; \
+		else \
+			${SMIR} -Zno-codegen --out-dir $$dir $$rust; \
+		fi; \
 		jq '.spans[].[1].[0] |= sub("/.*lib/rustlib"; "rustlib") | .spans[].[1].[0] |= sub("/.*/integration/data"; "data")' $$file > $$file.tmp; \
 		mv $$file.tmp $$file; \
 	done

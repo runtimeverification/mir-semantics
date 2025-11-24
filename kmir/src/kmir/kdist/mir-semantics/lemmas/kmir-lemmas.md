@@ -208,6 +208,25 @@ This avoids building up large expressions related to overflow checks and vacuous
     [simplification, preserves-definedness, symbolic]
 ```
 
+Another more general simplification relates a `NUMBER` and the bytes from its representation.
+If the number is initially masked at 64 bits (`&Int bitmask64`), it is guaranteed to be positive
+and therefore the masked value equals its bytes taken individually and multiplied.
+Terms like this have been observed as branching conditions in a proof that heavily uses `[u8;8] <--> u64` conversions.
+The simplification eliminates the vacuous branches instantly.
+
+```k
+  rule ((NUMBER &Int bitmask64) &Int bitmask8) +Int 256 *Int (
+         ((NUMBER &Int bitmask64) >>Int 8 &Int bitmask8) +Int 256 *Int (
+           ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+             ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+               ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+                 ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+                   ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+                     ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8))))))))
+         &Int bitmask64
+         => NUMBER &Int bitmask64
+    [simplification, preserves-definedness, symbolic(NUMBER)]
+```
 
 For the case where the (symbolic) byte values are first converted to a number, the round-trip simplification requires different matching.
 First, the bit-masking with `&Int 255` eliminates `Bytes2Int(Int2Bytes(1, ..) +Bytes ..)` enclosing a byte-valued variable:

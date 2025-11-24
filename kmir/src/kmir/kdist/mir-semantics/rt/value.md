@@ -36,7 +36,10 @@ The special `Moved` value represents values that have been used and should not b
                  | StringVal( String )                    [symbol(Value::StringVal)]
                    // UTF-8 encoded Unicode string
                  | Aggregate( VariantIdx , List )         [symbol(Value::Aggregate)]
-                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
+                   // heterogenous value list        for tuples, enum, and structs (standard, tuple, or anonymous)
+                 | Union( FieldIdx, Value )               [symbol(Value::Union)]
+                   // A union is an Aggregate, but we differentiate it from the other Aggregates.
+                   // The Value is the data, and FieldIdx determines the type from the union's fields
                  | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
                  | Reference( Int , Place , Mutability , Metadata )

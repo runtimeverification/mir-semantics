@@ -57,6 +57,7 @@ PROVE_RS_SHOW_SPECS = [
     'transmute-u8-to-enum-changed-discriminant-signed-fail',
     'assert-inhabited-fail',
     'iterator-simple-fail',
+    'unions-fail',
 ]
 
 
