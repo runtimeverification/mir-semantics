@@ -166,7 +166,7 @@ module KMIR-SPL-TOKEN
   syntax Bool ::= #isSPLRentGetFunc ( String ) [function, total]
   rule #isSPLRentGetFunc(_) => false [owise]
   rule #isSPLRentGetFunc("Rent::get") => true   // mock harness
-  rule #isSPLRentGetFunc("solana_sysvar::rent::<impl solana_sysvar::Sysvar for solana_rent::Rent>::get") => true
+  rule #isSPLRentGetFunc("solana_sysvar::rent::<impl Sysvar for solana_rent::Rent>::get") => true
 ```
 
 
