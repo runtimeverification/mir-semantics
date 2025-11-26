@@ -1033,6 +1033,12 @@ pub fn test_process_transfer(
     let old_src_delgated_amount = src_old.delegated_amount();
     let maybe_multisig_is_initialised = None; // Value set to `None` since authority is an account
 
+    #[cfg(feature = "assumptions")]
+    // avoids potential overflow in destination account. assuming global supply bound by u64
+    if accounts[0] != accounts[1] && dst_initial_amount.checked_add(amount).is_none() {
+        return Err(ProgramError::Custom(99));
+    }
+
     //-Process Instruction-----------------------------------------------------
     let result = process_transfer(accounts, instruction_data);
 
@@ -1121,12 +1127,16 @@ pub fn test_process_transfer(
         } else if accounts[0] != accounts[1]
             && amount != 0
             && src_new.is_native()
-            && u64::MAX - amount < dst_initial_lamports
+            && dst_initial_lamports.checked_add(amount).is_none()
         {
             // Not sure how to fund native mint
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
-        } else if accounts[0] != accounts[1] && amount != 0 {
+        }
+
+        assert!(result.is_ok());
+
+        if accounts[0] != accounts[1] && amount != 0 {
             assert_eq!(src_new.amount(), src_initial_amount - amount);
             assert_eq!(
                 get_account(&accounts[1]).amount(),
@@ -1138,8 +1148,6 @@ pub fn test_process_transfer(
                 assert_eq!(accounts[1].lamports(), dst_initial_lamports + amount);
             }
         }
-
-        assert!(result.is_ok());
 
         // Delegate updates
         if old_src_delgate == Some(*accounts[2].key()) && accounts[0] != accounts[1] {
@@ -1328,6 +1336,18 @@ pub fn test_process_mint_to(
     let dst_init_state = dst_old.account_state();
     let maybe_multisig_is_initialised = None; // Value set to `None` since authority is an account
 
+    #[cfg(feature = "assumptions")]
+    {
+        // Do not execute if adding to the account balance would overflow.
+        // shared::mint_to.rs,L68 is based on the assumption that initial_amount <=
+        // mint.supply and therefore cannot overflow because the minting itself
+        // would already error out.
+        let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
+        if initial_amount.checked_add(amount).is_none() {
+            return Err(ProgramError::Custom(99));
+        }
+    }
+
     //-Process Instruction-----------------------------------------------------
     let result = process_mint_to(accounts, instruction_data);
 
@@ -1392,7 +1412,7 @@ pub fn test_process_mint_to(
         } else if amount == 0 && accounts[1].owner() != &pinocchio_token_interface::program::ID {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if amount != 0 && u64::MAX - amount < initial_supply {
+        } else if amount != 0 && amount.checked_add(initial_supply).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
@@ -1537,6 +1557,13 @@ pub fn test_process_burn(accounts: &[AccountInfo; 3], instruction_data: &[u8; 8]
     let mint_init_supply = mint_old.supply();
     let mint_owner = *accounts[1].owner();
     let maybe_multisig_is_initialised = None; // Value set to `None` since authority is an account
+
+    #[cfg(feature = "assumptions")]
+    // accoutn.amount() <= mint.supply(), account.delegated_amount() <= account.amount()
+    // otherwise processing could lead to overflows, see processor::shared::burn,L83
+    if !(src_init_amount <= mint_init_supply && old_src_delgated_amount <= src_init_amount) {
+        return Err(ProgramError::Custom(99));
+    }
 
     //-Process Instruction-----------------------------------------------------
     let result = process_burn(accounts, instruction_data);
@@ -1788,7 +1815,7 @@ pub fn test_process_close_account(accounts: &[AccountInfo; 3]) -> ProgramResult 
         } else if accounts[1].key() != &INCINERATOR_ID {
             assert_eq!(result, Err(ProgramError::InvalidAccountData));
             return result;
-        } else if u64::MAX - src_init_lamports < dst_init_lamports {
+        } else if dst_init_lamports.checked_add(src_init_lamports).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
@@ -1914,6 +1941,12 @@ pub fn test_process_transfer_checked(
     let mint_initialised = get_mint(&accounts[1]).is_initialized();
     let maybe_multisig_is_initialised = None; // Value set to `None` since authority is an account
 
+    #[cfg(feature = "assumptions")]
+    // avoids potential overflow in destination account. assuming global supply bound by u64
+    if accounts[0] != accounts[1] && dst_initial_amount.checked_add(amount).is_none() {
+        return Err(ProgramError::Custom(99));
+    }
+
     //-Process Instruction-----------------------------------------------------
     let result = process_transfer_checked(accounts, instruction_data);
 
@@ -2008,12 +2041,15 @@ pub fn test_process_transfer_checked(
         {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if accounts[0] != accounts[2] && amount != 0 {
+        }
+        assert!(result.is_ok());
+
+        if accounts[0] != accounts[2] && amount != 0 {
             if src_new.is_native() && src_initial_lamports < amount {
                 // Not sure how to fund native mint
                 assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
-            } else if src_new.is_native() && u64::MAX - amount < dst_initial_lamports {
+            } else if src_new.is_native() && dst_initial_lamports.checked_add(amount).is_none() {
                 // Not sure how to fund native mint
                 assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
@@ -2031,7 +2067,6 @@ pub fn test_process_transfer_checked(
             }
         }
 
-        assert!(result.is_ok());
         // Delegate updates
         if old_src_delgate == Some(*accounts[3].key()) && accounts[0] != accounts[2] {
             assert_eq!(src_new.delegated_amount(), old_src_delgated_amount - amount);
@@ -2241,6 +2276,13 @@ pub fn test_process_burn_checked(
     let mint_decimals = mint_old.decimals;
     let mint_owner = *accounts[1].owner();
     let maybe_multisig_is_initialised = None; // Value set to `None` since authority is an account
+
+    #[cfg(feature = "assumptions")]
+    // accoutn.amount() <= mint.supply(), account.delegated_amount() <= account.amount()
+    // otherwise processing could lead to overflows, see processor::shared::burn,L83
+    if !(src_init_amount <= mint_init_supply && old_src_delgated_amount <= src_init_amount) {
+        return Err(ProgramError::Custom(99));
+    }
 
     //-Process Instruction-----------------------------------------------------
     let result = process_burn_checked(accounts, instruction_data);
@@ -3902,6 +3944,18 @@ fn test_process_mint_to_checked(
     let dst_init_state = dst_old.account_state();
     let maybe_multisig_is_initialised = None; // Value set to `None` since authority is an account
 
+    #[cfg(feature = "assumptions")]
+    {
+        // Do not execute if adding to the account balance would overflow.
+        // shared::mint_to.rs,L68 is based on the assumption that initial_amount <=
+        // mint.supply and therefore cannot overflow because the minting itself
+        // would already error out.
+        let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
+        if initial_amount.checked_add(amount).is_none() {
+            return Err(ProgramError::Custom(99));
+        }
+    }
+
     //-Process Instruction-----------------------------------------------------
     let result = process_mint_to_checked(accounts, instruction_data);
 
@@ -3970,7 +4024,7 @@ fn test_process_mint_to_checked(
         } else if amount == 0 && accounts[1].owner() != &pinocchio_token_interface::program::ID {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if amount != 0 && u64::MAX - amount < initial_supply {
+        } else if amount != 0 && initial_supply.checked_add(amount).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
@@ -4446,7 +4500,10 @@ fn test_process_withdraw_excess_lamports_account(accounts: &[AccountInfo; 3]) ->
             if src_init_lamports < minimum_balance {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
-            } else if u64::MAX - src_init_lamports + minimum_balance < dst_init_lamports {
+            } else if dst_init_lamports
+                .checked_add(src_init_lamports - minimum_balance)
+                .is_none()
+            {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
             }
@@ -4454,7 +4511,7 @@ fn test_process_withdraw_excess_lamports_account(accounts: &[AccountInfo; 3]) ->
             assert_eq!(accounts[0].lamports(), minimum_balance);
             assert_eq!(
                 accounts[1].lamports(),
-                dst_init_lamports + src_init_lamports - minimum_balance
+                dst_init_lamports + (src_init_lamports - minimum_balance)
             );
             assert!(result.is_ok())
         }
@@ -4597,7 +4654,10 @@ fn test_process_withdraw_excess_lamports_mint(accounts: &[AccountInfo; 3]) -> Pr
             } else if src_init_lamports < minimum_balance {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
-            } else if u64::MAX - src_init_lamports + minimum_balance < dst_init_lamports {
+            } else if dst_init_lamports
+                .checked_add(src_init_lamports - minimum_balance)
+                .is_none()
+            {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
             }
@@ -4605,7 +4665,7 @@ fn test_process_withdraw_excess_lamports_mint(accounts: &[AccountInfo; 3]) -> Pr
             assert_eq!(accounts[0].lamports(), minimum_balance);
             assert_eq!(
                 accounts[1].lamports(),
-                dst_init_lamports + src_init_lamports - minimum_balance
+                dst_init_lamports + (src_init_lamports - minimum_balance)
             );
             assert!(result.is_ok())
         }
@@ -4739,7 +4799,10 @@ fn test_process_withdraw_excess_lamports_multisig(accounts: &[AccountInfo; 3]) -
         if src_init_lamports < minimum_balance {
             assert_eq!(result, Err(ProgramError::Custom(0)));
             return result;
-        } else if u64::MAX - src_init_lamports + minimum_balance < dst_init_lamports {
+        } else if dst_init_lamports
+            .checked_add(src_init_lamports - minimum_balance)
+            .is_none()
+        {
             assert_eq!(result, Err(ProgramError::Custom(0)));
             return result;
         }
@@ -4747,7 +4810,7 @@ fn test_process_withdraw_excess_lamports_multisig(accounts: &[AccountInfo; 3]) -
         assert_eq!(accounts[0].lamports(), minimum_balance);
         assert_eq!(
             accounts[1].lamports(),
-            dst_init_lamports + src_init_lamports - minimum_balance
+            dst_init_lamports + (src_init_lamports - minimum_balance)
         );
         assert!(result.is_ok())
     }

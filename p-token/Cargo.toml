@@ -14,7 +14,7 @@ crate-type = ["cdylib"]
 [features]
 logging = []
 runtime-verification = []
-multisig = []
+assumptions = []
 
 [dependencies]
 pinocchio = { workspace = true }

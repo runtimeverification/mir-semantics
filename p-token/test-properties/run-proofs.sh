@@ -4,7 +4,7 @@
 # table if -a given) with given run options (-o) and timeout (-t).
 # Options and defaults:
 #   -t NUM   : timeout in seconds (default 2h=7200)
-#   -o STRING: prove-rs options. Default "--max-iterations 1000 --max-depth 2000"
+#   -o STRING: prove-rs options. Default "--max-iterations 10000 --max-depth 10000"
 #   -a       : run all start symbols from first table in `proofs.md` (1st column)
 #   -m       : run all start symbols from multisig table in `proofs.md` (2nd column)
 #   -c       : continue existing proofs instead of reloading (which is default)
@@ -24,7 +24,7 @@ ALL_NAMES=$(sed -n -e 's/^| \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 MULTISIG_NAMES=$(sed -n -e 's/^| m | \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 
 TIMEOUT=7200
-PROVE_OPTS="--max-iterations 1000 --max-depth 2000"
+PROVE_OPTS="--max-iterations 10000 --max-depth 10000"
 RELOAD_OPT="--reload"
 LOG_FILE=""
 

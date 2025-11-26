@@ -15,7 +15,12 @@ on:
         description: Start symbols for proofs to run
         required: true
         type: string
-        default: "['test_ptoken_domain_data', 'test_process_approve', 'test_process_get_account_data_size', 'test_process_initialize_immutable_owner']"
+        default: "['test_process_get_account_data_size', 'test_process_mint_to', 'test_process_transfer']"
+      proof_options:
+        description: Options for proof steps and iteration count
+        required: true
+        type: string
+        default: "--max-depth 10000 --max-iterations 10000"
       kmir:
         description: KMIR to work with (must exist as a docker image tag, optional)
         required: false
@@ -88,7 +93,7 @@ jobs:
       - name: "Build with stable_mir_json"
         run: |
           cd "${{ steps.vars.outputs.crate_dir }}"
-          RUSTC=stable_mir_json cargo build --features runtime-verification
+          RUSTC=stable_mir_json cargo build --features runtime-verification,assumptions
 
       - name: "Store SMIR JSON files"
         uses: actions/upload-artifact@v4
@@ -178,8 +183,7 @@ jobs:
               kmir prove-rs --smir "artefacts/${{ needs.compile.outputs.artifact_name }}.json" \
               --start-symbol "${{ needs.compile.outputs.start_prefix }}${{ matrix.proof }}" \
               --verbose \
-              --max-depth 2000 \
-              --max-iterations 500 \
+              ${{ inputs.proof_options }} \
               --proof-dir artefacts/proof \
             || echo "Runner signals proof failure"
 
@@ -188,6 +192,11 @@ jobs:
             "${{ needs.compile.outputs.show_prefix }}${{ matrix.proof }}" \
             > artefacts/proof/${{ matrix.proof }}-full.txt
 
+          docker exec --workdir /workdir "${KMIR_CONTAINER_NAME}" \
+            kmir show --statistics --leaves --proof-dir artefacts/proof \
+            "${{ needs.compile.outputs.show_prefix }}${{ matrix.proof }}" \
+            > artefacts/proof/${{ matrix.proof }}-stats.txt
+
       - name: "Save proof tree and smir"
         if: always()
         uses: actions/upload-artifact@v4
@@ -195,7 +204,7 @@ jobs:
           name: artefacts-${{ matrix.proof }}
           path: |
             artefacts/${{ needs.compile.outputs.artifact_name }}.json
-            artefacts/proof/*-full.txt
+            artefacts/proof/*.txt
 
       - name: "Shut down docker image"
         if: always()

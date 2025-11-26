@@ -75,7 +75,7 @@ ${RUSTC} --version
 pushd "${CRATE_DIR}" >/dev/null
 # Force cargo to emit artifacts under the crate's own target directory
 export CARGO_TARGET_DIR="${CRATE_DIR}/target"
-cargo clean && cargo build --features runtime-verification
+cargo clean && cargo build --features runtime-verification,assumptions
 popd >/dev/null
 
 # Collect SMIR JSONs from the crate's target dir

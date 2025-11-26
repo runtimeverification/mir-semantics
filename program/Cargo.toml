@@ -13,6 +13,7 @@ test-sbf = []
 test-against-pinocchio = ["pinocchio-token-interface"]
 runtime-verification = []
 rvo = []
+assumptions = []
 
 [dependencies]
 arrayref = "0.3.9"
