@@ -156,6 +156,17 @@ module KMIR-SPL-TOKEN
   rule #isSPLPackFunc("solana_program_pack::<spl_token_interface::state::Mint as solana_program_pack::Pack>::pack") => true
   // mock mint
   rule #isSPLPackFunc("Mint::pack") => true
+
+  // Rent sysvar calls (includes mock harness direct calls to Rent::from_account_info / Rent::get)
+  syntax Bool ::= #isSPLRentFromAccountInfoFunc ( String ) [function, total]
+  rule #isSPLRentFromAccountInfoFunc(_) => false [owise]
+  rule #isSPLRentFromAccountInfoFunc("Rent::from_account_info") => true   // mock harness
+  rule #isSPLRentFromAccountInfoFunc("solana_sysvar::<solana_rent::Rent as solana_sysvar::Sysvar>::from_account_info") => true
+
+  syntax Bool ::= #isSPLRentGetFunc ( String ) [function, total]
+  rule #isSPLRentGetFunc(_) => false [owise]
+  rule #isSPLRentGetFunc("Rent::get") => true   // mock harness
+  rule #isSPLRentGetFunc("solana_sysvar::rent::<impl Sysvar for solana_rent::Rent>::get") => true
 ```
 
 ## Slice metadata for SPL account buffers
@@ -378,6 +389,56 @@ module KMIR-SPL-TOKEN
       andBool 0 <=Int ?SplMintSupply andBool ?SplMintSupply <Int (1 <<Int 64)
       andBool 0 <=Int ?SplMintDecimals andBool ?SplMintDecimals <Int 256
       andBool #isSplCOptionPubkey(?SplMintFreezeAuthorityCOpt)
+    [priority(30), preserves-definedness]
+
+  rule [cheatcode-is-spl-rent]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #setLocalValue(
+            place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
+            Aggregate(variantIdx(0),
+              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplRentAccountKey:List))))) // pub key: &'a Pubkey
+              ListItem(
+                  SPLRefCell(
+                    place(
+                      LOCAL,
+                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
+                    ),
+                    Integer(?SplRentLamports:Int, 64, false)
+                  )
+              ) // lamports: Rc<RefCell<&'a mut u64>>
+              ListItem( // data: Rc<RefCell<&'a mut [u8]>>
+                  SPLRefCell(
+                    place(
+                      LOCAL,
+                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
+                    ),
+                    SPLDataBuffer(
+                      Aggregate(variantIdx(0),
+                        ListItem(Integer(?SplRentLamportsPerByteYear:Int, 64, false))
+                        ListItem(Float(2.0, 64))
+                        ListItem(Integer(?SplRentBurnPercent:Int, 8, false))
+                      )
+                    )
+                  )
+                )
+              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplRentOwnerKey:List))))) // owner: &'a Pubkey
+              ListItem(Integer(?SplRentRentEpoch:Int, 64, false))              // rent_epoch: u64
+              ListItem(BoolVal(false))                                          // is_signer: bool
+              ListItem(BoolVal(false))                                          // is_writable: bool
+              ListItem(BoolVal(false))                                          // executable: bool
+            )
+         )
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_rent"
+      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_rent"
+    ensures #isSplPubkey(?SplRentAccountKey)
+      andBool #isSplPubkey(?SplRentOwnerKey)
+      andBool 0 <=Int ?SplRentLamports andBool ?SplRentLamports <Int 18446744073709551616
+      andBool 0 <=Int ?SplRentRentEpoch andBool ?SplRentRentEpoch <Int 18446744073709551616
+      andBool 0 <=Int ?SplRentLamportsPerByteYear andBool ?SplRentLamportsPerByteYear <Int (1 <<Int 32)
+      andBool 0 <=Int ?SplRentBurnPercent andBool ?SplRentBurnPercent <=Int 100
     [priority(30), preserves-definedness]
 ```
 
@@ -702,6 +763,111 @@ expose the wrapped payload directly.
          ~> #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List))))
         ...
        </k>
+```
+
+```{.k .symbolic}
+  // Rent::from_account_info
+  rule [spl-rent-from-account-info]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLRentFromAccountInfo(DEST, OP)
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #isSPLRentFromAccountInfoFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
+    [priority(30), preserves-definedness]
+
+  syntax KItem ::= #mkSPLRentFromAccountInfo ( Place , Evaluation ) [seqstrict(2)]
+
+
+  // Accept references without an explicit deref projection (e.g., borrowed AccountInfo locals on the stack)
+  rule <k> #mkSPLRentFromAccountInfo(DEST, Reference(0, place(local(I), .ProjectionElems), _, _))
+        => #mkSPLRentFromAccountInfo(DEST, getValue(LOCALS, I))
+       ...
+      </k>
+      <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+
+  rule <k> #mkSPLRentFromAccountInfo(DEST, Reference(OFFSET, place(local(I), .ProjectionElems), _, _))
+        => #mkSPLRentFromAccountInfo(
+             DEST,
+             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET)
+           )
+       ...
+      </k>
+      <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+     andBool 0 <=Int I
+
+  rule <k> #mkSPLRentFromAccountInfo(
+            DEST,
+            Aggregate(variantIdx(0),
+              ListItem(_KEY)
+              ListItem(_LAMPORTS_CELL)
+              ListItem(SPLRefCell(_, SPLDataBuffer(RENT_DATA)))
+              _REST:List
+            )
+           )
+        => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(RENT_DATA)))
+       ...
+      </k>
+```
+
+```{.k .symbolic}
+  // Rent::get (stable value, stored once in outermost frame like p-token SysRent)
+  rule [spl-rent-get]:
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #writeSPLSysRent(DEST)
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #isSPLRentGetFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
+    [priority(30), preserves-definedness]
+
+  syntax KItem ::= #writeSPLSysRent ( Place )
+
+  // reuse existing Rent value if already initialised in outermost frame
+  rule <k> #writeSPLSysRent(DEST) => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(RENTVAL))) ... </k>
+       <stack>
+          STACK:List
+          ListItem(StackFrame(_, _, _, _, ListItem(typedValue(RENTVAL, _, _)) _REST))
+       </stack>
+    requires 0 <Int size(STACK)
+    [preserves-definedness]
+
+  rule <k> #writeSPLSysRent(DEST) => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(RENTVAL))) ... </k>
+       <stack>
+          ListItem(StackFrame(_, _, _, _, ListItem(typedValue(RENTVAL, _, _)) _REST))
+       </stack>
+    [preserves-definedness]
+
+  // first access: create SysRent in outermost frame's return slot (local 0)
+  rule [mk-spl-sys-rent]:
+      <k> #writeSPLSysRent(_DEST) ~> _CONT </k>
+      <stack>
+        _:List
+        ListItem(StackFrame(_, _, _, _,
+          ListItem(newLocal(_, _) =>
+            typedValue(
+              Aggregate(variantIdx(0),
+                ListItem(Integer(?SplSysRentLamportsPerByteYear:Int, 64, false))
+                ListItem(Float(2.0, 64))
+                ListItem(Integer(?SplSysRentBurnPercent:Int, 8, false))
+              ),
+              ty(0),
+              mutabilityNot
+            )
+          ) _:List
+        ))
+      </stack>
+    ensures 0 <=Int ?SplSysRentLamportsPerByteYear
+      andBool ?SplSysRentLamportsPerByteYear <Int (1 <<Int 32)
+      andBool 0 <=Int ?SplSysRentBurnPercent
+      andBool ?SplSysRentBurnPercent <=Int 100
+    [preserves-definedness]
 ```
 
 ```k
