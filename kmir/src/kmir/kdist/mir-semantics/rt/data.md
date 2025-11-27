@@ -1017,6 +1017,12 @@ that data as a different type.
        ...
       </k>
 
+  rule <k> #evalUnion(rvalueCast(_, _, _) #as CAST)
+        =>
+           CAST
+       ...
+      </k>
+
   rule <k> ListItem(ARG) .List ~> #mkUnion(FIELD)
         =>
             Union(FIELD, ARG)
@@ -1628,8 +1634,7 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
   rule #isEnumWithoutFields(typeInfoEnumType(_, _, _, FIELDSS, _)) => #noFields(FIELDSS)
   rule #isEnumWithoutFields(_OTHER) => false [owise]
 
-  // TODO: Connect this with MirError
-  syntax Evaulation ::= "#UBErrorInvalidDiscriminantsInEnumCast"
+  syntax MIRError ::= "#UBErrorInvalidDiscriminantsInEnumCast"
   rule <k>
            #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) ~> _REST
         =>
@@ -1662,6 +1667,39 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
   rule #validDiscriminantAux( VAL, discriminant(mirInt(DISCRIMINANT)) REST ) => VAL ==Int DISCRIMINANT orBool #validDiscriminantAux( VAL, REST )
   rule #validDiscriminantAux( VAL, discriminant(    DISCRIMINANT    ) REST ) => VAL ==Int DISCRIMINANT orBool #validDiscriminantAux( VAL, REST )
   rule #validDiscriminantAux( _VAL, .Discriminants ) => false
+```
+
+The type `std::mem::MaybeUninit` is a union that represents a potentially uninitialised location in memory.
+This union has two fields, first `()`, and second `std::mem::ManuallyDrop<T>` which represents the initialised data.
+When [converting an array to an iterator](https://github.com/rust-lang/rust/blob/a2545fd6fc66b4323f555223a860c451885d1d2b/library/core/src/array/iter.rs#L57-L70)
+a `Transmute` cast is invoked for the array element type (`T` from `[T; N]`) into `std::mem::MaybeUninit<T>`. Therefore,
+it is required for iterator use that we handle this transmute. There are details in the safety comment linked above for
+the safety of this cast. The logic of the semantics and saftey of this cast for us is:
+- that there is a `Value` to be cast as we cannot construct a `Value` that is not initialised;
+- that the type being cast from `T` is the same as the type of the unions second field `std::mem::ManuallyDrop<T>`;
+- we can then then create a union that is constructed with the second field, instantiating the `Value` in a struct;
+- otherwise we error so that the cast does not `thunk`.
+```k
+  syntax MIRError ::= "#UBInvalidTransmuteMaybeUninit"
+  rule <k>
+           #cast( _VAL:Value , castKindTransmute , TY_FROM , TY_TO )
+        =>
+           #UBInvalidTransmuteMaybeUninit
+       ...
+      </k>
+      requires #isUnionType(lookupTy(TY_TO))
+        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
+        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+
+  rule <k>
+           #cast( VAL:Value , castKindTransmute , TY_FROM , TY_TO )
+        =>
+           Union( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem(VAL) .List ))
+       ...
+      </k>
+      requires #isUnionType(lookupTy(TY_TO))
+        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
+        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
 ```
 
 

@@ -119,13 +119,36 @@ To make this function total, an optional `MaybeTy` is used.
     requires #zeroFieldOffset(LAYOUT)
   rule #transparentDepth(_) => 0 [owise]
 
-  syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total]
+  syntax String ::= #typeName ( TypeInfo ) [function, total]
+  // -------------------------------------------------------
+  rule #typeName(typeInfoUnionType(NAME, _, _, _)) => NAME
+  rule #typeName(typeInfoStructType(NAME, _, _, _)) => NAME
+  rule #typeName(typeInfoEnumType(NAME, _, _, _, _)) => NAME
+  rule #typeName(_) => "" [owise]
 
+  syntax Bool ::= #typeNameIs( TypeInfo, String ) [function, total]
+  // --------------------------------------------------------------
+  rule #typeNameIs( TY_TO, STRING) => findString(#typeName(TY_TO), STRING, 0) ==Int 0
+
+  syntax MaybeTy ::= getFieldTy ( TypeInfo , Int ) [function, total]
+  // ---------------------------------------------------------------
+  rule getFieldTy(typeInfoStructType(_, _, FIELDS, _) , IDX) => getFieldTyFromList(FIELDS, IDX)
+  rule getFieldTy(typeInfoUnionType(_, _, FIELDS, _)  , IDX) => getFieldTyFromList(FIELDS, IDX)
+  rule getFieldTy(_, _) => TyUnknown [owise]
+
+  syntax MaybeTy ::= getFieldTyFromList ( Tys , Int ) [function, total]
+  // ------------------------------------------------------------------
+  rule getFieldTyFromList(FIELD _REST, 0) => FIELD
+  rule getFieldTyFromList(_ REST, IDX) => getFieldTyFromList(REST, IDX -Int 1) requires IDX >Int 0
+  rule getFieldTyFromList(_, _) => TyUnknown [owise]
+
+  syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total]
+  // -------------------------------------------------------------
   rule #lookupMaybeTy(TY:Ty) => lookupTy(TY)
   rule #lookupMaybeTy(TyUnknown) => typeInfoVoidType
 
   syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ) [function, total]
-  // -----------------------------------------------------------
+  // ----------------------------------------------------------------------
   rule getTyOf(TyUnknown,             _                      ) => TyUnknown
   rule getTyOf(TY,                    .ProjectionElems       ) => TY
 
