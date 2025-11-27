@@ -43,7 +43,11 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
 
         # function IDs (with offset applied) have to be added to the type_map
         # before using it in this smir (simple identity, without de-duplication).
-        type_map = {**type_map, **{(f_id + smir_offset): (f_id + smir_offset) for f_id, _ in smir._smir['functions']}}
+        # type_map = {**type_map, **{(f_id + smir_offset): (f_id + smir_offset) for f_id, _ in smir._smir['functions']}}
+        # likewise, types that are missing from the SMIR JSON have to be identity-mapped
+        # to avoid `null` values in the linked output.
+        for i in range(smir_offset, smir_offset + offset):
+            type_map.setdefault(i, i)
 
         apply_offset(smir, smir_offset, type_map)
 
