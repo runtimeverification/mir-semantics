@@ -169,6 +169,110 @@ module KMIR-SPL-TOKEN
   rule #isSPLRentGetFunc("solana_sysvar::rent::<impl Sysvar for solana_rent::Rent>::get") => true
 ```
 
+## Slice metadata for SPL account buffers
+
+```k
+  // Account data (&mut [u8]) length hints (Account::LEN)
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // mint
+             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // owner
+             ListItem(Integer(_, 64, false))                                // amount
+             ListItem(_DELEG)                                               // delegate COption
+             ListItem(Integer(_, 8, false))                                 // state
+             ListItem(_IS_NATIVE)                                           // is_native COption
+             ListItem(Integer(_, 64, false))                                // delegated_amount
+             ListItem(_CLOSE)                                               // close_authority COption
+           )
+         )
+       )
+       => dynamicSize(165)
+       [priority(30)]
+
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBorrow(_, SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+             ListItem(Integer(_, 64, false))
+             ListItem(_DELEG)
+             ListItem(Integer(_, 8, false))
+             ListItem(_IS_NATIVE)
+             ListItem(Integer(_, 64, false))
+             ListItem(_CLOSE)
+           )
+         ))
+       )
+       => dynamicSize(165)
+       [priority(30)]
+
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBorrowMut(_, SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+             ListItem(Integer(_, 64, false))
+             ListItem(_DELEG)
+             ListItem(Integer(_, 8, false))
+             ListItem(_IS_NATIVE)
+             ListItem(Integer(_, 64, false))
+             ListItem(_CLOSE)
+           )
+         ))
+       )
+       => dynamicSize(165)
+       [priority(30)]
+
+  // Mint data (&mut [u8]) length hints (Mint::LEN)
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(_AUTH)                    // mint_authority COption
+             ListItem(Integer(_, 64, false))    // supply
+             ListItem(Integer(_, 8, false))     // decimals
+             ListItem(BoolVal(_))               // is_initialized
+             ListItem(_FREEZE)                  // freeze_authority COption
+           )
+         )
+       )
+       => dynamicSize(82)
+       [priority(30)]
+
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBorrow(_, SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(_AUTH)
+             ListItem(Integer(_, 64, false))
+             ListItem(Integer(_, 8, false))
+             ListItem(BoolVal(_))
+             ListItem(_FREEZE)
+           )
+         ))
+       )
+       => dynamicSize(82)
+       [priority(30)]
+
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBorrowMut(_, SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(_AUTH)
+             ListItem(Integer(_, 64, false))
+             ListItem(Integer(_, 8, false))
+             ListItem(BoolVal(_))
+             ListItem(_FREEZE)
+           )
+         ))
+       )
+       => dynamicSize(82)
+       [priority(30)]
+```
 
 ## Cheatcode handling
 ```{.k .symbolic}

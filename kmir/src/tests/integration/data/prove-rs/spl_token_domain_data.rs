@@ -119,6 +119,10 @@ impl<'a> AccountInfo<'a> {
             executable,
         }
     }
+
+    fn data_len(&self) -> usize {
+        self.data.borrow().len()
+    }
 }
 
 fn test_spltoken_domain_data(
@@ -161,6 +165,8 @@ fn test_spl_account_domain_data(acc: &AccountInfo<'_>) {
 
 fn test_spl_mint_domain_data(mint: &AccountInfo<'_>) {
     cheatcode_is_spl_mint(mint);
+
+    assert_eq!(mint.data_len(), Mint::LEN);
 
     let mut mint_state = get_mint(mint);
     assert!(!mint_state.is_initialized);
