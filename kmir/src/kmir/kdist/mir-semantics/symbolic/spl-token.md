@@ -163,13 +163,16 @@ module KMIR-SPL-TOKEN
   // mock mint
   rule #isSPLPackFunc("Mint::pack") => true
 
+  // Rent sysvar calls (includes mock harness direct calls to Rent::from_account_info / Rent::get)
   syntax Bool ::= #isSPLRentFromAccountInfoFunc ( String ) [function, total]
-  rule #isSPLRentFromAccountInfoFunc(NAME) => findString(NAME, "Rent::from_account_info", 0) =/=Int -1
   rule #isSPLRentFromAccountInfoFunc(_) => false [owise]
+  rule #isSPLRentFromAccountInfoFunc("Rent::from_account_info") => true   // mock harness
+  rule #isSPLRentFromAccountInfoFunc("solana_sysvar::<solana_rent::Rent as solana_sysvar::Sysvar>::from_account_info") => true
 
   syntax Bool ::= #isSPLRentGetFunc ( String ) [function, total]
-  rule #isSPLRentGetFunc(NAME) => findString(NAME, "Rent::get", 0) =/=Int -1
   rule #isSPLRentGetFunc(_) => false [owise]
+  rule #isSPLRentGetFunc("Rent::get") => true   // mock harness
+  rule #isSPLRentGetFunc("solana_sysvar::rent::<impl Sysvar for solana_rent::Rent>::get") => true
 
   // Adjust references when moving across stack frames
   rule #adjustRef(SPLRefCell(PLACE, VAL), OFFSET) => SPLRefCell(#adjustRef(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
