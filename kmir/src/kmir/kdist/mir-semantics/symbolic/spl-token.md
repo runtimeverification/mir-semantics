@@ -319,11 +319,14 @@ module KMIR-SPL-TOKEN
                         ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintKey:List))))        // Account.mint: Pubkey
                         ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplTokenOwnerKey:List))))  // Account.owner: Pubkey
                         ListItem(Integer(?SplAmount:Int, 64, false))             // Account.amount: u64
-                        ListItem(Aggregate(variantIdx(0), .List)) // COption<Pubkey> default None
+                        // Model COption<Pubkey> as Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplDelegateKey:List))))))
                         ListItem(Integer(?SplAccountState:Int, 8, false))        // Account.state: AccountState (repr u8)
-                        ListItem(Aggregate(variantIdx(0), .List)) // COption<u64> default None
+                        // Model COption<u64> as Some(amount); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1), ListItem(Integer(?SplIsNativeLamports:Int, 64, false))))
                         ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
-                        ListItem(Aggregate(variantIdx(0), .List)) // COption<Pubkey> default None
+                        // Model COption<Pubkey> as Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplCloseAuthKey:List))))))
                     )
                   )
                 )
@@ -349,9 +352,9 @@ module KMIR-SPL-TOKEN
       andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <Int 256
       andBool 0 <=Int ?SplDelegatedAmount andBool ?SplDelegatedAmount <Int (1 <<Int 64)
-              andBool #isSplCOptionPubkey(Aggregate(variantIdx(0), .List))
-      andBool #isSplCOptionPubkey(Aggregate(variantIdx(0), .List))
-      andBool #isSplCOptionU64(Aggregate(variantIdx(0), .List))
+      andBool #isSplPubkey(?SplDelegateKey)
+      andBool #isSplPubkey(?SplCloseAuthKey)
+      andBool 0 <=Int ?SplIsNativeLamports andBool ?SplIsNativeLamports <Int (1 <<Int 64)
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-mint]:
@@ -387,11 +390,13 @@ module KMIR-SPL-TOKEN
                     ),
                     SPLDataBuffer(
                       Aggregate(variantIdx(0),
-                        ListItem(Aggregate(variantIdx(0), .List))
+                        // Model COption<Pubkey> as Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintAuthorityKey:List))))))
                         ListItem(Integer(?SplMintSupply:Int, 64, false))
                         ListItem(Integer(?SplMintDecimals:Int, 8, false))
                         ListItem(BoolVal(false))
-                        ListItem(Aggregate(variantIdx(0), .List))
+                        // Model COption<Pubkey> as Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintFreezeAuthorityKey:List))))))
                       )
                     )
                   )
@@ -412,10 +417,10 @@ module KMIR-SPL-TOKEN
       andBool #isSplPubkey(?SplMintOwnerKey)
       andBool 0 <=Int ?SplMintLamports andBool ?SplMintLamports <Int 18446744073709551616
       andBool 0 <=Int ?SplMintRentEpoch andBool ?SplMintRentEpoch <Int 18446744073709551616
-      andBool #isSplCOptionPubkey(Aggregate(variantIdx(0), .List))
+      andBool #isSplPubkey(?SplMintAuthorityKey)
       andBool 0 <=Int ?SplMintSupply andBool ?SplMintSupply <Int (1 <<Int 64)
       andBool 0 <=Int ?SplMintDecimals andBool ?SplMintDecimals <Int 256
-      andBool #isSplCOptionPubkey(Aggregate(variantIdx(0), .List))
+      andBool #isSplPubkey(?SplMintFreezeAuthorityKey)
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-rent]:
