@@ -163,6 +163,14 @@ module KMIR-SPL-TOKEN
   // mock mint
   rule #isSPLPackFunc("Mint::pack") => true
 
+  syntax Bool ::= #isSPLRentFromAccountInfoFunc ( String ) [function, total]
+  rule #isSPLRentFromAccountInfoFunc(NAME) => findString(NAME, "Rent::from_account_info", 0) =/=Int -1
+  rule #isSPLRentFromAccountInfoFunc(_) => false [owise]
+
+  syntax Bool ::= #isSPLRentGetFunc ( String ) [function, total]
+  rule #isSPLRentGetFunc(NAME) => findString(NAME, "Rent::get", 0) =/=Int -1
+  rule #isSPLRentGetFunc(_) => false [owise]
+
   // Adjust references when moving across stack frames
   rule #adjustRef(SPLRefCell(PLACE, VAL), OFFSET) => SPLRefCell(#adjustRef(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
   rule #adjustRef(SPLDataBorrow(PLACE, VAL), OFFSET) => SPLDataBorrow(#adjustRef(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
@@ -431,18 +439,28 @@ module KMIR-SPL-TOKEN
               ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplRentAccountKey:List))))) // pub key: &'a Pubkey
               ListItem(
                   SPLRefCell(
-                    place(
-                      LOCAL,
-                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
+                    Reference(
+                      0,
+                      place(
+                        LOCAL,
+                        appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
+                      ),
+                      mutabilityNot,
+                      metadata(noMetadataSize, 0, noMetadataSize)
                     ),
                     Integer(?SplRentLamports:Int, 64, false)
                   )
               ) // lamports: Rc<RefCell<&'a mut u64>>
               ListItem( // data: Rc<RefCell<&'a mut [u8]>>
                   SPLRefCell(
-                    place(
-                      LOCAL,
-                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
+                    Reference(
+                      0,
+                      place(
+                        LOCAL,
+                        appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
+                      ),
+                      mutabilityNot,
+                      metadata(noMetadataSize, 0, noMetadataSize)
                     ),
                     SPLDataBuffer(
                       Aggregate(variantIdx(0),
