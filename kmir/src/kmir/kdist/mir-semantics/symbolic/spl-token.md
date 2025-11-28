@@ -180,11 +180,6 @@ module KMIR-SPL-TOKEN
   rule #adjustRef(SPLDataBorrowMut(PLACE, VAL), OFFSET) => SPLDataBorrowMut(#adjustRef(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
   rule #adjustRef(SPLDataBuffer(VAL), OFFSET) => SPLDataBuffer(#adjustRef(VAL, OFFSET))
   rule #adjustRef(SPLPubkeyRef(VAL), OFFSET) => SPLPubkeyRef(#adjustRef(VAL, OFFSET))
-  // COption values are pure data; adjusting references is a no-op
-  rule #adjustRef(VAL, _) => VAL
-    requires #isSplCOptionPubkey(VAL) orBool #isSplCOptionU64(VAL)
-    [simplification]
-
 ```
 
 ## Slice metadata for SPL account buffers
