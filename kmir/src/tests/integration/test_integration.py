@@ -40,6 +40,7 @@ PROVE_RS_START_SYMBOLS = {
     'spl_token_domain_data': [
         'test_spl_account_domain_data',
         'test_spl_mint_domain_data',
+        'test_spl_rent_domain_data',
         'test_spl_account_lamports_read_then_write',
     ],
 }
