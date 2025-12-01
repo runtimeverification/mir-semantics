@@ -700,7 +700,7 @@ fn inner_test_validate_owner(
     // Line 102-104 of validate_owner function in mod.rs
     if expected_owner != owner_account_info.key() {
         assert_eq!(result, Err(ProgramError::Custom(4)));
-        result
+        return result;
     }
     // Line 106-108
     // We add the `maybe_multisig_is_initialised.is_some()` to not branch vacuously in the
@@ -750,18 +750,18 @@ fn inner_test_validate_owner(
             if signers_count < multisig.m as usize {
                 assert_eq!(result, Err(ProgramError::MissingRequiredSignature));
                 return result;
-            } else {
-                return result;
             }
+
+            return Ok(());
         }
     }
     // Line 133-135: Non-multisig case - check if owner_account_info.is_signer()
     else if !owner_account_info.is_signer() {
         assert_eq!(result, Err(ProgramError::MissingRequiredSignature));
         return result;
-    } else {
-        return result;
     }
+
+    Ok(())
 }
 
 // wrapper to ensure the test below is in the SMIR JSON
