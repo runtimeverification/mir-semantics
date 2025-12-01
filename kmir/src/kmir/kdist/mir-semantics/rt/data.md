@@ -450,6 +450,26 @@ This is done without consideration of the validity of the Downcast[^downcast].
        </k>
 ```
 
+In context with pointer casts, the semantics handles the special case of a _transparent wrapper struct_:
+A pointer to a struct containing a single element can be cast to a pointer to the single element itself.
+While the pointer cast tries to insert and remove field projections to the singleton field,
+it is still possible that a field projection occurs on a value which is not an Aggregate (nor a union).
+This necessitates a special rule which allows the semantics to perform a field projection to field 0 as a Noop.
+The situation typically arises when the stored value is a pointer (`NonNull`), therefore the rule is restricted to this case.
+The context is populated with the correct field access data, so that write-backs will correct the stored value to an Aggregate.
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             PtrLocal(_, _, _, _) #as VALUE,
+             projectionElemField(fieldIdx(0), TY) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, VALUE, PROJS, CtxField(variantIdx(0), ListItem(VALUE), 0, TY) CTXTS) ... </k>
+    [preserves-definedness, priority(100)]
+```
+
+
 #### Unions
 ```k
   // Case: Union is in same state as field projection
