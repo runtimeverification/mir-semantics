@@ -267,7 +267,11 @@ class KMIR(KProve, KRun, KParse):
             )
 
             with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
-                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, cut_point_rules=cut_point_rules)
+                prover = APRProver(
+                    kcfg_explore,
+                    execute_depth=opts.max_depth,
+                    cut_point_rules=cut_point_rules,
+                )
                 prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
                 return apr_proof
 
