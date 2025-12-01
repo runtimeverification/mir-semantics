@@ -10,7 +10,6 @@ use {
     },
     solana_account_info::{next_account_info, AccountInfo},
     solana_cpi::set_return_data,
-    solana_msg::msg,
     solana_program_error::{ProgramError, ProgramResult},
     solana_program_memory::sol_memcmp,
     solana_program_option::COption,
@@ -20,6 +19,14 @@ use {
     solana_sdk_ids::system_program,
     solana_sysvar::Sysvar,
 };
+
+#[cfg(not (feature = "runtime-verification"))]
+use solana_msg::msg;
+#[cfg(feature = "runtime-verification")]
+macro_rules! msg {
+    ($_:expr) => {};
+    ($($_:tt)*) => {};
+}
 
 /// Program state handler.
 pub struct Processor {}

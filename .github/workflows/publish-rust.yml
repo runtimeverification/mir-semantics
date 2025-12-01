@@ -10,7 +10,6 @@ on:
         type: choice
         options:
           - clients/rust
-          - interface
           - p-interface
           - program
           - p-token

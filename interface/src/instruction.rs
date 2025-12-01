@@ -495,11 +495,12 @@ impl<'a> TokenInstruction<'a> {
                 Self::InitializeMultisig { m }
             }
             3 | 4 | 7 | 8 => {
-                let amount = rest
+                let amount_bytes: [u8; 8] = rest
                     .get(..8)
                     .and_then(|slice| slice.try_into().ok())
-                    .map(u64::from_le_bytes)
                     .ok_or(InvalidInstruction)?;
+                let amount = u64::from_le_bytes(amount_bytes);
+
                 match tag {
                     3 => Self::Transfer { amount },
                     4 => Self::Approve { amount },
