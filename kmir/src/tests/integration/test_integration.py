@@ -58,7 +58,7 @@ PROVE_RS_SHOW_SPECS = [
     'iterator-simple-fail',
     'unions-fail',
     'transmute-maybe-uninit-fail',
-    'iter_next_2-fail'
+    'iter_next_2-fail',
 ]
 
 
