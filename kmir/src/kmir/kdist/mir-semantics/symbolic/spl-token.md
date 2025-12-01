@@ -180,9 +180,9 @@ module KMIR-SPL-TOKEN
   rule #isSPLRentGetFunc("solana_sysvar::rent::<impl Sysvar for solana_rent::Rent>::get") => true
 
   // Adjust references when moving across stack frames
-  rule #adjustRef(SPLRefCell(PLACE, VAL), OFFSET) => SPLRefCell(#adjustAbsPlace(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
-  rule #adjustRef(SPLDataBorrow(PLACE, VAL), OFFSET) => SPLDataBorrow(#adjustAbsPlace(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
-  rule #adjustRef(SPLDataBorrowMut(PLACE, VAL), OFFSET) => SPLDataBorrowMut(#adjustAbsPlace(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
+  rule #adjustRef(SPLRefCell(ABS_PLACE, VAL), OFFSET) => SPLRefCell(#adjustAbsPlace(ABS_PLACE, OFFSET), VAL)
+  rule #adjustRef(SPLDataBorrow(ABS_PLACE, VAL), OFFSET) => SPLDataBorrow(#adjustAbsPlace(ABS_PLACE, OFFSET), VAL)
+  rule #adjustRef(SPLDataBorrowMut(ABS_PLACE, VAL), OFFSET) => SPLDataBorrowMut(#adjustAbsPlace(ABS_PLACE, OFFSET), VAL)
   rule #adjustRef(SPLDataBuffer(VAL), OFFSET) => SPLDataBuffer(#adjustRef(VAL, OFFSET))
   rule #adjustRef(SPLPubkeyRef(VAL), OFFSET) => SPLPubkeyRef(#adjustRef(VAL, OFFSET))
 ```
