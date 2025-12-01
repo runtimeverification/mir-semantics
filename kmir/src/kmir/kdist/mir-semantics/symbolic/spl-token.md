@@ -507,7 +507,7 @@ expose the wrapped payload directly.
   syntax KItem ::= #finishSPLRcDeref ( Evaluation , Place , MaybeBasicBlockIdx ) [seqstrict(1)]
                  | #resolveSPLRcRef ( Value , Place , MaybeBasicBlockIdx )
                  | #finishResolvedSPLRc ( Place , MaybeBasicBlockIdx )
-                 | #writeThroughRef ( Value , Value ) [seqstrict(2)]
+                 | #writeThroughRef ( Value , Value )
 
   rule <k> #finishSPLRcDeref(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET)
         => #resolveSPLRcRef(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET)
