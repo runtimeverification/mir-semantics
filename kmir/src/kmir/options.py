@@ -108,6 +108,7 @@ class ProveRSOpts(ProveOpts):
     save_smir: bool
     smir: bool
     start_symbol: str
+    cfg_roots: list[str]
 
     def __init__(
         self,
@@ -120,6 +121,7 @@ class ProveRSOpts(ProveOpts):
         save_smir: bool = False,
         smir: bool = False,
         start_symbol: str = 'main',
+        cfg_roots: Path | None = None,
         break_on_calls: bool = False,
         break_on_function_calls: bool = False,
         break_on_intrinsic_calls: bool = False,
@@ -136,6 +138,10 @@ class ProveRSOpts(ProveOpts):
         break_every_step: bool = False,
         terminate_on_thunk: bool = False,
     ) -> None:
+        # store each non-empty line in the cfg roots file + start symbol
+        cfg_roots = list(filter(None, [root.strip() for root in cfg_roots.read_text().splitlines()])) if cfg_roots is not None else []
+        cfg_roots.append(start_symbol)
+
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.bug_report = bug_report
@@ -145,6 +151,7 @@ class ProveRSOpts(ProveOpts):
         self.save_smir = save_smir
         self.smir = smir
         self.start_symbol = start_symbol
+        self.cfg_roots = cfg_roots
         self.break_on_calls = break_on_calls
         self.break_on_function_calls = break_on_function_calls
         self.break_on_intrinsic_calls = break_on_intrinsic_calls
