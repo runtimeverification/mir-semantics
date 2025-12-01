@@ -89,10 +89,15 @@ module KMIR-SPL-TOKEN
 ## Helper syntax
 
 ```k
-  syntax Value ::= SPLRefCell ( Value , Value ) // Reference to the buffer, value in the cell
+  syntax AbsPlace ::= AbsPlace ( Int , Place )
+
+  syntax AbsPlace ::= #adjustAbsPlace ( AbsPlace , Int ) [function, total]
+  rule #adjustAbsPlace(AbsPlace(DEPTH, PLACE), OFFSET) => AbsPlace(DEPTH +Int OFFSET, PLACE)
+
+  syntax Value ::= SPLRefCell ( AbsPlace , Value ) // Place of the buffer, value in the cell
                  | SPLDataBuffer ( Value )
-                 | SPLDataBorrow ( Value , Value ) // Reference to the buffer, borrowed value
-                 | SPLDataBorrowMut ( Value , Value )
+                 | SPLDataBorrow ( AbsPlace , Value ) // Place of the buffer, borrowed value
+                 | SPLDataBorrowMut ( AbsPlace , Value )
                  | SPLPubkeyRef ( Value )
 ```
 
@@ -175,9 +180,9 @@ module KMIR-SPL-TOKEN
   rule #isSPLRentGetFunc("solana_sysvar::rent::<impl Sysvar for solana_rent::Rent>::get") => true
 
   // Adjust references when moving across stack frames
-  rule #adjustRef(SPLRefCell(PLACE, VAL), OFFSET) => SPLRefCell(#adjustRef(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
-  rule #adjustRef(SPLDataBorrow(PLACE, VAL), OFFSET) => SPLDataBorrow(#adjustRef(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
-  rule #adjustRef(SPLDataBorrowMut(PLACE, VAL), OFFSET) => SPLDataBorrowMut(#adjustRef(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
+  rule #adjustRef(SPLRefCell(PLACE, VAL), OFFSET) => SPLRefCell(#adjustAbsPlace(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
+  rule #adjustRef(SPLDataBorrow(PLACE, VAL), OFFSET) => SPLDataBorrow(#adjustAbsPlace(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
+  rule #adjustRef(SPLDataBorrowMut(PLACE, VAL), OFFSET) => SPLDataBorrowMut(#adjustAbsPlace(PLACE, OFFSET), #adjustRef(VAL, OFFSET))
   rule #adjustRef(SPLDataBuffer(VAL), OFFSET) => SPLDataBuffer(#adjustRef(VAL, OFFSET))
   rule #adjustRef(SPLPubkeyRef(VAL), OFFSET) => SPLPubkeyRef(#adjustRef(VAL, OFFSET))
 ```
@@ -297,28 +302,24 @@ module KMIR-SPL-TOKEN
               ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplAccountKey:List)))))              // pub key: &'a Pubkey
               ListItem(
                   SPLRefCell(
-                    Reference(
+                    AbsPlace(
                       0,
                       place(
                         LOCAL,
                         appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
-                      ),
-                      mutabilityNot,
-                      metadata(noMetadataSize, 0, noMetadataSize)
+                      )
                     ),
                     Integer(?SplLamports:Int, 64, false)
                   )
               ) // lamports: Rc<RefCell<&'a mut u64>>
               ListItem( // data: Rc<RefCell<&'a mut [u8]>>
                   SPLRefCell(
-                    Reference(
+                    AbsPlace(
                       0,
                       place(
                         LOCAL,
                         appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
-                      ),
-                      mutabilityNot,
-                      metadata(noMetadataSize, 0, noMetadataSize)
+                      )
                     ),
                     SPLDataBuffer( // data: Rc<RefCell<&'a mut [u8]>>, Aggregate is for &account.data
                       Aggregate(variantIdx(0),
@@ -371,28 +372,24 @@ module KMIR-SPL-TOKEN
               ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplMintAccountKey:List)))))    // pub key: &'a Pubkey
               ListItem(
                   SPLRefCell(
-                    Reference(
+                    AbsPlace(
                       0,
                       place(
                         LOCAL,
                         appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
-                      ),
-                      mutabilityNot,
-                      metadata(noMetadataSize, 0, noMetadataSize)
+                      )
                     ),
                     Integer(?SplMintLamports:Int, 64, false)
                   )
               )
               ListItem(
                   SPLRefCell(
-                    Reference(
+                    AbsPlace(
                       0,
                       place(
                         LOCAL,
                         appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
-                      ),
-                      mutabilityNot,
-                      metadata(noMetadataSize, 0, noMetadataSize)
+                      )
                     ),
                     SPLDataBuffer(
                       Aggregate(variantIdx(0),
@@ -437,28 +434,24 @@ module KMIR-SPL-TOKEN
               ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplRentAccountKey:List))))) // pub key: &'a Pubkey
               ListItem(
                   SPLRefCell(
-                    Reference(
+                    AbsPlace(
                       0,
                       place(
                         LOCAL,
                         appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
-                      ),
-                      mutabilityNot,
-                      metadata(noMetadataSize, 0, noMetadataSize)
+                      )
                     ),
                     Integer(?SplRentLamports:Int, 64, false)
                   )
               ) // lamports: Rc<RefCell<&'a mut u64>>
               ListItem( // data: Rc<RefCell<&'a mut [u8]>>
                   SPLRefCell(
-                    Reference(
+                    AbsPlace(
                       0,
                       place(
                         LOCAL,
                         appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
-                      ),
-                      mutabilityNot,
-                      metadata(noMetadataSize, 0, noMetadataSize)
+                      )
                     ),
                     SPLDataBuffer(
                       Aggregate(variantIdx(0),
@@ -507,7 +500,7 @@ expose the wrapped payload directly.
   syntax KItem ::= #finishSPLRcDeref ( Evaluation , Place , MaybeBasicBlockIdx ) [seqstrict(1)]
                  | #resolveSPLRcRef ( Value , Place , MaybeBasicBlockIdx )
                  | #finishResolvedSPLRc ( Place , MaybeBasicBlockIdx )
-                 | #writeThroughRef ( Value , Value )
+                 | #writeThroughAbsPlace ( AbsPlace , Value )
 
   rule <k> #finishSPLRcDeref(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET)
         => #resolveSPLRcRef(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET)
@@ -555,7 +548,7 @@ expose the wrapped payload directly.
       </k>
 
   // Cross-frame write helper for SPL ref cells
-  rule <k> #writeThroughRef(Reference(0, place(local(I), PROJS), _, _), VAL)
+  rule <k> #writeThroughAbsPlace(AbsPlace(0, place(local(I), PROJS)), VAL)
         => #forceSetPlaceValue(place(local(I), PROJS), VAL)
        ...
       </k>
@@ -563,7 +556,7 @@ expose the wrapped payload directly.
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
 
-  rule <k> #writeThroughRef(Reference(OFFSET, place(local(I), PROJS), _, _), VAL)
+  rule <k> #writeThroughAbsPlace(AbsPlace(OFFSET, place(local(I), PROJS)), VAL)
         => #traverseProjection(
              toStack(OFFSET, local(I)),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET),
@@ -608,7 +601,7 @@ expose the wrapped payload directly.
 
 ```k
   // Step 1
-  syntax Context ::= CtxSPLRefCell ( Value )
+  syntax Context ::= CtxSPLRefCell ( AbsPlace )
   rule <k> #traverseProjection(
              DEST,
              SPLRefCell(PLACE, VAL),
@@ -628,7 +621,7 @@ expose the wrapped payload directly.
   rule #projectionsFor(CtxSPLRefCell(_) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
 
   // Step 2 
-  syntax Context ::= CtxSPLDataBorrow ( Value )
+  syntax Context ::= CtxSPLDataBorrow ( AbsPlace )
   rule <k> #traverseProjection(
              DEST,
              SPLDataBorrow(PLACE, VAL),
@@ -647,7 +640,7 @@ expose the wrapped payload directly.
   rule #buildUpdate(VAL, CtxSPLDataBorrow(PLACE) CTXS) => #buildUpdate(SPLDataBorrow(PLACE, SPLDataBuffer(VAL)), CTXS)
   rule #projectionsFor(CtxSPLDataBorrow(_) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
 
-  syntax Context ::= CtxSPLDataBorrowMut ( Value )
+  syntax Context ::= CtxSPLDataBorrowMut ( AbsPlace )
   rule <k> #traverseProjection(
              DEST,
              SPLDataBorrowMut(PLACE, VAL),
@@ -830,14 +823,13 @@ expose the wrapped payload directly.
   syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation , Place ) [seqstrict(1,2)]
 
   rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)), DEST)
-        => #writeThroughRef(
+        => #writeThroughAbsPlace(
              PLACE,
              SPLRefCell(PLACE, SPLDataBuffer(ACCOUNT))
            )
          ~> #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List))))
         ...
        </k>
-    requires isRef(PLACE)
 ```
 
 ```{.k .symbolic}
