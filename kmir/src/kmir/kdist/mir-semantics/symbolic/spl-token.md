@@ -278,6 +278,46 @@ module KMIR-SPL-TOKEN
        )
        => dynamicSize(82)
        [priority(30)]
+
+  // Rent data (&mut [u8]) length hints (Rent::LEN)
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Integer(_, 64, false))    // lamports_per_byte_year
+             ListItem(Float(2.0, 64))           // exemption_threshold
+             ListItem(Integer(_, 8, false))     // burn_percent
+           )
+         )
+       )
+       => dynamicSize(17)
+       [priority(30)]
+
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBorrow(_, SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Integer(_, 64, false))
+             ListItem(Float(2.0, 64))
+             ListItem(Integer(_, 8, false))
+           )
+         ))
+       )
+       => dynamicSize(17)
+       [priority(30)]
+
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBorrowMut(_, SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Integer(_, 64, false))
+             ListItem(Float(2.0, 64))
+             ListItem(Integer(_, 8, false))
+           )
+         ))
+       )
+       => dynamicSize(17)
+       [priority(30)]
 ```
 
 ## Cheatcode handling
