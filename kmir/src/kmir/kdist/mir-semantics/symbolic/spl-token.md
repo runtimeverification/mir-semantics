@@ -117,20 +117,26 @@ module KMIR-SPL-TOKEN
 
   syntax Bool ::= #isSPLRcRefCellDerefFunc ( String ) [function, total]
   rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<&mut [u8]>> as std::ops::Deref>::deref") => true
+  rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<&mut u64>> as std::ops::Deref>::deref") => true
   rule #isSPLRcRefCellDerefFunc(_) => false [owise]
 
   syntax Bool ::= #isSPLBorrowFunc ( String ) [function, total]
   rule #isSPLBorrowFunc("std::cell::RefCell::<&mut [u8]>::borrow") => true
   rule #isSPLBorrowFunc("std::cell::RefCell::<&mut [u8]>::borrow_mut") => true
+  rule #isSPLBorrowFunc("std::cell::RefCell::<&mut u64>::borrow") => true
+  rule #isSPLBorrowFunc("std::cell::RefCell::<&mut u64>::borrow_mut") => true
   rule #isSPLBorrowFunc(_) => false [owise]
 
   syntax Bool ::= #isSPLBorrowMutFunc ( String ) [function, total]
   rule #isSPLBorrowMutFunc("std::cell::RefCell::<&mut [u8]>::borrow_mut") => true
+  rule #isSPLBorrowMutFunc("std::cell::RefCell::<&mut u64>::borrow_mut") => true
   rule #isSPLBorrowMutFunc(_) => false [owise]
 
   syntax Bool ::= #isSPLRefDerefFunc      ( String ) [function, total]
   rule #isSPLRefDerefFunc("<std::cell::Ref<'_, &mut [u8]> as std::ops::Deref>::deref") => true
   rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut [u8]> as std::ops::DerefMut>::deref_mut") => true
+  rule #isSPLRefDerefFunc("<std::cell::Ref<'_, &mut u64> as std::ops::Deref>::deref") => true
+  rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut u64> as std::ops::DerefMut>::deref_mut") => true
   rule #isSPLRefDerefFunc(_) => false [owise]
 
   syntax Bool ::= #isSPLUnpackFunc ( String ) [function, total]

@@ -63,6 +63,8 @@ fn main() {
     );
 
     test_spltoken_domain_data(&acc, &mint, &multisig, &rent);
+    // Keep lamports read/write harness reachable so stable-mir emits it.
+    test_spl_account_lamports_read_then_write(&[acc.clone()]);
 }
 
 #[derive(Clone)]
@@ -203,6 +205,16 @@ fn test_spl_multisig_domain_data(multisig: &AccountInfo<'_>) {
     assert_eq!(unpacked_multisig.signers[0], MULTISIG_SIGNER_A);
     assert_eq!(unpacked_multisig.signers[1], MULTISIG_SIGNER_B);
     assert_eq!(unpacked_multisig.signers[2], MULTISIG_SIGNER_C);
+}
+
+/// Read symbolic lamports, write a concrete value, then read again to mirror the close_account stuck case and ensure writes propagate.
+#[inline(never)]
+fn test_spl_account_lamports_read_then_write(accounts: &[AccountInfo; 1]) -> (u64, u64) {
+    cheatcode_is_spl_account(&accounts[0]);
+    let before = **accounts[0].lamports.borrow();
+    **accounts[0].lamports.borrow_mut() = 42;
+    let after = **accounts[0].lamports.borrow();
+    (before, after)
 }
 
 fn test_spl_rent_domain_data(rent: &AccountInfo<'_>) {
