@@ -228,16 +228,12 @@ def _make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[str]:  # generates
             _mk_equation(kmir, 'lookupFunction', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
         )
 
-    types: set[KInner] = set()
     for type in smir_info._smir['types']:
         parse_result = kmir.parser.parse_mir_json(type, 'TypeMapping')
         assert parse_result is not None
         type_mapping, _ = parse_result
         assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
         ty, tyinfo = type_mapping.args
-        if ty in types:
-            raise ValueError(f'Key collision in type map: {ty}')
-        types.add(ty)
         equations.append(_mk_equation(kmir, 'lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
 
     for alloc in smir_info._smir['allocs']:
