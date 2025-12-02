@@ -225,6 +225,7 @@ fn test_spl_rent_domain_data(rent: &AccountInfo<'_>) {
     assert!(sysrent.burn_percent > 100 || (sys_burnt <= rent_collected && sys_distributed <= rent_collected));
 
     cheatcode_is_spl_rent(rent);
+    assert_eq!(rent.data_len(), Rent::LEN);
     let prent = Rent::from_account_info(rent).unwrap_or(sysrent);
     let (acct_burnt, acct_distributed) = prent.calculate_burn(rent_collected);
     assert!(prent.burn_percent > 100 || (acct_burnt <= rent_collected && acct_distributed <= rent_collected));
