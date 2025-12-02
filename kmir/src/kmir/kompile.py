@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from pyk.kast.inner import KApply, KSort
+from pyk.kast.inner import KApply, KSort, KToken, KVariable
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.string import stringToken
 from pyk.kore.syntax import App, EVar, SortApp, Symbol, SymbolDecl
@@ -222,8 +222,9 @@ def kompile_smir(
 def _make_stratified_rules(
     kmir: KMIR,
     fun: str,
-    id_cons: str,
+    arg_sort: str,
     result_sort: str,
+    id_cons: str,
     assocs: list[tuple[int, KInner]],
     not_found: KInner,
     strata: int = 10,
@@ -231,14 +232,19 @@ def _make_stratified_rules(
     from pyk.kore.prelude import int_dv
     from pyk.kore.rule import FunctionRule
 
-    arg_sort_kore = SortApp('Sort' + id_cons.capitalize())
+    int_eqls = "Lbl'UndsEqlsEqls'Int'Unds'"
+    int_tmod = "Lbl'UndsPerc'Int'Unds'"
+
+    arg_sort_kore = SortApp('Sort' + arg_sort)
+    int_sort_kore = SortApp('SortInt')
     result_sort_kore = SortApp('Sort' + result_sort)
+    id_cons_kore = 'Lbl' + id_cons
 
     declarations = [
         # declare stratified functions
         SymbolDecl(
             symbol=Symbol('Lbl' + fun + str(i)),
-            param_sorts=(arg_sort_kore,),
+            param_sorts=(int_sort_kore,),
             sort=result_sort_kore,
             attrs=(
                 App('function'),
@@ -249,11 +255,11 @@ def _make_stratified_rules(
     ]
     dispatch = [
         # define dispatch equations to stratified functions
-        # f'rule {fun}({id_cons}(N) => {fun}{str(i)}(N)) requires N /Int {strata} ==Int {i}'
+        # f'rule {fun}({id_cons}(N) => {fun}{i}(N)) requires N /Int {strata} ==Int {i}'
         FunctionRule(
-            App('Lbl' + fun, (), (App(id_cons, (), (EVar('N', SortApp('SortInt')),)),)),
-            App('Lbl' + fun + str(i), (), (EVar('N', SortApp('SortInt')),)),
-            App('==Int', (), [App('%Int', (), [EVar('N', SortApp('SortInt')), int_dv(strata)]), int_dv(i)]),
+            App('Lbl' + fun, (), (App(id_cons_kore, (), (EVar('VarN', int_sort_kore),)),)),
+            App('Lbl' + fun + str(i), (), (EVar('VarN', int_sort_kore),)),
+            App(int_eqls, (), [App(int_tmod, (), [EVar('VarN', int_sort_kore), int_dv(strata)]), int_dv(i)]),
             None,
             result_sort_kore,
             (arg_sort_kore,),
@@ -268,12 +274,12 @@ def _make_stratified_rules(
         # define dispatch equations to stratified functions
         # f'rule {fun}{i}(N) => {default} [owise]'
         FunctionRule(
-            App('Lbl' + fun + str(i), (), (EVar('N', SortApp('SortInt')),)),
+            App('Lbl' + fun + str(i), (), (EVar('VarN', SortApp('SortInt')),)),
             kmir.kast_to_kore(not_found),
             None,
             None,
             result_sort_kore,
-            (arg_sort_kore,),
+            (int_sort_kore,),
             None,
             200,
             f'default-{fun}-{i}',
@@ -310,11 +316,23 @@ def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> Sequence[Sentence]:
         ty, tyinfo = type_mapping.args
         equations.append(_mk_equation(kmir, 'lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
 
-    for alloc in smir_info._smir['allocs']:
-        alloc_id, value = _decode_alloc(smir_info=smir_info, raw_alloc=alloc)
-        equations.append(_mk_equation(kmir, 'lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
+    def get_int_arg(app: KInner) -> int:
+        match app:
+            case KApply(_, args=(KToken(token=int_arg, sort=KSort('Int')),)):
+                return int(int_arg)
+            case _:
+                raise Exception(f'Cannot extract int arg from {app}')
 
-    return equations
+    invalid_alloc_n = KApply(
+        'InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KApply('allocId', (KVariable('N'),)),)
+    )
+    decoded_allocs = [_decode_alloc(smir_info=smir_info, raw_alloc=alloc) for alloc in smir_info._smir['allocs']]
+    allocs = [(get_int_arg(alloc_id), value) for (alloc_id, value) in decoded_allocs]
+    alloc_equations = _make_stratified_rules(
+        kmir, 'lookupAlloc', 'AllocId', 'Evaluation', 'allocId', allocs, invalid_alloc_n
+    )
+
+    return [*equations, *alloc_equations]
 
 
 def _default_equations(kmir) -> list[Axiom]:
@@ -332,19 +350,12 @@ def _default_equations(kmir) -> list[Axiom]:
     default_function = _mk_equation(
         kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
     ).let_attrs(((App('owise')),))
-    default_alloc = _mk_equation(
-        kmir,
-        'lookupAlloc',
-        KVariable('ID'),
-        'AllocId',
-        KApply('InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KVariable('ID'),)),
-        'Evaluation',
-    ).let_attrs(((App('owise')),))
+
     default_ty = _mk_equation(
         kmir, 'lookupTy', KApply('ty', (KVariable('_TY'),)), 'Ty', KApply('TypeInfo::VoidType', ()), 'TypeInfo'
     ).let_attrs(((App('owise')),))
 
-    return [default_function, default_alloc, default_ty]
+    return [default_function, default_ty]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
@@ -427,7 +438,7 @@ def _insert_rules_and_write(input_file: Path, rules: Sequence[Sentence], output_
 
     # Insert rules before the endmodule line
     new_lines.append(f'\n// Generated from file {input_file}\n\n')
-    new_lines.extend([ax.text for ax in rules])
+    new_lines.extend([ax.text + '\n' for ax in rules])
     new_lines.append('\n' + last_line)
 
     # Write to output file
