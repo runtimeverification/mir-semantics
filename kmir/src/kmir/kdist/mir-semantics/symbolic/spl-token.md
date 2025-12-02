@@ -308,11 +308,20 @@ module KMIR-SPL-TOKEN
                         ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintKey:List))))        // Account.mint: Pubkey
                         ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplTokenOwnerKey:List))))  // Account.owner: Pubkey
                         ListItem(Integer(?SplAmount:Int, 64, false))             // Account.amount: u64
-                        ListItem(?SplDelegateCOpt:Value)                         // Account.delegate: COption<Pubkey>
+                        // Model COption<Pubkey> as
+                        // Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1),
+                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplDelegateKey:List))))))
                         ListItem(Aggregate(variantIdx(?SplAccountState:Int), .List)) // Account.state: AccountState (repr u8)
-                        ListItem(?SplIsNativeCOpt:Value)                         // Account.is_native: COption<u64>
+                        // Model COption<u64> as
+                        // Some(amount); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1),
+                          ListItem(Integer(?SplIsNativeLamports:Int, 64, false))))
                         ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
-                        ListItem(?SplCloseAuthCOpt:Value)                        // Account.close_authority: COption<Pubkey>
+                        // Model COption<Pubkey> as
+                        // Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1),
+                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplCloseAuthKey:List))))))
                     )
                   )
                 )
@@ -335,12 +344,12 @@ module KMIR-SPL-TOKEN
       andBool 0 <=Int ?SplRentEpoch andBool ?SplRentEpoch <Int 18446744073709551616
       andBool #isSplPubkey(?SplMintKey)
       andBool #isSplPubkey(?SplTokenOwnerKey)
+      andBool #isSplPubkey(?SplDelegateKey)
+      andBool #isSplPubkey(?SplCloseAuthKey)
       andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <=Int 2
       andBool 0 <=Int ?SplDelegatedAmount andBool ?SplDelegatedAmount <Int (1 <<Int 64)
-      andBool #isSplCOptionPubkey(?SplDelegateCOpt)
-      andBool #isSplCOptionPubkey(?SplCloseAuthCOpt)
-      andBool #isSplCOptionU64(?SplIsNativeCOpt)
+      andBool 0 <=Int ?SplIsNativeLamports andBool ?SplIsNativeLamports <Int (1 <<Int 64)
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-mint]:
@@ -366,11 +375,17 @@ module KMIR-SPL-TOKEN
                     ),
                     SPLDataBuffer(
                       Aggregate(variantIdx(0),
-                        ListItem(?SplMintAuthorityCOpt:Value)
+                        // Model COption<Pubkey> as
+                        // Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1),
+                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintAuthorityKey:List))))))
                         ListItem(Integer(?SplMintSupply:Int, 64, false))
                         ListItem(Integer(?SplMintDecimals:Int, 8, false))
                         ListItem(BoolVal(false))
-                        ListItem(?SplMintFreezeAuthorityCOpt:Value)
+                        // Model COption<Pubkey> as
+                        // Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1),
+                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintFreezeAuthorityKey:List))))))
                       )
                     )
                   )
@@ -389,12 +404,12 @@ module KMIR-SPL-TOKEN
       orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_mint"
     ensures #isSplPubkey(?SplMintAccountKey)
       andBool #isSplPubkey(?SplMintOwnerKey)
+      andBool #isSplPubkey(?SplMintAuthorityKey)
+      andBool #isSplPubkey(?SplMintFreezeAuthorityKey)
       andBool 0 <=Int ?SplMintLamports andBool ?SplMintLamports <Int 18446744073709551616
       andBool 0 <=Int ?SplMintRentEpoch andBool ?SplMintRentEpoch <Int 18446744073709551616
-      andBool #isSplCOptionPubkey(?SplMintAuthorityCOpt)
       andBool 0 <=Int ?SplMintSupply andBool ?SplMintSupply <Int (1 <<Int 64)
       andBool 0 <=Int ?SplMintDecimals andBool ?SplMintDecimals <Int 256
-      andBool #isSplCOptionPubkey(?SplMintFreezeAuthorityCOpt)
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-rent]:
