@@ -297,17 +297,30 @@ def _make_stratified_rules(
 
 
 def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> Sequence[Sentence]:
-    equations: list[Axiom] = _default_equations(kmir)
-
     # kprint tool is too chatty
     kprint_logger = logging.getLogger('pyk.ktool.kprint')
     kprint_logger.setLevel(logging.WARNING)
+
+    unknown_function = KApply(
+        'MonoItemKind::MonoItemFn',
+        (
+            KApply('symbol(_)_LIB_Symbol_String', (KToken('"** UNKNOWN FUNCTION **"', KSort('String')),)),
+            KApply('defId(_)_BODY_DefId_Int', (KVariable('TY', KSort('Int')),)),
+            KApply('noBody_BODY_MaybeBody', ()),
+        ),
+    )
+    default_function = _mk_equation(
+        kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
+    ).let_attrs(((App('owise')),))
+
+    equations: list[Axiom] = [default_function]
 
     for fty, kind in _functions(kmir, smir_info).items():
         equations.append(
             _mk_equation(kmir, 'lookupFunction', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
         )
 
+    # stratify type and alloc lookups
     def get_int_arg(app: KInner) -> int:
         match app:
             case KApply(_, args=(KToken(token=int_arg, sort=KSort('Int')),)):
@@ -336,25 +349,6 @@ def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> Sequence[Sentence]:
     )
 
     return [*equations, *type_equations, *alloc_equations]
-
-
-def _default_equations(kmir) -> list[Axiom]:
-    from pyk.kast.inner import KToken, KVariable
-    from pyk.kore.syntax import App
-
-    unknown_function = KApply(
-        'MonoItemKind::MonoItemFn',
-        (
-            KApply('symbol(_)_LIB_Symbol_String', (KToken('"** UNKNOWN FUNCTION **"', KSort('String')),)),
-            KApply('defId(_)_BODY_DefId_Int', (KVariable('TY', KSort('Int')),)),
-            KApply('noBody_BODY_MaybeBody', ()),
-        ),
-    )
-    default_function = _mk_equation(
-        kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
-    ).let_attrs(((App('owise')),))
-
-    return [default_function]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
