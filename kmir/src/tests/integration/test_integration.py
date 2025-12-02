@@ -42,6 +42,7 @@ PROVE_RS_START_SYMBOLS = {
         'test_spl_mint_domain_data',
         'test_spl_rent_domain_data',
         'test_spl_account_lamports_read_then_write',
+        'test_spl_account_is_native_branch',
     ],
 }
 PROVE_RS_SHOW_SPECS = [

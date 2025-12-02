@@ -133,10 +133,22 @@ fn test_spltoken_domain_data(
     multisig: &AccountInfo<'_>,
     rent: &AccountInfo<'_>,
 ) {
+    test_spl_account_is_native_branches(acc);
     test_spl_account_domain_data(acc);
     test_spl_mint_domain_data(mint);
     test_spl_multisig_domain_data(multisig);
     test_spl_rent_domain_data(rent);
+}
+
+fn test_spl_account_is_native_branches(acc: &AccountInfo<'_>) {
+    // Keep is_native symbolic, hit pack through an extra call frame, and exercise COption::<u64>::is_some
+    cheatcode_is_spl_account(acc);
+
+    let account = get_account(acc);
+    let mut borrow = acc.data.borrow_mut();
+    pack_account_inner(&mut borrow, &account);
+
+    let _ = account.is_native();
 }
 
 fn test_spl_account_domain_data(acc: &AccountInfo<'_>) {
@@ -241,6 +253,10 @@ fn get_mint(acc: &AccountInfo<'_>) -> Mint {
 
 fn get_multisig(acc: &AccountInfo<'_>) -> Multisig {
     Multisig::unpack_unchecked(&acc.data.borrow()).unwrap()
+}
+
+fn pack_account_inner(buf: &mut [u8], account: &Account) {
+    Account::pack(account.clone(), buf).unwrap();
 }
 
 #[inline(never)]
