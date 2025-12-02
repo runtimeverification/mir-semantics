@@ -308,20 +308,23 @@ def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> Sequence[Sentence]:
             _mk_equation(kmir, 'lookupFunction', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
         )
 
-    for type in smir_info._smir['types']:
-        parse_result = kmir.parser.parse_mir_json(type, 'TypeMapping')
-        assert parse_result is not None
-        type_mapping, _ = parse_result
-        assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-        ty, tyinfo = type_mapping.args
-        equations.append(_mk_equation(kmir, 'lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
-
     def get_int_arg(app: KInner) -> int:
         match app:
             case KApply(_, args=(KToken(token=int_arg, sort=KSort('Int')),)):
                 return int(int_arg)
             case _:
                 raise Exception(f'Cannot extract int arg from {app}')
+
+    invalid_type = KApply('TypeInfo::VoidType', ())
+    parsed_types = [kmir.parser.parse_mir_json(type, 'TypeMapping') for type in smir_info._smir['types']]
+    type_mappings = [type_mapping for type_mapping, _ in (result for result in parsed_types if result is not None)]
+
+    type_assocs = [
+        (get_int_arg(ty), info)
+        for ty, info in (type_mapping.args for type_mapping in type_mappings if isinstance(type_mapping, KApply))
+    ]
+
+    type_equations = _make_stratified_rules(kmir, 'lookupTy', 'Ty', 'TypeInfo', 'ty', type_assocs, invalid_type)
 
     invalid_alloc_n = KApply(
         'InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KApply('allocId', (KVariable('N'),)),)
@@ -332,7 +335,7 @@ def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> Sequence[Sentence]:
         kmir, 'lookupAlloc', 'AllocId', 'Evaluation', 'allocId', allocs, invalid_alloc_n
     )
 
-    return [*equations, *alloc_equations]
+    return [*equations, *type_equations, *alloc_equations]
 
 
 def _default_equations(kmir) -> list[Axiom]:
@@ -351,11 +354,7 @@ def _default_equations(kmir) -> list[Axiom]:
         kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
     ).let_attrs(((App('owise')),))
 
-    default_ty = _mk_equation(
-        kmir, 'lookupTy', KApply('ty', (KVariable('_TY'),)), 'Ty', KApply('TypeInfo::VoidType', ()), 'TypeInfo'
-    ).let_attrs(((App('owise')),))
-
-    return [default_function, default_ty]
+    return [default_function]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
