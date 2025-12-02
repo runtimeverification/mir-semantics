@@ -217,6 +217,24 @@ def kompile_smir(
         return KompiledConcrete(llvm_dir=target_llvm_path)
 
 
+strata = 10
+
+def _make_stratified_rules(kmir: KMIR, fun: str, id_cons: str, result_sort: str, assocs: list[tuple[int, KInner]]) -> list[str]:
+    equations = [
+        # declare stratified functions
+          f'syntax {result_sort} ::= {fun}{str(i)} ( {id_cons.capitalize()} ) [function, total]' 
+            for i in range(strata)
+        ] + [
+          f'rule {fun}({id_cons}(N) => {fun}{str(i)}(N)) requires N /Int {strata} ==Int {i}'
+            for i in range(strata)
+        ]
+    for i, result in assocs:
+        m = i % strata
+        equations.append(_mk_equation(kmir, fun + str(m), intToken(i), 'Int', result, result_sort))
+    return equations
+
+
+
 def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[Axiom]:
     equations = _default_equations(kmir)
 
