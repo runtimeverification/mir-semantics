@@ -115,6 +115,11 @@ module KMIR-SPL-TOKEN
     requires REST ==K .List
   rule #isSplCOptionU64(_) => false [owise]
 
+  // AccountState in SPL semantics is carried as an enum variantIdx(0..2); accept legacy u8 too.
+  syntax Bool ::= #isSplAccountStateVal ( Value ) [function, total]
+  rule #isSplAccountStateVal(Aggregate(variantIdx(N), .List)) => 0 <=Int N andBool N <=Int 2
+  rule #isSplAccountStateVal(_) => false [owise]
+
   syntax Bool ::= #isSPLRcRefCellDerefFunc ( String ) [function, total]
   rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<&mut [u8]>> as std::ops::Deref>::deref") => true
   rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<&mut u64>> as std::ops::Deref>::deref") => true
@@ -182,55 +187,58 @@ module KMIR-SPL-TOKEN
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // mint
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // owner
-             ListItem(Integer(_, 64, false))                                // amount
-             ListItem(_DELEG)                                               // delegate COption
-             ListItem(Integer(_, 8, false))                                 // state
-             ListItem(_IS_NATIVE)                                           // is_native COption
-             ListItem(Integer(_, 64, false))                                // delegated_amount
-             ListItem(_CLOSE)                                               // close_authority COption
-           )
+         Aggregate(variantIdx(0),
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // mint
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // owner
+           ListItem(Integer(_, 64, false))                                // amount
+           ListItem(_DELEG)                                               // delegate COption
+           ListItem(STATE)                                                // state
+           ListItem(_IS_NATIVE)                                           // is_native COption
+           ListItem(Integer(_, 64, false))                                // delegated_amount
+           ListItem(_CLOSE)                                               // close_authority COption
          )
        )
+      )
        => dynamicSize(165)
+       requires #isSplAccountStateVal(STATE)
        [priority(30)]
 
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBorrow(_, SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-             ListItem(Integer(_, 64, false))
-             ListItem(_DELEG)
-             ListItem(Integer(_, 8, false))
-             ListItem(_IS_NATIVE)
-             ListItem(Integer(_, 64, false))
-             ListItem(_CLOSE)
-           )
-         ))
-       )
+         Aggregate(variantIdx(0),
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Integer(_, 64, false))
+           ListItem(_DELEG)
+           ListItem(STATE)
+           ListItem(_IS_NATIVE)
+           ListItem(Integer(_, 64, false))
+           ListItem(_CLOSE)
+         )
+       ))
+      )
        => dynamicSize(165)
+       requires #isSplAccountStateVal(STATE)
        [priority(30)]
 
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBorrowMut(_, SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-             ListItem(Integer(_, 64, false))
-             ListItem(_DELEG)
-             ListItem(Integer(_, 8, false))
-             ListItem(_IS_NATIVE)
-             ListItem(Integer(_, 64, false))
-             ListItem(_CLOSE)
-           )
-         ))
-       )
+         Aggregate(variantIdx(0),
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Integer(_, 64, false))
+           ListItem(_DELEG)
+           ListItem(STATE)
+           ListItem(_IS_NATIVE)
+           ListItem(Integer(_, 64, false))
+           ListItem(_CLOSE)
+         )
+       ))
+      )
        => dynamicSize(165)
+       requires #isSplAccountStateVal(STATE)
        [priority(30)]
 
   // Mint data (&mut [u8]) length hints (Mint::LEN)
