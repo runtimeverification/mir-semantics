@@ -10,16 +10,18 @@ from typing import TYPE_CHECKING
 from pyk.kast.inner import KApply, KSort
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.string import stringToken
+from pyk.kore.syntax import App, EVar, SortApp, Symbol, SymbolDecl
 
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from pathlib import Path
     from typing import Any, Final
 
     from pyk.kast import KInner
-    from pyk.kore.syntax import Axiom
+    from pyk.kore.syntax import Axiom, Sentence
 
     from .smir import SMIRInfo
 
@@ -217,26 +219,79 @@ def kompile_smir(
         return KompiledConcrete(llvm_dir=target_llvm_path)
 
 
-strata = 10
+def _make_stratified_rules(
+    kmir: KMIR,
+    fun: str,
+    id_cons: str,
+    result_sort: str,
+    assocs: list[tuple[int, KInner]],
+    not_found: KInner,
+    strata: int = 10,
+) -> Sequence[Sentence]:
+    from pyk.kore.prelude import int_dv
+    from pyk.kore.rule import FunctionRule
 
-def _make_stratified_rules(kmir: KMIR, fun: str, id_cons: str, result_sort: str, assocs: list[tuple[int, KInner]]) -> list[str]:
-    equations = [
+    arg_sort_kore = SortApp('Sort' + id_cons.capitalize())
+    result_sort_kore = SortApp('Sort' + result_sort)
+
+    declarations = [
         # declare stratified functions
-          f'syntax {result_sort} ::= {fun}{str(i)} ( {id_cons.capitalize()} ) [function, total]' 
-            for i in range(strata)
-        ] + [
-          f'rule {fun}({id_cons}(N) => {fun}{str(i)}(N)) requires N /Int {strata} ==Int {i}'
-            for i in range(strata)
-        ]
+        SymbolDecl(
+            symbol=Symbol('Lbl' + fun + str(i)),
+            param_sorts=(arg_sort_kore,),
+            sort=result_sort_kore,
+            attrs=(
+                App('function'),
+                App('total'),
+            ),
+        )
+        for i in range(strata)
+    ]
+    dispatch = [
+        # define dispatch equations to stratified functions
+        # f'rule {fun}({id_cons}(N) => {fun}{str(i)}(N)) requires N /Int {strata} ==Int {i}'
+        FunctionRule(
+            App('Lbl' + fun, (), (App(id_cons, (), (EVar('N', SortApp('SortInt')),)),)),
+            App('Lbl' + fun + str(i), (), (EVar('N', SortApp('SortInt')),)),
+            App('==Int', (), [App('%Int', (), [EVar('N', SortApp('SortInt')), int_dv(strata)]), int_dv(i)]),
+            None,
+            result_sort_kore,
+            (arg_sort_kore,),
+            None,
+            0,
+            f'dispatch-{fun}-{i}',
+            f'dispatch-{fun}-{i}',
+        ).to_axiom()
+        for i in range(strata)
+    ]
+    defaults = [
+        # define dispatch equations to stratified functions
+        # f'rule {fun}{i}(N) => {default} [owise]'
+        FunctionRule(
+            App('Lbl' + fun + str(i), (), (EVar('N', SortApp('SortInt')),)),
+            kmir.kast_to_kore(not_found),
+            None,
+            None,
+            result_sort_kore,
+            (arg_sort_kore,),
+            None,
+            200,
+            f'default-{fun}-{i}',
+            f'default-{fun}-{i}',
+        )
+        .to_axiom()
+        .let_attrs((App('owise'),))
+        for i in range(strata)
+    ]
+    equations = []
     for i, result in assocs:
         m = i % strata
         equations.append(_mk_equation(kmir, fun + str(m), intToken(i), 'Int', result, result_sort))
-    return equations
+    return [*declarations, *dispatch, *defaults, *equations]
 
 
-
-def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> list[Axiom]:
-    equations = _default_equations(kmir)
+def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> Sequence[Sentence]:
+    equations: list[Axiom] = _default_equations(kmir)
 
     # kprint tool is too chatty
     kprint_logger = logging.getLogger('pyk.ktool.kprint')
@@ -361,7 +416,7 @@ def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
     return alloc_id_term, value.to_kast()
 
 
-def _insert_rules_and_write(input_file: Path, rules: list[Axiom], output_file: Path) -> None:
+def _insert_rules_and_write(input_file: Path, rules: Sequence[Sentence], output_file: Path) -> None:
     with open(input_file, 'r') as f:
         lines = f.readlines()
 
