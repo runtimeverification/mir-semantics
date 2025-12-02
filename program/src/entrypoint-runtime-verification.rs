@@ -60,11 +60,17 @@ impl MintWrapper {
     }
 
     fn supply(&self) -> u64 {
-        self.0.as_ref().map(|m| m.supply).unwrap_or(0)
+        match &self.0 {
+            Ok(m) => m.supply,
+            Err(_) => 0,
+        }
     }
 
     fn decimals(&self) -> u8 {
-        self.0.as_ref().map(|m| m.decimals).unwrap_or(0)
+        match &self.0 {
+            Ok(m) => m.decimals,
+            Err(_) => 0,
+        }
     }
 }
 
@@ -86,34 +92,55 @@ impl AccountWrapper {
     }
 
     fn amount(&self) -> u64 {
-        self.0.as_ref().map(|a| a.amount).unwrap()
+        match &self.0 {
+            Ok(a) => a.amount,
+            Err(_) => panic!("AccountWrapper amount: underlying account missing"),
+        }
     }
 
     fn mint(&self) -> Pubkey {
-        self.0.as_ref().map(|a| a.mint).unwrap()
+        match &self.0 {
+            Ok(a) => a.mint,
+            Err(_) => panic!("AccountWrapper mint: underlying account missing"),
+        }
     }
 
     fn owner(&self) -> Pubkey {
-        self.0.as_ref().map(|a| a.owner).unwrap()
+        match &self.0 {
+            Ok(a) => a.owner,
+            Err(_) => panic!("AccountWrapper owner: underlying account missing"),
+        }
     }
 
     fn delegate(&self) -> Option<&Pubkey> {
-        match self.0.as_ref().unwrap().delegate.as_ref() {
-            solana_program_option::COption::None => None,
-            solana_program_option::COption::Some(delegate) => Some(delegate),
+        match &self.0 {
+            Ok(a) => match a.delegate.as_ref() {
+                solana_program_option::COption::None => None,
+                solana_program_option::COption::Some(delegate) => Some(delegate),
+            },
+            Err(_) => None,
         }
     }
 
     fn delegated_amount(&self) -> u64 {
-        self.0.as_ref().map(|a| a.delegated_amount).unwrap()
+        match &self.0 {
+            Ok(a) => a.delegated_amount,
+            Err(_) => panic!("AccountWrapper delegated_amount: underlying account missing"),
+        }
     }
 
     fn account_state(&self) -> Result<AccountState, ProgramError> {
-        self.0.as_ref().map(|a| a.state).map_err(|e| e.clone())
+        match &self.0 {
+            Ok(a) => Ok(a.state),
+            Err(e) => Err(e.clone()),
+        }
     }
 
     fn is_native(&self) -> bool {
-        self.0.as_ref().map(|a| a.is_native.is_some()).unwrap()
+        match &self.0 {
+            Ok(a) => a.is_native.is_some(),
+            Err(_) => false,
+        }
     }
 
     fn native_amount(&self) -> Option<u64> {
@@ -178,11 +205,17 @@ impl MultisigWrapper {
     }
 
     fn m(&self) -> u8 {
-        self.0.as_ref().map(|m| m.m).unwrap_or(0) // FIXME: Change to stright unwrap?
+        match &self.0 {
+            Ok(m) => m.m,
+            Err(_) => 0,
+        }
     }
 
     fn n(&self) -> u8 {
-        self.0.as_ref().map(|m| m.n).unwrap_or(0)
+        match &self.0 {
+            Ok(m) => m.n,
+            Err(_) => 0,
+        }
     }
 }
 
@@ -1168,7 +1201,7 @@ fn test_process_initialize_multisig(
     let instruction_data: &[u8; 1] = instruction_data.last_chunk().unwrap();
 
                                                           // ^ FIXME: totally arbitrary for the tests
-    // cheatcode_is_spl_multisig(&accounts[0]);
+    cheatcode_is_spl_multisig(&accounts[0]);
     cheatcode_is_spl_rent(&accounts[1]);
     cheatcode_is_spl_account(&accounts[2]); // Signer
     cheatcode_is_spl_account(&accounts[3]); // Signer
@@ -1329,7 +1362,7 @@ fn test_process_mint_to_checked_multisig(
         } else if amount == 0 && accounts[1].owner != &crate::id() {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if amount != 0 && u64::MAX - amount < initial_supply {
+        } else if amount != 0 && amount.checked_add(initial_supply).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
@@ -1508,6 +1541,12 @@ fn test_process_transfer(
     let old_src_delgated_amount = get_account(&accounts[0]).delegated_amount();
     let maybe_multisig_is_initialised = None;
 
+    #[cfg(feature = "assumptions")]
+    // Avoid potential overflow in destination account; assuming total supply stays within u64
+    if accounts[0].key != accounts[1].key && dst_initial_amount.checked_add(amount).is_none() {
+        return Err(ProgramError::Custom(99));
+    }
+
     //-Process Instruction-----------------------------------------------------
     let result = Processor::process(program_id, accounts, instruction_data_with_discriminator);
 
@@ -1576,11 +1615,15 @@ fn test_process_transfer(
             // Not sure how to fund native mint
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
-        } else if accounts[0].key != accounts[1].key && amount != 0 && get_account(&accounts[0]).is_native() && u64::MAX - amount < dst_initial_lamports {
+        } else if accounts[0].key != accounts[1].key && amount != 0 && get_account(&accounts[0]).is_native() && dst_initial_lamports.checked_add(amount).is_none() {
             // Not sure how to fund native mint
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
-        } else if accounts[0].key != accounts[1].key  && amount != 0 {
+        }
+
+        assert!(result.is_ok());
+
+        if accounts[0].key != accounts[1].key  && amount != 0 {
             assert_eq!(get_account(&accounts[0]).amount(), src_initial_amount - amount);
             assert_eq!(get_account(&accounts[1]).amount(), dst_initial_amount + amount);
 
@@ -1589,8 +1632,6 @@ fn test_process_transfer(
                 assert_eq!(accounts[1].lamports(), dst_initial_lamports + amount);
             }
         }
-
-        assert!(result.is_ok());
 
         // Delegate updates
         if old_src_delgate == Some(*accounts[2].key) && accounts[0].key != accounts[1].key {
@@ -1715,7 +1756,7 @@ fn test_process_transfer_multisig(
             // Not sure how to fund native mint
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
-        } else if accounts[0].key != accounts[1].key && amount != 0 && get_account(&accounts[0]).is_native() && u64::MAX - amount < dst_initial_lamports {
+        } else if accounts[0].key != accounts[1].key && amount != 0 && get_account(&accounts[0]).is_native() && dst_initial_lamports.checked_add(amount).is_none() {
             // Not sure how to fund native mint
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
@@ -1887,7 +1928,7 @@ fn test_process_transfer_checked_multisig(
                 // Not sure how to fund native mint
                 assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
-            } else if src_new.is_native() && u64::MAX - amount < dst_initial_lamports {
+            } else if src_new.is_native() && dst_initial_lamports.checked_add(amount).is_none() {
                 // Not sure how to fund native mint
                 assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
@@ -2794,6 +2835,16 @@ fn test_process_mint_to(
     let dst_init_state = get_account(&accounts[1]).account_state();
     let maybe_multisig_is_initialised = None;
 
+    #[cfg(feature = "assumptions")]
+    {
+        // Skip cases that would overflow the destination balance assuming total supply fits in u64
+        let amount =
+            u64::from_le_bytes([instruction_data[0], instruction_data[1], instruction_data[2], instruction_data[3], instruction_data[4], instruction_data[5], instruction_data[6], instruction_data[7]]);
+        if initial_amount.checked_add(amount).is_none() {
+            return Err(ProgramError::Custom(99));
+        }
+    }
+
     //-Process Instruction-----------------------------------------------------
     let result = Processor::process(program_id, accounts, instruction_data_with_discriminator);
 
@@ -2854,7 +2905,7 @@ fn test_process_mint_to(
         } else if amount == 0 && accounts[1].owner != &crate::id() {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if amount != 0 && u64::MAX - amount < initial_supply {
+        } else if amount != 0 && amount.checked_add(initial_supply).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
@@ -2966,7 +3017,7 @@ fn test_process_mint_to_multisig(
         } else if amount == 0 && accounts[1].owner != &crate::id() {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if amount != 0 && u64::MAX - amount < initial_supply {
+        } else if amount != 0 && amount.checked_add(initial_supply).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
@@ -3026,6 +3077,12 @@ fn test_process_burn(
     let mint_owner = *accounts[1].owner;
     let maybe_multisig_is_initialised = None;
     let tx_signers: &[AccountInfo] = &accounts[3..];
+
+    #[cfg(feature = "assumptions")]
+    // Assume balances stay within u64 so processing cannot overflow
+    if !(src_init_amount <= mint_init_supply && old_src_delgated_amount <= src_init_amount) {
+        return Err(ProgramError::Custom(99));
+    }
 
     //-Process Instruction-----------------------------------------------------
     let result = Processor::process(program_id, accounts, instruction_data_with_discriminator);
@@ -3178,7 +3235,7 @@ fn test_process_close_account(
         } else if accounts[1].key != &INCINERATOR_ID {
             assert_eq!(result, Err(ProgramError::InvalidAccountData));
             return result;
-        } else if u64::MAX - dst_init_lamports < src_init_lamports {
+        } else if dst_init_lamports.checked_add(src_init_lamports).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
@@ -3268,7 +3325,7 @@ fn test_process_close_account_multisig(
         } else if accounts[1].key != &INCINERATOR_ID {
             assert_eq!(result, Err(ProgramError::InvalidAccountData));
             return result;
-        } else if u64::MAX - dst_init_lamports < src_init_lamports {
+        } else if dst_init_lamports.checked_add(src_init_lamports).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
@@ -3662,6 +3719,12 @@ fn test_process_transfer_checked(
         &[]
     };
 
+    #[cfg(feature = "assumptions")]
+    // Avoid potential overflow in destination account; assuming total supply stays within u64
+    if accounts[0].key != accounts[2].key && dst_initial_amount.checked_add(amount).is_none() {
+        return Err(ProgramError::Custom(99));
+    }
+
     //-Process Instruction-----------------------------------------------------
     let result = Processor::process(program_id, accounts, instruction_data_with_discriminator);
 
@@ -3741,12 +3804,18 @@ fn test_process_transfer_checked(
         } else if (accounts[0].key == accounts[2].key || amount == 0) && accounts[2].owner != &crate::id() {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if accounts[0].key != accounts[2].key && amount != 0 {
+        }
+
+        assert!(result.is_ok());
+
+        if accounts[0].key != accounts[2].key && amount != 0 {
             if get_account(&accounts[0]).is_native() && src_initial_lamports < amount {
                 // Not sure how to fund native mint
                 assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
-            } else if get_account(&accounts[0]).is_native() && u64::MAX - amount < dst_initial_lamports {
+            } else if get_account(&accounts[0]).is_native()
+                && dst_initial_lamports.checked_add(amount).is_none()
+            {
                 // Not sure how to fund native mint
                 assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
@@ -3761,7 +3830,6 @@ fn test_process_transfer_checked(
             }
         }
 
-        assert!(result.is_ok());
         // Delegate updates
         if old_src_delgate == Some(*accounts[3].key) && accounts[0].key != accounts[2].key {
             assert_eq!(get_account(&accounts[0]).delegated_amount(), old_src_delgated_amount - amount);
@@ -3959,7 +4027,7 @@ fn test_process_mint_to_checked(
         } else if amount == 0 && accounts[1].owner != &crate::id() {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if amount != 0 && u64::MAX - amount < initial_supply {
+        } else if amount != 0 && amount.checked_add(initial_supply).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
@@ -4019,6 +4087,12 @@ fn test_process_burn_checked(
     let mint_owner = *accounts[1].owner;
     let maybe_multisig_is_initialised = None;
     let tx_signers: &[AccountInfo] = &accounts[3..];
+
+    #[cfg(feature = "assumptions")]
+    // Assume balances stay within u64 so processing cannot overflow
+    if !(src_init_amount <= mint_init_supply && old_src_delgated_amount <= src_init_amount) {
+        return Err(ProgramError::Custom(99));
+    }
 
     //-Process Instruction-----------------------------------------------------
     let result = Processor::process(program_id, accounts, instruction_data_with_discriminator);
@@ -4121,7 +4195,7 @@ fn test_process_withdraw_excess_lamports_multisig_multisig(
     let instruction_data_with_discriminator = &instruction_data.clone();
     let instruction_data: &[u8; 0] = instruction_data.last_chunk().unwrap();
 
-    // cheatcode_is_spl_multisig(&accounts[0]); // Source Account (Multisig)
+    cheatcode_is_spl_multisig(&accounts[0]); // Source Account (Multisig)
     cheatcode_is_spl_account(&accounts[1]); // Destination
     cheatcode_is_spl_multisig(&accounts[2]); // Authority
 
@@ -4158,13 +4232,19 @@ fn test_process_withdraw_excess_lamports_multisig_multisig(
         if src_init_lamports < minimum_balance {
             assert_eq!(result, Err(ProgramError::Custom(0)));
             return result;
-        } else if u64::MAX - src_init_lamports + minimum_balance < dst_init_lamports {
+        } else if dst_init_lamports
+            .checked_add(src_init_lamports - minimum_balance)
+            .is_none()
+        {
             assert_eq!(result, Err(ProgramError::Custom(0)));
             return result;
         }
 
         assert_eq!(accounts[0].lamports(), minimum_balance);
-        assert_eq!(accounts[1].lamports(), dst_init_lamports + src_init_lamports - minimum_balance);
+        assert_eq!(
+            accounts[1].lamports(),
+            dst_init_lamports + (src_init_lamports - minimum_balance)
+        );
         assert!(result.is_ok())
     }
 
@@ -4413,7 +4493,7 @@ fn test_process_initialize_multisig2(
     let instruction_data: &[u8; 1] = instruction_data.last_chunk().unwrap();
 
                                                            // ^ FIXME: totally arbitrary for the tests
-    // cheatcode_is_spl_multisig(&accounts[0]);
+    cheatcode_is_spl_multisig(&accounts[0]);
     cheatcode_is_spl_account(&accounts[1]); // Signer
     cheatcode_is_spl_account(&accounts[2]); // Signer
     cheatcode_is_spl_account(&accounts[3]); // Signer
@@ -4906,13 +4986,19 @@ fn test_process_withdraw_excess_lamports_account(
             if src_init_lamports < minimum_balance {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
-            } else if u64::MAX - src_init_lamports + minimum_balance < dst_init_lamports {
+            } else if dst_init_lamports
+                .checked_add(src_init_lamports - minimum_balance)
+                .is_none()
+            {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
             }
 
             assert_eq!(accounts[0].lamports(), minimum_balance);
-            assert_eq!(accounts[1].lamports(), dst_init_lamports + src_init_lamports - minimum_balance);
+            assert_eq!(
+                accounts[1].lamports(),
+                dst_init_lamports + (src_init_lamports - minimum_balance)
+            );
             assert!(result.is_ok())
         }
     }
@@ -4991,13 +5077,19 @@ fn test_process_withdraw_excess_lamports_account_multisig(
             if src_init_lamports < minimum_balance {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
-            } else if u64::MAX - src_init_lamports + minimum_balance < dst_init_lamports {
+            } else if dst_init_lamports
+                .checked_add(src_init_lamports - minimum_balance)
+                .is_none()
+            {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
             }
 
             assert_eq!(accounts[0].lamports(), minimum_balance);
-            assert_eq!(accounts[1].lamports(), dst_init_lamports + src_init_lamports - minimum_balance);
+            assert_eq!(
+                accounts[1].lamports(),
+                dst_init_lamports + (src_init_lamports - minimum_balance)
+            );
             assert!(result.is_ok())
         }
     }
@@ -5079,13 +5171,19 @@ fn test_process_withdraw_excess_lamports_mint(
             else if src_init_lamports < minimum_balance {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
-            } else if u64::MAX - src_init_lamports + minimum_balance < dst_init_lamports {
+            } else if dst_init_lamports
+                .checked_add(src_init_lamports - minimum_balance)
+                .is_none()
+            {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
             }
 
             assert_eq!(accounts[0].lamports(), minimum_balance);
-            assert_eq!(accounts[1].lamports(), dst_init_lamports + src_init_lamports - minimum_balance);
+            assert_eq!(
+                accounts[1].lamports(),
+                dst_init_lamports + (src_init_lamports - minimum_balance)
+            );
             assert!(result.is_ok())
         }
     }
@@ -5167,13 +5265,19 @@ fn test_process_withdraw_excess_lamports_mint_multisig(
             else if src_init_lamports < minimum_balance {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
-            } else if u64::MAX - src_init_lamports + minimum_balance < dst_init_lamports {
+            } else if dst_init_lamports
+                .checked_add(src_init_lamports - minimum_balance)
+                .is_none()
+            {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
             }
 
             assert_eq!(accounts[0].lamports(), minimum_balance);
-            assert_eq!(accounts[1].lamports(), dst_init_lamports + src_init_lamports - minimum_balance);
+            assert_eq!(
+                accounts[1].lamports(),
+                dst_init_lamports + (src_init_lamports - minimum_balance)
+            );
             assert!(result.is_ok())
         }
     }
@@ -5204,7 +5308,7 @@ fn test_process_withdraw_excess_lamports_multisig(
     let instruction_data_with_discriminator = &instruction_data.clone();
     let instruction_data: &[u8; 0] = instruction_data.last_chunk().unwrap();
 
-    // cheatcode_is_spl_multisig(&accounts[0]); // Source Account (Multisig)
+    cheatcode_is_spl_multisig(&accounts[0]); // Source Account (Multisig)
     cheatcode_is_spl_account(&accounts[1]); // Destination
     cheatcode_is_spl_account(&accounts[2]); // Authority
 
@@ -5241,13 +5345,19 @@ fn test_process_withdraw_excess_lamports_multisig(
         if src_init_lamports < minimum_balance {
             assert_eq!(result, Err(ProgramError::Custom(0)));
             return result;
-        } else if u64::MAX - src_init_lamports + minimum_balance < dst_init_lamports {
+        } else if dst_init_lamports
+            .checked_add(src_init_lamports - minimum_balance)
+            .is_none()
+        {
             assert_eq!(result, Err(ProgramError::Custom(0)));
             return result;
         }
 
         assert_eq!(accounts[0].lamports(), minimum_balance);
-        assert_eq!(accounts[1].lamports(), dst_init_lamports + src_init_lamports - minimum_balance);
+        assert_eq!(
+            accounts[1].lamports(),
+            dst_init_lamports + (src_init_lamports - minimum_balance)
+        );
         assert!(result.is_ok())
     }
 
