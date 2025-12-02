@@ -349,7 +349,7 @@ module KMIR-SPL-TOKEN
                         ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplTokenOwnerKey:List))))  // Account.owner: Pubkey
                         ListItem(Integer(?SplAmount:Int, 64, false))             // Account.amount: u64
                         ListItem(?SplDelegateCOpt:Value)                         // Account.delegate: COption<Pubkey>
-                        ListItem(Integer(?SplAccountState:Int, 8, false))        // Account.state: AccountState (repr u8)
+                        ListItem(Aggregate(variantIdx(?SplAccountState:Int), .List)) // Account.state: AccountState (repr u8)
                         ListItem(?SplIsNativeCOpt:Value)                         // Account.is_native: COption<u64>
                         ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
                         ListItem(?SplCloseAuthCOpt:Value)                        // Account.close_authority: COption<Pubkey>
@@ -376,7 +376,7 @@ module KMIR-SPL-TOKEN
       andBool #isSplPubkey(?SplMintKey)
       andBool #isSplPubkey(?SplTokenOwnerKey)
       andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
-      andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <Int 256
+      andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <=Int 2
       andBool 0 <=Int ?SplDelegatedAmount andBool ?SplDelegatedAmount <Int (1 <<Int 64)
       andBool #isSplCOptionPubkey(?SplDelegateCOpt)
       andBool #isSplCOptionPubkey(?SplCloseAuthCOpt)
