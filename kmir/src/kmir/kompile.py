@@ -275,7 +275,7 @@ def _make_stratified_rules(
         # f'rule {fun}{i}(N) => {default} [owise]'
         FunctionRule(
             App('Lbl' + fun + str(i), (), (EVar('VarN', SortApp('SortInt')),)),
-            kmir.kast_to_kore(not_found),
+            kmir.kast_to_kore(not_found, KSort(result_sort)),
             None,
             None,
             result_sort_kore,
