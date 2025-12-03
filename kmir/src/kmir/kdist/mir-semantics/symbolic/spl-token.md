@@ -361,9 +361,8 @@ module KMIR-SPL-TOKEN
                         ListItem(Aggregate(variantIdx(1),
                           ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplDelegateKey:List))))))
                         ListItem(Aggregate(variantIdx(?SplAccountState:Int), .List)) // Account.state: AccountState (repr u8)
-                        // Model COption<u64> as
-                        // Some(amount); None is not represented here.
-                        ListItem(Aggregate(variantIdx(1),
+                        // Allow COption<u64> with a symbolic variant (0=None, 1=Some(amount)).
+                        ListItem(Aggregate(variantIdx(?SplIsNativeLamportsVariant:Int),
                           ListItem(Integer(?SplIsNativeLamports:Int, 64, false))))
                         ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
                         // Model COption<Pubkey> as
@@ -397,6 +396,7 @@ module KMIR-SPL-TOKEN
       andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <=Int 2
       andBool 0 <=Int ?SplDelegatedAmount andBool ?SplDelegatedAmount <Int (1 <<Int 64)
+      andBool 0 <=Int ?SplIsNativeLamportsVariant andBool ?SplIsNativeLamportsVariant <=Int 1
       andBool 0 <=Int ?SplIsNativeLamports andBool ?SplIsNativeLamports <Int (1 <<Int 64)
     [priority(30), preserves-definedness]
 
