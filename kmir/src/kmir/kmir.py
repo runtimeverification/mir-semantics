@@ -11,7 +11,6 @@ from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
-from pyk.kast.outer import KFlatModule, KImport
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -267,20 +266,8 @@ class KMIR(KProve, KRun, KParse):
                 break_every_step=opts.break_every_step,
             )
 
-            # produce a module for the lookup functions
-            from .kompile import make_kore_rules
-
-            equations = make_kore_rules(kmir, smir_info)
-            _LOGGER.debug(f'Made {len(equations)} equations')
-            prog_module = KFlatModule(name='KMIR-PROGRAM', imports=(KImport('KMIR'),))
-
             with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
-                prover = APRProver(
-                    kcfg_explore,
-                    execute_depth=opts.max_depth,
-                    cut_point_rules=cut_point_rules,
-                    extra_module=prog_module,
-                )
+                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, cut_point_rules=cut_point_rules)
                 prover.advance_proof(apr_proof, max_iterations=opts.max_iterations)
                 return apr_proof
 
