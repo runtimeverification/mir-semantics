@@ -139,14 +139,19 @@ These functions are global static data  accessed from many places, and will be e
 
 ```k
   // // function store, Ty -> MonoItemFn
-  syntax MonoItemKind ::= lookupFunction ( Ty ) [function, total, symbol(lookupFunction), no-evaluators]
+  syntax MonoItemKind ::= lookupFunction ( Ty ) [function, total, symbol(lookupFunction)]
 
   // // static allocations: AllocId -> AllocData (Value or error)
-  syntax Evaluation ::= lookupAlloc ( AllocId ) [function, total, symbol(lookupAlloc), no-evaluators]
+  syntax Evaluation ::= lookupAlloc ( AllocId ) [function, total, symbol(lookupAlloc)]
                       | InvalidAlloc ( AllocId ) // error marker
 
   // // static information about the base type interning in the MIR: Ty -> TypeInfo
-  syntax TypeInfo ::= lookupTy ( Ty )    [function, total, symbol(lookupTy), no-evaluators]
+  syntax TypeInfo ::= lookupTy ( Ty )    [function, total, symbol(lookupTy)]
+
+  // default rules (unused, only required for compilation of the base semantics)
+  rule lookupFunction(ty(TY))   => monoItemFn(symbol(" ** INVALID LOOKUP CALL **"), defId(TY), noBody ) [owise]
+  rule lookupAlloc(ID)          => InvalidAlloc(ID)                                                     [owise]
+  rule lookupTy(_)              => typeInfoFunType(" ** INVALID LOOKUP CALL **" )                       [owise]
 ```
 
 ```k
