@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from pyk.kast.inner import KApply, KSort, KToken, KVariable
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.string import stringToken
-from pyk.kore.syntax import App, EVar, SortApp, Symbol, SymbolDecl
+from pyk.kore.syntax import App, EVar, SortApp, String, Symbol, SymbolDecl
 
 from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR
@@ -265,9 +265,11 @@ def _make_stratified_rules(
             (arg_sort_kore,),
             None,
             0,
-            f'dispatch-{fun}-{i}',
-            f'dispatch-{fun}-{i}',
-        ).to_axiom()
+            f'{fun}{i}-dispatch',
+            f'{fun}{i}-dispatch',
+        )
+        .to_axiom()
+        .let_attrs((App("UNIQUE'Unds'ID", (), (String(f'{fun}{i}-dispatch'),)),))
         for i in range(strata)
     ]
     defaults = [
@@ -282,17 +284,21 @@ def _make_stratified_rules(
             (int_sort_kore,),
             None,
             200,
-            f'default-{fun}-{i}',
-            f'default-{fun}-{i}',
+            f'{fun}{i}-default',
+            f'{fun}{i}-default',
         )
         .to_axiom()
-        .let_attrs((App('owise'),))
+        .let_attrs((App('owise'), App("UNIQUE'Unds'ID", (), (String(f'{fun}{i}-default'),))))
         for i in range(strata)
     ]
     equations = []
     for i, result in assocs:
         m = i % strata
-        equations.append(_mk_equation(kmir, fun + str(m), intToken(i), 'Int', result, result_sort))
+        equations.append(
+            _mk_equation(kmir, fun + str(m), intToken(i), 'Int', result, result_sort).let_attrs(
+                (App("UNIQUE'Unds'ID", (), (String(f'{fun}{m}-{i}-generated'),)),)
+            )
+        )
     return [*declarations, *dispatch, *defaults, *equations]
 
 
