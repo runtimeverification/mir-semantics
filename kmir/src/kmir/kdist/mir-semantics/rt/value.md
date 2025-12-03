@@ -149,9 +149,9 @@ These functions are global static data  accessed from many places, and will be e
   syntax TypeInfo ::= lookupTy ( Ty )    [function, total, symbol(lookupTy)]
 
   // default rules (unused, only required for compilation of the base semantics)
-  rule lookupFunction(ty(TY))   => monoItemFn(symbol(" ** INVALID LOOKUP CALL **"), defId(TY), noBody ) [owise]
-  rule lookupAlloc(ID)          => InvalidAlloc(ID)                                                     [owise]
-  rule lookupTy(_)              => typeInfoFunType(" ** INVALID LOOKUP CALL **" )                       [owise]
+  rule lookupFunction(ty(TY))   => monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(TY), noBody ) [owise]
+  rule lookupAlloc(ID)          => InvalidAlloc(ID)                                                  [owise]
+  rule lookupTy(_)              => typeInfoFunType(" ** INVALID LOOKUP CALL **" )                    [owise]
 ```
 
 ```k
