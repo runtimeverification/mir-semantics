@@ -115,6 +115,11 @@ module KMIR-SPL-TOKEN
     requires REST ==K .List
   rule #isSplCOptionU64(_) => false [owise]
 
+  // AccountState in SPL semantics is carried as an enum variantIdx(0..2); accept legacy u8 too.
+  syntax Bool ::= #isSplAccountStateVal ( Value ) [function, total]
+  rule #isSplAccountStateVal(Aggregate(variantIdx(N), .List)) => 0 <=Int N andBool N <=Int 2
+  rule #isSplAccountStateVal(_) => false [owise]
+
   syntax Bool ::= #isSPLRcRefCellDerefFunc ( String ) [function, total]
   rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<&mut [u8]>> as std::ops::Deref>::deref") => true
   rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<&mut u64>> as std::ops::Deref>::deref") => true
@@ -182,55 +187,58 @@ module KMIR-SPL-TOKEN
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // mint
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // owner
-             ListItem(Integer(_, 64, false))                                // amount
-             ListItem(_DELEG)                                               // delegate COption
-             ListItem(Integer(_, 8, false))                                 // state
-             ListItem(_IS_NATIVE)                                           // is_native COption
-             ListItem(Integer(_, 64, false))                                // delegated_amount
-             ListItem(_CLOSE)                                               // close_authority COption
-           )
+         Aggregate(variantIdx(0),
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // mint
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))          // owner
+           ListItem(Integer(_, 64, false))                                // amount
+           ListItem(_DELEG)                                               // delegate COption
+           ListItem(STATE)                                                // state
+           ListItem(_IS_NATIVE)                                           // is_native COption
+           ListItem(Integer(_, 64, false))                                // delegated_amount
+           ListItem(_CLOSE)                                               // close_authority COption
          )
        )
+      )
        => dynamicSize(165)
+       requires #isSplAccountStateVal(STATE)
        [priority(30)]
 
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBorrow(_, SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-             ListItem(Integer(_, 64, false))
-             ListItem(_DELEG)
-             ListItem(Integer(_, 8, false))
-             ListItem(_IS_NATIVE)
-             ListItem(Integer(_, 64, false))
-             ListItem(_CLOSE)
-           )
-         ))
-       )
+         Aggregate(variantIdx(0),
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Integer(_, 64, false))
+           ListItem(_DELEG)
+           ListItem(STATE)
+           ListItem(_IS_NATIVE)
+           ListItem(Integer(_, 64, false))
+           ListItem(_CLOSE)
+         )
+       ))
+      )
        => dynamicSize(165)
+       requires #isSplAccountStateVal(STATE)
        [priority(30)]
 
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBorrowMut(_, SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-             ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-             ListItem(Integer(_, 64, false))
-             ListItem(_DELEG)
-             ListItem(Integer(_, 8, false))
-             ListItem(_IS_NATIVE)
-             ListItem(Integer(_, 64, false))
-             ListItem(_CLOSE)
-           )
-         ))
-       )
+         Aggregate(variantIdx(0),
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Integer(_, 64, false))
+           ListItem(_DELEG)
+           ListItem(STATE)
+           ListItem(_IS_NATIVE)
+           ListItem(Integer(_, 64, false))
+           ListItem(_CLOSE)
+         )
+       ))
+      )
        => dynamicSize(165)
+       requires #isSplAccountStateVal(STATE)
        [priority(30)]
 
   // Mint data (&mut [u8]) length hints (Mint::LEN)
@@ -348,11 +356,19 @@ module KMIR-SPL-TOKEN
                         ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintKey:List))))        // Account.mint: Pubkey
                         ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplTokenOwnerKey:List))))  // Account.owner: Pubkey
                         ListItem(Integer(?SplAmount:Int, 64, false))             // Account.amount: u64
-                        ListItem(?SplDelegateCOpt:Value)                         // Account.delegate: COption<Pubkey>
-                        ListItem(Integer(?SplAccountState:Int, 8, false))        // Account.state: AccountState (repr u8)
-                        ListItem(?SplIsNativeCOpt:Value)                         // Account.is_native: COption<u64>
+                        // Model COption<Pubkey> as
+                        // Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1),
+                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplDelegateKey:List))))))
+                        ListItem(Aggregate(variantIdx(?SplAccountState:Int), .List)) // Account.state: AccountState (repr u8)
+                        // Allow COption<u64> with a symbolic variant (0=None, 1=Some(amount)).
+                        ListItem(Aggregate(variantIdx(?SplIsNativeLamportsVariant:Int),
+                          ListItem(Integer(?SplIsNativeLamports:Int, 64, false))))
                         ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
-                        ListItem(?SplCloseAuthCOpt:Value)                        // Account.close_authority: COption<Pubkey>
+                        // Model COption<Pubkey> as
+                        // Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1),
+                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplCloseAuthKey:List))))))
                     )
                   )
                 )
@@ -375,12 +391,13 @@ module KMIR-SPL-TOKEN
       andBool 0 <=Int ?SplRentEpoch andBool ?SplRentEpoch <Int 18446744073709551616
       andBool #isSplPubkey(?SplMintKey)
       andBool #isSplPubkey(?SplTokenOwnerKey)
+      andBool #isSplPubkey(?SplDelegateKey)
+      andBool #isSplPubkey(?SplCloseAuthKey)
       andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
-      andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <Int 256
+      andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <=Int 2
       andBool 0 <=Int ?SplDelegatedAmount andBool ?SplDelegatedAmount <Int (1 <<Int 64)
-      andBool #isSplCOptionPubkey(?SplDelegateCOpt)
-      andBool #isSplCOptionPubkey(?SplCloseAuthCOpt)
-      andBool #isSplCOptionU64(?SplIsNativeCOpt)
+      andBool 0 <=Int ?SplIsNativeLamportsVariant andBool ?SplIsNativeLamportsVariant <=Int 1
+      andBool 0 <=Int ?SplIsNativeLamports andBool ?SplIsNativeLamports <Int (1 <<Int 64)
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-mint]:
@@ -406,11 +423,17 @@ module KMIR-SPL-TOKEN
                     ),
                     SPLDataBuffer(
                       Aggregate(variantIdx(0),
-                        ListItem(?SplMintAuthorityCOpt:Value)
+                        // Model COption<Pubkey> as
+                        // Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1),
+                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintAuthorityKey:List))))))
                         ListItem(Integer(?SplMintSupply:Int, 64, false))
                         ListItem(Integer(?SplMintDecimals:Int, 8, false))
                         ListItem(BoolVal(false))
-                        ListItem(?SplMintFreezeAuthorityCOpt:Value)
+                        // Model COption<Pubkey> as
+                        // Some(pubkey); None is not represented here.
+                        ListItem(Aggregate(variantIdx(1),
+                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintFreezeAuthorityKey:List))))))
                       )
                     )
                   )
@@ -429,12 +452,12 @@ module KMIR-SPL-TOKEN
       orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_mint"
     ensures #isSplPubkey(?SplMintAccountKey)
       andBool #isSplPubkey(?SplMintOwnerKey)
+      andBool #isSplPubkey(?SplMintAuthorityKey)
+      andBool #isSplPubkey(?SplMintFreezeAuthorityKey)
       andBool 0 <=Int ?SplMintLamports andBool ?SplMintLamports <Int 18446744073709551616
       andBool 0 <=Int ?SplMintRentEpoch andBool ?SplMintRentEpoch <Int 18446744073709551616
-      andBool #isSplCOptionPubkey(?SplMintAuthorityCOpt)
       andBool 0 <=Int ?SplMintSupply andBool ?SplMintSupply <Int (1 <<Int 64)
       andBool 0 <=Int ?SplMintDecimals andBool ?SplMintDecimals <Int 256
-      andBool #isSplCOptionPubkey(?SplMintFreezeAuthorityCOpt)
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-rent]:
