@@ -1546,6 +1546,45 @@ What can be supported without additional layout consideration is trivial casts b
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
 
+Transmuting a pointer to an integer discards provenance and reinterprets the pointer’s offset as a value of the target integer type.
+
+```k
+  syntax Int ::= #ptrOffsetBytes ( Int , MaybeTy ) [function, total]
+  rule #ptrOffsetBytes(PTR_OFFSET, _TY:Ty) => 0
+    requires PTR_OFFSET ==Int 0
+  rule #ptrOffsetBytes(PTR_OFFSET, TY:Ty)
+    => PTR_OFFSET *Int #elemSize(#lookupMaybeTy(elemTy(lookupTy(TY))))
+    requires PTR_OFFSET =/=Int 0
+     andBool #isArrayType(lookupTy(TY))
+  rule #ptrOffsetBytes(_, _) => -1 [owise] // should not happen
+
+  syntax Bool ::= #isArrayType ( TypeInfo ) [function, total]
+  rule #isArrayType(typeInfoArrayType(_, _)) => true
+  rule #isArrayType(_) => false [owise]
+```
+
+```k
+  rule <k> #cast(
+              PtrLocal(_, _, _, metadata(_, PTR_OFFSET, _)),
+              castKindTransmute,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              #ptrOffsetBytes(
+                PTR_OFFSET,
+                pointeeTy(#lookupMaybeTy(TY_SOURCE))
+              ),
+              #bitWidth(#numTypeOf(lookupTy(TY_TARGET))),
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool 0 <=Int #ptrOffsetBytes(PTR_OFFSET,pointeeTy(#lookupMaybeTy(TY_SOURCE)))
+```
+
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
 The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
 
