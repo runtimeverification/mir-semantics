@@ -469,6 +469,21 @@ The context is populated with the correct field access data, so that write-backs
     [preserves-definedness, priority(100)]
 ```
 
+A somewhat dual case to this rule can occur when a pointer into an array of data elements has been offset and is then dereferenced.
+The dereferenced pointer may either point to a subslice or to a single element (depending on context).
+Therefore, a field projection may be found which has to be applied to the head element of an array.
+The following rule resolves this situation by using the head element.
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             Range(ListItem(Aggregate(_, _) #as VALUE) _REST:List),
+             projectionElemField(IDX, TY) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
+    [preserves-definedness, priority(100)]
+```
 
 #### Unions
 ```k
