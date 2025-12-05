@@ -29,7 +29,6 @@ Account::pack(a, &mut acc.data.borrow_mut())
 ```k
 module KMIR-SPL-TOKEN
   imports KMIR-P-TOKEN
-  imports KMIR-INTRINSICS
 ```
 
 ## Helper operations for projected writes
