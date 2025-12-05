@@ -29,6 +29,7 @@ Account::pack(a, &mut acc.data.borrow_mut())
 ```k
 module KMIR-SPL-TOKEN
   imports KMIR-P-TOKEN
+  imports KMIR-INTRINSICS
 ```
 
 ## Helper operations for projected writes
@@ -936,6 +937,29 @@ expose the wrapped payload directly.
       andBool ?SplSysRentLamportsPerByteYear <Int (1 <<Int 32)
       andBool 0 <=Int ?SplSysRentBurnPercent
       andBool ?SplSysRentBurnPercent <=Int 100
+    [preserves-definedness]
+```
+
+## Pubkey comparison shortcut
+```k
+  rule [spl-cmp-pubkeys]:
+    <k> #execTerminator(
+          terminator(
+            terminatorKindCall(FUNC, ARG1:Operand ARG2:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND),
+            _SPAN
+          )
+        )
+      => #execSPLCmpPubkeys( DEST, #withDeref(ARG1), #withDeref(ARG2))
+         ~> #execBlockIdx(TARGET)
+    ...
+    </k>
+    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::processor::Processor::cmp_pubkeys"
+    [priority(30), preserves-definedness]
+
+  syntax KItem ::= #execSPLCmpPubkeys( Place , Evaluation , Evaluation ) [seqstrict(2,3)]
+  rule <k> #execSPLCmpPubkeys(DEST, Aggregate(variantIdx(0), ListItem(Range(KEY1))), Aggregate(variantIdx(0), ListItem(Range(KEY2))))
+        => #setLocalValue(DEST, BoolVal(KEY1 ==K KEY2))
+       ... </k>
     [preserves-definedness]
 ```
 
