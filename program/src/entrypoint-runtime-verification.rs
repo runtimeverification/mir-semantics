@@ -2861,14 +2861,19 @@ fn test_process_mint_to(
     } else if dst_initialised.is_err() {
         assert_eq!(result, Err(ProgramError::InvalidAccountData));
         return result;
-    } else if !dst_initialised.unwrap() {
-        assert_eq!(result, Err(ProgramError::UninitializedAccount));
-        return result;
     } else if dst_init_state.unwrap() == AccountState::Frozen  { // unwrap must succeed due to dst_initialised not being err
+        // The validation sequence is different from p-token
+        // P-Token:
+        // - !dst_initialised.unwrap()
+        // - dst_init_state.unwrap() == AccountState::Frozen
+        // - get_account(&accounts[1]).is_native()
         assert_eq!(result, Err(ProgramError::Custom(17)));
         return result;
     } else if get_account(&accounts[1]).is_native() {
         assert_eq!(result, Err(ProgramError::Custom(10)));
+        return result;
+    } else if !dst_initialised.unwrap() {
+        assert_eq!(result, Err(ProgramError::UninitializedAccount));
         return result;
     } else if accounts[0].key != &get_account(&accounts[1]).mint() {
         assert_eq!(result, Err(ProgramError::Custom(3)));
