@@ -179,7 +179,7 @@ This ensures that branches on the key value are not duplicated.
                 ListItem(OWNER)
                 ListItem(AMT)
                 ListItem(Aggregate(variantIdx(0), ListItem(DLG_FLAG) ListItem(DLG_KEY)))
-                ListItem(Integer(STATE, 8, false))
+                ListItem(Integer(STATE, _, false)) // bit width 8 or 0 for a discriminant
                 ListItem(NATIVE_FLAG)
                 ListItem(NATIVE_AMT)
                 ListItem(DLG_AMT)
