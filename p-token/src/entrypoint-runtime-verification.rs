@@ -1815,10 +1815,12 @@ pub fn test_process_close_account(accounts: &[AccountInfo; 3]) -> ProgramResult 
         } else if accounts[1].key() != &INCINERATOR_ID {
             assert_eq!(result, Err(ProgramError::InvalidAccountData));
             return result;
-        } else if dst_init_lamports.checked_add(src_init_lamports).is_none() {
+        }
+        if dst_init_lamports.checked_add(src_init_lamports).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
+        assert!(result.is_ok());
 
         // Validate owner falls through to here if no error
         assert_eq!(accounts[0].lamports(), 0);
@@ -1826,8 +1828,8 @@ pub fn test_process_close_account(accounts: &[AccountInfo; 3]) -> ProgramResult 
             accounts[1].lamports(),
             dst_init_lamports + src_init_lamports
         );
-        assert_eq!(accounts[0].data_len(), 0); // TODO: More sol_memset stuff?
-        assert!(result.is_ok());
+        #[cfg(any(target_os = "solana", target_arch = "bpf"))]
+        assert_eq!(accounts[0].data_len(), 0); // Solana-RT only
     }
     result
 }
@@ -2042,8 +2044,6 @@ pub fn test_process_transfer_checked(
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
         }
-        assert!(result.is_ok());
-
         if accounts[0] != accounts[2] && amount != 0 {
             if src_new.is_native() && src_initial_lamports < amount {
                 // Not sure how to fund native mint
@@ -2066,6 +2066,7 @@ pub fn test_process_transfer_checked(
                 assert_eq!(accounts[1].lamports(), dst_initial_lamports + amount);
             }
         }
+        assert!(result.is_ok());
 
         // Delegate updates
         if old_src_delgate == Some(*accounts[3].key()) && accounts[0] != accounts[2] {
@@ -4504,7 +4505,7 @@ fn test_process_withdraw_excess_lamports_account(accounts: &[AccountInfo; 3]) ->
                 .checked_add(src_init_lamports - minimum_balance)
                 .is_none()
             {
-                assert_eq!(result, Err(ProgramError::Custom(0)));
+                assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
             }
 
@@ -4651,26 +4652,29 @@ fn test_process_withdraw_excess_lamports_mint(accounts: &[AccountInfo; 3]) -> Pr
             } else if !accounts[2].is_signer() {
                 assert_eq!(result, Err(ProgramError::MissingRequiredSignature));
                 return result;
-            } else if src_init_lamports < minimum_balance {
+            }
+
+            if src_init_lamports < minimum_balance {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
             } else if dst_init_lamports
                 .checked_add(src_init_lamports - minimum_balance)
                 .is_none()
             {
-                assert_eq!(result, Err(ProgramError::Custom(0)));
+                assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
             }
 
+            assert!(result.is_ok());
             assert_eq!(accounts[0].lamports(), minimum_balance);
             assert_eq!(
                 accounts[1].lamports(),
-                dst_init_lamports + (src_init_lamports - minimum_balance)
+                dst_init_lamports
+                    .checked_add(src_init_lamports - minimum_balance)
+                    .unwrap()
             );
-            assert!(result.is_ok())
         }
     }
-
     result
 }
 

@@ -24,31 +24,32 @@ sed -n -e "/^| ${HEADING}.*/,/^\$/ {/| ${HEADING}.*/d; /^\$/q; s/^| \(test_p[a-z
 | Passing                                 |
 |-----------------------------------------|
 | test_ptoken_domain_data                 |
+| test_process_approve_checked            |
+| test_process_approve                    |
+| test_process_freeze_account             |
 | test_process_get_account_data_size      |
+| test_process_initialize_account2        |
+| test_process_initialize_account3        |
+| test_process_initialize_account         |
 | test_process_initialize_immutable_owner |
 | test_process_initialize_mint2_freeze    |
 | test_process_initialize_mint2_no_freeze |
 | test_process_initialize_mint_freeze     |
 | test_process_initialize_mint_no_freeze  |
+| test_process_mint_to_checked            |
+| test_process_mint_to                    |
 | test_process_revoke                     |
+| test_process_set_authority_account      |
 | test_process_set_authority_mint         |
 | test_process_sync_native                |
+| test_process_thaw_account               |
+| test_process_transfer                   |
+| test_process_withdraw_excess_lamports_account |
+| test_process_withdraw_excess_lamports_mint    |
 
 | Failing nodes                                 |
 |-----------------------------------------------|
-| test_process_approve_checked                  |
-| test_process_approve                          |
 | test_process_close_account                    |
-| test_process_freeze_account                   |
-| test_process_initialize_account2              |
-| test_process_initialize_account3              |
-| test_process_initialize_account               |
-| test_process_mint_to_checked                  |
-| test_process_mint_to                          |
-| test_process_set_authority_account            |
-| test_process_thaw_account                     |
-| test_process_withdraw_excess_lamports_account |
-| test_process_withdraw_excess_lamports_mint    |
 
 | Long-running (2h+)            |
 |-------------------------------|
