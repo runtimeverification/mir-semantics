@@ -424,16 +424,14 @@ module KMIR-SPL-TOKEN
                     ),
                     SPLDataBuffer(
                       Aggregate(variantIdx(0),
-                        // Model COption<Pubkey> as
-                        // Some(pubkey); None is not represented here.
-                        ListItem(Aggregate(variantIdx(1),
+                        // optional key. The model always carries a payload key (never to be read if None)
+                        ListItem(Aggregate(variantIdx(?SplMintHasAuthKey),
                           ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintAuthorityKey:List))))))
                         ListItem(Integer(?SplMintSupply:Int, 64, false))
                         ListItem(Integer(?SplMintDecimals:Int, 8, false))
-                        ListItem(BoolVal(false))
-                        // Model COption<Pubkey> as
-                        // Some(pubkey); None is not represented here.
-                        ListItem(Aggregate(variantIdx(1),
+                        ListItem(BoolVal(?_SplMintInitialised))
+                        // optional key. The model always carries a payload key (never to be read if None)
+                        ListItem(Aggregate(variantIdx(?SplMintHasFreezeKey),
                           ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintFreezeAuthorityKey:List))))))
                       )
                     )
@@ -453,7 +451,9 @@ module KMIR-SPL-TOKEN
       orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_mint"
     ensures #isSplPubkey(?SplMintAccountKey)
       andBool #isSplPubkey(?SplMintOwnerKey)
+      andBool 0 <=Int ?SplMintHasAuthKey andBool ?SplMintHasAuthKey <=Int 1
       andBool #isSplPubkey(?SplMintAuthorityKey)
+      andBool 0 <=Int ?SplMintHasFreezeKey andBool ?SplMintHasFreezeKey <=Int 1
       andBool #isSplPubkey(?SplMintFreezeAuthorityKey)
       andBool 0 <=Int ?SplMintLamports andBool ?SplMintLamports <Int 18446744073709551616
       andBool 0 <=Int ?SplMintRentEpoch andBool ?SplMintRentEpoch <Int 18446744073709551616
