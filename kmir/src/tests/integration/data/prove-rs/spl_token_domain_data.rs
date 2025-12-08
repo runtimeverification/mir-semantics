@@ -38,12 +38,12 @@ fn main() {
     );
 
     let mut mint_data = [0u8; Mint::LEN];
-    Mint::default().pack_into_slice(&mut mint_data);
+    Mint::pack(Mint::default(), &mut mint_data).unwrap();
     let mut mint_lamports = 0;
     let mint = AccountInfo::from_data(&mut mint_data[..], &MINT_KEY, &TOKEN_PROGRAM_ID, &mut mint_lamports);
 
     let mut multisig_data = [0u8; Multisig::LEN];
-    Multisig::default().pack_into_slice(&mut multisig_data);
+    Multisig::pack(Multisig::default(), &mut multisig_data).unwrap();
     let mut multisig_lamports = 0;
     let multisig =
         AccountInfo::from_data(&mut multisig_data[..], &MULTISIG_KEY, &TOKEN_PROGRAM_ID, &mut multisig_lamports);
@@ -87,7 +87,7 @@ impl<'a> AccountInfo<'a> {
         owner: &'a Pubkey,
         lamports: &'a mut u64,
     ) -> Self {
-        account.pack_into_slice(data);
+        Account::pack(account, data).unwrap();
         Self::from_data(data, key, owner, lamports)
     }
 
@@ -154,7 +154,7 @@ fn test_spl_account_domain_data(acc: &AccountInfo<'_>) {
     account.state = AccountState::Initialized;
     account.delegated_amount = 789;
     account.close_authority = COption::Some(ACCOUNT_CLOSE_AUTHORITY);
-    account.pack_into_slice(&mut acc.data.borrow_mut());
+    Account::pack(account, &mut acc.data.borrow_mut()).unwrap();
     let unpacked_account = get_account(acc);
     assert!(unpacked_account.is_native());
     assert_eq!(unpacked_account.mint, MINT_KEY);
@@ -177,7 +177,7 @@ fn test_spl_mint_domain_data(mint: &AccountInfo<'_>) {
     mint_state.decimals = 9;
     mint_state.mint_authority = COption::Some(MINT_AUTHORITY);
     mint_state.freeze_authority = COption::Some(FREEZE_AUTHORITY);
-    mint_state.pack_into_slice(&mut mint.data.borrow_mut());
+    Mint::pack(mint_state, &mut mint.data.borrow_mut()).unwrap();
     let unpacked_mint = get_mint(mint);
     assert!(unpacked_mint.is_initialized);
     assert_eq!(unpacked_mint.supply, 42);
@@ -197,7 +197,7 @@ fn test_spl_multisig_domain_data(multisig: &AccountInfo<'_>) {
     multisig_state.signers[0] = MULTISIG_SIGNER_A;
     multisig_state.signers[1] = MULTISIG_SIGNER_B;
     multisig_state.signers[2] = MULTISIG_SIGNER_C;
-    multisig_state.pack_into_slice(&mut multisig.data.borrow_mut());
+    Multisig::pack(multisig_state, &mut multisig.data.borrow_mut()).unwrap();
     let unpacked_multisig = get_multisig(multisig);
     assert!(unpacked_multisig.is_initialized);
     assert_eq!(unpacked_multisig.m, 2);
@@ -232,15 +232,15 @@ fn test_spl_rent_domain_data(rent: &AccountInfo<'_>) {
 }
 
 fn get_account(acc: &AccountInfo<'_>) -> Account {
-    Account::unpack_from_slice(&acc.data.borrow()).unwrap()
+    Account::unpack_unchecked(&acc.data.borrow()).unwrap()
 }
 
 fn get_mint(acc: &AccountInfo<'_>) -> Mint {
-    Mint::unpack_from_slice(&acc.data.borrow()).unwrap()
+    Mint::unpack_unchecked(&acc.data.borrow()).unwrap()
 }
 
 fn get_multisig(acc: &AccountInfo<'_>) -> Multisig {
-    Multisig::unpack_from_slice(&acc.data.borrow()).unwrap()
+    Multisig::unpack_unchecked(&acc.data.borrow()).unwrap()
 }
 
 #[inline(never)]
