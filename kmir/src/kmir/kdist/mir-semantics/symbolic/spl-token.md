@@ -16,8 +16,8 @@ embedded.
 
 ```
 cheatcode_is_spl_account(acc)
-Account::unpack_unchecked(&acc.data.borrow())
-Account::pack(a, &mut acc.data.borrow_mut())
+Account::unpack_from_slice(&acc.data.borrow())
+Account::pack_into_slice(&a, &mut acc.data.borrow_mut())
   -> #isSPLRcRefCellDerefFunc                        (rule [spl-rc-deref])
   -> #isSPLBorrowFunc                                (rule [spl-borrow-data])
   -> #isSPLRefDerefFunc                              (rule [spl-ref-deref])
@@ -148,26 +148,20 @@ module KMIR-SPL-TOKEN
   syntax Bool ::= #isSPLUnpackFunc ( String ) [function, total]
   rule #isSPLUnpackFunc(_) => false [owise]
   // spl-token account
-  rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack_unchecked") => true
-  rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::unpack") => true
-  // mock account
-  rule #isSPLUnpackFunc("Account::unpack_unchecked") => true
+  rule #isSPLUnpackFunc("<state::Account as solana_program_pack::Pack>::unpack_from_slice") => true
+  rule #isSPLUnpackFunc("Account::unpack_from_slice") => true
   // spl-token mint
-  rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Mint as solana_program_pack::Pack>::unpack_unchecked") => true
-  rule #isSPLUnpackFunc("solana_program_pack::<spl_token_interface::state::Mint as solana_program_pack::Pack>::unpack") => true
-  // mock mint
-  rule #isSPLUnpackFunc("Mint::unpack_unchecked") => true
+  rule #isSPLUnpackFunc("<state::Mint as solana_program_pack::Pack>::unpack_from_slice") => true
+  rule #isSPLUnpackFunc("Mint::unpack_from_slice") => true
 
   syntax Bool ::= #isSPLPackFunc   ( String ) [function, total]
   rule #isSPLPackFunc(_) => false [owise]
   // spl-token account
-  rule #isSPLPackFunc("solana_program_pack::<spl_token_interface::state::Account as solana_program_pack::Pack>::pack") => true
-  // mock account
-  rule #isSPLPackFunc("Account::pack") => true
+  rule #isSPLPackFunc("<state::Account as solana_program_pack::Pack>::pack_into_slice") => true
+  rule #isSPLPackFunc("Account::pack_into_slice") => true
   // spl-token mint
-  rule #isSPLPackFunc("solana_program_pack::<spl_token_interface::state::Mint as solana_program_pack::Pack>::pack") => true
-  // mock mint
-  rule #isSPLPackFunc("Mint::pack") => true
+  rule #isSPLPackFunc("<state::Mint as solana_program_pack::Pack>::pack_into_slice") => true
+  rule #isSPLPackFunc("Mint::pack_into_slice") => true
 
   // Rent sysvar calls (includes mock harness direct calls to Rent::from_account_info / Rent::get)
   syntax Bool ::= #isSPLRentFromAccountInfoFunc ( String ) [function, total]
@@ -767,7 +761,7 @@ expose the wrapped payload directly.
     [owise]
 ```
 
-## Account::unpack / Account::pack
+## Account::unpack_from_slice / Account::pack_into_slice
 ```k
   rule [spl-account-unpack]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
@@ -815,22 +809,21 @@ expose the wrapped payload directly.
 
 ```k
   rule [spl-account-pack]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC_OP:Operand BUF_OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLAccountPack(SRC_OP, BUF_OP, DEST)
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC_OP:Operand BUF_OP:Operand .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLAccountPack(SRC_OP, BUF_OP)
          ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #isSPLPackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation , Place ) [seqstrict(1,2)]
+  syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation ) [seqstrict(1,2)]
 
-  rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)), DEST)
+  rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)))
         => #forceSetPlaceValue(
              PLACE,
              SPLRefCell(PLACE, SPLDataBuffer(ACCOUNT))
            )
-         ~> #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List))))
         ...
        </k>
 ```
