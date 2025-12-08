@@ -149,19 +149,19 @@ module KMIR-SPL-TOKEN
   rule #isSPLUnpackFunc(_) => false [owise]
   // spl-token account
   rule #isSPLUnpackFunc("<state::Account as solana_program_pack::Pack>::unpack_from_slice") => true
-  rule #isSPLUnpackFunc("Account::unpack_from_slice") => true
+  rule #isSPLUnpackFunc("Account::unpack_unchecked") => true
   // spl-token mint
   rule #isSPLUnpackFunc("<state::Mint as solana_program_pack::Pack>::unpack_from_slice") => true
-  rule #isSPLUnpackFunc("Mint::unpack_from_slice") => true
+  rule #isSPLUnpackFunc("Mint::unpack_unchecked") => true
 
   syntax Bool ::= #isSPLPackFunc   ( String ) [function, total]
   rule #isSPLPackFunc(_) => false [owise]
   // spl-token account
   rule #isSPLPackFunc("<state::Account as solana_program_pack::Pack>::pack_into_slice") => true
-  rule #isSPLPackFunc("Account::pack_into_slice") => true
+  rule #isSPLPackFunc("Account::pack") => true
   // spl-token mint
   rule #isSPLPackFunc("<state::Mint as solana_program_pack::Pack>::pack_into_slice") => true
-  rule #isSPLPackFunc("Mint::pack_into_slice") => true
+  rule #isSPLPackFunc("Mint::pack") => true
 
   // Rent sysvar calls (includes mock harness direct calls to Rent::from_account_info / Rent::get)
   syntax Bool ::= #isSPLRentFromAccountInfoFunc ( String ) [function, total]
