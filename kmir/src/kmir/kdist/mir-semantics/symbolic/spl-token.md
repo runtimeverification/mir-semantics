@@ -149,19 +149,19 @@ module KMIR-SPL-TOKEN
   rule #isSPLUnpackFunc(_) => false [owise]
   // spl-token account
   rule #isSPLUnpackFunc("<state::Account as solana_program_pack::Pack>::unpack_from_slice") => true
-  rule #isSPLUnpackFunc("Account::unpack_unchecked") => true
+  rule #isSPLUnpackFunc("Account::unpack_from_slice") => true
   // spl-token mint
   rule #isSPLUnpackFunc("<state::Mint as solana_program_pack::Pack>::unpack_from_slice") => true
-  rule #isSPLUnpackFunc("Mint::unpack_unchecked") => true
+  rule #isSPLUnpackFunc("Mint::unpack_from_slice") => true
 
   syntax Bool ::= #isSPLPackFunc   ( String ) [function, total]
   rule #isSPLPackFunc(_) => false [owise]
   // spl-token account
   rule #isSPLPackFunc("<state::Account as solana_program_pack::Pack>::pack_into_slice") => true
-  rule #isSPLPackFunc("Account::pack") => true
+  rule #isSPLPackFunc("Account::pack_into_slice") => true
   // spl-token mint
   rule #isSPLPackFunc("<state::Mint as solana_program_pack::Pack>::pack_into_slice") => true
-  rule #isSPLPackFunc("Mint::pack") => true
+  rule #isSPLPackFunc("Mint::pack_into_slice") => true
 
   // Rent sysvar calls (includes mock harness direct calls to Rent::from_account_info / Rent::get)
   syntax Bool ::= #isSPLRentFromAccountInfoFunc ( String ) [function, total]
@@ -809,22 +809,21 @@ expose the wrapped payload directly.
 
 ```k
   rule [spl-account-pack]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC_OP:Operand BUF_OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLAccountPack(SRC_OP, BUF_OP, DEST)
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC_OP:Operand BUF_OP:Operand .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #mkSPLAccountPack(SRC_OP, BUF_OP)
          ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #isSPLPackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation , Place ) [seqstrict(1,2)]
+  syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation ) [seqstrict(1,2)]
 
-  rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)), DEST)
+  rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)))
         => #forceSetPlaceValue(
              PLACE,
              SPLRefCell(PLACE, SPLDataBuffer(ACCOUNT))
            )
-         ~> #setLocalValue(DEST, Aggregate(variantIdx(0), .List))
         ...
        </k>
 ```
