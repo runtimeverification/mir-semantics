@@ -248,8 +248,11 @@ fn inner_test_validate_owner(
 
     if expected_owner != owner_account_info.key {
         assert_eq!(result, Err(ProgramError::Custom(4)));
-        result
-    } else if maybe_multisig_is_initialised.is_some()
+        return result;
+    }
+    // We add the `maybe_multisig_is_initialised.is_some()` to not branch vacuously in the
+    // non-multisig cases
+    else if maybe_multisig_is_initialised.is_some()
         && owner_account_info.data_len() == Multisig::LEN
         && owner_account_info.owner == &id()
     {
@@ -287,13 +290,15 @@ fn inner_test_validate_owner(
             return result;
         }
 
-        result
-    } else if !owner_account_info.is_signer {
-        assert_eq!(result, Err(ProgramError::MissingRequiredSignature));
-        result
-    } else {
-        result
+        return Ok(());
     }
+    // Non-multisig case - check if owner_account_info.is_signer
+    else if !owner_account_info.is_signer {
+        assert_eq!(result, Err(ProgramError::MissingRequiredSignature));
+        return result;
+    }
+
+    Ok(())
 }
 
 // TODO: Not sure if these are needed since there is no UB like p-token
@@ -3235,16 +3240,21 @@ fn test_process_close_account(
         } else if accounts[1].key != &INCINERATOR_ID {
             assert_eq!(result, Err(ProgramError::InvalidAccountData));
             return result;
-        } else if dst_init_lamports.checked_add(src_init_lamports).is_none() {
+        }
+        if dst_init_lamports.checked_add(src_init_lamports).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
+        assert!(result.is_ok());
 
         // Validate owner falls through to here if no error
-        assert_eq!(accounts[1].lamports(), dst_init_lamports + src_init_lamports);
         assert_eq!(accounts[0].lamports(), 0);
-        assert_eq!(accounts[0].data_len(), 0); // TODO: More sol_memset stuff?
-        assert!(result.is_ok());
+        assert_eq!(
+            accounts[1].lamports(),
+            dst_init_lamports + src_init_lamports
+        );
+        #[cfg(any(target_os = "solana", target_arch = "bpf"))]
+        assert_eq!(accounts[0].data_len(), 0); // Solana-RT only
     }
 
     // Ensure instruction_data was not mutated
@@ -3805,9 +3815,6 @@ fn test_process_transfer_checked(
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
         }
-
-        assert!(result.is_ok());
-
         if accounts[0].key != accounts[2].key && amount != 0 {
             if get_account(&accounts[0]).is_native() && src_initial_lamports < amount {
                 // Not sure how to fund native mint
@@ -3829,6 +3836,7 @@ fn test_process_transfer_checked(
                 assert_eq!(accounts[1].lamports(), dst_initial_lamports + amount);
             }
         }
+        assert!(result.is_ok());
 
         // Delegate updates
         if old_src_delgate == Some(*accounts[3].key) && accounts[0].key != accounts[2].key {
@@ -4990,16 +4998,18 @@ fn test_process_withdraw_excess_lamports_account(
                 .checked_add(src_init_lamports - minimum_balance)
                 .is_none()
             {
-                assert_eq!(result, Err(ProgramError::Custom(0)));
+                assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
             }
 
+            assert!(result.is_ok());
             assert_eq!(accounts[0].lamports(), minimum_balance);
             assert_eq!(
                 accounts[1].lamports(),
-                dst_init_lamports + (src_init_lamports - minimum_balance)
+                dst_init_lamports
+                    .checked_add(src_init_lamports - minimum_balance)
+                    .unwrap()
             );
-            assert!(result.is_ok())
         }
     }
 
@@ -5168,26 +5178,27 @@ fn test_process_withdraw_excess_lamports_mint(
                 return result;
             }
 
-            else if src_init_lamports < minimum_balance {
+            if src_init_lamports < minimum_balance {
                 assert_eq!(result, Err(ProgramError::Custom(0)));
                 return result;
             } else if dst_init_lamports
                 .checked_add(src_init_lamports - minimum_balance)
                 .is_none()
             {
-                assert_eq!(result, Err(ProgramError::Custom(0)));
+                assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
             }
 
+            assert!(result.is_ok());
             assert_eq!(accounts[0].lamports(), minimum_balance);
             assert_eq!(
                 accounts[1].lamports(),
-                dst_init_lamports + (src_init_lamports - minimum_balance)
+                dst_init_lamports
+                    .checked_add(src_init_lamports - minimum_balance)
+                    .unwrap()
             );
-            assert!(result.is_ok())
         }
     }
-
     // Ensure instruction_data was not mutated
     assert_eq!(*instruction_data, instruction_data_with_discriminator[1..]);
 
