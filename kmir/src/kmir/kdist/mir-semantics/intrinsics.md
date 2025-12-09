@@ -136,23 +136,42 @@ the second argument, so the returned difference is always positive.
 
 ```k
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from")), ARG1:Operand ARG2:Operand .Operands, DEST)
-        => #setLocalValue(DEST, #ptrOffsetDiff(ARG1, ARG2, true))
+        => #ptrOffsetDiff(ARG1, ARG2, true, DEST)
         ...
        </k>
 
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from_unsigned")), ARG1:Operand ARG2:Operand .Operands, DEST)
-        => #setLocalValue(DEST, #ptrOffsetDiff(ARG1, ARG2, false))
+        => #ptrOffsetDiff(ARG1, ARG2, false, DEST)
         ...
        </k>
 
-  syntax Evaluation ::= #ptrOffsetDiff ( Evaluation , Evaluation , Bool ) [seqstrict(1,2)]
+  syntax KItem ::= #ptrOffsetDiff ( Evaluation , Evaluation , Bool , Place ) [seqstrict(1,2)]
 
-  rule #ptrOffsetDiff(
+  syntax MIRError ::= UBPtrOffsetDiff
+
+  syntax UBPtrOffsetDiff ::= #UBErrorPtrOffsetDiff( Value , Value , Bool )
+
+  rule <k> 
+        #ptrOffsetDiff(
           PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF1, _)),
           PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF2, _)),
-          SIGNED_FLAG
-       ) => Integer(OFF1 -Int OFF2, 64, SIGNED_FLAG)
+          SIGNED_FLAG,
+          DEST
+       ) => #setLocalValue(DEST, Integer(OFF1 -Int OFF2, 64, SIGNED_FLAG))
+        ...
+       </k>
     requires (SIGNED_FLAG orBool OFF1 >=Int OFF2)
+
+  rule <k> 
+        #ptrOffsetDiff(
+          PtrLocal(_, _, _, _) #as PTR1,
+          PtrLocal(_, _, _, _) #as PTR2,
+          SIGNED_FLAG,
+          _DEST
+       ) => #UBErrorPtrOffsetDiff(PTR1, PTR2, SIGNED_FLAG)
+        ...
+       </k>
+    [priority(100)]
 ```
 
 ```k
