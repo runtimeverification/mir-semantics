@@ -37,6 +37,7 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode': ['check_assume'],
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
+    'test_offset_from-fail': ['testing'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -59,6 +60,7 @@ PROVE_RS_SHOW_SPECS = [
     'unions-fail',
     'transmute-maybe-uninit-fail',
     'iter_next_2-fail',
+    'test_offset_from-fail',
 ]
 
 
