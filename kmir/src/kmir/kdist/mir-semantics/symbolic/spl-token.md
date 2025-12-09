@@ -95,6 +95,14 @@ module KMIR-SPL-TOKEN
                  | SPLDataBorrow ( Place , Value )
                  | SPLDataBorrowMut ( Place , Value )
                  | SPLPubkeyRef ( Value )
+
+  syntax Place ::= placeOf ( Operand ) [function]
+  rule placeOf(operandCopy(P)) => P
+  rule placeOf(operandMove(P)) => P
+
+  syntax Operand ::= #appendProjsOp ( Operand , ProjectionElems ) [function]
+  rule #appendProjsOp(operandCopy(place(L, PROJS)), EXTRA) => operandCopy(place(L, appendP(PROJS, EXTRA)))
+  rule #appendProjsOp(operandMove(place(L, PROJS)), EXTRA) => operandMove(place(L, appendP(PROJS, EXTRA)))
 ```
 
 ## Helper predicates
@@ -324,67 +332,38 @@ module KMIR-SPL-TOKEN
 ```
 
 ## Cheatcode handling
+
 ```{.k .symbolic}
   rule [cheatcode-is-spl-account]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
-            Aggregate(variantIdx(0),
-              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplAccountKey:List)))))              // pub key: &'a Pubkey
-              ListItem(
-                  SPLRefCell(
-                    place(
-                      LOCAL,
-                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
-                    ),
-                    Integer(?SplLamports:Int, 64, false)
-                  )
-              ) // lamports: Rc<RefCell<&'a mut u64>>
-              ListItem( // data: Rc<RefCell<&'a mut [u8]>>
-                  SPLRefCell(
-                    place(
-                      LOCAL,
-                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
-                    ),
-                    SPLDataBuffer( // data: Rc<RefCell<&'a mut [u8]>>, Aggregate is for &account.data
-                      Aggregate(variantIdx(0),
-                        ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintKey:List))))        // Account.mint: Pubkey
-                        ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplTokenOwnerKey:List))))  // Account.owner: Pubkey
-                        ListItem(Integer(?SplAmount:Int, 64, false))             // Account.amount: u64
-                        // Model COption<Pubkey> as
-                        // Some(pubkey); None is not represented here.
-                        ListItem(Aggregate(variantIdx(1),
-                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplDelegateKey:List))))))
-                        ListItem(Aggregate(variantIdx(?SplAccountState:Int), .List)) // Account.state: AccountState (repr u8)
-                        // Allow COption<u64> with a symbolic variant (0=None, 1=Some(amount)).
-                        ListItem(Aggregate(variantIdx(?SplIsNativeLamportsVariant:Int),
-                          ListItem(Integer(?SplIsNativeLamports:Int, 64, false))))
-                        ListItem(Integer(?SplDelegatedAmount:Int, 64, false))    // Account.delegated_amount: u64
-                        // Model COption<Pubkey> as
-                        // Some(pubkey); None is not represented here.
-                        ListItem(Aggregate(variantIdx(1),
-                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplCloseAuthKey:List))))))
-                    )
-                  )
-                )
-              )
-              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplOwnerKey:List)))))               // owner: &'a Pubkey
-              ListItem(Integer(?SplRentEpoch:Int, 64, false))              // rent_epoch: u64
-              ListItem(BoolVal(?_SplIsSigner:Bool))                        // is_signer: bool
-              ListItem(BoolVal(?_SplIsWritable:Bool))                      // is_writable: bool
-              ListItem(BoolVal(?_SplExecutable:Bool))                      // executable: bool
-            )
+      => #forceSetPlaceValue(
+           place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(1), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+           SPLDataBuffer(
+             Aggregate(variantIdx(0),
+               ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintKey:List))))        // Account.mint: Pubkey
+               ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplTokenOwnerKey:List))))  // Account.owner: Pubkey
+               ListItem(Integer(?SplAmount:Int, 64, false))                                 // Account.amount: u64
+               ListItem(Aggregate(variantIdx(1),                                            // delegate COption<Pubkey>
+                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplDelegateKey:List))))))
+               ListItem(Aggregate(variantIdx(?SplAccountState:Int), .List))                 // Account.state: AccountState
+               ListItem(Aggregate(variantIdx(?SplIsNativeLamportsVariant:Int),              // is_native COption<u64>
+                 ListItem(Integer(?SplIsNativeLamports:Int, 64, false))))
+               ListItem(Integer(?SplDelegatedAmount:Int, 64, false))                        // Account.delegated_amount: u64
+               ListItem(Aggregate(variantIdx(1),                                            // close_authority COption<Pubkey>
+                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplCloseAuthKey:List))))))
+             )
+           )
          )
-         ~> #execBlockIdx(TARGET)
+      ~> #forceSetPlaceValue(
+         place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+        #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems))), 165)
+     )    
+      ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_account"
-      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_account" 
-    ensures #isSplPubkey(?SplAccountKey)
-      andBool #isSplPubkey(?SplOwnerKey)
-      andBool 0 <=Int ?SplLamports andBool ?SplLamports <Int 18446744073709551616
-      andBool 0 <=Int ?SplRentEpoch andBool ?SplRentEpoch <Int 18446744073709551616
-      andBool #isSplPubkey(?SplMintKey)
+      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_account"
+    ensures #isSplPubkey(?SplMintKey)
       andBool #isSplPubkey(?SplTokenOwnerKey)
       andBool #isSplPubkey(?SplDelegateKey)
       andBool #isSplPubkey(?SplCloseAuthKey)
@@ -395,286 +374,84 @@ module KMIR-SPL-TOKEN
       andBool 0 <=Int ?SplIsNativeLamports andBool ?SplIsNativeLamports <Int (1 <<Int 64)
     [priority(30), preserves-definedness]
 
+  syntax Evaluation ::= #initBorrow(Evaluation, Int) [seqstrict(1)]
+  rule <k> #initBorrow(Aggregate ( variantIdx ( 0 ) ,
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , false ))))))
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , false ))))))
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , true ))))))
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( OFFSET , PLACE , MUT , metadata ( dynamicSize ( _ ) , 0 , dynamicSize ( _ ))))))))
+             ), N)
+          => Aggregate ( variantIdx ( 0 ) ,
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , false ))))))
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , false ))))))
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , true ))))))
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( OFFSET , PLACE , MUT , metadata ( dynamicSize ( N ) , 0 , dynamicSize ( N ))))))))
+             ) ...
+      </k>
+
+  rule <k> #traverseProjection(DEST, SPLDataBuffer(VAL), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize (_), PROJS)
+        => #traverseProjection(DEST, SPLDataBuffer(VAL), PROJS, CTXTS) ...
+       </k>
+
   rule [cheatcode-is-spl-mint]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
-            Aggregate(variantIdx(0),
-              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplMintAccountKey:List)))))    // pub key: &'a Pubkey
-              ListItem(
-                  SPLRefCell(
-                    place(
-                      LOCAL,
-                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
-                    ),
-                    Integer(?SplMintLamports:Int, 64, false)
-                  )
-              )
-              ListItem(
-                  SPLRefCell(
-                    place(
-                      LOCAL,
-                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
-                    ),
-                    SPLDataBuffer(
-                      Aggregate(variantIdx(0),
-                        // optional key. The model always carries a payload key (never to be read if None)
-                        ListItem(Aggregate(variantIdx(?SplMintHasAuthKey),
-                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintAuthorityKey:List))))))
-                        ListItem(Integer(?SplMintSupply:Int, 64, false))
-                        ListItem(Integer(?SplMintDecimals:Int, 8, false))
-                        ListItem(BoolVal(?_SplMintInitialised))
-                        // optional key. The model always carries a payload key (never to be read if None)
-                        ListItem(Aggregate(variantIdx(?SplMintHasFreezeKey),
-                          ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintFreezeAuthorityKey:List))))))
-                      )
-                    )
-                  )
-              )
-              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplMintOwnerKey:List)))))     // owner: &'a Pubkey
-              ListItem(Integer(?SplMintRentEpoch:Int, 64, false))
-              ListItem(BoolVal(?_SplMintIsSigner:Bool))
-              ListItem(BoolVal(?_SplMintIsWritable:Bool))
-              ListItem(BoolVal(?_SplMintExecutable:Bool))
-            )
+      => #forceSetPlaceValue(
+           place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(1), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+           SPLDataBuffer(
+             Aggregate(variantIdx(0),
+               // optional key. The model always carries a payload key (never to be read if None)
+               ListItem(Aggregate(variantIdx(?SplMintHasAuthKey:Int),                                 // mint_authority COption<Pubkey>
+                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintAuthorityKey:List))))))
+               ListItem(Integer(?SplMintSupply:Int, 64, false))                                       // supply: u64
+               ListItem(Integer(?SplMintDecimals:Int, 8, false))                                      // decimals: u8
+               ListItem(BoolVal(?_SplMintInitialised:Bool))                                           // is_initialized: bool
+               // optional key. The model always carries a payload key (never to be read if None)
+               ListItem(Aggregate(variantIdx(?SplMintHasFreezeKey:Int),                               // freeze_authority COption<Pubkey>
+                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintFreezeAuthorityKey:List))))))
+             )
+           )
          )
-         ~> #execBlockIdx(TARGET)
+      ~> #forceSetPlaceValue(
+         place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+        #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems))), 82)
+     )
+      ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_mint"
       orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_mint"
-    ensures #isSplPubkey(?SplMintAccountKey)
-      andBool #isSplPubkey(?SplMintOwnerKey)
-      andBool 0 <=Int ?SplMintHasAuthKey andBool ?SplMintHasAuthKey <=Int 1
+    ensures 0 <=Int ?SplMintHasAuthKey andBool ?SplMintHasAuthKey <=Int 1
       andBool #isSplPubkey(?SplMintAuthorityKey)
       andBool 0 <=Int ?SplMintHasFreezeKey andBool ?SplMintHasFreezeKey <=Int 1
       andBool #isSplPubkey(?SplMintFreezeAuthorityKey)
-      andBool 0 <=Int ?SplMintLamports andBool ?SplMintLamports <Int 18446744073709551616
-      andBool 0 <=Int ?SplMintRentEpoch andBool ?SplMintRentEpoch <Int 18446744073709551616
       andBool 0 <=Int ?SplMintSupply andBool ?SplMintSupply <Int (1 <<Int 64)
       andBool 0 <=Int ?SplMintDecimals andBool ?SplMintDecimals <Int 256
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-rent]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #setLocalValue(
-            place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)),
-            Aggregate(variantIdx(0),
-              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplRentAccountKey:List))))) // pub key: &'a Pubkey
-              ListItem(
-                  SPLRefCell(
-                    place(
-                      LOCAL,
-                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(1), #hack()) .ProjectionElems)
-                    ),
-                    Integer(?SplRentLamports:Int, 64, false)
-                  )
-              ) // lamports: Rc<RefCell<&'a mut u64>>
-              ListItem( // data: Rc<RefCell<&'a mut [u8]>>
-                  SPLRefCell(
-                    place(
-                      LOCAL,
-                      appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) .ProjectionElems)
-                    ),
-                    SPLDataBuffer(
-                      Aggregate(variantIdx(0),
-                        ListItem(Integer(?SplRentLamportsPerByteYear:Int, 64, false))
-                        ListItem(Float(2.0, 64))
-                        ListItem(Integer(?SplRentBurnPercent:Int, 8, false))
-                      )
-                    )
-                  )
-                )
-              ListItem(SPLPubkeyRef(Aggregate(variantIdx(0), ListItem(Range(?SplRentOwnerKey:List))))) // owner: &'a Pubkey
-              ListItem(Integer(?SplRentRentEpoch:Int, 64, false))              // rent_epoch: u64
-              ListItem(BoolVal(false))                                          // is_signer: bool
-              ListItem(BoolVal(false))                                          // is_writable: bool
-              ListItem(BoolVal(false))                                          // executable: bool
-            )
+      => #forceSetPlaceValue(
+           place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(1), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+           SPLDataBuffer(
+             Aggregate(variantIdx(0),
+               ListItem(Integer(?SplRentLamportsPerByteYear:Int, 64, false))                          // lamports_per_byte_year: u64
+               ListItem(Float(2.0, 64))                                                               // exemption_threshold: f64
+               ListItem(Integer(?SplRentBurnPercent:Int, 8, false))                                   // burn_percent: u8
+             )
+           )
          )
-         ~> #execBlockIdx(TARGET)
+      ~> #forceSetPlaceValue(
+         place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+        #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems))), 17)
+     )
+      ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_rent"
       orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_rent"
-    ensures #isSplPubkey(?SplRentAccountKey)
-      andBool #isSplPubkey(?SplRentOwnerKey)
-      andBool 0 <=Int ?SplRentLamports andBool ?SplRentLamports <Int 18446744073709551616
-      andBool 0 <=Int ?SplRentRentEpoch andBool ?SplRentRentEpoch <Int 18446744073709551616
-      andBool 0 <=Int ?SplRentLamportsPerByteYear andBool ?SplRentLamportsPerByteYear <Int (1 <<Int 32)
+    ensures 0 <=Int ?SplRentLamportsPerByteYear andBool ?SplRentLamportsPerByteYear <Int (1 <<Int 32)
       andBool 0 <=Int ?SplRentBurnPercent andBool ?SplRentBurnPercent <=Int 100
     [priority(30), preserves-definedness]
-```
-
-## Accessing `Rc<RefCell<_>>`
-
-We shortcut the MIR field access that `<Rc<_> as Deref>::deref` performs and
-expose the wrapped payload directly.
-
-```k
-  rule [spl-rc-deref]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND), _SPAN))
-      => #finishSPLRcDeref(OP, DEST, TARGET)
-    ...
-    </k>
-    requires #isSPLRcRefCellDerefFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
-    [priority(30), preserves-definedness]
-
-  syntax KItem ::= #finishSPLRcDeref ( Evaluation , Place , MaybeBasicBlockIdx ) [seqstrict(1)]
-                  | #resolveSPLRcRef ( Value , Place , MaybeBasicBlockIdx )
-                  | #finishResolvedSPLRc ( Place , MaybeBasicBlockIdx )
-
-  rule <k> #finishSPLRcDeref(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET)
-        => #resolveSPLRcRef(Reference(OFFSET, PLACE, MUT, META), DEST, TARGET)
-       ...
-      </k>
-
-  rule <k> #resolveSPLRcRef(Reference(0, place(local(I), PROJS), _, _), DEST, TARGET)
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
-             PROJS,
-             .Contexts
-           )
-           ~> #readProjection(false)
-           ~> #finishResolvedSPLRc(DEST, TARGET)
-       ...
-      </k>
-      <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-
-  rule <k> #resolveSPLRcRef(Reference(OFFSET, place(local(I), PROJS), _, _), DEST, TARGET)
-        => #traverseProjection(
-             toStack(OFFSET, local(I)),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET),
-             PROJS,
-             .Contexts
-           )
-           ~> #readProjection(false)
-           ~> #finishResolvedSPLRc(DEST, TARGET)
-       ...
-      </k>
-      <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool 0 <=Int I
-
-  // If the deref doesn't return `SPLRefCell`, it will stuck there;
-  // TODO: fallback to ordinary call when it's not `SPLRefCell`
-  rule <k> SPLRefCell(PLACE, VAL) ~> #finishResolvedSPLRc(DEST, TARGET)
-        => #setLocalValue(DEST, SPLRefCell(PLACE, VAL)) ~> #continueAt(TARGET)
-       ...
-      </k>
-```
-
-## Pubkey references
-
-```k
-  syntax Context ::= "CtxSPLPubkeyRef"
-
-  rule <k> #traverseProjection(
-             DEST,
-             SPLPubkeyRef(VAL),
-             projectionElemDeref PROJS,
-             CTXTS
-           )
-        => #traverseProjection(
-             DEST,
-             VAL,
-             PROJS,
-             CtxSPLPubkeyRef CTXTS
-           )
-        ...
-       </k>
-    [priority(30)]
-  rule #buildUpdate(VAL, CtxSPLPubkeyRef CTXS) => #buildUpdate(SPLPubkeyRef(VAL), CTXS)
-  rule #projectionsFor(CtxSPLPubkeyRef CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
-```
-
-## Borrowed buffer projections
-
-```k
-  // Step 1
-  syntax Context ::= CtxSPLRefCell ( Place )
-  rule <k> #traverseProjection(
-             DEST,
-             SPLRefCell(PLACE, VAL),
-             projectionElemDeref PROJS,
-             CTXTS
-           )
-        => #traverseProjection(
-             DEST,
-             VAL,
-             PROJS,
-             CtxSPLRefCell(PLACE) CTXTS
-           )
-        ...
-       </k>
-    [priority(30)]
-  rule #buildUpdate(VAL, CtxSPLRefCell(PLACE) CTXS) => #buildUpdate(SPLRefCell(PLACE, VAL), CTXS)
-  rule #projectionsFor(CtxSPLRefCell(_) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
-
-  // Step 2 
-  syntax Context ::= CtxSPLDataBorrow ( Place )
-  rule <k> #traverseProjection(
-             DEST,
-             SPLDataBorrow(PLACE, VAL),
-             projectionElemDeref PROJS,
-             CTXTS
-           )
-        => #traverseProjection(
-             DEST,
-             VAL,
-             PROJS,
-             CtxSPLDataBorrow(PLACE) CTXTS
-           )
-        ...
-       </k>
-    [priority(30)]
-  rule #buildUpdate(VAL, CtxSPLDataBorrow(PLACE) CTXS) => #buildUpdate(SPLDataBorrow(PLACE, SPLDataBuffer(VAL)), CTXS)
-  rule #projectionsFor(CtxSPLDataBorrow(_) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
-
-  syntax Context ::= CtxSPLDataBorrowMut ( Place )
-  rule <k> #traverseProjection(
-             DEST,
-             SPLDataBorrowMut(PLACE, VAL),
-             projectionElemDeref PROJS,
-             CTXTS
-           )
-        => #traverseProjection(
-             DEST,
-             VAL,
-             PROJS,
-             CtxSPLDataBorrowMut(PLACE) CTXTS
-           )
-        ...
-       </k>
-    [priority(30)]
-  rule #buildUpdate(VAL, CtxSPLDataBorrowMut(PLACE) CTXS) => #buildUpdate(SPLDataBorrowMut(PLACE, SPLDataBuffer(VAL)), CTXS)
-  rule #projectionsFor(CtxSPLDataBorrowMut(_) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
-
-  // Step 3
-  syntax Context ::= "CtxSPLDataBuffer"
-  rule <k> #traverseProjection(
-             DEST,
-             SPLDataBuffer(VALUE),
-             projectionElemDeref PROJS,
-             CTXTS
-           )
-        => #traverseProjection(
-             DEST,
-             VALUE,
-             PROJS,
-             CtxSPLDataBuffer CTXTS
-           )
-        ...
-       </k>
-    [priority(30)]
-  rule #buildUpdate(VAL, CtxSPLDataBuffer CTXS) => #buildUpdate(SPLDataBuffer(VAL), CTXS)
-  rule #projectionsFor(CtxSPLDataBuffer CTXS, PROJS) => #projectionsFor(CTXS, projectionElemDeref PROJS)
 ```
 
 ## RefCell::<&mut [u8]> helpers
@@ -682,201 +459,58 @@ expose the wrapped payload directly.
 ```k
   rule [spl-borrow-data]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLBorrowData(
-           DEST,
-           operandCopy(place(LOCAL, PROJS)),
-           place(LOCAL, PROJS),
-           #isSPLBorrowMutFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
-         )
+      => #setSPLBorrowData(DEST, operandCopy(place(LOCAL, PROJS)))
          ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #isSPLBorrowFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #mkSPLBorrowData ( Place , Evaluation , Place , Bool ) [seqstrict(2)]
-
-  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(PLACE, BUF), _SRC, false)
-        => #setLocalValue(DEST, SPLRefCell(PLACE, SPLDataBorrow(PLACE, BUF)))
-        ...
+  syntax KItem ::= #setSPLBorrowData ( Place , Evaluation ) [seqstrict(2)]
+  rule <k> #setSPLBorrowData(DEST, Reference(OFFSET, place(LOCAL, PROJS), MUT, META))
+        => #setLocalValue(DEST, Aggregate(variantIdx(0),
+             ListItem(Aggregate(variantIdx(0), ListItem(PtrLocal(OFFSET, place(LOCAL, appendP(PROJS, projectionElemField(fieldIdx(1), #hack())  projectionElemField(fieldIdx(0), #hack()) .ProjectionElems)), MUT, META))))
+             ListItem(Aggregate(variantIdx(0), ListItem(Reference(OFFSET, place (LOCAL, appendP(PROJS, projectionElemField(fieldIdx(0), #hack()) .ProjectionElems)), MUT, META)))))) ...
        </k>
-
-  rule <k> #mkSPLBorrowData(DEST, SPLRefCell(PLACE, BUF), _SRC, true)
-        => #setLocalValue(DEST, SPLRefCell(PLACE, SPLDataBorrowMut(PLACE, BUF)))
-        ...
-       </k>
-```
-
-## `Ref`/`RefMut` deref shortcuts
-
-```k
-  rule [spl-ref-deref]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARG_OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLRefDeref(DEST, ARG_OP)
-         ~> #execBlockIdx(TARGET)
-    ...
-    </k>
-    requires #isSPLRefDerefFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
-    [priority(30), preserves-definedness]
-
-  syntax KItem ::= #mkSPLRefDeref ( Place , Evaluation ) [seqstrict(2)]
-
-  rule <k> #mkSPLRefDeref(DEST, Reference(0, place(local(I), .ProjectionElems), _, _))
-        => #mkSPLRefDeref(DEST, getValue(LOCALS, I))
-       ...
-      </k>
-      <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-
-  rule <k> #mkSPLRefDeref(DEST, Reference(OFFSET, place(local(I), .ProjectionElems), _, _))
-        => #mkSPLRefDeref(
-             DEST,
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET)
-           )
-       ...
-      </k>
-      <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool 0 <=Int I
-
-  rule <k> #mkSPLRefDeref(DEST, SPLDataBorrow(_, _) #as BORROW)
-        => #setLocalValue(DEST, BORROW)
-        ...
-       </k>
-
-  rule <k> #mkSPLRefDeref(DEST, SPLDataBorrowMut(_, _) #as BORROW)
-        => #setLocalValue(DEST, BORROW)
-        ...
-       </k>
-
-  rule [spl-ref-deref-owise]:
-    <k> #mkSPLRefDeref(DEST, VAL)
-        => #setLocalValue(DEST, VAL)
-       ...
-      </k>
-    [owise]
 ```
 
 ## Account::unpack_from_slice / Account::pack_into_slice
 ```k
   rule [spl-account-unpack]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLAccountUnpack(DEST, OP)
+      => #splUnpack(DEST, #withDeref(OP))
          ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #isSPLUnpackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #mkSPLAccountUnpack ( Place , Evaluation ) [seqstrict(2)]
-
-  rule <k> #mkSPLAccountUnpack(DEST, Reference(0, place(local(I), projectionElemDeref .ProjectionElems), _, _))
-        => #mkSPLAccountUnpack(DEST, getValue(LOCALS, I))
-       ...
-      </k>
-      <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-
-  rule <k> #mkSPLAccountUnpack(DEST, Reference(OFFSET, place(local(I), projectionElemDeref .ProjectionElems), _, _))
-        => #mkSPLAccountUnpack(
-             DEST,
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET)
-           )
-       ...
-      </k>
-      <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool 0 <=Int I
-
-  rule <k> #mkSPLAccountUnpack(DEST, SPLDataBorrow(_, SPLDataBuffer(ACCOUNT)))
-      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(ACCOUNT)))
-      ...
-      </k>
-
-  rule <k> #mkSPLAccountUnpack(DEST, SPLDataBorrowMut(_, SPLDataBuffer(ACCOUNT)))
-        => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(ACCOUNT)))
-        ...
+  syntax KItem ::= #splUnpack ( Place , Evaluation ) [seqstrict(2)]
+  rule <k> #splUnpack(DEST, SPLDataBuffer(VAL))
+        => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(VAL))) ...
        </k>
-```
 
-```k
   rule [spl-account-pack]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC_OP:Operand BUF_OP:Operand .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLAccountPack(SRC_OP, BUF_OP)
-         ~> #execBlockIdx(TARGET)
-    ...
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC:Operand DST:Operand .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #splPack(SRC, #withDeref(DST)) ~> #execBlockIdx(TARGET) ...
     </k>
     requires #isSPLPackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #mkSPLAccountPack ( Evaluation , Evaluation ) [seqstrict(1,2)]
-
-  rule <k> #mkSPLAccountPack(ACCOUNT, SPLDataBorrowMut(PLACE, SPLDataBuffer(_)))
-        => #forceSetPlaceValue(
-             PLACE,
-             SPLRefCell(PLACE, SPLDataBuffer(ACCOUNT))
-           )
-        ...
-       </k>
+  syntax KItem ::= #splPack ( Evaluation , Evaluation ) [seqstrict(1)]
+  rule <k> #splPack(VAL, DEST) => #setLocalValue(placeOf(DEST), SPLDataBuffer(VAL)) ... </k>
 ```
 
 ```{.k .symbolic}
-  // Rent::from_account_info
+  // Rent::from_account_info - navigate to data buffer using projection path from cheatcode
   rule [spl-rent-from-account-info]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #mkSPLRentFromAccountInfo(DEST, OP)
+    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+      => #splUnpack(DEST, #appendProjsOp(OP, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(1), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems))
          ~> #execBlockIdx(TARGET)
     ...
     </k>
     requires #isSPLRentFromAccountInfoFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
-
-  syntax KItem ::= #mkSPLRentFromAccountInfo ( Place , Evaluation ) [seqstrict(2)]
-
-
-  // Accept references without an explicit deref projection (e.g., borrowed AccountInfo locals on the stack)
-  rule <k> #mkSPLRentFromAccountInfo(DEST, Reference(0, place(local(I), .ProjectionElems), _, _))
-        => #mkSPLRentFromAccountInfo(DEST, getValue(LOCALS, I))
-       ...
-      </k>
-      <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-
-  rule <k> #mkSPLRentFromAccountInfo(DEST, Reference(OFFSET, place(local(I), .ProjectionElems), _, _))
-        => #mkSPLRentFromAccountInfo(
-             DEST,
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, local(I), OFFSET)
-           )
-       ...
-      </k>
-      <stack> STACK </stack>
-    requires 0 <Int OFFSET
-     andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool 0 <=Int I
-
-  rule <k> #mkSPLRentFromAccountInfo(
-            DEST,
-            Aggregate(variantIdx(0),
-              ListItem(_KEY)
-              ListItem(_LAMPORTS_CELL)
-              ListItem(SPLRefCell(_, SPLDataBuffer(RENT_DATA)))
-              _REST:List
-            )
-           )
-        => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(RENT_DATA)))
-       ...
-      </k>
 ```
 
 ```{.k .symbolic}

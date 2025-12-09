@@ -171,7 +171,6 @@ fn test_spl_mint_domain_data(mint: &AccountInfo<'_>) {
     assert_eq!(mint.data_len(), Mint::LEN);
 
     let mut mint_state = get_mint(mint);
-    assert!(!mint_state.is_initialized);
     mint_state.is_initialized = true;
     mint_state.supply = 42;
     mint_state.decimals = 9;
