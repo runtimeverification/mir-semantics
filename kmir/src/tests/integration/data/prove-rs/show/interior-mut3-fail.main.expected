@@ -3,57 +3,11 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (151 steps)
-├─ 3
-│   #expect ( thunk ( #applyBinOp ( binOpEq , thunk ( #applyBinOp ( binOpBitAnd , th
-│   function: main
-┃
-┃ (1 step)
-┣━━┓
-┃  │
-┃  ├─ 4
-┃  │   AssertError ( assertMessageMisalignedPointerDereference ( ... required: operandC
-┃  │   function: main
-┃  │
-┃  │  (1 step)
-┃  └─ 6 (stuck, leaf)
-┃      #ProgramError ( AssertError ( assertMessageMisalignedPointerDereference ( ... re
-┃      function: main
-┃
-┗━━┓
-   │
-   ├─ 5
-   │   #execBlockIdx ( basicBlockIdx ( 8 ) ) ~> .K
-   │   function: main
-   │
-   │  (111 steps)
-   ├─ 7
-   │   #expect ( thunk ( #applyBinOp ( binOpEq , thunk ( #applyBinOp ( binOpBitAnd , th
-   │   function: main
-   ┃
-   ┃ (1 step)
-   ┣━━┓
-   ┃  │
-   ┃  ├─ 8
-   ┃  │   AssertError ( assertMessageMisalignedPointerDereference ( ... required: operandC
-   ┃  │   function: main
-   ┃  │
-   ┃  │  (1 step)
-   ┃  └─ 10 (stuck, leaf)
-   ┃      #ProgramError ( AssertError ( assertMessageMisalignedPointerDereference ( ... re
-   ┃      function: main
-   ┃
-   ┗━━┓
-      │
-      ├─ 9
-      │   #execBlockIdx ( basicBlockIdx ( 7 ) ) ~> .K
-      │   function: main
-      │
-      │  (17 steps)
-      └─ 11 (stuck, leaf)
-          #setLocalValue ( place ( ... local: local ( 1 ) , projection: .ProjectionElems )
-          function: main
-          span: 79
+│  (281 steps)
+└─ 3 (stuck, leaf)
+    #setLocalValue ( place ( ... local: local ( 1 ) , projection: .ProjectionElems )
+    function: main
+    span: 79
 
 
 ┌─ 2 (root, leaf, target, terminal)
