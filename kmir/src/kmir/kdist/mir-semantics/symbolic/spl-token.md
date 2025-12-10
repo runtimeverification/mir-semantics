@@ -208,11 +208,76 @@ module KMIR-SPL-TOKEN
 
 ## Cheatcode handling
 
+The cheatcode functions receive an `&AccountInfo` argument. To access the underlying
+data buffer, we navigate through the following Solana AccountInfo structure:
+
+```
+AccountInfo (arg is &AccountInfo, so first deref)
+├── field 0: key: &Pubkey
+├── field 1: lamports: Rc<RefCell<&mut u64>>
+├── field 2: data: Rc<RefCell<&mut [u8]>>      <- we want this
+│   └── Rc<T>
+│       └── field 0: RcInner<T>
+│           └── field 0: Cell<usize>           (strong count)
+│           └── field 1: Cell<usize>           (weak count)
+│           └── field 2: T = RefCell<&mut [u8]>
+│               └── field 0: Cell<BorrowFlag>
+│               └── field 1: UnsafeCell<&mut [u8]>
+│                   └── field 0: &mut [u8]     <- the actual data buffer (deref to get [u8])
+├── field 3: owner: &Pubkey
+├── ...
+```
+
+**Projection path to data buffer** (DATA_BUFFER_PROJS):
+```
+Deref                      -> AccountInfo       (deref &AccountInfo)
+Field(2)                   -> .data             (Rc<RefCell<&mut [u8]>>)
+Field(0)                   -> RcInner           (RcInner<RefCell<...>>)
+Field(0)                   -> first field       (due to repr, actual RefCell is here)
+Deref                      -> RefCell content   (deref the pointer inside Rc)
+Field(2)                   -> RefCell.value     (UnsafeCell<&mut [u8]>)
+Field(1)                   -> UnsafeCell.value  (the &mut [u8] reference)
+Field(0)                   -> inner value
+Deref                      -> [u8]              (the actual byte slice)
+```
+
+**Projection path to RefCell** (REFCELL_PROJS) - used for initializing borrow metadata:
+```
+Deref                      -> AccountInfo
+Field(2)                   -> .data
+Field(0)                   -> RcInner
+Field(0)                   -> RefCell location
+Deref                      -> RefCell content
+```
+
 ```{.k .symbolic}
+  // Projection path constants for navigating AccountInfo structure
+  // Path to the actual data buffer: AccountInfo -> data -> Rc -> RcInner -> RefCell -> UnsafeCell -> &mut [u8] -> [u8]
+  syntax ProjectionElems ::= "DATA_BUFFER_PROJS" [alias]
+  rule DATA_BUFFER_PROJS => projectionElemDeref                        // deref &AccountInfo
+                            projectionElemField(fieldIdx(2), #hack())  // .data (Rc<RefCell<&mut [u8]>>)
+                            projectionElemField(fieldIdx(0), #hack())  // RcInner
+                            projectionElemField(fieldIdx(0), #hack())  // first field (RefCell location)
+                            projectionElemDeref                        // deref Rc pointer
+                            projectionElemField(fieldIdx(2), #hack())  // RefCell.value (UnsafeCell)
+                            projectionElemField(fieldIdx(1), #hack())  // UnsafeCell.value
+                            projectionElemField(fieldIdx(0), #hack())  // inner
+                            projectionElemDeref                        // deref to [u8]
+                            .ProjectionElems
+
+  // Path to RefCell for borrow metadata: AccountInfo -> data -> Rc -> RcInner -> RefCell
+  syntax ProjectionElems ::= "REFCELL_PROJS" [alias]
+  rule REFCELL_PROJS => projectionElemDeref                        // deref &AccountInfo
+                        projectionElemField(fieldIdx(2), #hack())  // .data
+                        projectionElemField(fieldIdx(0), #hack())  // RcInner
+                        projectionElemField(fieldIdx(0), #hack())  // RefCell location
+                        projectionElemDeref                        // deref Rc pointer
+                        .ProjectionElems
+
   rule [cheatcode-is-spl-account]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #forceSetPlaceValue(
-           place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(1), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+           place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
              Aggregate(variantIdx(0),
                ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintKey:List))))        // Account.mint: Pubkey
@@ -230,9 +295,9 @@ module KMIR-SPL-TOKEN
            )
          )
       ~> #forceSetPlaceValue(
-         place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
-        #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems))), 165)
-     )    
+           place(LOCAL, appendP(PROJS, REFCELL_PROJS)),      // navigate to RefCell for borrow init
+           #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, REFCELL_PROJS))), 165)
+         )
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -271,7 +336,7 @@ module KMIR-SPL-TOKEN
   rule [cheatcode-is-spl-mint]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #forceSetPlaceValue(
-           place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(1), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+           place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
              Aggregate(variantIdx(0),
                // optional key. The model always carries a payload key (never to be read if None)
@@ -287,9 +352,9 @@ module KMIR-SPL-TOKEN
            )
          )
       ~> #forceSetPlaceValue(
-         place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
-        #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems))), 82)
-     )
+           place(LOCAL, appendP(PROJS, REFCELL_PROJS)),      // navigate to RefCell for borrow init
+           #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, REFCELL_PROJS))), 82)
+         )
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -306,7 +371,7 @@ module KMIR-SPL-TOKEN
   rule [cheatcode-is-spl-rent]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #forceSetPlaceValue(
-           place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(1), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
+           place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
              Aggregate(variantIdx(0),
                ListItem(Integer(?SplRentLamportsPerByteYear:Int, 64, false))                          // lamports_per_byte_year: u64
@@ -316,9 +381,9 @@ module KMIR-SPL-TOKEN
            )
          )
       ~> #forceSetPlaceValue(
-         place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems)),
-        #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems))), 17)
-     )
+           place(LOCAL, appendP(PROJS, REFCELL_PROJS)),      // navigate to RefCell for borrow init
+           #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, REFCELL_PROJS))), 17)
+         )
       ~> #execBlockIdx(TARGET)
     ...
     </k>
@@ -383,10 +448,10 @@ module KMIR-SPL-TOKEN
 ## Rent sysvar handling
 
 ```{.k .symbolic}
-  // Rent::from_account_info - navigates to data buffer using projection path
+  // Rent::from_account_info - navigates to data buffer using DATA_BUFFER_PROJS
   rule [spl-rent-from-account-info]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #splUnpack(DEST, #appendProjsOp(OP, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(1), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems))
+      => #splUnpack(DEST, #appendProjsOp(OP, DATA_BUFFER_PROJS))
          ~> #execBlockIdx(TARGET)
     ...
     </k>
