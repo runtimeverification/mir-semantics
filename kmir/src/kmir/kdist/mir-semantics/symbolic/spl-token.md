@@ -6,23 +6,26 @@ requires "../rt/configuration.md"
 ```
 
 We mirror the Solana `AccountInfo` layout so that MIR code can traverse the
-fields exactly as it would against the real SPL runtime.  The account data
-contains the real SPL `Account` struct layout described in `info.md`
-(`mint`, `owner`, `amount`, `COption<Pubkey>`, `AccountState`, `COption<u64>`,
-`delegated_amount`, `COption<Pubkey>`).  No Pinocchio-specific payloads are
-embedded.
+fields exactly as it would against the real SPL runtime.
 
-## Data Access Overview
+## Data Layout
+
+The account data uses `SPLDataBuffer` wrapper containing the actual struct:
+- **Account** (165 bytes): `mint`, `owner`, `amount`, `delegate`, `state`, `is_native`, `delegated_amount`, `close_authority`
+- **Mint** (82 bytes): `mint_authority`, `supply`, `decimals`, `is_initialized`, `freeze_authority`
+- **Rent** (17 bytes): `lamports_per_byte_year`, `exemption_threshold`, `burn_percent`
+
+## Cheatcode Flow
 
 ```
-cheatcode_is_spl_account(acc)
-Account::unpack_from_slice(&acc.data.borrow())
-Account::pack_into_slice(&a, &mut acc.data.borrow_mut())
-  -> #isSPLRcRefCellDerefFunc                        (rule [spl-rc-deref])
-  -> #isSPLBorrowFunc                                (rule [spl-borrow-data])
-  -> #isSPLRefDerefFunc                              (rule [spl-ref-deref])
-  -> Borrowed buffer projections
-  -> #isSPLUnpackFunc / #isSPLPackFunc (rule [spl-account-unpack])
+cheatcode_is_spl_account(acc)   -> sets SPLDataBuffer at data field, initializes borrow metadata
+cheatcode_is_spl_mint(acc)      -> sets SPLDataBuffer at data field, initializes borrow metadata
+cheatcode_is_spl_rent(acc)      -> sets SPLDataBuffer at data field, initializes borrow metadata
+
+Account::unpack_from_slice(buf) -> #splUnpack extracts value from SPLDataBuffer
+Account::pack_into_slice(v,buf) -> #splPack writes value into SPLDataBuffer
+Rent::from_account_info(acc)    -> navigates to data buffer using projection path
+Rent::get()                     -> returns cached or new symbolic Rent value
 ```
 
 
@@ -90,11 +93,7 @@ module KMIR-SPL-TOKEN
 ## Helper syntax
 
 ```k
-  syntax Value ::= SPLRefCell ( Place , Value )
-                 | SPLDataBuffer ( Value )
-                 | SPLDataBorrow ( Place , Value )
-                 | SPLDataBorrowMut ( Place , Value )
-                 | SPLPubkeyRef ( Value )
+  syntax Value ::= SPLDataBuffer ( Value )
 
   syntax Place ::= placeOf ( Operand ) [function]
   rule placeOf(operandCopy(P)) => P
@@ -111,28 +110,10 @@ module KMIR-SPL-TOKEN
   syntax Bool ::= #isSplPubkey ( List ) [function, total]
   rule #isSplPubkey(KEY) => size(KEY) ==Int 32 andBool allBytes(KEY)
 
-  syntax Bool ::= #isSplCOptionPubkey ( Value ) [function, total]
-  rule #isSplCOptionPubkey(Aggregate(variantIdx(0), .List)) => true
-  rule #isSplCOptionPubkey(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Range(KEY))))))
-    => #isSplPubkey(KEY)
-  rule #isSplCOptionPubkey(_) => false [owise]
-
-  syntax Bool ::= #isSplCOptionU64 ( Value ) [function, total]
-  rule #isSplCOptionU64(Aggregate(variantIdx(0), .List)) => true
-  rule #isSplCOptionU64(Aggregate(variantIdx(1), ListItem(Integer(AMT, 64, false)) REST))
-    => 0 <=Int AMT andBool AMT <Int (1 <<Int 64)
-    requires REST ==K .List
-  rule #isSplCOptionU64(_) => false [owise]
-
   // AccountState in SPL semantics is carried as an enum variantIdx(0..2); accept legacy u8 too.
   syntax Bool ::= #isSplAccountStateVal ( Value ) [function, total]
   rule #isSplAccountStateVal(Aggregate(variantIdx(N), .List)) => 0 <=Int N andBool N <=Int 2
   rule #isSplAccountStateVal(_) => false [owise]
-
-  syntax Bool ::= #isSPLRcRefCellDerefFunc ( String ) [function, total]
-  rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<&mut [u8]>> as std::ops::Deref>::deref") => true
-  rule #isSPLRcRefCellDerefFunc("<std::rc::Rc<std::cell::RefCell<&mut u64>> as std::ops::Deref>::deref") => true
-  rule #isSPLRcRefCellDerefFunc(_) => false [owise]
 
   syntax Bool ::= #isSPLBorrowFunc ( String ) [function, total]
   rule #isSPLBorrowFunc("std::cell::RefCell::<&mut [u8]>::borrow") => true
@@ -140,18 +121,6 @@ module KMIR-SPL-TOKEN
   rule #isSPLBorrowFunc("std::cell::RefCell::<&mut u64>::borrow") => true
   rule #isSPLBorrowFunc("std::cell::RefCell::<&mut u64>::borrow_mut") => true
   rule #isSPLBorrowFunc(_) => false [owise]
-
-  syntax Bool ::= #isSPLBorrowMutFunc ( String ) [function, total]
-  rule #isSPLBorrowMutFunc("std::cell::RefCell::<&mut [u8]>::borrow_mut") => true
-  rule #isSPLBorrowMutFunc("std::cell::RefCell::<&mut u64>::borrow_mut") => true
-  rule #isSPLBorrowMutFunc(_) => false [owise]
-
-  syntax Bool ::= #isSPLRefDerefFunc      ( String ) [function, total]
-  rule #isSPLRefDerefFunc("<std::cell::Ref<'_, &mut [u8]> as std::ops::Deref>::deref") => true
-  rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut [u8]> as std::ops::DerefMut>::deref_mut") => true
-  rule #isSPLRefDerefFunc("<std::cell::Ref<'_, &mut u64> as std::ops::Deref>::deref") => true
-  rule #isSPLRefDerefFunc("<std::cell::RefMut<'_, &mut u64> as std::ops::DerefMut>::deref_mut") => true
-  rule #isSPLRefDerefFunc(_) => false [owise]
 
   syntax Bool ::= #isSPLUnpackFunc ( String ) [function, total]
   rule #isSPLUnpackFunc(_) => false [owise]
@@ -186,7 +155,7 @@ module KMIR-SPL-TOKEN
 ## Slice metadata for SPL account buffers
 
 ```k
-  // Account data (&mut [u8]) length hints (Account::LEN)
+  // Account data buffer length (Account::LEN = 165)
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBuffer(
@@ -206,45 +175,7 @@ module KMIR-SPL-TOKEN
        requires #isSplAccountStateVal(STATE)
        [priority(30)]
 
-  rule #maybeDynamicSize(
-         dynamicSize(_),
-         SPLDataBorrow(_, SPLDataBuffer(
-         Aggregate(variantIdx(0),
-           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-           ListItem(Integer(_, 64, false))
-           ListItem(_DELEG)
-           ListItem(STATE)
-           ListItem(_IS_NATIVE)
-           ListItem(Integer(_, 64, false))
-           ListItem(_CLOSE)
-         )
-       ))
-      )
-       => dynamicSize(165)
-       requires #isSplAccountStateVal(STATE)
-       [priority(30)]
-
-  rule #maybeDynamicSize(
-         dynamicSize(_),
-         SPLDataBorrowMut(_, SPLDataBuffer(
-         Aggregate(variantIdx(0),
-           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
-           ListItem(Integer(_, 64, false))
-           ListItem(_DELEG)
-           ListItem(STATE)
-           ListItem(_IS_NATIVE)
-           ListItem(Integer(_, 64, false))
-           ListItem(_CLOSE)
-         )
-       ))
-      )
-       => dynamicSize(165)
-       requires #isSplAccountStateVal(STATE)
-       [priority(30)]
-
-  // Mint data (&mut [u8]) length hints (Mint::LEN)
+  // Mint data buffer length (Mint::LEN = 82)
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBuffer(
@@ -260,37 +191,7 @@ module KMIR-SPL-TOKEN
        => dynamicSize(82)
        [priority(30)]
 
-  rule #maybeDynamicSize(
-         dynamicSize(_),
-         SPLDataBorrow(_, SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(_AUTH)
-             ListItem(Integer(_, 64, false))
-             ListItem(Integer(_, 8, false))
-             ListItem(BoolVal(_))
-             ListItem(_FREEZE)
-           )
-         ))
-       )
-       => dynamicSize(82)
-       [priority(30)]
-
-  rule #maybeDynamicSize(
-         dynamicSize(_),
-         SPLDataBorrowMut(_, SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(_AUTH)
-             ListItem(Integer(_, 64, false))
-             ListItem(Integer(_, 8, false))
-             ListItem(BoolVal(_))
-             ListItem(_FREEZE)
-           )
-         ))
-       )
-       => dynamicSize(82)
-       [priority(30)]
-
-  // Rent data (&mut [u8]) length hints (Rent::LEN)
+  // Rent data buffer length (Rent::LEN = 17)
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBuffer(
@@ -300,32 +201,6 @@ module KMIR-SPL-TOKEN
              ListItem(Integer(_, 8, false))     // burn_percent
            )
          )
-       )
-       => dynamicSize(17)
-       [priority(30)]
-
-  rule #maybeDynamicSize(
-         dynamicSize(_),
-         SPLDataBorrow(_, SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(Integer(_, 64, false))
-             ListItem(Float(2.0, 64))
-             ListItem(Integer(_, 8, false))
-           )
-         ))
-       )
-       => dynamicSize(17)
-       [priority(30)]
-
-  rule #maybeDynamicSize(
-         dynamicSize(_),
-         SPLDataBorrowMut(_, SPLDataBuffer(
-           Aggregate(variantIdx(0),
-             ListItem(Integer(_, 64, false))
-             ListItem(Float(2.0, 64))
-             ListItem(Integer(_, 8, false))
-           )
-         ))
        )
        => dynamicSize(17)
        [priority(30)]
@@ -454,9 +329,10 @@ module KMIR-SPL-TOKEN
     [priority(30), preserves-definedness]
 ```
 
-## RefCell::<&mut [u8]> helpers
+## RefCell borrow helpers
 
 ```k
+  // RefCell::<&mut [u8]>::borrow / borrow_mut - returns Ref/RefMut wrapper with pointer to data
   rule [spl-borrow-data]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #setSPLBorrowData(DEST, operandCopy(place(LOCAL, PROJS)))
@@ -474,8 +350,10 @@ module KMIR-SPL-TOKEN
        </k>
 ```
 
-## Account::unpack_from_slice / Account::pack_into_slice
+## Pack / Unpack operations
+
 ```k
+  // Account/Mint::unpack_from_slice - extracts struct from SPLDataBuffer
   rule [spl-account-unpack]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #splUnpack(DEST, #withDeref(OP))
@@ -490,6 +368,7 @@ module KMIR-SPL-TOKEN
         => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(VAL))) ...
        </k>
 
+  // Account/Mint::pack_into_slice - writes struct into SPLDataBuffer
   rule [spl-account-pack]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC:Operand DST:Operand .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #splPack(SRC, #withDeref(DST)) ~> #execBlockIdx(TARGET) ...
@@ -501,8 +380,10 @@ module KMIR-SPL-TOKEN
   rule <k> #splPack(VAL, DEST) => #setLocalValue(placeOf(DEST), SPLDataBuffer(VAL)) ... </k>
 ```
 
+## Rent sysvar handling
+
 ```{.k .symbolic}
-  // Rent::from_account_info - navigate to data buffer using projection path from cheatcode
+  // Rent::from_account_info - navigates to data buffer using projection path
   rule [spl-rent-from-account-info]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #splUnpack(DEST, #appendProjsOp(OP, projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref projectionElemField(fieldIdx(2), #hack()) projectionElemField(fieldIdx(1), #hack()) projectionElemField(fieldIdx(0), #hack()) projectionElemDeref .ProjectionElems))
@@ -511,10 +392,8 @@ module KMIR-SPL-TOKEN
     </k>
     requires #isSPLRentFromAccountInfoFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
-```
 
-```{.k .symbolic}
-  // Rent::get (stable value, stored once in outermost frame like p-token SysRent)
+  // Rent::get - returns stable value, cached in outermost frame
   rule [spl-rent-get]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
       => #writeSPLSysRent(DEST)
