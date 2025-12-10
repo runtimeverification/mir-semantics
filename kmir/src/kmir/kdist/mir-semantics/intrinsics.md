@@ -125,6 +125,55 @@ Execution gets stuck (no matching rule) when operands have different types or un
   rule #extractOperandType(_, _) => TyUnknown [owise]
 ```
 
+#### Ptr Offset Computations (`std::intrinsics::ptr_offset_from`, `std::intrinsics::ptr_offset_from_unsigned`)
+
+The `ptr_offset_from[_unsigned]` calculates the distance between two pointers within the same allocation,
+i.e., pointers that refer to the same place and only differ in their offset from a given base.
+
+Additionally, for `ptr_offset_from_unsigned`, it is _known_ that the first argument has a greater offset than
+the second argument, so the returned difference is always positive.
+
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from")), ARG1:Operand ARG2:Operand .Operands, DEST)
+        => #ptrOffsetDiff(ARG1, ARG2, true, DEST)
+        ...
+       </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from_unsigned")), ARG1:Operand ARG2:Operand .Operands, DEST)
+        => #ptrOffsetDiff(ARG1, ARG2, false, DEST)
+        ...
+       </k>
+
+  syntax KItem ::= #ptrOffsetDiff ( Evaluation , Evaluation , Bool , Place ) [seqstrict(1,2)]
+
+  syntax MIRError ::= UBPtrOffsetDiff
+
+  syntax UBPtrOffsetDiff ::= #UBErrorPtrOffsetDiff( Value , Value , Bool )
+
+  rule <k> 
+        #ptrOffsetDiff(
+          PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF1, _)),
+          PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF2, _)),
+          SIGNED_FLAG,
+          DEST
+       ) => #setLocalValue(DEST, Integer(OFF1 -Int OFF2, 64, SIGNED_FLAG))
+        ...
+       </k>
+    requires (SIGNED_FLAG orBool OFF1 >=Int OFF2)
+
+  rule <k> 
+        #ptrOffsetDiff(
+          PtrLocal(_, _, _, _) #as PTR1,
+          PtrLocal(_, _, _, _) #as PTR2,
+          SIGNED_FLAG,
+          _DEST
+       ) => #UBErrorPtrOffsetDiff(PTR1, PTR2, SIGNED_FLAG)
+        ...
+       </k>
+    [priority(100)]
+```
+
 ```k
 endmodule
 ```

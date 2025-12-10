@@ -1,0 +1,137 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (296 steps)
+├─ 3 (split)
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     0 ==Int ARG_INT1:Int &Int 18446744073709551615
+┃  │
+┃  ├─ 4
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
+┃  │
+┃  │  (582 steps)
+┃  ├─ 6 (terminal)
+┃  │   #EndProgram ~> .K
+┃  │
+┃  ┊  constraint: true
+┃  ┊  subst: ...
+┃  └─ 2 (leaf, target, terminal)
+┃      #EndProgram ~> .K
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     notBool 0 ==Int ARG_INT1:Int &Int 18446744073709551615
+   │
+   ├─ 5
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
+   │
+   │  (1 step)
+   ├─ 7 (split)
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 7 ) )
+   ┃
+   ┃ (branch)
+   ┣━━┓ subst: .Subst
+   ┃  ┃ constraint:
+   ┃  ┃     1 ==Int ARG_INT1:Int &Int 18446744073709551615
+   ┃  │
+   ┃  ├─ 8
+   ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 7 ) )
+   ┃  │
+   ┃  │  (99 steps)
+   ┃  └─ 10 (stuck, leaf)
+   ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( 1 , place ( ... local: local
+   ┃
+   ┗━━┓ subst: .Subst
+      ┃ constraint:
+      ┃     notBool 1 ==Int ARG_INT1:Int &Int 18446744073709551615
+      │
+      ├─ 9
+      │   #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 7 ) )
+      │
+      │  (1 step)
+      ├─ 11 (split)
+      │   #selectBlock ( switchTargets ( ... branches: branch ( 2 , basicBlockIdx ( 6 ) )
+      ┃
+      ┃ (branch)
+      ┣━━┓ subst: .Subst
+      ┃  ┃ constraint:
+      ┃  ┃     2 ==Int ARG_INT1:Int &Int 18446744073709551615
+      ┃  │
+      ┃  ├─ 12
+      ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 2 , basicBlockIdx ( 6 ) )
+      ┃  │
+      ┃  │  (99 steps)
+      ┃  └─ 14 (stuck, leaf)
+      ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( 1 , place ( ... local: local
+      ┃
+      ┗━━┓ subst: .Subst
+         ┃ constraint:
+         ┃     notBool 2 ==Int ARG_INT1:Int &Int 18446744073709551615
+         │
+         ├─ 13
+         │   #selectBlock ( switchTargets ( ... branches: branch ( 2 , basicBlockIdx ( 6 ) )
+         │
+         │  (1 step)
+         ├─ 15 (split)
+         │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 5 ) )
+         ┃
+         ┃ (branch)
+         ┣━━┓ subst: .Subst
+         ┃  ┃ constraint:
+         ┃  ┃     3 ==Int ARG_INT1:Int &Int 18446744073709551615
+         ┃  │
+         ┃  ├─ 16
+         ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 5 ) )
+         ┃  │
+         ┃  │  (16 steps)
+         ┃  └─ 18 (stuck, leaf)
+         ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( 0 , place ( ... local: local
+         ┃
+         ┗━━┓ subst: .Subst
+            ┃ constraint:
+            ┃     notBool 3 ==Int ARG_INT1:Int &Int 18446744073709551615
+            │
+            ├─ 17
+            │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 5 ) )
+            │
+            │  (1 step)
+            ├─ 19 (split)
+            │   #selectBlock ( switchTargets ( ... branches: branch ( 4 , basicBlockIdx ( 4 ) )
+            ┃
+            ┃ (branch)
+            ┣━━┓ subst: .Subst
+            ┃  ┃ constraint:
+            ┃  ┃     4 ==Int ARG_INT1:Int &Int 18446744073709551615
+            ┃  │
+            ┃  ├─ 20
+            ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 4 , basicBlockIdx ( 4 ) )
+            ┃  │
+            ┃  │  (68 steps)
+            ┃  └─ 22 (stuck, leaf)
+            ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
+            ┃      span: 32
+            ┃
+            ┗━━┓ subst: .Subst
+               ┃ constraint:
+               ┃     notBool 4 ==Int ARG_INT1:Int &Int 18446744073709551615
+               │
+               ├─ 21
+               │   #selectBlock ( switchTargets ( ... branches: branch ( 4 , basicBlockIdx ( 4 ) )
+               │
+               │  (6 steps)
+               ├─ 23 (terminal)
+               │   #EndProgram ~> .K
+               │
+               ┊  constraint: true
+               ┊  subst: ...
+               └─ 2 (leaf, target, terminal)
+                   #EndProgram ~> .K
+
+
+
