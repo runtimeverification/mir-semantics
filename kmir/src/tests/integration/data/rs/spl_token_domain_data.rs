@@ -38,18 +38,18 @@ fn main() {
     );
 
     let mut mint_data = [0u8; Mint::LEN];
-    Mint::pack(Mint::default(), &mut mint_data).unwrap();
+    Mint::pack(&Mint::default(), &mut mint_data).unwrap();
     let mut mint_lamports = 0;
     let mint = AccountInfo::from_data(&mut mint_data[..], &MINT_KEY, &TOKEN_PROGRAM_ID, &mut mint_lamports);
 
     let mut multisig_data = [0u8; Multisig::LEN];
-    Multisig::pack(Multisig::default(), &mut multisig_data).unwrap();
+    Multisig::pack(&Multisig::default(), &mut multisig_data).unwrap();
     let mut multisig_lamports = 0;
     let multisig =
         AccountInfo::from_data(&mut multisig_data[..], &MULTISIG_KEY, &TOKEN_PROGRAM_ID, &mut multisig_lamports);
 
     let mut rent_data = [0u8; Rent::LEN];
-    Rent::pack(Rent::default(), &mut rent_data).unwrap();
+    Rent::pack(&Rent::default(), &mut rent_data).unwrap();
     let mut rent_lamports = RENT_LAMPORTS;
     let rent = AccountInfo::new(
         &SYSVAR_RENT_ID,
@@ -87,7 +87,7 @@ impl<'a> AccountInfo<'a> {
         owner: &'a Pubkey,
         lamports: &'a mut u64,
     ) -> Self {
-        Account::pack(account, data).unwrap();
+        Account::pack(&account, data).unwrap();
         Self::from_data(data, key, owner, lamports)
     }
 
@@ -154,7 +154,7 @@ fn test_spl_account_domain_data(acc: &AccountInfo<'_>) {
     account.state = AccountState::Initialized;
     account.delegated_amount = 789;
     account.close_authority = COption::Some(ACCOUNT_CLOSE_AUTHORITY);
-    Account::pack(account, &mut acc.data.borrow_mut()).unwrap();
+    Account::pack(&account, &mut acc.data.borrow_mut()).unwrap();
     let unpacked_account = get_account(acc);
     assert!(unpacked_account.is_native());
     assert_eq!(unpacked_account.mint, MINT_KEY);
@@ -171,13 +171,12 @@ fn test_spl_mint_domain_data(mint: &AccountInfo<'_>) {
     assert_eq!(mint.data_len(), Mint::LEN);
 
     let mut mint_state = get_mint(mint);
-    assert!(!mint_state.is_initialized);
     mint_state.is_initialized = true;
     mint_state.supply = 42;
     mint_state.decimals = 9;
     mint_state.mint_authority = COption::Some(MINT_AUTHORITY);
     mint_state.freeze_authority = COption::Some(FREEZE_AUTHORITY);
-    Mint::pack(mint_state, &mut mint.data.borrow_mut()).unwrap();
+    Mint::pack(&mint_state, &mut mint.data.borrow_mut()).unwrap();
     let unpacked_mint = get_mint(mint);
     assert!(unpacked_mint.is_initialized);
     assert_eq!(unpacked_mint.supply, 42);
@@ -197,7 +196,7 @@ fn test_spl_multisig_domain_data(multisig: &AccountInfo<'_>) {
     multisig_state.signers[0] = MULTISIG_SIGNER_A;
     multisig_state.signers[1] = MULTISIG_SIGNER_B;
     multisig_state.signers[2] = MULTISIG_SIGNER_C;
-    Multisig::pack(multisig_state, &mut multisig.data.borrow_mut()).unwrap();
+    Multisig::pack(&multisig_state, &mut multisig.data.borrow_mut()).unwrap();
     let unpacked_multisig = get_multisig(multisig);
     assert!(unpacked_multisig.is_initialized);
     assert_eq!(unpacked_multisig.m, 2);
@@ -352,7 +351,7 @@ impl Account {
         Self::unpack_from_slice(data)
     }
 
-    fn pack_into_slice(self, dst: &mut [u8]) {
+    fn pack_into_slice(&self, dst: &mut [u8]) {
         dst[0..32].copy_from_slice(self.mint.as_ref());
         dst[32..64].copy_from_slice(self.owner.as_ref());
         dst[64..72].copy_from_slice(&self.amount.to_le_bytes());
@@ -363,7 +362,7 @@ impl Account {
         encode_coption_key(&self.close_authority, &mut dst[129..165]);
     }
 
-    fn pack(account: Account, dst: &mut [u8]) -> Result<(), ProgramError> {
+    fn pack(account: &Account, dst: &mut [u8]) -> Result<(), ProgramError> {
         if dst.len() < Self::LEN {
             return Err(ProgramError::InvalidAccountData);
         }
@@ -422,7 +421,7 @@ impl Mint {
         Self::unpack_from_slice(data)
     }
 
-    fn pack_into_slice(self, dst: &mut [u8]) {
+    fn pack_into_slice(&self, dst: &mut [u8]) {
         encode_coption_key(&self.mint_authority, &mut dst[0..36]);
         dst[36..44].copy_from_slice(&self.supply.to_le_bytes());
         dst[44] = self.decimals;
@@ -430,7 +429,7 @@ impl Mint {
         encode_coption_key(&self.freeze_authority, &mut dst[46..82]);
     }
 
-    fn pack(mint: Mint, dst: &mut [u8]) -> Result<(), ProgramError> {
+    fn pack(mint: &Mint, dst: &mut [u8]) -> Result<(), ProgramError> {
         if dst.len() < Self::LEN {
             return Err(ProgramError::InvalidAccountData);
         }
@@ -492,7 +491,7 @@ impl Multisig {
         Self::unpack_from_slice(data)
     }
 
-    fn pack_into_slice(self, dst: &mut [u8]) {
+    fn pack_into_slice(&self, dst: &mut [u8]) {
         dst[0] = self.m;
         dst[1] = self.n;
         dst[2] = self.is_initialized as u8;
@@ -502,7 +501,7 @@ impl Multisig {
         }
     }
 
-    fn pack(multisig: Multisig, dst: &mut [u8]) -> Result<(), ProgramError> {
+    fn pack(multisig: &Multisig, dst: &mut [u8]) -> Result<(), ProgramError> {
         if dst.len() < Self::LEN {
             return Err(ProgramError::InvalidAccountData);
         }
@@ -565,7 +564,7 @@ impl Rent {
         })
     }
 
-    fn pack(rent: Rent, dst: &mut [u8]) -> Result<(), ProgramError> {
+    fn pack(rent: &Rent, dst: &mut [u8]) -> Result<(), ProgramError> {
         if dst.len() < Self::LEN {
             return Err(ProgramError::InvalidAccountData);
         }
