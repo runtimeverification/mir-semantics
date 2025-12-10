@@ -95,13 +95,10 @@ module KMIR-SPL-TOKEN
 ```k
   syntax Value ::= SPLDataBuffer ( Value )
 
-  syntax Place ::= placeOf ( Operand ) [function]
-  rule placeOf(operandCopy(P)) => P
-  rule placeOf(operandMove(P)) => P
-
-  syntax Operand ::= #appendProjsOp ( Operand , ProjectionElems ) [function]
+  syntax Operand ::= #appendProjsOp ( Operand , ProjectionElems ) [function, total]
   rule #appendProjsOp(operandCopy(place(L, PROJS)), EXTRA) => operandCopy(place(L, appendP(PROJS, EXTRA)))
   rule #appendProjsOp(operandMove(place(L, PROJS)), EXTRA) => operandMove(place(L, appendP(PROJS, EXTRA)))
+  rule #appendProjsOp(OP, _) => OP [owise]
 ```
 
 ## Helper predicates
@@ -457,13 +454,14 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
   // Account/Mint::pack_into_slice - writes struct into SPLDataBuffer
   rule [spl-account-pack]:
     <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC:Operand DST:Operand .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #splPack(SRC, #withDeref(DST)) ~> #execBlockIdx(TARGET) ...
+      => #splPack(#withDeref(SRC), #withDeref(DST)) ~> #execBlockIdx(TARGET) ...
     </k>
     requires #isSPLPackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #splPack ( Evaluation , Evaluation ) [seqstrict(1)]
-  rule <k> #splPack(VAL, DEST) => #setLocalValue(placeOf(DEST), SPLDataBuffer(VAL)) ... </k>
+  syntax KItem ::= #splPack ( Evaluation , Operand ) [seqstrict(1)]
+  rule <k> #splPack(VAL, operandCopy(DEST)) => #setLocalValue(DEST, SPLDataBuffer(VAL)) ... </k>
+  rule <k> #splPack(VAL, operandMove(DEST)) => #setLocalValue(DEST, SPLDataBuffer(VAL)) ... </k>
 ```
 
 ## Rent sysvar handling
