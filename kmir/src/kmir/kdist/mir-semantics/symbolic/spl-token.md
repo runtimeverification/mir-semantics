@@ -283,13 +283,13 @@ Deref                      -> RefCell content
                ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplMintKey:List))))        // Account.mint: Pubkey
                ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplTokenOwnerKey:List))))  // Account.owner: Pubkey
                ListItem(Integer(?SplAmount:Int, 64, false))                                 // Account.amount: u64
-               ListItem(Aggregate(variantIdx(1),                                            // delegate COption<Pubkey>
+               ListItem(Aggregate(variantIdx(?SplHasDelegateKey:Int),                       // delegate COption<Pubkey>
                  ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplDelegateKey:List))))))
                ListItem(Aggregate(variantIdx(?SplAccountState:Int), .List))                 // Account.state: AccountState
                ListItem(Aggregate(variantIdx(?SplIsNativeLamportsVariant:Int),              // is_native COption<u64>
                  ListItem(Integer(?SplIsNativeLamports:Int, 64, false))))
                ListItem(Integer(?SplDelegatedAmount:Int, 64, false))                        // Account.delegated_amount: u64
-               ListItem(Aggregate(variantIdx(1),                                            // close_authority COption<Pubkey>
+               ListItem(Aggregate(variantIdx(?SplHasCloseAuthKey:Int),                      // close_authority COption<Pubkey>
                  ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplCloseAuthKey:List))))))
              )
            )
@@ -305,13 +305,15 @@ Deref                      -> RefCell content
       orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_account"
     ensures #isSplPubkey(?SplMintKey)
       andBool #isSplPubkey(?SplTokenOwnerKey)
+      andBool 0 <=Int ?SplHasDelegateKey andBool ?SplHasDelegateKey <=Int 1
       andBool #isSplPubkey(?SplDelegateKey)
-      andBool #isSplPubkey(?SplCloseAuthKey)
       andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <=Int 2
       andBool 0 <=Int ?SplDelegatedAmount andBool ?SplDelegatedAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplIsNativeLamportsVariant andBool ?SplIsNativeLamportsVariant <=Int 1
       andBool 0 <=Int ?SplIsNativeLamports andBool ?SplIsNativeLamports <Int (1 <<Int 64)
+      andBool 0 <=Int ?SplHasCloseAuthKey andBool ?SplHasCloseAuthKey <=Int 1
+      andBool #isSplPubkey(?SplCloseAuthKey)
     [priority(30), preserves-definedness]
 
   syntax Evaluation ::= #initBorrow(Evaluation, Int) [seqstrict(1)]
