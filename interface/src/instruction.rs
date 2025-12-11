@@ -722,11 +722,11 @@ impl<'a> TokenInstruction<'a> {
     }
 
     fn unpack_u64(input: &[u8]) -> Result<(u64, &[u8]), ProgramError> {
-        let value = input
+        let value_bytes: [u8; 8] = input
             .get(..U64_BYTES)
             .and_then(|slice| slice.try_into().ok())
-            .map(u64::from_le_bytes)
             .ok_or(TokenError::InvalidInstruction)?;
+        let value = u64::from_le_bytes(value_bytes);
         Ok((value, &input[U64_BYTES..]))
     }
 
