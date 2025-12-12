@@ -130,9 +130,10 @@ class SMIRInfo:
         fnc_symbols[-1] = {'NormalSym': self.main_symbol}
 
         # function items not present in the SMIR lookup table are added with negative Ty ID
+        # Note: -2 is reserved for "unsupported call type" in K semantics
         missing = [name for name in self.items.keys() if {'NormalSym': name} not in fnc_symbols.values()]
 
-        fake_ty = -2
+        fake_ty = -3
         for name in missing:
             fnc_symbols[fake_ty] = {'NormalSym': name}
             fake_ty -= 1
