@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: src/rust/library/std/src/rt.rs:194
 │
-│  (6 steps)
+│  (7 steps)
 ├─ 3 (terminal)
 │   #EndProgram ~> .K
 │   function: main

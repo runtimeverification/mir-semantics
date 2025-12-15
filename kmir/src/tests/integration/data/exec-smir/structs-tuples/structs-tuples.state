@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execStmts ( .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 73 ) ) ) ~> .K
+    #setArgsFromStack ( 4 , .Operands ) ~> #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 73 ) ) ) ) ~> .K
   </k>
   <retVal>
     noReturn

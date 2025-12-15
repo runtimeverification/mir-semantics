@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) ~> .K
+    #setUpCalleeData ( monoItemFn (... name: symbol ( "c" ) , id: defId ( 9 ) , body: someBody ( body (... blocks: basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 1 ) , span: span ( 66 ) , mut: mutabilityMut )  .LocalDecls , argCount: 0 , varDebugInfo: .VarDebugInfos , spreadArg: noLocal , span: span ( 67 ) ) ) ) , .Operands ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -10,7 +10,8 @@
   </currentFunc>
   <currentFrame>
     <currentBody>
-      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) )
+      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 60 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 27 ) , id: mirConstId ( 11 ) ) ) ) , args: .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 61 ) ) ) )
+      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 62 ) ) ) )
     </currentBody>
     <caller>
       ty ( 26 )
