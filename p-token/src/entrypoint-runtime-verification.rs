@@ -858,6 +858,8 @@ pub fn test_process_initialize_mint_freeze(
     } else if accounts[0].lamports() < minimum_balance {
         assert_eq!(result, Err(ProgramError::Custom(0)))
     } else {
+        assert!(result.is_ok());
+
         let mint_new = get_mint(&accounts[0]);
         assert!(mint_new.is_initialized().unwrap());
         assert_eq!(mint_new.mint_authority().unwrap(), &instruction_data[1..33]);
@@ -914,6 +916,8 @@ pub fn test_process_initialize_mint_no_freeze(
     } else if accounts[0].lamports() < minimum_balance {
         assert_eq!(result, Err(ProgramError::Custom(0)))
     } else {
+        assert!(result.is_ok());
+
         let mint_new = get_mint(&accounts[0]);
         assert!(mint_new.is_initialized().unwrap());
         assert_eq!(mint_new.mint_authority().unwrap(), &instruction_data[1..33]);
@@ -2676,6 +2680,8 @@ pub fn test_process_initialize_mint2_freeze(
     } else if accounts[0].lamports() < minimum_balance {
         assert_eq!(result, Err(ProgramError::Custom(0)))
     } else {
+        assert!(result.is_ok());
+
         let mint_new = get_mint(&accounts[0]);
         assert!(mint_new.is_initialized().unwrap());
         assert_eq!(mint_new.mint_authority().unwrap(), &instruction_data[1..33]);
@@ -2731,6 +2737,8 @@ pub fn test_process_initialize_mint2_no_freeze(
     } else if accounts[0].lamports() < minimum_balance {
         assert_eq!(result, Err(ProgramError::Custom(0)))
     } else {
+        assert!(result.is_ok());
+
         let mint_new = get_mint(&accounts[0]);
         assert!(mint_new.is_initialized().unwrap());
         assert_eq!(mint_new.mint_authority().unwrap(), &instruction_data[1..33]);
