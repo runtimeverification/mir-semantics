@@ -308,21 +308,33 @@ The call stack is not necessarily empty at this point so it is left untouched.
 `Call` is calling another function, setting up its stack frame and
 where the returned result should go.
 
-
 ```k
-  // Intrinsic function call - execute directly without state switching
-  rule [termCallIntrinsic]: <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, _UNWIND), _SPAN)) ~> _
-         =>
-           #execIntrinsic(lookupFunction(#tyOfCall(FUNC)), ARGS, DEST) ~> #continueAt(TARGET)
+  syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction)
+
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), _SPAN))
+        => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND)
+        ...
        </k>
-    requires isIntrinsicFunction(lookupFunction(#tyOfCall(FUNC)))
+
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), .ProjectionElems)), ARGS, DEST, TARGET, UNWIND), _SPAN))
+        => #execTerminatorCall(tyOfLocal(getLocal(LOCALS, I)), lookupFunction(tyOfLocal(getLocal(LOCALS, I))), ARGS, DEST, TARGET, UNWIND)
+        ...
+       </k>
+      <locals> LOCALS </locals>
+
+  // Intrinsic function call - execute directly without state switching
+  rule [termCallIntrinsic]:
+        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST) ~> #continueAt(TARGET)
+        </k>
+    requires isIntrinsicFunction(FUNC)
 
   // Regular function call - full state switching and stack setup
-  rule [termCallFunction]: <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
-         =>
-           #setUpCalleeData(lookupFunction(#tyOfCall(FUNC)), ARGS)
+  rule [termCallFunction]:
+       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND) ~> _
+        => #setUpCalleeData(FUNC, ARGS)
        </k>
-       <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
+       <currentFunc> CALLER => FTY </currentFunc>
        <currentFrame>
          <currentBody> _ </currentBody>
          <caller> OLDCALLER => CALLER </caller>
@@ -332,7 +344,7 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-    requires notBool isIntrinsicFunction(lookupFunction(#tyOfCall(FUNC)))
+    requires notBool isIntrinsicFunction(FUNC)
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
@@ -341,11 +353,6 @@ where the returned result should go.
   syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
   rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>
   rule <k> #continueAt(noBasicBlockIdx) => .K ... </k>
-
-  syntax Ty ::= #tyOfCall( Operand ) [function, total]
-
-  rule #tyOfCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _)))) => Ty
-  rule #tyOfCall(_) => ty(-1) [owise] // copy, move, non-zero size: not supported
 ```
 
 The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the old locals (`OLDLOCALS` below), and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references.
@@ -415,7 +422,8 @@ An operand may be a `Reference` (the only way a function could access another fu
      andBool isTypedValue(CALLERLOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
+  // TODO: This is not safe, need to add more checks to this.
+  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), _)))
         =>
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
