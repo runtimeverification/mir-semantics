@@ -159,7 +159,7 @@ In contrast to regular write operations, the value does not have to be _mutable_
        </k>
        <locals> LOCALS </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-//     andBool isTypedValue(LOCALS[I])
+     andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
 

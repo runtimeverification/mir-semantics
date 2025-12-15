@@ -130,10 +130,9 @@ class SMIRInfo:
         fnc_symbols[-1] = {'NormalSym': self.main_symbol}
 
         # function items not present in the SMIR lookup table are added with negative Ty ID
-        # Note: -2 is reserved for "unsupported call type" in K semantics
         missing = [name for name in self.items.keys() if {'NormalSym': name} not in fnc_symbols.values()]
 
-        fake_ty = -3
+        fake_ty = -2
         for name in missing:
             fnc_symbols[fake_ty] = {'NormalSym': name}
             fake_ty -= 1
@@ -204,23 +203,6 @@ class SMIRInfo:
     def call_edges(self) -> dict[Ty, set[Ty]]:
         # determines which functions are _called_ from others, by symbol name
         result = {}
-
-        def collect_const_fun_tys(obj: object, called: set[Ty]) -> None:
-            # Recursively collect any Constant operands whose type refers to a function.
-            if isinstance(obj, dict):
-                if 'Constant' in obj and isinstance(obj['Constant'], dict):
-                    const = obj['Constant']
-                    const_inner = const.get('const_')
-                    if isinstance(const_inner, dict):
-                        ty_id = const_inner.get('ty')
-                        if isinstance(ty_id, int) and ty_id in self.function_symbols:
-                            called.add(Ty(ty_id))
-                for v in obj.values():
-                    collect_const_fun_tys(v, called)
-            elif isinstance(obj, list):
-                for v in obj:
-                    collect_const_fun_tys(v, called)
-
         for sym, item in self.items.items():
             if not SMIRInfo._is_func(item):
                 continue
@@ -233,10 +215,12 @@ class SMIRInfo:
                 _LOGGER.debug(f'Skipping call edge extraction for {sym}: missing body')
                 called_tys: set[Ty] = set()
             else:
-                called_tys = set()
-
-                # Collect direct calls and function items passed as constants (e.g., fn pointers).
-                collect_const_fun_tys(body, called_tys)
+                called_funs = [
+                    b['terminator']['kind']['Call']['func'] for b in body['blocks'] if 'Call' in b['terminator']['kind']
+                ]
+                called_tys = {Ty(op['Constant']['const_']['ty']) for op in called_funs if 'Constant' in op}
+            # TODO also add any constant operands used as arguments whose ty refer to a function
+            # the semantics currently does not support this, see issue #488 and stable-mir-json issue #55
             for ty in self.function_symbols_reverse[sym]:
                 result[Ty(ty)] = called_tys
         return result
