@@ -130,6 +130,17 @@ Constant operands are simply decoded according to their type.
     requires typeInfoVoidType =/=K lookupTy(TY)
 ```
 
+Function pointers are zero-sized constants whose `Ty` is a key in the function table instaed of the type table.
+
+```k
+  rule <k> operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, ty(ID) #as TY, _)))
+        => FunPtr(TY)
+       ...
+       </k>
+    requires typeInfoVoidType ==K lookupTy(TY) // not a valid type info
+     andBool lookupFunction(TY) =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
+```
+
 ### Copying and Moving
 
 When an operand is `Copied` by a read, the original remains valid (see `false` passed to `#readProjection`).
