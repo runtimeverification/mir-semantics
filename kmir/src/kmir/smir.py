@@ -204,6 +204,23 @@ class SMIRInfo:
     def call_edges(self) -> dict[Ty, set[Ty]]:
         # determines which functions are _called_ from others, by symbol name
         result = {}
+
+        def collect_const_fun_tys(obj: object, called: set[Ty]) -> None:
+            # Recursively collect any Constant operands whose type refers to a function.
+            if isinstance(obj, dict):
+                if 'Constant' in obj and isinstance(obj['Constant'], dict):
+                    const = obj['Constant']
+                    const_inner = const.get('const_')
+                    if isinstance(const_inner, dict):
+                        ty_id = const_inner.get('ty')
+                        if isinstance(ty_id, int) and ty_id in self.function_symbols:
+                            called.add(Ty(ty_id))
+                for v in obj.values():
+                    collect_const_fun_tys(v, called)
+            elif isinstance(obj, list):
+                for v in obj:
+                    collect_const_fun_tys(v, called)
+
         for sym, item in self.items.items():
             if not SMIRInfo._is_func(item):
                 continue
@@ -218,24 +235,8 @@ class SMIRInfo:
             else:
                 called_tys = set()
 
-                def collect_const_fun_tys(obj: object) -> None:
-                    # Recursively collect any Constant operands whose type refers to a function.
-                    if isinstance(obj, dict):
-                        if 'Constant' in obj and isinstance(obj['Constant'], dict):
-                            const = obj['Constant']
-                            const_inner = const.get('const_')
-                            if isinstance(const_inner, dict):
-                                ty_id = const_inner.get('ty')
-                                if isinstance(ty_id, int) and ty_id in self.function_symbols:
-                                    called_tys.add(Ty(ty_id))
-                        for v in obj.values():
-                            collect_const_fun_tys(v)
-                    elif isinstance(obj, list):
-                        for v in obj:
-                            collect_const_fun_tys(v)
-
                 # Collect direct calls and function items passed as constants (e.g., fn pointers).
-                collect_const_fun_tys(body)
+                collect_const_fun_tys(body, called_tys)
             for ty in self.function_symbols_reverse[sym]:
                 result[Ty(ty)] = called_tys
         return result
