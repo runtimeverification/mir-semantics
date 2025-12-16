@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (31 steps)
+│  (34 steps)
 └─ 3 (stuck, leaf)
     #traverseProjection ( toLocal ( 1 ) , thunk ( #decodeConstant ( constantKindAllo
     span: 48
