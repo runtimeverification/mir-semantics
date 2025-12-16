@@ -20,7 +20,6 @@ impl TryFrom<&[u8]> for EightBytes {
 
 fn main() {
     let bytes: [u8;8] = [1,2,3,4,5,6,7,8];
-    let _unused = EightBytes::from(bytes);
     let slice: &[u8] = &bytes;
     let thing: Result<EightBytes, _> = EightBytes::try_from(slice);
     assert!(thing.is_ok());
