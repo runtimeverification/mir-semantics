@@ -201,13 +201,21 @@ class SMIRInfo:
 
     @cached_property
     def call_edges(self) -> dict[Ty, set[Ty]]:
-        # determines which functions are _called_ from others, by symbol name
-        result = {}
+        """Determines which functions are called or referenced from others.
+
+        This includes:
+        1. Direct calls: functions used as the `func` operand in Call terminators
+        2. Indirect calls: functions passed as arguments (ZeroSized constants) that may be
+           called via function pointers (e.g., closures passed to higher-order functions)
+        """
+        result: dict[Ty, set[Ty]] = {}
+        function_tys = set(self.function_symbols.keys())
+
         for sym, item in self.items.items():
             if not SMIRInfo._is_func(item):
                 continue
             # skip functions not present in the `function_symbols_reverse` table
-            if not sym in self.function_symbols_reverse:
+            if sym not in self.function_symbols_reverse:
                 continue
             body = item['mono_item_kind']['MonoItemFn'].get('body')
             if body is None or 'blocks' not in body:
@@ -215,12 +223,27 @@ class SMIRInfo:
                 _LOGGER.debug(f'Skipping call edge extraction for {sym}: missing body')
                 called_tys: set[Ty] = set()
             else:
-                called_funs = [
-                    b['terminator']['kind']['Call']['func'] for b in body['blocks'] if 'Call' in b['terminator']['kind']
-                ]
-                called_tys = {Ty(op['Constant']['const_']['ty']) for op in called_funs if 'Constant' in op}
-            # TODO also add any constant operands used as arguments whose ty refer to a function
-            # the semantics currently does not support this, see issue #488 and stable-mir-json issue #55
+                called_tys = set()
+                for block in body['blocks']:
+                    if 'Call' not in block['terminator']['kind']:
+                        continue
+                    call = block['terminator']['kind']['Call']
+
+                    # 1. Direct call: the function being called
+                    func = call['func']
+                    if 'Constant' in func:
+                        called_tys.add(Ty(func['Constant']['const_']['ty']))
+
+                    # 2. Indirect call: function pointers passed as arguments
+                    #    These are ZeroSized constants whose ty is in the function table
+                    for arg in call.get('args', []):
+                        if 'Constant' in arg:
+                            const_ = arg['Constant'].get('const_', {})
+                            if const_.get('kind') == 'ZeroSized':
+                                ty = const_.get('ty')
+                                if isinstance(ty, int) and ty in function_tys:
+                                    called_tys.add(Ty(ty))
+
             for ty in self.function_symbols_reverse[sym]:
                 result[Ty(ty)] = called_tys
         return result
