@@ -51,6 +51,8 @@ The special `Moved` value represents values that have been used and should not b
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
                    // fields are the same as in Reference
+                 | FunPtr ( Ty )
+                   // function pointer, created by operandConstant only. Ty is a key in the function table
                  | AllocRef ( AllocId , ProjectionElems , Metadata )
                                                           [symbol(Value::AllocRef)]
                    // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
