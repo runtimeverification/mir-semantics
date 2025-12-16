@@ -897,6 +897,8 @@ fn test_process_initialize_mint_freeze(
     } else if accounts[0].lamports() < minimum_balance {
         assert_eq!(result, Err(ProgramError::Custom(0)))
     } else {
+        assert!(result.is_ok());
+
         assert!(get_mint(&accounts[0]).is_initialized().unwrap());
         assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[1..33]);
         assert_eq!(get_mint(&accounts[0]).decimals(), instruction_data[0]);
@@ -963,6 +965,8 @@ fn test_process_initialize_mint_no_freeze(
     } else if accounts[0].lamports() < minimum_balance {
         assert_eq!(result, Err(ProgramError::Custom(0)))
     } else {
+        assert!(result.is_ok());
+
         assert!(get_mint(&accounts[0]).is_initialized().unwrap());
         assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[1..33]);
         assert_eq!(get_mint(&accounts[0]).decimals(), instruction_data[0]);
@@ -4608,6 +4612,8 @@ fn test_process_initialize_mint2_freeze(
     } else if accounts[0].lamports() < minimum_balance {
         assert_eq!(result, Err(ProgramError::Custom(0)))
     } else {
+        assert!(result.is_ok());
+
         assert!(get_mint(&accounts[0]).is_initialized().unwrap());
         assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[1..33]);
         assert_eq!(get_mint(&accounts[0]).decimals(), instruction_data[0]);
@@ -4672,6 +4678,8 @@ fn test_process_initialize_mint2_no_freeze(
     } else if accounts[0].lamports() < minimum_balance {
         assert_eq!(result, Err(ProgramError::Custom(0)))
     } else {
+        assert!(result.is_ok());
+
         assert!(get_mint(&accounts[0]).is_initialized().unwrap());
         assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[1..33]);
         assert_eq!(get_mint(&accounts[0]).decimals(), instruction_data[0]);
