@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    Integer ( 11 , 16 , true ) ~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_ ( place (... local: local ( 2 ) , projection: .ProjectionElems ) ~> .K ) ~> #setArgsFromStack ( 3 , .Operands ) ~> #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) ) ~> .K
+    #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -27,7 +27,7 @@
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
       ListItem ( typedValue ( Integer ( 10 , 64 , false ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 28 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Integer ( 11 , 16 , true ) , ty ( 28 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>

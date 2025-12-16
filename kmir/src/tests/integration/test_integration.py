@@ -154,13 +154,13 @@ EXEC_DATA = [
         'main-a-b-c --depth 20',
         EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
         EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.state',
-        20,
+        24,
     ),
     (
         'call-with-args',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.state',
-        30,
+        33,
     ),
     (
         'closure-call',
@@ -178,7 +178,7 @@ EXEC_DATA = [
         'structs-tuples',
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.state',
-        99,
+        101,
     ),
     (
         'struct-field-update',
@@ -246,7 +246,7 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
         None,
     ),
-    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 135),
+    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 136),
     (
         'Array-indexing',
         EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',
@@ -275,7 +275,7 @@ EXEC_DATA = [
         'pointer-cast-zst',
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-zst.smir.json',
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-zst.state',
-        48,
+        50,
     ),
     (
         'ref-ptr-cases',
