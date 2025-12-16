@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (296 steps)
+│  (297 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
 ┃
@@ -15,7 +15,7 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
 ┃  │
-┃  │  (582 steps)
+┃  │  (588 steps)
 ┃  ├─ 6 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │
@@ -43,7 +43,7 @@
    ┃  ├─ 8
    ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 7 ) )
    ┃  │
-   ┃  │  (99 steps)
+   ┃  │  (101 steps)
    ┃  └─ 10 (stuck, leaf)
    ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( 1 , place ( ... local: local
    ┃
@@ -66,7 +66,7 @@
       ┃  ├─ 12
       ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 2 , basicBlockIdx ( 6 ) )
       ┃  │
-      ┃  │  (99 steps)
+      ┃  │  (101 steps)
       ┃  └─ 14 (stuck, leaf)
       ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( 1 , place ( ... local: local
       ┃
@@ -89,7 +89,7 @@
          ┃  ├─ 16
          ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 5 ) )
          ┃  │
-         ┃  │  (16 steps)
+         ┃  │  (17 steps)
          ┃  └─ 18 (stuck, leaf)
          ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( 0 , place ( ... local: local
          ┃
@@ -112,7 +112,7 @@
             ┃  ├─ 20
             ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 4 , basicBlockIdx ( 4 ) )
             ┃  │
-            ┃  │  (68 steps)
+            ┃  │  (70 steps)
             ┃  └─ 22 (stuck, leaf)
             ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
             ┃      span: 32

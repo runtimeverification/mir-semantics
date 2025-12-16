@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (14 steps)
+│  (15 steps)
 └─ 3 (stuck, leaf)
     #ProgramError ( #UBErrorInvalidDiscriminantsInEnumCast ) ~> .K
     function: main

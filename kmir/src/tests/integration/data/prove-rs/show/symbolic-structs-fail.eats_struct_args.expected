@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (60 steps)
+│  (61 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
@@ -27,7 +27,7 @@
 ┃  ┃  ├─ 8
 ┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
 ┃  ┃  │
-┃  ┃  │  (5 steps)
+┃  ┃  │  (6 steps)
 ┃  ┃  └─ 10 (stuck, leaf)
 ┃  ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
 ┃  ┃      span: 32
