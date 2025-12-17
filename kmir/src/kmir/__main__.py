@@ -246,6 +246,20 @@ def _arg_parser() -> ArgumentParser:
     )
     prove_args.add_argument('--reload', action='store_true', help='Force restarting proof')
     prove_args.add_argument(
+        '--fail-fast',
+        dest='fail_fast',
+        action='store_true',
+        help='Halt execution early if the proof is failing',
+    )
+    prove_args.add_argument(
+        '--maintenance-rate',
+        dest='maintenance_rate',
+        type=int,
+        default=1,
+        metavar='RATE',
+        help='Number of iterations between proof maintenance (writing to disk). Default: 1',
+    )
+    prove_args.add_argument(
         '--break-on-calls', dest='break_on_calls', action='store_true', help='Break on all function and intrinsic calls'
     )
     prove_args.add_argument(
@@ -496,6 +510,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 max_depth=ns.max_depth,
                 max_iterations=ns.max_iterations,
                 reload=ns.reload,
+                fail_fast=ns.fail_fast,
+                maintenance_rate=ns.maintenance_rate,
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
