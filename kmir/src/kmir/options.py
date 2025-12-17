@@ -41,6 +41,8 @@ class ProveOpts(KMirOpts):
     max_depth: int | None
     max_iterations: int | None
     reload: bool
+    fail_fast: bool
+    maintenance_rate: int
     break_on_calls: bool
     break_on_function_calls: bool
     break_on_intrinsic_calls: bool
@@ -64,6 +66,8 @@ class ProveOpts(KMirOpts):
         max_depth: int | None = None,
         max_iterations: int | None = None,
         reload: bool = False,
+        fail_fast: bool = False,
+        maintenance_rate: int = 1,
         break_on_calls: bool = False,
         break_on_function_calls: bool = False,
         break_on_intrinsic_calls: bool = False,
@@ -85,6 +89,8 @@ class ProveOpts(KMirOpts):
         self.max_depth = max_depth
         self.max_iterations = max_iterations
         self.reload = reload
+        self.fail_fast = fail_fast
+        self.maintenance_rate = maintenance_rate
         self.break_on_calls = break_on_calls
         self.break_on_function_calls = break_on_function_calls
         self.break_on_intrinsic_calls = break_on_intrinsic_calls
@@ -117,6 +123,8 @@ class ProveRSOpts(ProveOpts):
         max_depth: int | None = None,
         max_iterations: int | None = None,
         reload: bool = False,
+        fail_fast: bool = False,
+        maintenance_rate: int = 1,
         save_smir: bool = False,
         smir: bool = False,
         start_symbol: str = 'main',
@@ -142,6 +150,8 @@ class ProveRSOpts(ProveOpts):
         self.max_depth = max_depth
         self.max_iterations = max_iterations
         self.reload = reload
+        self.fail_fast = fail_fast
+        self.maintenance_rate = maintenance_rate
         self.save_smir = save_smir
         self.smir = smir
         self.start_symbol = start_symbol
