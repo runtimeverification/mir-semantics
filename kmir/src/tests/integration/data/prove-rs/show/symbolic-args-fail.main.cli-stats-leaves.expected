@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: src/rust/library/std/src/rt.rs:194
 │
-│  (563 steps)
+│  (566 steps)
 └─ 3 (stuck, leaf)
     #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
     span: no-location:0
@@ -25,9 +25,9 @@ Node roles (exclusive):
 Leaf paths from init:
   total leaves (non-root): 1
   reachable leaves       : 1
-  total steps            : 563
+  total steps            : 566
 
-  leaf 3: steps 563, path 1 -> 3
+  leaf 3: steps 566, path 1 -> 3
 
 LEAF <k> CELLS
 ---------------

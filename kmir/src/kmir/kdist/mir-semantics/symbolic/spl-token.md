@@ -283,7 +283,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
                         .ProjectionElems
 
   rule [cheatcode-is-spl-account]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -306,11 +306,10 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
            place(LOCAL, appendP(PROJS, REFCELL_PROJS)),      // navigate to RefCell for borrow init
            #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, REFCELL_PROJS))), 165)
          )
-      ~> #execBlockIdx(TARGET)
-    ...
+      ~> #continueAt(TARGET)
     </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_account"
-      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_account"
+    requires #functionName(FUNC) ==String "spl_token::entrypoint::cheatcode_is_spl_account"
+      orBool #functionName(FUNC) ==String "cheatcode_is_spl_account"
     ensures #isSplPubkey(?SplMintKey)
       andBool #isSplPubkey(?SplTokenOwnerKey)
       andBool 0 <=Int ?SplHasDelegateKey andBool ?SplHasDelegateKey <=Int 1
@@ -355,7 +354,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
        </k>
 
   rule [cheatcode-is-spl-mint]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -376,11 +375,10 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
            place(LOCAL, appendP(PROJS, REFCELL_PROJS)),      // navigate to RefCell for borrow init
            #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, REFCELL_PROJS))), 82)
          )
-      ~> #execBlockIdx(TARGET)
-    ...
+      ~> #continueAt(TARGET)
     </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_mint"
-      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_mint"
+    requires #functionName(FUNC) ==String "spl_token::entrypoint::cheatcode_is_spl_mint"
+      orBool #functionName(FUNC) ==String "cheatcode_is_spl_mint"
     ensures 0 <=Int ?SplMintHasAuthKey andBool ?SplMintHasAuthKey <=Int 1
       andBool (0 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, ?SplMintHasAuthKey) orBool 1 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, ?SplMintHasAuthKey))
       andBool #isSplPubkey(?SplMintAuthorityKey)
@@ -392,7 +390,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-rent]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -407,11 +405,10 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
            place(LOCAL, appendP(PROJS, REFCELL_PROJS)),      // navigate to RefCell for borrow init
            #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, REFCELL_PROJS))), 17)
          )
-      ~> #execBlockIdx(TARGET)
-    ...
+      ~> #continueAt(TARGET)
     </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::entrypoint::cheatcode_is_spl_rent"
-      orBool #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "cheatcode_is_spl_rent"
+    requires #functionName(FUNC) ==String "spl_token::entrypoint::cheatcode_is_spl_rent"
+      orBool #functionName(FUNC) ==String "cheatcode_is_spl_rent"
     ensures 0 <=Int ?SplRentLamportsPerByteYear andBool ?SplRentLamportsPerByteYear <Int (1 <<Int 32)
       andBool 0 <=Int ?SplRentBurnPercent andBool ?SplRentBurnPercent <=Int 100
     [priority(30), preserves-definedness]
@@ -422,12 +419,11 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ```k
   // RefCell::<&mut [u8]>::borrow / borrow_mut - returns Ref/RefMut wrapper with pointer to data
   rule [spl-borrow-data]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND) ~> _CONT
       => #setSPLBorrowData(DEST, operandCopy(place(LOCAL, PROJS)))
-         ~> #execBlockIdx(TARGET)
-    ...
+         ~> #continueAt(TARGET)
     </k>
-    requires #isSPLBorrowFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
+    requires #isSPLBorrowFunc(#functionName(FUNC))
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #setSPLBorrowData ( Place , Evaluation ) [seqstrict(2)]
@@ -443,12 +439,11 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ```k
   // Account/Mint::unpack_from_slice - extracts struct from SPLDataBuffer
   rule [spl-account-unpack]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    <k> #execTerminatorCall(_, FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND) ~> _CONT
       => #splUnpack(DEST, #withDeref(OP))
-         ~> #execBlockIdx(TARGET)
-    ...
+         ~> #continueAt(TARGET)
     </k>
-    requires #isSPLUnpackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
+    requires #isSPLUnpackFunc(#functionName(FUNC))
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #splUnpack ( Place , Evaluation ) [seqstrict(2)]
@@ -458,10 +453,10 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 
   // Account/Mint::pack_into_slice - writes struct into SPLDataBuffer
   rule [spl-account-pack]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, SRC:Operand DST:Operand .Operands, _DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
-      => #splPack(#withDeref(SRC), #withDeref(DST)) ~> #execBlockIdx(TARGET) ...
+    <k> #execTerminatorCall(_, FUNC, SRC:Operand DST:Operand .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+      => #splPack(#withDeref(SRC), #withDeref(DST)) ~> #continueAt(TARGET)
     </k>
-    requires #isSPLPackFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
+    requires #isSPLPackFunc(#functionName(FUNC))
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #splPack ( Evaluation , Operand ) [seqstrict(1)]
@@ -474,22 +469,20 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ```{.k .symbolic}
   // Rent::from_account_info - navigates to data buffer using DATA_BUFFER_PROJS
   rule [spl-rent-from-account-info]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, OP:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    <k> #execTerminatorCall(_, FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND) ~> _CONT
       => #splUnpack(DEST, #appendProjsOp(OP, DATA_BUFFER_PROJS))
-         ~> #execBlockIdx(TARGET)
-    ...
+         ~> #continueAt(TARGET)
     </k>
-    requires #isSPLRentFromAccountInfoFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
+    requires #isSPLRentFromAccountInfoFunc(#functionName(FUNC))
     [priority(30), preserves-definedness]
 
   // Rent::get - returns stable value, cached in outermost frame
   rule [spl-rent-get]:
-    <k> #execTerminator(terminator(terminatorKindCall(FUNC, .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND), _SPAN))
+    <k> #execTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND) ~> _CONT
       => #writeSPLSysRent(DEST)
-         ~> #execBlockIdx(TARGET)
-    ...
+         ~> #continueAt(TARGET)
     </k>
-    requires #isSPLRentGetFunc(#functionName(lookupFunction(#tyOfCall(FUNC))))
+    requires #isSPLRentGetFunc(#functionName(FUNC))
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #writeSPLSysRent ( Place )
@@ -538,17 +531,11 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ## Pubkey comparison shortcut
 ```k
   rule [spl-cmp-pubkeys]:
-    <k> #execTerminator(
-          terminator(
-            terminatorKindCall(FUNC, ARG1:Operand ARG2:Operand .Operands, DEST, someBasicBlockIdx(TARGET), _UNWIND),
-            _SPAN
-          )
-        )
+    <k> #execTerminatorCall(_, FUNC, ARG1:Operand ARG2:Operand .Operands, DEST, TARGET, _UNWIND) ~> _CONT
       => #execSPLCmpPubkeys( DEST, #withDeref(ARG1), #withDeref(ARG2))
-         ~> #execBlockIdx(TARGET)
-    ...
+         ~> #continueAt(TARGET)
     </k>
-    requires #functionName(lookupFunction(#tyOfCall(FUNC))) ==String "spl_token::processor::Processor::cmp_pubkeys"
+    requires #functionName(FUNC) ==String "spl_token::processor::Processor::cmp_pubkeys"
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #execSPLCmpPubkeys( Place , Evaluation , Evaluation ) [seqstrict(2,3)]

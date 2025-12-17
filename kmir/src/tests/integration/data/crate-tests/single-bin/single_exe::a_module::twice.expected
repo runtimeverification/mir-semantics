@@ -2,7 +2,7 @@
 ┌─ 1 (root, init)
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │
-│  (42 steps)
+│  (44 steps)
 ├─ 3 (split)
 │   #expect ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT1:Int &Int 18446744073709
 ┃
