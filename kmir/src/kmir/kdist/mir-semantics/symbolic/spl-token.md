@@ -542,10 +542,10 @@ Since float casts create thunks, we simplify this pattern directly to `PRODUCT *
   // Simplify: (int)((float)PRODUCT * 2.0) => PRODUCT * 2
   rule #cast(
          thunk(#applyBinOp(binOpMul,
-           thunk(#cast(Integer(PRODUCT:Int, 64, false), castKindIntToFloat, _TY1, _TY2)),
+           thunk(#cast(Integer(PRODUCT:Int, 64, false), castKindIntToFloat, INT_TY, FLOAT_TY)),
            Float(0.20000000000000000e1, 64),
            false)),
-         castKindFloatToInt, _TY3, _TY4)
+         castKindFloatToInt, FLOAT_TY, INT_TY)
     => Integer(PRODUCT *Int 2, 64, false)
 ```
 
