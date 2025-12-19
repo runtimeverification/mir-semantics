@@ -24,7 +24,7 @@ cheatcode_is_spl_rent(acc)      -> sets SPLDataBuffer at data field, initializes
 
 Account::unpack_from_slice(buf) -> #splUnpack extracts value from SPLDataBuffer
 Account::pack_into_slice(v,buf) -> #splPack writes value into SPLDataBuffer
-Rent::unpack(buf)               -> #splUnpack extracts Rent from SPLDataBuffer
+bincode::deserialize(buf)       -> #splUnpack extracts Rent from SPLDataBuffer
 Rent::get()                     -> returns cached or new symbolic Rent value
 ```
 
@@ -434,7 +434,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ## Pack / Unpack operations
 
 ```k
-  // Account/Mint::unpack_from_slice - extracts struct from SPLDataBuffer
+  // Account/Mint::unpack_from_slice, bincode::deserialize (for Rent) - extracts struct from SPLDataBuffer
   rule [spl-account-unpack]:
     <k> #execTerminatorCall(_, FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND) ~> _CONT
       => #splUnpack(DEST, #withDeref(OP))
