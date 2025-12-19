@@ -24,7 +24,7 @@ cheatcode_is_spl_rent(acc)      -> sets SPLDataBuffer at data field, initializes
 
 Account::unpack_from_slice(buf) -> #splUnpack extracts value from SPLDataBuffer
 Account::pack_into_slice(v,buf) -> #splPack writes value into SPLDataBuffer
-Rent::from_account_info(acc)    -> navigates to data buffer using projection path
+bincode::deserialize(buf)       -> #splUnpack extracts Rent from SPLDataBuffer
 Rent::get()                     -> returns cached or new symbolic Rent value
 ```
 
@@ -127,6 +127,9 @@ module KMIR-SPL-TOKEN
   // spl-token mint
   rule #isSPLUnpackFunc("<state::Mint as solana_program_pack::Pack>::unpack_from_slice") => true
   rule #isSPLUnpackFunc("Mint::unpack_from_slice") => true
+  // spl-token rent
+  rule #isSPLUnpackFunc("bincode::deserialize::<'_, solana_rent::Rent>") => true
+  rule #isSPLUnpackFunc("Rent::unpack") => true
 
   syntax Bool ::= #isSPLPackFunc   ( String ) [function, total]
   rule #isSPLPackFunc(_) => false [owise]
@@ -136,12 +139,6 @@ module KMIR-SPL-TOKEN
   // spl-token mint
   rule #isSPLPackFunc("<state::Mint as solana_program_pack::Pack>::pack_into_slice") => true
   rule #isSPLPackFunc("Mint::pack_into_slice") => true
-
-  // Rent sysvar calls (includes mock harness direct calls to Rent::from_account_info / Rent::get)
-  syntax Bool ::= #isSPLRentFromAccountInfoFunc ( String ) [function, total]
-  rule #isSPLRentFromAccountInfoFunc(_) => false [owise]
-  rule #isSPLRentFromAccountInfoFunc("Rent::from_account_info") => true   // mock harness
-  rule #isSPLRentFromAccountInfoFunc("solana_sysvar::<solana_rent::Rent as solana_sysvar::Sysvar>::from_account_info") => true
 
   syntax Bool ::= #isSPLRentGetFunc ( String ) [function, total]
   rule #isSPLRentGetFunc(_) => false [owise]
@@ -437,7 +434,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ## Pack / Unpack operations
 
 ```k
-  // Account/Mint::unpack_from_slice - extracts struct from SPLDataBuffer
+  // Account/Mint::unpack_from_slice, bincode::deserialize (for Rent) - extracts struct from SPLDataBuffer
   rule [spl-account-unpack]:
     <k> #execTerminatorCall(_, FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND) ~> _CONT
       => #splUnpack(DEST, #withDeref(OP))
@@ -467,15 +464,6 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ## Rent sysvar handling
 
 ```{.k .symbolic}
-  // Rent::from_account_info - navigates to data buffer using DATA_BUFFER_PROJS
-  rule [spl-rent-from-account-info]:
-    <k> #execTerminatorCall(_, FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND) ~> _CONT
-      => #splUnpack(DEST, #appendProjsOp(OP, DATA_BUFFER_PROJS))
-         ~> #continueAt(TARGET)
-    </k>
-    requires #isSPLRentFromAccountInfoFunc(#functionName(FUNC))
-    [priority(30), preserves-definedness]
-
   // Rent::get - returns stable value, cached in outermost frame
   rule [spl-rent-get]:
     <k> #execTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND) ~> _CONT
