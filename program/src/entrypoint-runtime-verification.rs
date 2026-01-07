@@ -78,6 +78,13 @@ fn get_mint(account_info: &AccountInfo) -> MintWrapper {
     MintWrapper(Mint::unpack_unchecked(&account_info.data.borrow()))
 }
 
+macro_rules! assert_pubkey_from_slice {
+    ($actual:expr, $slice:expr) => {{
+        let expected_pubkey = Pubkey::new_from_array($slice.try_into().unwrap());
+        assert_eq!($actual, expected_pubkey);
+    }};
+}
+
 /// A wrapper struct as middleware so that the same functions called
 /// on the p-token Account are called on the spl Account. However,
 /// this means that fields have to be accessed through functions.
@@ -232,8 +239,9 @@ fn get_multisig(account_info: &AccountInfo) -> MultisigWrapper {
     MultisigWrapper(Multisig::unpack_unchecked(&account_info.data.borrow()))
 }
 
-fn get_rent(_account_info: &AccountInfo) -> solana_rent::Rent {
-    solana_rent::Rent::get().unwrap()
+fn get_rent(account_info: &AccountInfo) -> solana_rent::Rent {
+    // Directly deserialize from account data without key check
+    bincode::deserialize(&account_info.data.borrow()).unwrap()
 }
 
 #[inline(never)]
@@ -899,12 +907,13 @@ fn test_process_initialize_mint_freeze(
     } else {
         assert!(result.is_ok());
 
-        assert!(get_mint(&accounts[0]).is_initialized().unwrap());
-        assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[1..33]);
-        assert_eq!(get_mint(&accounts[0]).decimals(), instruction_data[0]);
+        let mint_new = get_mint(&accounts[0]);
+        assert!(mint_new.is_initialized().unwrap());
+        assert_pubkey_from_slice!(*mint_new.mint_authority().unwrap(), instruction_data[1..33]);
+        assert_eq!(mint_new.decimals(), instruction_data[0]);
 
         if instruction_data[33] == 1 {
-            assert_eq!(get_mint(&accounts[0]).freeze_authority().unwrap().as_ref(), &instruction_data[34..66]);
+            assert_pubkey_from_slice!(*mint_new.freeze_authority().unwrap(), instruction_data[34..66]);
         }
     }
 
@@ -968,11 +977,11 @@ fn test_process_initialize_mint_no_freeze(
         assert!(result.is_ok());
 
         assert!(get_mint(&accounts[0]).is_initialized().unwrap());
-        assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[1..33]);
+        assert_pubkey_from_slice!(*get_mint(&accounts[0]).mint_authority().unwrap(), instruction_data[1..33]);
         assert_eq!(get_mint(&accounts[0]).decimals(), instruction_data[0]);
 
         if instruction_data[33] == 1 {
-            assert_eq!(get_mint(&accounts[0]).freeze_authority().unwrap().as_ref(), &instruction_data[34..66]);
+            assert_pubkey_from_slice!(*get_mint(&accounts[0]).freeze_authority().unwrap(), instruction_data[34..66]);
         }
     }
 
@@ -2333,7 +2342,7 @@ fn test_process_set_authority_account(
                         return result;
                     }
 
-                    assert_eq!(get_account(&accounts[0]).owner().as_ref(), &instruction_data[2..34]);
+                    assert_pubkey_from_slice!(get_account(&accounts[0]).owner(), instruction_data[2..34]);
                     assert_eq!(get_account(&accounts[0]).delegate(), None);
                     assert_eq!(get_account(&accounts[0]).delegated_amount(), 0);
                     if get_account(&accounts[0]).is_native() {
@@ -2352,7 +2361,7 @@ fn test_process_set_authority_account(
                     )?;
 
                     if instruction_data[1] == 1 { // 1 ==> 34 <= instruction_data.len()
-                        assert_eq!(get_account(&accounts[0]).close_authority().unwrap().as_ref(), &instruction_data[2..34]);
+                        assert_pubkey_from_slice!(*get_account(&accounts[0]).close_authority().unwrap(), instruction_data[2..34]);
                     } else {
                         assert_eq!(get_account(&accounts[0]).close_authority(), None);
                     }
@@ -2458,7 +2467,7 @@ fn test_process_set_authority_account_multisig(
                         return result;
                     }
 
-                    assert_eq!(get_account(&accounts[0]).owner().as_ref(), &instruction_data[2..34]);
+                    assert_pubkey_from_slice!(get_account(&accounts[0]).owner(), instruction_data[2..34]);
                     assert_eq!(get_account(&accounts[0]).delegate(), None);
                     assert_eq!(get_account(&accounts[0]).delegated_amount(), 0);
                     if get_account(&accounts[0]).is_native() {
@@ -2477,7 +2486,7 @@ fn test_process_set_authority_account_multisig(
                     )?;
 
                     if instruction_data[1] == 1 { // 1 ==> 34 <= instruction_data.len()
-                        assert_eq!(get_account(&accounts[0]).close_authority().unwrap().as_ref(), &instruction_data[2..34]);
+                        assert_pubkey_from_slice!(*get_account(&accounts[0]).close_authority().unwrap(), instruction_data[2..34]);
                     } else {
                         assert_eq!(get_account(&accounts[0]).close_authority(), None);
                     }
@@ -2573,7 +2582,7 @@ fn test_process_set_authority_mint(
                     )?;
 
                     if instruction_data[1] == 1 { // 1 ==> 34 <= instruction_data.len()
-                        assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[2..34]);
+                        assert_pubkey_from_slice!(*get_mint(&accounts[0]).mint_authority().unwrap(), instruction_data[2..34]);
                     } else {
                         assert_eq!(get_mint(&accounts[0]).mint_authority(), None);
                     }
@@ -2593,7 +2602,7 @@ fn test_process_set_authority_mint(
                     )?;
 
                     if instruction_data[1] == 1 { // 1 ==> 34 <= instruction_data.len()
-                        assert_eq!(get_mint(&accounts[0]).freeze_authority().unwrap().as_ref(), &instruction_data[2..34]);
+                        assert_pubkey_from_slice!(*get_mint(&accounts[0]).freeze_authority().unwrap(), instruction_data[2..34]);
                     } else {
                         assert_eq!(get_mint(&accounts[0]).freeze_authority(), None);
                     }
@@ -2689,7 +2698,7 @@ fn test_process_set_authority_mint_multisig(
                     )?;
 
                     if instruction_data[1] == 1 { // 1 ==> 34 <= instruction_data.len()
-                        assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[2..34]);
+                        assert_pubkey_from_slice!(*get_mint(&accounts[0]).mint_authority().unwrap(), instruction_data[2..34]);
                     } else {
                         assert_eq!(get_mint(&accounts[0]).mint_authority(), None);
                     }
@@ -2709,7 +2718,7 @@ fn test_process_set_authority_mint_multisig(
                     )?;
 
                     if instruction_data[1] == 1 { // 1 ==> 34 <= instruction_data.len()
-                        assert_eq!(get_mint(&accounts[0]).freeze_authority().unwrap().as_ref(), &instruction_data[2..34]);
+                        assert_pubkey_from_slice!(*get_mint(&accounts[0]).freeze_authority().unwrap(), instruction_data[2..34]);
                     } else {
                         assert_eq!(get_mint(&accounts[0]).freeze_authority(), None);
                     }
@@ -4614,12 +4623,13 @@ fn test_process_initialize_mint2_freeze(
     } else {
         assert!(result.is_ok());
 
-        assert!(get_mint(&accounts[0]).is_initialized().unwrap());
-        assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[1..33]);
-        assert_eq!(get_mint(&accounts[0]).decimals(), instruction_data[0]);
+        let mint_new = get_mint(&accounts[0]);
+        assert!(mint_new.is_initialized().unwrap());
+        assert_pubkey_from_slice!(*mint_new.mint_authority().unwrap(), instruction_data[1..33]);
+        assert_eq!(mint_new.decimals(), instruction_data[0]);
 
         if instruction_data[33] == 1 {
-            assert_eq!(get_mint(&accounts[0]).freeze_authority().unwrap().as_ref(), &instruction_data[34..66]);
+            assert_pubkey_from_slice!(*mint_new.freeze_authority().unwrap(), instruction_data[34..66]);
         }
     }
 
@@ -4680,12 +4690,13 @@ fn test_process_initialize_mint2_no_freeze(
     } else {
         assert!(result.is_ok());
 
-        assert!(get_mint(&accounts[0]).is_initialized().unwrap());
-        assert_eq!(get_mint(&accounts[0]).mint_authority().unwrap().as_ref(), &instruction_data[1..33]);
-        assert_eq!(get_mint(&accounts[0]).decimals(), instruction_data[0]);
+        let mint_new = get_mint(&accounts[0]);
+        assert!(mint_new.is_initialized().unwrap());
+        assert_pubkey_from_slice!(*mint_new.mint_authority().unwrap(), instruction_data[1..33]);
+        assert_eq!(mint_new.decimals(), instruction_data[0]);
 
         if instruction_data[33] == 1 {
-            assert_eq!(get_mint(&accounts[0]).freeze_authority().unwrap().as_ref(), &instruction_data[34..66]);
+            assert_pubkey_from_slice!(*mint_new.freeze_authority().unwrap(), instruction_data[34..66]);
         }
     }
 

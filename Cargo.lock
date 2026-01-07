@@ -7258,6 +7258,7 @@ name = "spl-token"
 version = "8.0.0"
 dependencies = [
  "arrayref",
+ "bincode",
  "bytemuck",
  "lazy_static",
  "mollusk-svm",
