@@ -2283,12 +2283,13 @@ pub fn test_process_burn_checked(
     let src_mint = src_old.mint;
     let src_owned_sys_inc = src_old.is_owned_by_system_program_or_incinerator();
     let src_owner = src_old.owner;
+    let src_info_owner = accounts[0].owner();
     let old_src_delgate = src_old.delegate().cloned();
     let old_src_delgated_amount = src_old.delegated_amount();
     let mint_initialised = mint_old.is_initialized();
     let mint_init_supply = mint_old.supply();
     let mint_decimals = mint_old.decimals;
-    let mint_owner = *accounts[1].owner();
+    let mint_info_owner = *accounts[1].owner();
     let maybe_multisig_is_initialised = None; // Value set to `None` since authority is an account
 
     #[cfg(feature = "assumptions")]
@@ -2356,9 +2357,9 @@ pub fn test_process_burn_checked(
             }
         }
 
-        if amount == 0 && src_owner != pinocchio_token_interface::program::ID {
+        if amount == 0 && *src_info_owner != pinocchio_token_interface::program::ID {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId))
-        } else if amount == 0 && mint_owner != pinocchio_token_interface::program::ID {
+        } else if amount == 0 && mint_info_owner != pinocchio_token_interface::program::ID {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId))
         } else {
             let src_new = get_account(&accounts[0]);
@@ -2367,11 +2368,19 @@ pub fn test_process_burn_checked(
             assert!(result.is_ok());
 
             // Delegate updates
-            if old_src_delgate.is_some() && *accounts[2].key() == old_src_delgate.unwrap() {
-                assert_eq!(src_new.delegated_amount(), old_src_delgated_amount - amount);
+            let new_src_delegate = src_new.delegate().cloned();
+            let new_src_delegated_amount = src_new.delegated_amount();
+            if !src_owned_sys_inc
+                && old_src_delgate.is_some()
+                && *accounts[2].key() == old_src_delgate.unwrap()
+            {
+                assert_eq!(new_src_delegated_amount, old_src_delgated_amount - amount);
                 if old_src_delgated_amount - amount == 0 {
-                    assert_eq!(src_new.delegate(), None);
+                    assert_eq!(new_src_delegate, None);
                 }
+            } else {
+                assert_eq!(old_src_delgate, new_src_delegate);
+                assert_eq!(old_src_delgated_amount, new_src_delegated_amount);
             }
         }
     }
