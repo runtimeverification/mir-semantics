@@ -3088,11 +3088,12 @@ fn test_process_burn(
     let src_mint = get_account(&accounts[0]).mint();
     let src_owned_sys_inc = get_account(&accounts[0]).is_owned_by_system_program_or_incinerator();
     let src_owner = get_account(&accounts[0]).owner();
+    let src_info_owner = accounts[0].owner;
     let old_src_delgate = get_account(&accounts[0]).delegate().cloned();
     let old_src_delgated_amount = get_account(&accounts[0]).delegated_amount();
     let mint_initialised = get_mint(&accounts[1]).is_initialized();
     let mint_init_supply = get_mint(&accounts[1]).supply();
-    let mint_owner = *accounts[1].owner;
+    let mint_info_owner = *accounts[1].owner;
     let maybe_multisig_is_initialised = None;
     let tx_signers: &[AccountInfo] = &accounts[3..];
 
@@ -3156,21 +3157,30 @@ fn test_process_burn(
             }
         }
 
-        if amount == 0 && src_owner != crate::id() {
+        if amount == 0 && *src_info_owner != crate::id() {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId))
-        } else if amount == 0 && mint_owner != crate::id() {
+        } else if amount == 0 && mint_info_owner != crate::id() {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId))
         } else {
-            assert!(get_account(&accounts[0]).amount() == src_init_amount - amount);
+            let src_new = get_account(&accounts[0]);
+            assert!(src_new.amount() == src_init_amount - amount);
             assert!(get_mint(&accounts[1]).supply() == mint_init_supply - amount);
             assert!(result.is_ok());
 
             // Delegate updates
-            if old_src_delgate.is_some() && *accounts[2].key == old_src_delgate.unwrap() {
-                assert_eq!(get_account(&accounts[0]).delegated_amount(), old_src_delgated_amount - amount);
+            let new_src_delegate = src_new.delegate().cloned();
+            let new_src_delegated_amount = src_new.delegated_amount();
+            if !src_owned_sys_inc
+                && old_src_delgate.is_some()
+                && *accounts[2].key == old_src_delgate.unwrap()
+            {
+                assert_eq!(new_src_delegated_amount, old_src_delgated_amount - amount);
                 if old_src_delgated_amount - amount == 0 {
-                    assert_eq!(get_account(&accounts[0]).delegate(), None);
+                    assert_eq!(new_src_delegate, None);
                 }
+            } else {
+                assert_eq!(old_src_delgate, new_src_delegate);
+                assert_eq!(old_src_delgated_amount, new_src_delegated_amount);
             }
         }
     }
