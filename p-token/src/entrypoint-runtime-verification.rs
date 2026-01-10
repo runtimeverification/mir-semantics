@@ -1958,7 +1958,7 @@ pub fn test_process_transfer_checked(
 
     #[cfg(feature = "assumptions")]
     // avoids potential overflow in destination account. assuming global supply bound by u64
-    if accounts[0] != accounts[1] && dst_initial_amount.checked_add(amount).is_none() {
+    if accounts[0] != accounts[2] && dst_initial_amount.checked_add(amount).is_none() {
         return Err(ProgramError::Custom(99));
     }
 
@@ -2057,6 +2057,7 @@ pub fn test_process_transfer_checked(
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
         }
+
         if accounts[0] != accounts[2] && amount != 0 {
             if src_new.is_native() && src_initial_lamports < amount {
                 // Not sure how to fund native mint
@@ -2076,7 +2077,7 @@ pub fn test_process_transfer_checked(
 
             if src_new.is_native() {
                 assert_eq!(accounts[0].lamports(), src_initial_lamports - amount);
-                assert_eq!(accounts[1].lamports(), dst_initial_lamports + amount);
+                assert_eq!(accounts[2].lamports(), dst_initial_lamports + amount);
             }
         }
         assert!(result.is_ok());

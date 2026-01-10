@@ -3782,6 +3782,7 @@ fn test_process_transfer_checked(
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
         }
+
         if accounts[0].key != accounts[2].key && amount != 0 {
             if get_account(&accounts[0]).is_native() && src_initial_lamports < amount {
                 // Not sure how to fund native mint
@@ -3800,7 +3801,7 @@ fn test_process_transfer_checked(
 
             if get_account(&accounts[0]).is_native() {
                 assert_eq!(accounts[0].lamports(), src_initial_lamports - amount);
-                assert_eq!(accounts[1].lamports(), dst_initial_lamports + amount);
+                assert_eq!(accounts[2].lamports(), dst_initial_lamports + amount);
             }
         }
         assert!(result.is_ok());
