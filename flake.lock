@@ -556,17 +556,17 @@
         "rv-nix-tools": "rv-nix-tools_4"
       },
       "locked": {
-        "lastModified": 1765851796,
-        "narHash": "sha256-99Exa7fiaW52zb4yEiJyS0syz7AOZOi0zVXqIWKM7PE=",
+        "lastModified": 1768154399,
+        "narHash": "sha256-BdN7bNZowS2IO/SLo6pp14O+996wGQhCdFKlbUFPDqM=",
         "owner": "runtimeverification",
         "repo": "stable-mir-json",
-        "rev": "626e8fed0470078c4d980b6b5b503a3aceb355ec",
+        "rev": "b70cb77fe2026565c89f9de1f090453a26cb20a6",
         "type": "github"
       },
       "original": {
         "owner": "runtimeverification",
         "repo": "stable-mir-json",
-        "rev": "626e8fed0470078c4d980b6b5b503a3aceb355ec",
+        "rev": "b70cb77fe2026565c89f9de1f090453a26cb20a6",
         "type": "github"
       }
     },
