@@ -5,5 +5,13 @@
   "useTabs": false,
   "tabWidth": 2,
   "arrowParens": "always",
-  "printWidth": 80
+  "printWidth": 80,
+  "overrides": [
+    {
+      "files": "*.(yml|yaml)",
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ]
 }

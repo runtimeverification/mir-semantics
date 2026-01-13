@@ -26,11 +26,6 @@ on:
         required: false
         type: string
         default: # empty = retrieve from submodule (later)
-      smir:
-        description: Stable MIR JSON to work with (commit hash, optional)
-        required: false
-        type: string
-        default:  # empty = master
       timeout:
         description: Timeout for running the proofs
         required: false
@@ -40,7 +35,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-
 jobs:
   compile:
     name: "Compile to SMIR JSON"
@@ -49,22 +43,21 @@ jobs:
       artifact_name: ${{ steps.vars.outputs.artifact_name }}
       start_prefix: ${{ steps.vars.outputs.start_prefix }}
       show_prefix: ${{ steps.vars.outputs.show_prefix }}
+      kmir: ${{ steps.kmir.outputs.kmir }}
     steps:
       - name: "Git Checkout"
         uses: actions/checkout@v4
 
-      - name: "Provide nightly Rust" # https://github.com/rust-lang/rustup/issues/3409
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly-2024-11-29 # Hardcoded version for stable-mir-json. TODO can we use nix?
-
-      - name: "Provide Nix"
-        uses: cachix/install-nix-action@v30
-
-      - name: "Set up nix shell"
-        uses: rrbutani/use-nix-shell-action@v1
-        with:
-          flakes: github:runtimeverification/stable-mir-json/${{ inputs.smir }}
+      - name: "Set KMIR version"
+        id: kmir
+        run: |
+          if [ ! -z "${{ inputs.kmir }}" ]; then
+              echo "KMIR version set to ${{ inputs.kmir }}"
+              kmir=${{ inputs.kmir }}
+          else
+              kmir=p-token-$(git rev-parse --short $(git ls-tree HEAD p-token/test-properties/mir-semantics/ | awk '{print $3}'))
+          fi
+          echo "kmir=$kmir" >> $GITHUB_OUTPUT
 
       - name: "Derive settings from target"
         id: vars
@@ -90,10 +83,16 @@ jobs:
               ;;
           esac
 
-      - name: "Build with stable_mir_json"
+      - name: "Build with stable_mir_json from Docker"
         run: |
-          cd "${{ steps.vars.outputs.crate_dir }}"
-          RUSTC=stable_mir_json cargo build --features runtime-verification,assumptions
+          docker run --rm \
+            --entrypoint bash \
+            -u 0:0 \
+            -v $PWD:/workdir --workdir /workdir \
+            -e CARGO_HOME=/tmp/cargo \
+            -e RUSTUP_HOME=/rustup \
+            runtimeverificationinc/kmir:${{ steps.kmir.outputs.kmir }} \
+            -c "cd '${{ steps.vars.outputs.crate_dir }}' && RUSTC=/home/kmir/.stable-mir-json/release.sh cargo build --features runtime-verification,assumptions"
 
       - name: "Store SMIR JSON files"
         uses: actions/upload-artifact@v4
@@ -108,26 +107,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       proofs: ${{ steps.split.outputs.matrix }}
-      kmir: ${{ steps.kmir.outputs.kmir }}
     steps:
-      - name: "Git Checkout"
-        uses: actions/checkout@v4
-
       - name: "Create Proof Array"
         id: split
         run: |
           echo "proofs = '${{ inputs.proofs }}'"
           echo "matrix=${{ inputs.proofs }}" >> $GITHUB_OUTPUT
-      - name: "Set KMIR version"
-        id: kmir
-        run: |
-          if [ ! -z "${{ inputs.kmir }}" ]; then
-              echo "KMIR version set to ${{ inputs.kmir }}"
-              kmir=${{ inputs.kmir }}
-          else
-              kmir=p-token-$(git rev-parse --short $(git ls-tree HEAD p-token/test-properties/mir-semantics/ | awk '{print $3}'))
-          fi
-          echo "kmir=$kmir" >> $GITHUB_OUTPUT
 
   run_proof:
     name: "Link SMIR and Run Proofs"
@@ -146,7 +131,7 @@ jobs:
       - name: debug matrix and docker image
         run: |
           echo "This is proof ${{ matrix.proof }}"
-          echo "Running with $KMIR_CONTAINER_NAME, docker image runtimeverificationinc/kmir:${{ needs.prepare_matrix.outputs.kmir }}"
+          echo "Running with $KMIR_CONTAINER_NAME, docker image runtimeverificationinc/kmir:${{ needs.compile.outputs.kmir }}"
 
       - name: "Set up Docker Host"
         run: |
@@ -157,7 +142,7 @@ jobs:
             -u $(id -u):$(id -g) \
             -v $PWD:/workdir --workdir /workdir \
             --name "${KMIR_CONTAINER_NAME}" \
-            runtimeverificationinc/kmir:${{ needs.prepare_matrix.outputs.kmir }} \
+            runtimeverificationinc/kmir:${{ needs.compile.outputs.kmir }} \
             bash -c 'while true; do sleep 600; done'
           sleep 10
 
