@@ -121,18 +121,25 @@ class KMIR(KProve, KRun, KParse):
     def from_kompiled_kore(
         smir_info: SMIRInfo,
         target_dir: Path,
+        *,
+        extra_module: Path | None = None,
         bug_report: Path | None = None,
         symbolic: bool = True,
-        extra_module: Path | None = None,
+        llvm_target: str | None = None,
+        llvm_lib_target: str | None = None,
+        haskell_target: str | None = None,
     ) -> KMIR:
         from .kompile import kompile_smir
 
         kompiled_smir = kompile_smir(
             smir_info=smir_info,
             target_dir=target_dir,
+            extra_module=extra_module,
             bug_report=bug_report,
             symbolic=symbolic,
-            extra_module=extra_module,
+            llvm_target=llvm_target,
+            llvm_lib_target=llvm_lib_target,
+            haskell_target=haskell_target,
         )
         return kompiled_smir.create_kmir(bug_report_file=bug_report)
 
