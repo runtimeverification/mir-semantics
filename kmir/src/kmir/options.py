@@ -61,7 +61,7 @@ class ProveOpts(KMirOpts):
 
     def __init__(
         self,
-        proof_dir: Path | str | None,
+        proof_dir: Path | str | None = None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
@@ -189,7 +189,7 @@ class DisplayOpts(ProofOpts):
         smir_info: Path | None = None,
         omit_current_body: bool = True,
     ) -> None:
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.proof_dir = Path(proof_dir).resolve()
         self.id = id
         self.full_printer = full_printer
         self.smir_info = smir_info
@@ -294,7 +294,7 @@ class SectionEdgeOpts(ProofOpts):
         sections: int = 2,
         bug_report: Path | None = None,
     ) -> None:
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.proof_dir = Path(proof_dir).resolve()
         self.id = id
         self.edge = edge
         self.sections = sections
