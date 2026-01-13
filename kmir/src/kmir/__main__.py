@@ -54,7 +54,7 @@ def _kmir_run(opts: RunOpts) -> None:
         smir_info = cargo.smir_for_project(clean=False)
 
     def run(target_dir: Path):
-        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend, target_dir=target_dir)
+        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.symbolic, target_dir=target_dir)
         result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
         print(kmir.kore_to_pretty(result))
 
@@ -271,7 +271,7 @@ def _arg_parser() -> ArgumentParser:
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
-    run_parser.add_argument('--haskell-backend', action='store_true', help='Run with the haskell backend')
+    run_parser.add_argument('--symbolic', action='store_true', help='Run with the symbolic backend')
 
     info_parser = command_parser.add_parser(
         'info', help='Show information about a SMIR JSON file', parents=[kcli_args.logging_args]
@@ -523,7 +523,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 target_dir=ns.target_dir,
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
-                haskell_backend=ns.haskell_backend,
+                symbolic=ns.symbolic,
             )
         case 'info':
             return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)

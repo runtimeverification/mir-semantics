@@ -25,7 +25,7 @@ class RunOpts(KMirOpts):
     target_dir: Path | None
     depth: int
     start_symbol: str
-    haskell_backend: bool
+    symbolic: bool
 
 
 @dataclass
