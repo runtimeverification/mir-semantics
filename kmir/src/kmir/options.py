@@ -5,17 +5,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pyk.cli.args import LoggingOptions
-
 if TYPE_CHECKING:
     from typing import Final
+
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 @dataclass
-class KMirOpts(LoggingOptions): ...
+class KMirOpts: ...
 
 
 @dataclass
