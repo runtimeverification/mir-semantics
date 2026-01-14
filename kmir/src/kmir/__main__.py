@@ -560,7 +560,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             if ns.proof_dir is None:
                 raise ValueError('Must pass --proof-dir to section-edge command')
             proof_dir = Path(ns.proof_dir)
-            return SectionEdgeOpts(proof_dir, ns.id, ns.edge, ns.sections)
+            return SectionEdgeOpts(proof_dir, ns.id, ns.edge, sections=ns.sections)
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file),

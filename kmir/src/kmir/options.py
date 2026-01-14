@@ -19,12 +19,38 @@ class KMirOpts: ...
 
 @dataclass
 class RunOpts(KMirOpts):
+    start_symbol: str
+    depth: int
     bin: str | None
     file: str | None
     target_dir: Path | None
-    depth: int
-    start_symbol: str
     symbolic: bool
+    haskell_target: str | None
+    llvm_lib_target: str | None
+    llvm_target: str | None
+
+    def __init__(
+        self,
+        start_symbol: str,
+        depth: int,
+        *,
+        bin: str | None = None,
+        file: str | None = None,
+        target_dir: str | Path | None = None,
+        symbolic: bool = False,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
+        llvm_target: str | None = None,
+    ):
+        self.start_symbol = start_symbol
+        self.depth = depth
+        self.bin = bin
+        self.file = file
+        self.target_dir = Path(target_dir).resolve() if target_dir is not None else None
+        self.symbolic = symbolic
+        self.haskell_target = haskell_target
+        self.llvm_lib_target = llvm_lib_target
+        self.llvm_target = llvm_target
 
 
 @dataclass
@@ -36,6 +62,8 @@ class ProofOpts(KMirOpts):
 @dataclass
 class ProveOpts(KMirOpts):
     proof_dir: Path | None
+    haskell_target: str | None
+    llvm_lib_target: str | None
     bug_report: Path | None
     max_depth: int | None
     max_iterations: int | None
@@ -60,7 +88,10 @@ class ProveOpts(KMirOpts):
 
     def __init__(
         self,
+        *,
         proof_dir: Path | str | None = None,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
@@ -84,6 +115,8 @@ class ProveOpts(KMirOpts):
         terminate_on_thunk: bool = False,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.haskell_target = haskell_target
+        self.llvm_lib_target = llvm_lib_target
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations
@@ -118,7 +151,10 @@ class ProveRSOpts(ProveOpts):
     def __init__(
         self,
         rs_file: Path,
+        *,
         proof_dir: Path | str | None = None,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
@@ -147,6 +183,8 @@ class ProveRSOpts(ProveOpts):
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.haskell_target = haskell_target
+        self.llvm_lib_target = llvm_lib_target
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations
@@ -178,17 +216,24 @@ class ProveRSOpts(ProveOpts):
 class DisplayOpts(ProofOpts):
     full_printer: bool
     smir_info: Path | None
+    haskell_target: str | None
+    llvm_lib_target: str | None
     omit_current_body: bool
 
     def __init__(
         self,
         proof_dir: Path | str,
         id: str,
+        *,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
         full_printer: bool = False,
         smir_info: Path | None = None,
         omit_current_body: bool = True,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve()
+        self.haskell_target = haskell_target
+        self.llvm_lib_target = llvm_lib_target
         self.id = id
         self.full_printer = full_printer
         self.smir_info = smir_info
@@ -213,6 +258,9 @@ class ShowOpts(DisplayOpts):
         self,
         proof_dir: Path | str,
         id: str,
+        *,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
         full_printer: bool = False,
         smir_info: Path | None = None,
         omit_current_body: bool = True,
@@ -228,7 +276,15 @@ class ShowOpts(DisplayOpts):
         to_module: Path | None = None,
         minimize_proof: bool = False,
     ) -> None:
-        super().__init__(proof_dir, id, full_printer, smir_info, omit_current_body)
+        super().__init__(
+            proof_dir,
+            id,
+            haskell_target=haskell_target,
+            llvm_lib_target=llvm_lib_target,
+            full_printer=full_printer,
+            smir_info=smir_info,
+            omit_current_body=omit_current_body,
+        )
         self.omit_static_info = omit_static_info
         self.use_default_printer = use_default_printer
         self.statistics = statistics
@@ -284,19 +340,26 @@ class InfoOpts(KMirOpts):
 class SectionEdgeOpts(ProofOpts):
     edge: tuple[str, str]
     sections: int
+    haskell_target: str | None
+    llvm_lib_target: str | None
 
     def __init__(
         self,
         proof_dir: Path | str,
         id: str,
         edge: tuple[str, str],
+        *,
         sections: int = 2,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
         bug_report: Path | None = None,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve()
         self.id = id
         self.edge = edge
         self.sections = sections
+        self.haskell_target = haskell_target
+        self.llvm_lib_target = llvm_lib_target
         self.bug_report = bug_report
 
 
