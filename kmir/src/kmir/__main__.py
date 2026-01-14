@@ -291,6 +291,8 @@ def _arg_parser() -> ArgumentParser:
 
     prove_args = ArgumentParser(add_help=False)
     prove_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
+    prove_args.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    prove_args.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
     prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
     prove_args.add_argument('--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg')
     prove_args.add_argument(

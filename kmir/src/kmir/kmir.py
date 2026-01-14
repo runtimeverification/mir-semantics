@@ -226,10 +226,12 @@ class KMIR(KProve, KRun, KParse):
                 smir_info = SMIRInfo.from_file(target_path / 'smir.json')
                 kmir = KMIR.from_kompiled_kore(
                     smir_info,
-                    symbolic=True,
-                    bug_report=opts.bug_report,
                     target_dir=target_path,
                     extra_module=opts.add_module,
+                    bug_report=opts.bug_report,
+                    symbolic=True,
+                    haskell_target=opts.haskell_target,
+                    llvm_lib_target=opts.llvm_lib_target,
                 )
             else:
                 _LOGGER.info(f'Constructing initial proof: {label}')
@@ -254,10 +256,12 @@ class KMIR(KProve, KRun, KParse):
 
                 kmir = KMIR.from_kompiled_kore(
                     smir_info,
-                    symbolic=True,
-                    bug_report=opts.bug_report,
                     target_dir=target_path,
                     extra_module=opts.add_module,
+                    bug_report=opts.bug_report,
+                    symbolic=True,
+                    haskell_target=opts.haskell_target,
+                    llvm_lib_target=opts.llvm_lib_target,
                 )
 
                 apr_proof = kmir.apr_proof_from_smir(
