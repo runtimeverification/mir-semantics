@@ -79,6 +79,17 @@ Definedness of the list and list elements is also guaranteed.
 For symbolic enum values, the variant index remains unevaluated but the original (symbolic) discriminant can be restored:
 
 ```k
+  syntax Int ::= size(Discriminants) [function, total]
+  rule size(.Discriminants) => 0
+  rule size(discriminant(_) REST) => 1 +Int size(REST)
+
+  rule #Ceil(#lookupDiscrAux(DISCRS:Discriminants, I:Int))
+    => #Ceil(DISCRS)
+     #And #Ceil(I)
+     #And {true #Equals 0 <=Int I}
+     #And {true #Equals I <Int size(DISCRS)}
+    [simplification]
+
   rule #lookupDiscriminant(typeInfoEnumType(_, _, _, _, _), #findVariantIdxAux(DISCR, DISCRS, _IDX)) => DISCR
     requires isOneOf(DISCR, DISCRS)
     [simplification, preserves-definedness, symbolic(DISCR)]
