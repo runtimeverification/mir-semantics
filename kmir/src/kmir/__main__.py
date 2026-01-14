@@ -211,7 +211,14 @@ def _kmir_section_edge(opts: SectionEdgeOpts) -> None:
 
     smir_info = SMIRInfo.from_file(target_path / 'smir.json')
 
-    kmir = KMIR.from_kompiled_kore(smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path)
+    kmir = KMIR.from_kompiled_kore(
+        smir_info,
+        target_dir=target_path,
+        bug_report=opts.bug_report,
+        symbolic=True,
+        haskell_target=opts.haskell_target,
+        llvm_lib_target=opts.llvm_lib_target,
+    )
 
     source_id, target_id = opts.edge
     _LOGGER.info(f'Attempting to add {opts.sections} sections from node {source_id} to node {target_id}')
@@ -502,6 +509,8 @@ def _arg_parser() -> ArgumentParser:
     section_edge_parser.add_argument(
         '--sections', type=int, default=2, help='Number of sections to make from edge (>= 2, default: 2)'
     )
+    section_edge_parser.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    section_edge_parser.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
 
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
@@ -584,7 +593,14 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             if ns.proof_dir is None:
                 raise ValueError('Must pass --proof-dir to section-edge command')
             proof_dir = Path(ns.proof_dir)
-            return SectionEdgeOpts(proof_dir, ns.id, ns.edge, sections=ns.sections)
+            return SectionEdgeOpts(
+                proof_dir,
+                ns.id,
+                ns.edge,
+                sections=ns.sections,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
+            )
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file),
