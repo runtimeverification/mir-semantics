@@ -54,7 +54,14 @@ def _kmir_run(opts: RunOpts) -> None:
         smir_info = cargo.smir_for_project(clean=False)
 
     def run(target_dir: Path):
-        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.symbolic, target_dir=target_dir)
+        kmir = KMIR.from_kompiled_kore(
+            smir_info,
+            target_dir=target_dir,
+            symbolic=opts.symbolic,
+            haskell_target=opts.haskell_target,
+            llvm_lib_target=opts.llvm_lib_target,
+            llvm_target=opts.llvm_target,
+        )
         result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
         print(kmir.kore_to_pretty(result))
 
@@ -272,6 +279,9 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
     run_parser.add_argument('--symbolic', action='store_true', help='Run with the symbolic backend')
+    run_parser.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    run_parser.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
+    run_parser.add_argument('--llvm-target', metavar='TARGET', help='LLVM target to use')
 
     info_parser = command_parser.add_parser(
         'info', help='Show information about a SMIR JSON file', parents=[kcli_args.logging_args]
