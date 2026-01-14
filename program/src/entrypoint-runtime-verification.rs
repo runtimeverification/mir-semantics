@@ -3215,13 +3215,17 @@ fn test_process_close_account(
         assert!(result.is_ok());
 
         // Validate owner falls through to here if no error
-        assert_eq!(accounts[0].lamports(), 0);
         assert_eq!(
             accounts[1].lamports(),
             dst_init_lamports + src_init_lamports
         );
         #[cfg(any(target_os = "solana", target_arch = "bpf"))]
-        assert_eq!(accounts[0].data_len(), 0); // Solana-RT only
+        {
+            // Solana-RT only syscall
+            assert_eq!(*accounts[0].owner, Pubkey::from([0; 32]));
+            assert_eq!(accounts[0].lamports(), 0);
+            assert_eq!(accounts[0].data_len(), 0);
+        }
     }
 
     // Ensure instruction_data was not mutated
