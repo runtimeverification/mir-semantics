@@ -10,11 +10,11 @@ from typing import TYPE_CHECKING
 from pyk.cli.args import KCLIArgs
 from pyk.cterm.show import CTermShow
 from pyk.kast.pretty import PrettyPrinter
+from pyk.kdist import kdist
 from pyk.proof.reachability import APRProof
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
-from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
@@ -80,7 +80,10 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
 
 
 def _kmir_view(opts: ViewOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+    kmir = KMIR(
+        definition_dir=kdist.which(opts.haskell_target or 'mir-semantics.haskell'),
+        llvm_library_dir=kdist.which(opts.llvm_lib_target or 'mir-semantics.llvm-library'),
+    )
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     printer = PrettyPrinter(kmir.definition)
     omit_labels = ('<currentBody>',) if opts.omit_current_body else ()
@@ -125,7 +128,10 @@ def _kmir_show(opts: ShowOpts) -> None:
 
     from .kprint import KMIRPrettyPrinter
 
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+    kmir = KMIR(
+        definition_dir=kdist.which(opts.haskell_target or 'mir-semantics.haskell'),
+        llvm_library_dir=kdist.which(opts.llvm_lib_target or 'mir-semantics.llvm-library'),
+    )
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
 
     # Minimize proof KCFG if requested
@@ -424,6 +430,8 @@ def _arg_parser() -> ArgumentParser:
         action='store_false',
         help='Display the <currentBody> cell completely.',
     )
+    display_args.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    display_args.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
 
     show_parser = command_parser.add_parser(
         'show', help='Show proof information', parents=[kcli_args.logging_args, proof_args, display_args]
@@ -545,6 +553,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 id=ns.id,
                 full_printer=ns.full_printer,
                 smir_info=Path(ns.smir_info) if ns.smir_info else None,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
                 omit_current_body=ns.omit_current_body,
                 nodes=ns.nodes,
                 node_deltas=ns.node_deltas,
@@ -563,6 +573,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 ns.id,
                 full_printer=ns.full_printer,
                 smir_info=ns.smir_info,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
                 omit_current_body=ns.omit_current_body,
             )
         case 'prune':
