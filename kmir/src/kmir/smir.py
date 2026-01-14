@@ -10,6 +10,7 @@ from .alloc import AllocInfo
 from .ty import EnumT, RefT, StructT, Ty, TypeMetadata, UnionT
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from pathlib import Path
     from typing import Final
 
@@ -180,13 +181,19 @@ class SMIRInfo:
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']
 
-    def reduce_to(self, start_name: str) -> SMIRInfo:
-        # returns a new SMIRInfo with all _items_ removed that are not reachable from the named function
-        start_ty = self.function_tys[start_name]
+    def reduce_to(self, start_symbols: str | Sequence[str]) -> SMIRInfo:
+        # returns a new SMIRInfo with all _items_ removed that are not reachable from the named function(s)
+        match start_symbols:
+            case str(symbol):
+                start_tys = [Ty(self.function_tys[symbol])]
+            case [*symbols] if symbols and all(isinstance(sym, str) for sym in symbols):
+                start_tys = [Ty(self.function_tys[sym]) for sym in symbols]
+            case _:
+                raise ValueError("SMIRInfo.reduce_to() received an invalid start_symbol")
 
-        _LOGGER.debug(f'Reducing items, starting at {start_ty}. Call Edges {self.call_edges}')
+        _LOGGER.debug(f'Reducing items, starting at {start_tys}. Call Edges {self.call_edges}')
 
-        reachable = compute_closure(Ty(start_ty), self.call_edges)
+        reachable = compute_closure(start_tys, self.call_edges)
 
         _LOGGER.debug(f'Reducing to reachable Tys {reachable}')
 
@@ -249,8 +256,8 @@ class SMIRInfo:
         return result
 
 
-def compute_closure(start: Ty, edges: dict[Ty, set[Ty]]) -> set[Ty]:
-    work = deque([start])
+def compute_closure(start_nodes: Sequence[Ty], edges: dict[Ty, set[Ty]]) -> set[Ty]:
+    work = deque(start_nodes)
     reached = set()
     finished = False
     while not finished:

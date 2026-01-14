@@ -222,7 +222,7 @@ class KMIR(KProve, KRun, KParse):
                 else:
                     smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-                smir_info = smir_info.reduce_to(opts.start_symbol)
+                smir_info = smir_info.reduce_to(opts.cfg_roots)
                 # Report whether the reduced call graph includes any functions without MIR bodies
                 missing_body_syms = [
                     sym
