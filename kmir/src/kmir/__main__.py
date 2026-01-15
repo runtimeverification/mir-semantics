@@ -84,6 +84,35 @@ def _kmir_view(opts: ViewOpts) -> None:
     viewer.run()
 
 
+def _write_to_module(kmir: KMIR, proof: APRProof, to_module_path: Path) -> None:
+    """Write proof KCFG as a K module to the specified path."""
+    import json
+
+    from pyk.kast.manip import remove_generated_cells
+    from pyk.kast.outer import KRule
+
+    # Generate K module using KCFG.to_module with defunc_with for proper function inlining
+    module_name = proof.id.upper().replace('.', '-').replace('_', '-') + '-SUMMARY'
+    k_module = proof.kcfg.to_module(module_name=module_name, defunc_with=kmir.definition)
+
+    if to_module_path.suffix == '.json':
+        # JSON format for --add-module: keep <generatedTop> for Kore conversion
+        # Note: We don't use minimize_rule_like here because it creates partial configs
+        # with dots that cannot be converted back to Kore
+        to_module_path.write_text(json.dumps(k_module.to_dict(), indent=2))
+    else:
+        # K text format for human readability: remove <generatedTop> and <generatedCounter>
+        def _process_sentence(sent):  # type: ignore[no-untyped-def]
+            if isinstance(sent, KRule):
+                sent = sent.let(body=remove_generated_cells(sent.body))
+            return sent
+
+        k_module_readable = k_module.let(sentences=[_process_sentence(sent) for sent in k_module.sentences])
+        k_module_text = kmir.pretty_print(k_module_readable)
+        to_module_path.write_text(k_module_text)
+    _LOGGER.info(f'Module written to: {to_module_path}')
+
+
 def _kmir_show(opts: ShowOpts) -> None:
     from pyk.kast.pretty import PrettyPrinter
 
@@ -91,6 +120,13 @@ def _kmir_show(opts: ShowOpts) -> None:
 
     kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
+
+    # Minimize proof KCFG if requested
+    if opts.minimize_proof:
+        _LOGGER.info('Minimizing proof KCFG...')
+        proof.minimize_kcfg()
+        proof.write_proof_data()
+        _LOGGER.info('Proof KCFG minimized and saved')
 
     # Use custom KMIR printer by default, switch to standard printer if requested
     if opts.use_default_printer:
@@ -119,6 +155,7 @@ def _kmir_show(opts: ShowOpts) -> None:
         nodes=opts.nodes or (),
         node_deltas=effective_node_deltas,
         omit_cells=tuple(all_omit_cells),
+        to_module=opts.to_module is not None,
     )
     if opts.statistics:
         if lines and lines[-1] != '':
@@ -132,7 +169,12 @@ def _kmir_show(opts: ShowOpts) -> None:
             lines.append('')
         lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show))
 
-    print('\n'.join(lines))
+    # Handle --to-module output
+    if opts.to_module:
+        _write_to_module(kmir, proof, opts.to_module)
+        print(f'Module written to: {opts.to_module}')
+    else:
+        print('\n'.join(lines))
 
 
 def _kmir_prune(opts: PruneOpts) -> None:
@@ -410,6 +452,17 @@ def _arg_parser() -> ArgumentParser:
     )
 
     show_parser.add_argument('--rules', metavar='EDGES', help='Comma separated list of edges in format "source:target"')
+    show_parser.add_argument(
+        '--to-module',
+        type=Path,
+        metavar='FILE',
+        help='Output path for K module file (.k for readable, .json for --add-module)',
+    )
+    show_parser.add_argument(
+        '--minimize-proof',
+        action='store_true',
+        help='Minimize the proof KCFG before exporting to module',
+    )
 
     command_parser.add_parser(
         'view', help='View proof information', parents=[kcli_args.logging_args, proof_args, display_args]
@@ -442,6 +495,12 @@ def _arg_parser() -> ArgumentParser:
     prove_rs_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
     prove_rs_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
+    )
+    prove_rs_parser.add_argument(
+        '--add-module',
+        type=Path,
+        metavar='FILE',
+        help='K module file to include (.json format from --to-module)',
     )
 
     link_parser = command_parser.add_parser(
@@ -530,6 +589,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 break_every_terminator=ns.break_every_terminator,
                 break_every_step=ns.break_every_step,
                 terminate_on_thunk=ns.terminate_on_thunk,
+                add_module=ns.add_module,
             )
         case 'link':
             return LinkOpts(
