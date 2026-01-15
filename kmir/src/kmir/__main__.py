@@ -111,7 +111,6 @@ def _write_to_module(kmir: KMIR, proof: APRProof, to_module_path: Path) -> None:
         k_module_text = kmir.pretty_print(k_module_readable)
         to_module_path.write_text(k_module_text)
     _LOGGER.info(f'Module written to: {to_module_path}')
-    print(f'Module written to: {to_module_path}')
 
 
 def _kmir_show(opts: ShowOpts) -> None:
@@ -173,6 +172,7 @@ def _kmir_show(opts: ShowOpts) -> None:
     # Handle --to-module output
     if opts.to_module:
         _write_to_module(kmir, proof, opts.to_module)
+        print(f'Module written to: {opts.to_module}')
     else:
         print('\n'.join(lines))
 
