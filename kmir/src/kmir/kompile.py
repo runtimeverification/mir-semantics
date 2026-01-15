@@ -119,8 +119,8 @@ def _load_extra_module_rules(kmir: KMIR, module_path: Path) -> list[Sentence]:
             try:
                 axiom = krule_to_kore(kmir.definition, sentence)
                 axioms.append(axiom)
-            except Exception as e:
-                _LOGGER.warning(f'Failed to convert rule to Kore: {e}')
+            except Exception:
+                _LOGGER.warning(f'Failed to convert rule to Kore: {sentence}', exc_info=True)
 
     return axioms
 

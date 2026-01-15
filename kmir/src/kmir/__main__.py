@@ -84,6 +84,36 @@ def _kmir_view(opts: ViewOpts) -> None:
     viewer.run()
 
 
+def _write_to_module(kmir: KMIR, proof: APRProof, to_module_path: Path) -> None:
+    """Write proof KCFG as a K module to the specified path."""
+    import json
+
+    from pyk.kast.manip import remove_generated_cells
+    from pyk.kast.outer import KRule
+
+    # Generate K module using KCFG.to_module with defunc_with for proper function inlining
+    module_name = proof.id.upper().replace('.', '-').replace('_', '-') + '-SUMMARY'
+    k_module = proof.kcfg.to_module(module_name=module_name, defunc_with=kmir.definition)
+
+    if to_module_path.suffix == '.json':
+        # JSON format for --add-module: keep <generatedTop> for Kore conversion
+        # Note: We don't use minimize_rule_like here because it creates partial configs
+        # with dots that cannot be converted back to Kore
+        to_module_path.write_text(json.dumps(k_module.to_dict(), indent=2))
+    else:
+        # K text format for human readability: remove <generatedTop> and <generatedCounter>
+        def _process_sentence(sent):  # type: ignore[no-untyped-def]
+            if isinstance(sent, KRule):
+                sent = sent.let(body=remove_generated_cells(sent.body))
+            return sent
+
+        k_module_readable = k_module.let(sentences=[_process_sentence(sent) for sent in k_module.sentences])
+        k_module_text = kmir.pretty_print(k_module_readable)
+        to_module_path.write_text(k_module_text)
+    _LOGGER.info(f'Module written to: {to_module_path}')
+    print(f'Module written to: {to_module_path}')
+
+
 def _kmir_show(opts: ShowOpts) -> None:
     from pyk.kast.pretty import PrettyPrinter
 
@@ -142,32 +172,7 @@ def _kmir_show(opts: ShowOpts) -> None:
 
     # Handle --to-module output
     if opts.to_module:
-        import json
-
-        from pyk.kast.manip import remove_generated_cells
-        from pyk.kast.outer import KRule
-
-        # Generate K module using KCFG.to_module with defunc_with for proper function inlining
-        module_name = proof.id.upper().replace('.', '-').replace('_', '-') + '-SUMMARY'
-        k_module = proof.kcfg.to_module(module_name=module_name, defunc_with=kmir.definition)
-
-        if opts.to_module.suffix == '.json':
-            # JSON format for --add-module: keep <generatedTop> for Kore conversion
-            # Note: We don't use minimize_rule_like here because it creates partial configs
-            # with dots that cannot be converted back to Kore
-            opts.to_module.write_text(json.dumps(k_module.to_dict(), indent=2))
-        else:
-            # K text format for human readability: remove <generatedTop> and <generatedCounter>
-            def _process_sentence(sent):  # type: ignore[no-untyped-def]
-                if isinstance(sent, KRule):
-                    sent = sent.let(body=remove_generated_cells(sent.body))
-                return sent
-
-            k_module_readable = k_module.let(sentences=[_process_sentence(sent) for sent in k_module.sentences])
-            k_module_text = kmir.pretty_print(k_module_readable)
-            opts.to_module.write_text(k_module_text)
-        _LOGGER.info(f'Module written to: {opts.to_module}')
-        print(f'Module written to: {opts.to_module}')
+        _write_to_module(kmir, proof, opts.to_module)
     else:
         print('\n'.join(lines))
 
