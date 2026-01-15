@@ -1,0 +1,901 @@
+{
+  "node": "KFlatModule",
+  "name": "ASSERT-TRUE-MAIN-SUMMARY",
+  "localSentences": [
+    {
+      "node": "KRule",
+      "body": {
+        "node": "KApply",
+        "label": {
+          "node": "KLabel",
+          "name": "<generatedTop>",
+          "params": []
+        },
+        "args": [
+          {
+            "node": "KApply",
+            "label": {
+              "node": "KLabel",
+              "name": "<kmir>",
+              "params": []
+            },
+            "args": [
+              {
+                "node": "KApply",
+                "label": {
+                  "node": "KLabel",
+                  "name": "<k>",
+                  "params": []
+                },
+                "args": [
+                  {
+                    "node": "KRewrite",
+                    "lhs": {
+                      "node": "KApply",
+                      "label": {
+                        "node": "KLabel",
+                        "name": "#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator",
+                        "params": []
+                      },
+                      "args": [
+                        {
+                          "node": "KApply",
+                          "label": {
+                            "node": "KLabel",
+                            "name": "terminator(_,_)_BODY_Terminator_TerminatorKind_Span",
+                            "params": []
+                          },
+                          "args": [
+                            {
+                              "node": "KApply",
+                              "label": {
+                                "node": "KLabel",
+                                "name": "TerminatorKind::Call",
+                                "params": []
+                              },
+                              "args": [
+                                {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "Operand::Constant",
+                                    "params": []
+                                  },
+                                  "args": [
+                                    {
+                                      "node": "KApply",
+                                      "label": {
+                                        "node": "KLabel",
+                                        "name": "constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst",
+                                        "params": []
+                                      },
+                                      "args": [
+                                        {
+                                          "node": "KApply",
+                                          "label": {
+                                            "node": "KLabel",
+                                            "name": "span",
+                                            "params": []
+                                          },
+                                          "args": [
+                                            {
+                                              "node": "KToken",
+                                              "token": "0",
+                                              "sort": {
+                                                "node": "KSort",
+                                                "name": "Int"
+                                              }
+                                            }
+                                          ],
+                                          "arity": 1,
+                                          "variable": false
+                                        },
+                                        {
+                                          "node": "KApply",
+                                          "label": {
+                                            "node": "KLabel",
+                                            "name": "noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex",
+                                            "params": []
+                                          },
+                                          "args": [],
+                                          "arity": 0,
+                                          "variable": false
+                                        },
+                                        {
+                                          "node": "KApply",
+                                          "label": {
+                                            "node": "KLabel",
+                                            "name": "mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId",
+                                            "params": []
+                                          },
+                                          "args": [
+                                            {
+                                              "node": "KApply",
+                                              "label": {
+                                                "node": "KLabel",
+                                                "name": "ConstantKind::ZeroSized",
+                                                "params": []
+                                              },
+                                              "args": [],
+                                              "arity": 0,
+                                              "variable": false
+                                            },
+                                            {
+                                              "node": "KApply",
+                                              "label": {
+                                                "node": "KLabel",
+                                                "name": "ty",
+                                                "params": []
+                                              },
+                                              "args": [
+                                                {
+                                                  "node": "KToken",
+                                                  "token": "-1",
+                                                  "sort": {
+                                                    "node": "KSort",
+                                                    "name": "Int"
+                                                  }
+                                                }
+                                              ],
+                                              "arity": 1,
+                                              "variable": false
+                                            },
+                                            {
+                                              "node": "KApply",
+                                              "label": {
+                                                "node": "KLabel",
+                                                "name": "mirConstId(_)_TYPES_MirConstId_Int",
+                                                "params": []
+                                              },
+                                              "args": [
+                                                {
+                                                  "node": "KToken",
+                                                  "token": "0",
+                                                  "sort": {
+                                                    "node": "KSort",
+                                                    "name": "Int"
+                                                  }
+                                                }
+                                              ],
+                                              "arity": 1,
+                                              "variable": false
+                                            }
+                                          ],
+                                          "arity": 3,
+                                          "variable": false
+                                        }
+                                      ],
+                                      "arity": 3,
+                                      "variable": false
+                                    }
+                                  ],
+                                  "arity": 1,
+                                  "variable": false
+                                },
+                                {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "Operands::empty",
+                                    "params": []
+                                  },
+                                  "args": [],
+                                  "arity": 0,
+                                  "variable": false
+                                },
+                                {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "place",
+                                    "params": []
+                                  },
+                                  "args": [
+                                    {
+                                      "node": "KApply",
+                                      "label": {
+                                        "node": "KLabel",
+                                        "name": "local",
+                                        "params": []
+                                      },
+                                      "args": [
+                                        {
+                                          "node": "KToken",
+                                          "token": "0",
+                                          "sort": {
+                                            "node": "KSort",
+                                            "name": "Int"
+                                          }
+                                        }
+                                      ],
+                                      "arity": 1,
+                                      "variable": false
+                                    },
+                                    {
+                                      "node": "KApply",
+                                      "label": {
+                                        "node": "KLabel",
+                                        "name": "ProjectionElems::empty",
+                                        "params": []
+                                      },
+                                      "args": [],
+                                      "arity": 0,
+                                      "variable": false
+                                    }
+                                  ],
+                                  "arity": 2,
+                                  "variable": false
+                                },
+                                {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "noBasicBlockIdx_BODY_MaybeBasicBlockIdx",
+                                    "params": []
+                                  },
+                                  "args": [],
+                                  "arity": 0,
+                                  "variable": false
+                                },
+                                {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "UnwindAction::Continue",
+                                    "params": []
+                                  },
+                                  "args": [],
+                                  "arity": 0,
+                                  "variable": false
+                                }
+                              ],
+                              "arity": 5,
+                              "variable": false
+                            },
+                            {
+                              "node": "KApply",
+                              "label": {
+                                "node": "KLabel",
+                                "name": "span",
+                                "params": []
+                              },
+                              "args": [
+                                {
+                                  "node": "KToken",
+                                  "token": "0",
+                                  "sort": {
+                                    "node": "KSort",
+                                    "name": "Int"
+                                  }
+                                }
+                              ],
+                              "arity": 1,
+                              "variable": false
+                            }
+                          ],
+                          "arity": 2,
+                          "variable": false
+                        }
+                      ],
+                      "arity": 1,
+                      "variable": false
+                    },
+                    "rhs": {
+                      "node": "KSequence",
+                      "items": [
+                        {
+                          "node": "KApply",
+                          "label": {
+                            "node": "KLabel",
+                            "name": "#EndProgram_KMIR-CONTROL-FLOW_KItem",
+                            "params": []
+                          },
+                          "args": [],
+                          "arity": 0,
+                          "variable": false
+                        }
+                      ],
+                      "arity": 1
+                    }
+                  }
+                ],
+                "arity": 1,
+                "variable": false
+              },
+              {
+                "node": "KApply",
+                "label": {
+                  "node": "KLabel",
+                  "name": "<retVal>",
+                  "params": []
+                },
+                "args": [
+                  {
+                    "node": "KVariable",
+                    "name": "_RETVAL_CELL"
+                  }
+                ],
+                "arity": 1,
+                "variable": false
+              },
+              {
+                "node": "KApply",
+                "label": {
+                  "node": "KLabel",
+                  "name": "<currentFunc>",
+                  "params": []
+                },
+                "args": [
+                  {
+                    "node": "KRewrite",
+                    "lhs": {
+                      "node": "KVariable",
+                      "name": "CURRENTFUNC_CELL"
+                    },
+                    "rhs": {
+                      "node": "KApply",
+                      "label": {
+                        "node": "KLabel",
+                        "name": "ty",
+                        "params": []
+                      },
+                      "args": [
+                        {
+                          "node": "KToken",
+                          "token": "-1",
+                          "sort": {
+                            "node": "KSort",
+                            "name": "Int"
+                          }
+                        }
+                      ],
+                      "arity": 1,
+                      "variable": false
+                    }
+                  }
+                ],
+                "arity": 1,
+                "variable": false
+              },
+              {
+                "node": "KApply",
+                "label": {
+                  "node": "KLabel",
+                  "name": "<currentFrame>",
+                  "params": []
+                },
+                "args": [
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "<currentBody>",
+                      "params": []
+                    },
+                    "args": [
+                      {
+                        "node": "KRewrite",
+                        "lhs": {
+                          "node": "KVariable",
+                          "name": "_CURRENTBODY_CELL"
+                        },
+                        "rhs": {
+                          "node": "KApply",
+                          "label": {
+                            "node": "KLabel",
+                            "name": "ListItem",
+                            "params": []
+                          },
+                          "args": [
+                            {
+                              "node": "KApply",
+                              "label": {
+                                "node": "KLabel",
+                                "name": "basicBlock(_,_)_BODY_BasicBlock_Statements_Terminator",
+                                "params": []
+                              },
+                              "args": [
+                                {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "Statements::empty",
+                                    "params": []
+                                  },
+                                  "args": [],
+                                  "arity": 0,
+                                  "variable": false
+                                },
+                                {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "terminator(_,_)_BODY_Terminator_TerminatorKind_Span",
+                                    "params": []
+                                  },
+                                  "args": [
+                                    {
+                                      "node": "KApply",
+                                      "label": {
+                                        "node": "KLabel",
+                                        "name": "TerminatorKind::Return",
+                                        "params": []
+                                      },
+                                      "args": [],
+                                      "arity": 0,
+                                      "variable": false
+                                    },
+                                    {
+                                      "node": "KApply",
+                                      "label": {
+                                        "node": "KLabel",
+                                        "name": "span",
+                                        "params": []
+                                      },
+                                      "args": [
+                                        {
+                                          "node": "KToken",
+                                          "token": "50",
+                                          "sort": {
+                                            "node": "KSort",
+                                            "name": "Int"
+                                          }
+                                        }
+                                      ],
+                                      "arity": 1,
+                                      "variable": false
+                                    }
+                                  ],
+                                  "arity": 2,
+                                  "variable": false
+                                }
+                              ],
+                              "arity": 2,
+                              "variable": false
+                            }
+                          ],
+                          "arity": 1,
+                          "variable": false
+                        }
+                      }
+                    ],
+                    "arity": 1,
+                    "variable": false
+                  },
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "<caller>",
+                      "params": []
+                    },
+                    "args": [
+                      {
+                        "node": "KRewrite",
+                        "lhs": {
+                          "node": "KVariable",
+                          "name": "CALLER_CELL"
+                        },
+                        "rhs": {
+                          "node": "KVariable",
+                          "name": "CURRENTFUNC_CELL",
+                          "sort": {
+                            "node": "KSort",
+                            "name": "Ty"
+                          }
+                        }
+                      }
+                    ],
+                    "arity": 1,
+                    "variable": false
+                  },
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "<dest>",
+                      "params": []
+                    },
+                    "args": [
+                      {
+                        "node": "KRewrite",
+                        "lhs": {
+                          "node": "KVariable",
+                          "name": "DEST_CELL"
+                        },
+                        "rhs": {
+                          "node": "KApply",
+                          "label": {
+                            "node": "KLabel",
+                            "name": "place",
+                            "params": []
+                          },
+                          "args": [
+                            {
+                              "node": "KApply",
+                              "label": {
+                                "node": "KLabel",
+                                "name": "local",
+                                "params": []
+                              },
+                              "args": [
+                                {
+                                  "node": "KToken",
+                                  "token": "0",
+                                  "sort": {
+                                    "node": "KSort",
+                                    "name": "Int"
+                                  }
+                                }
+                              ],
+                              "arity": 1,
+                              "variable": false
+                            },
+                            {
+                              "node": "KApply",
+                              "label": {
+                                "node": "KLabel",
+                                "name": "ProjectionElems::empty",
+                                "params": []
+                              },
+                              "args": [],
+                              "arity": 0,
+                              "variable": false
+                            }
+                          ],
+                          "arity": 2,
+                          "variable": false
+                        }
+                      }
+                    ],
+                    "arity": 1,
+                    "variable": false
+                  },
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "<target>",
+                      "params": []
+                    },
+                    "args": [
+                      {
+                        "node": "KRewrite",
+                        "lhs": {
+                          "node": "KVariable",
+                          "name": "TARGET_CELL"
+                        },
+                        "rhs": {
+                          "node": "KApply",
+                          "label": {
+                            "node": "KLabel",
+                            "name": "noBasicBlockIdx_BODY_MaybeBasicBlockIdx",
+                            "params": []
+                          },
+                          "args": [],
+                          "arity": 0,
+                          "variable": false
+                        }
+                      }
+                    ],
+                    "arity": 1,
+                    "variable": false
+                  },
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "<unwind>",
+                      "params": []
+                    },
+                    "args": [
+                      {
+                        "node": "KRewrite",
+                        "lhs": {
+                          "node": "KVariable",
+                          "name": "UNWIND_CELL"
+                        },
+                        "rhs": {
+                          "node": "KApply",
+                          "label": {
+                            "node": "KLabel",
+                            "name": "UnwindAction::Continue",
+                            "params": []
+                          },
+                          "args": [],
+                          "arity": 0,
+                          "variable": false
+                        }
+                      }
+                    ],
+                    "arity": 1,
+                    "variable": false
+                  },
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "<locals>",
+                      "params": []
+                    },
+                    "args": [
+                      {
+                        "node": "KApply",
+                        "label": {
+                          "node": "KLabel",
+                          "name": "ListItem",
+                          "params": []
+                        },
+                        "args": [
+                          {
+                            "node": "KApply",
+                            "label": {
+                              "node": "KLabel",
+                              "name": "newLocal",
+                              "params": []
+                            },
+                            "args": [
+                              {
+                                "node": "KApply",
+                                "label": {
+                                  "node": "KLabel",
+                                  "name": "ty",
+                                  "params": []
+                                },
+                                "args": [
+                                  {
+                                    "node": "KRewrite",
+                                    "lhs": {
+                                      "node": "KToken",
+                                      "token": "0",
+                                      "sort": {
+                                        "node": "KSort",
+                                        "name": "Int"
+                                      }
+                                    },
+                                    "rhs": {
+                                      "node": "KToken",
+                                      "token": "1",
+                                      "sort": {
+                                        "node": "KSort",
+                                        "name": "Int"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "arity": 1,
+                                "variable": false
+                              },
+                              {
+                                "node": "KRewrite",
+                                "lhs": {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "Mutability::Not",
+                                    "params": []
+                                  },
+                                  "args": [],
+                                  "arity": 0,
+                                  "variable": false
+                                },
+                                "rhs": {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "Mutability::Mut",
+                                    "params": []
+                                  },
+                                  "args": [],
+                                  "arity": 0,
+                                  "variable": false
+                                }
+                              }
+                            ],
+                            "arity": 2,
+                            "variable": false
+                          }
+                        ],
+                        "arity": 1,
+                        "variable": false
+                      }
+                    ],
+                    "arity": 1,
+                    "variable": false
+                  }
+                ],
+                "arity": 6,
+                "variable": false
+              },
+              {
+                "node": "KApply",
+                "label": {
+                  "node": "KLabel",
+                  "name": "<stack>",
+                  "params": []
+                },
+                "args": [
+                  {
+                    "node": "KRewrite",
+                    "lhs": {
+                      "node": "KApply",
+                      "label": {
+                        "node": "KLabel",
+                        "name": ".List",
+                        "params": []
+                      },
+                      "args": [],
+                      "arity": 0,
+                      "variable": false
+                    },
+                    "rhs": {
+                      "node": "KApply",
+                      "label": {
+                        "node": "KLabel",
+                        "name": "ListItem",
+                        "params": []
+                      },
+                      "args": [
+                        {
+                          "node": "KApply",
+                          "label": {
+                            "node": "KLabel",
+                            "name": "StackFrame(_,_,_,_,_)_KMIR-CONFIGURATION_StackFrame_Ty_Place_MaybeBasicBlockIdx_UnwindAction_List",
+                            "params": []
+                          },
+                          "args": [
+                            {
+                              "node": "KVariable",
+                              "name": "CALLER_CELL",
+                              "sort": {
+                                "node": "KSort",
+                                "name": "Ty"
+                              }
+                            },
+                            {
+                              "node": "KVariable",
+                              "name": "DEST_CELL",
+                              "sort": {
+                                "node": "KSort",
+                                "name": "Place"
+                              }
+                            },
+                            {
+                              "node": "KVariable",
+                              "name": "TARGET_CELL",
+                              "sort": {
+                                "node": "KSort",
+                                "name": "MaybeBasicBlockIdx"
+                              }
+                            },
+                            {
+                              "node": "KVariable",
+                              "name": "UNWIND_CELL",
+                              "sort": {
+                                "node": "KSort",
+                                "name": "UnwindAction"
+                              }
+                            },
+                            {
+                              "node": "KApply",
+                              "label": {
+                                "node": "KLabel",
+                                "name": "ListItem",
+                                "params": []
+                              },
+                              "args": [
+                                {
+                                  "node": "KApply",
+                                  "label": {
+                                    "node": "KLabel",
+                                    "name": "newLocal",
+                                    "params": []
+                                  },
+                                  "args": [
+                                    {
+                                      "node": "KApply",
+                                      "label": {
+                                        "node": "KLabel",
+                                        "name": "ty",
+                                        "params": []
+                                      },
+                                      "args": [
+                                        {
+                                          "node": "KToken",
+                                          "token": "0",
+                                          "sort": {
+                                            "node": "KSort",
+                                            "name": "Int"
+                                          }
+                                        }
+                                      ],
+                                      "arity": 1,
+                                      "variable": false
+                                    },
+                                    {
+                                      "node": "KApply",
+                                      "label": {
+                                        "node": "KLabel",
+                                        "name": "Mutability::Not",
+                                        "params": []
+                                      },
+                                      "args": [],
+                                      "arity": 0,
+                                      "variable": false
+                                    }
+                                  ],
+                                  "arity": 2,
+                                  "variable": false
+                                }
+                              ],
+                              "arity": 1,
+                              "variable": false
+                            }
+                          ],
+                          "arity": 5,
+                          "variable": false
+                        }
+                      ],
+                      "arity": 1,
+                      "variable": false
+                    }
+                  }
+                ],
+                "arity": 1,
+                "variable": false
+              }
+            ],
+            "arity": 5,
+            "variable": false
+          },
+          {
+            "node": "KApply",
+            "label": {
+              "node": "KLabel",
+              "name": "<generatedCounter>",
+              "params": []
+            },
+            "args": [
+              {
+                "node": "KVariable",
+                "name": "_GENERATEDCOUNTER_CELL"
+              }
+            ],
+            "arity": 1,
+            "variable": false
+          }
+        ],
+        "arity": 2,
+        "variable": false
+      },
+      "requires": {
+        "node": "KToken",
+        "token": "true",
+        "sort": {
+          "node": "KSort",
+          "name": "Bool"
+        }
+      },
+      "ensures": {
+        "node": "KToken",
+        "token": "true",
+        "sort": {
+          "node": "KSort",
+          "name": "Bool"
+        }
+      },
+      "att": {
+        "node": "KAtt",
+        "att": {
+          "priority": "20",
+          "label": "BASIC-BLOCK-1-TO-3"
+        }
+      }
+    }
+  ],
+  "imports": [],
+  "att": {
+    "node": "KAtt",
+    "att": {}
+  }
+}

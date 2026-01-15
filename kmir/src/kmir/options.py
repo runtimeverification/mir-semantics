@@ -114,6 +114,7 @@ class ProveRSOpts(ProveOpts):
     save_smir: bool
     smir: bool
     start_symbol: str
+    add_module: Path | None
 
     def __init__(
         self,
@@ -143,6 +144,7 @@ class ProveRSOpts(ProveOpts):
         break_every_terminator: bool = False,
         break_every_step: bool = False,
         terminate_on_thunk: bool = False,
+        add_module: Path | None = None,
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -170,6 +172,7 @@ class ProveRSOpts(ProveOpts):
         self.break_every_terminator = break_every_terminator
         self.break_every_step = break_every_step
         self.terminate_on_thunk = terminate_on_thunk
+        self.add_module = add_module
 
 
 @dataclass
@@ -204,6 +207,8 @@ class ShowOpts(DisplayOpts):
     use_default_printer: bool
     statistics: bool
     leaves: bool
+    to_module: Path | None
+    minimize_proof: bool
 
     def __init__(
         self,
@@ -221,12 +226,16 @@ class ShowOpts(DisplayOpts):
         use_default_printer: bool = False,
         statistics: bool = False,
         leaves: bool = False,
+        to_module: Path | None = None,
+        minimize_proof: bool = False,
     ) -> None:
         super().__init__(proof_dir, id, full_printer, smir_info, omit_current_body)
         self.omit_static_info = omit_static_info
         self.use_default_printer = use_default_printer
         self.statistics = statistics
         self.leaves = leaves
+        self.to_module = to_module
+        self.minimize_proof = minimize_proof
         self.nodes = tuple(int(n.strip()) for n in nodes.split(',')) if nodes is not None else None
 
         def _parse_pairs(text: str | None) -> tuple[tuple[int, int], ...] | None:

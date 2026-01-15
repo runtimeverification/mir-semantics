@@ -119,7 +119,11 @@ class KMIR(KProve, KRun, KParse):
 
     @staticmethod
     def from_kompiled_kore(
-        smir_info: SMIRInfo, target_dir: Path, bug_report: Path | None = None, symbolic: bool = True
+        smir_info: SMIRInfo,
+        target_dir: Path,
+        bug_report: Path | None = None,
+        symbolic: bool = True,
+        extra_module: Path | None = None,
     ) -> KMIR:
         from .kompile import kompile_smir
 
@@ -128,6 +132,7 @@ class KMIR(KProve, KRun, KParse):
             target_dir=target_dir,
             bug_report=bug_report,
             symbolic=symbolic,
+            extra_module=extra_module,
         )
         return kompiled_smir.create_kmir(bug_report_file=bug_report)
 
@@ -213,7 +218,11 @@ class KMIR(KProve, KRun, KParse):
 
                 smir_info = SMIRInfo.from_file(target_path / 'smir.json')
                 kmir = KMIR.from_kompiled_kore(
-                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path
+                    smir_info,
+                    symbolic=True,
+                    bug_report=opts.bug_report,
+                    target_dir=target_path,
+                    extra_module=opts.add_module,
                 )
             else:
                 _LOGGER.info(f'Constructing initial proof: {label}')
@@ -237,7 +246,11 @@ class KMIR(KProve, KRun, KParse):
                     _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
                 kmir = KMIR.from_kompiled_kore(
-                    smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path
+                    smir_info,
+                    symbolic=True,
+                    bug_report=opts.bug_report,
+                    target_dir=target_path,
+                    extra_module=opts.add_module,
                 )
 
                 apr_proof = kmir.apr_proof_from_smir(
@@ -267,7 +280,11 @@ class KMIR(KProve, KRun, KParse):
             )
 
             with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
-                prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, cut_point_rules=cut_point_rules)
+                prover = APRProver(
+                    kcfg_explore,
+                    execute_depth=opts.max_depth,
+                    cut_point_rules=cut_point_rules,
+                )
                 prover.advance_proof(
                     apr_proof,
                     max_iterations=opts.max_iterations,
