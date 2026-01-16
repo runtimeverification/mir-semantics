@@ -130,6 +130,9 @@ module KMIR-SPL-TOKEN
   // spl-token rent
   rule #isSPLUnpackFunc("bincode::deserialize::<'_, solana_rent::Rent>") => true
   rule #isSPLUnpackFunc("Rent::unpack") => true
+  // spl-token multisig
+  rule #isSPLUnpackFunc("<state::Multisig as solana_program_pack::Pack>::unpack_from_slice") => true
+  rule #isSPLUnpackFunc("Multisig::unpack_from_slice") => true
 
   syntax Bool ::= #isSPLPackFunc   ( String ) [function, total]
   rule #isSPLPackFunc(_) => false [owise]
@@ -139,6 +142,9 @@ module KMIR-SPL-TOKEN
   // spl-token mint
   rule #isSPLPackFunc("<state::Mint as solana_program_pack::Pack>::pack_into_slice") => true
   rule #isSPLPackFunc("Mint::pack_into_slice") => true
+  // spl-token multisig
+  rule #isSPLPackFunc("<state::Multisig as solana_program_pack::Pack>::pack_into_slice") => true
+  rule #isSPLPackFunc("Multisig::pack_into_slice") => true
 
   syntax Bool ::= #isSPLRentGetFunc ( String ) [function, total]
   rule #isSPLRentGetFunc(_) => false [owise]
@@ -197,6 +203,25 @@ module KMIR-SPL-TOKEN
          )
        )
        => dynamicSize(17)
+       [priority(30)]
+
+  // Multisig data buffer length (Multisig::LEN = 355)
+  rule #maybeDynamicSize(
+         dynamicSize(_),
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Integer(_, 8, false))     // m
+             ListItem(Integer(_, 8, false))     // n
+             ListItem(BoolVal(_))               // is_initialized
+             ListItem(Range(                    // signers: [Pubkey; 11]
+               ListItem(_) ListItem(_) ListItem(_) ListItem(_) ListItem(_)
+               ListItem(_) ListItem(_) ListItem(_) ListItem(_) ListItem(_)
+               ListItem(_)
+             ))
+           )
+         )
+       )
+       => dynamicSize(355)
        [priority(30)]
 ```
 
@@ -408,6 +433,54 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
       orBool #functionName(FUNC) ==String "cheatcode_is_spl_rent"
     ensures 0 <=Int ?SplRentLamportsPerByteYear andBool ?SplRentLamportsPerByteYear <Int (1 <<Int 32)
       andBool 0 <=Int ?SplRentBurnPercent andBool ?SplRentBurnPercent <=Int 100
+    [priority(30), preserves-definedness]
+
+  rule [cheatcode-is-spl-multisig]:
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+      => #forceSetPlaceValue(
+           place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
+           SPLDataBuffer(
+             Aggregate(variantIdx(0),
+               ListItem(Integer(?SplMultisigM:Int, 8, false))                                             // m: u8
+               ListItem(Integer(?SplMultisigN:Int, 8, false))                                             // n: u8
+               ListItem(BoolVal(?_SplMultisigInitialised:Bool))                                           // is_initialized: bool
+               ListItem(Range(                                                                            // signers: [Pubkey; 11]
+                 ListItem(?SplSigner0:List)
+                 ListItem(?SplSigner1:List)
+                 ListItem(?SplSigner2:List)
+                 ListItem(?SplSigner3:List)
+                 ListItem(?SplSigner4:List)
+                 ListItem(?SplSigner5:List)
+                 ListItem(?SplSigner6:List)
+                 ListItem(?SplSigner7:List)
+                 ListItem(?SplSigner8:List)
+                 ListItem(?SplSigner9:List)
+                 ListItem(?SplSigner10:List)
+               ))
+             )
+           )
+         )
+      ~> #forceSetPlaceValue(
+           place(LOCAL, appendP(PROJS, REFCELL_PROJS)),      // navigate to RefCell for borrow init
+           #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, REFCELL_PROJS))), 355)
+         )
+      ~> #continueAt(TARGET)
+    </k>
+    requires #functionName(FUNC) ==String "spl_token::entrypoint::cheatcode_is_spl_multisig"
+      orBool #functionName(FUNC) ==String "cheatcode_is_spl_multisig"
+    ensures 0 <=Int ?SplMultisigM andBool ?SplMultisigM <Int 256
+      andBool 0 <=Int ?SplMultisigN andBool ?SplMultisigN <Int 256
+      andBool #isSplPubkey(?SplSigner0)
+      andBool #isSplPubkey(?SplSigner1)
+      andBool #isSplPubkey(?SplSigner2)
+      andBool #isSplPubkey(?SplSigner3)
+      andBool #isSplPubkey(?SplSigner4)
+      andBool #isSplPubkey(?SplSigner5)
+      andBool #isSplPubkey(?SplSigner6)
+      andBool #isSplPubkey(?SplSigner7)
+      andBool #isSplPubkey(?SplSigner8)
+      andBool #isSplPubkey(?SplSigner9)
+      andBool #isSplPubkey(?SplSigner10)
     [priority(30), preserves-definedness]
 ```
 
