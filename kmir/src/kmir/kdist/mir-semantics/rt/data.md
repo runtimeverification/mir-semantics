@@ -128,6 +128,13 @@ Constant operands are simply decoded according to their type.
        ...
        </k>
     requires typeInfoVoidType =/=K lookupTy(TY)
+
+  // Fallback for zero-sized constants whose type metadata was not emitted.
+  rule <k> operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, TY, _)))
+        => Aggregate(variantIdx(0), .List)
+       ...
+       </k>
+    requires typeInfoVoidType ==K lookupTy(TY) 
 ```
 
 Function pointers are zero-sized constants whose `Ty` is a key in the function table instaed of the type table.
