@@ -121,18 +121,25 @@ class KMIR(KProve, KRun, KParse):
     def from_kompiled_kore(
         smir_info: SMIRInfo,
         target_dir: Path,
+        *,
+        extra_module: Path | None = None,
         bug_report: Path | None = None,
         symbolic: bool = True,
-        extra_module: Path | None = None,
+        llvm_target: str | None = None,
+        llvm_lib_target: str | None = None,
+        haskell_target: str | None = None,
     ) -> KMIR:
         from .kompile import kompile_smir
 
         kompiled_smir = kompile_smir(
             smir_info=smir_info,
             target_dir=target_dir,
+            extra_module=extra_module,
             bug_report=bug_report,
             symbolic=symbolic,
-            extra_module=extra_module,
+            llvm_target=llvm_target,
+            llvm_lib_target=llvm_lib_target,
+            haskell_target=haskell_target,
         )
         return kompiled_smir.create_kmir(bug_report_file=bug_report)
 
@@ -219,10 +226,12 @@ class KMIR(KProve, KRun, KParse):
                 smir_info = SMIRInfo.from_file(target_path / 'smir.json')
                 kmir = KMIR.from_kompiled_kore(
                     smir_info,
-                    symbolic=True,
-                    bug_report=opts.bug_report,
                     target_dir=target_path,
                     extra_module=opts.add_module,
+                    bug_report=opts.bug_report,
+                    symbolic=True,
+                    haskell_target=opts.haskell_target,
+                    llvm_lib_target=opts.llvm_lib_target,
                 )
             else:
                 _LOGGER.info(f'Constructing initial proof: {label}')
@@ -247,10 +256,12 @@ class KMIR(KProve, KRun, KParse):
 
                 kmir = KMIR.from_kompiled_kore(
                     smir_info,
-                    symbolic=True,
-                    bug_report=opts.bug_report,
                     target_dir=target_path,
                     extra_module=opts.add_module,
+                    bug_report=opts.bug_report,
+                    symbolic=True,
+                    haskell_target=opts.haskell_target,
+                    llvm_lib_target=opts.llvm_lib_target,
                 )
 
                 apr_proof = kmir.apr_proof_from_smir(

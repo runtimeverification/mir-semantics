@@ -10,11 +10,11 @@ from typing import TYPE_CHECKING
 from pyk.cli.args import KCLIArgs
 from pyk.cterm.show import CTermShow
 from pyk.kast.pretty import PrettyPrinter
+from pyk.kdist import kdist
 from pyk.proof.reachability import APRProof
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
-from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
@@ -54,7 +54,14 @@ def _kmir_run(opts: RunOpts) -> None:
         smir_info = cargo.smir_for_project(clean=False)
 
     def run(target_dir: Path):
-        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend, target_dir=target_dir)
+        kmir = KMIR.from_kompiled_kore(
+            smir_info,
+            target_dir=target_dir,
+            symbolic=opts.symbolic,
+            haskell_target=opts.haskell_target,
+            llvm_lib_target=opts.llvm_lib_target,
+            llvm_target=opts.llvm_target,
+        )
         result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
         print(kmir.kore_to_pretty(result))
 
@@ -73,7 +80,10 @@ def _kmir_prove_rs(opts: ProveRSOpts) -> None:
 
 
 def _kmir_view(opts: ViewOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+    kmir = KMIR(
+        definition_dir=kdist.which(opts.haskell_target or 'mir-semantics.haskell'),
+        llvm_library_dir=kdist.which(opts.llvm_lib_target or 'mir-semantics.llvm-library'),
+    )
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     printer = PrettyPrinter(kmir.definition)
     omit_labels = ('<currentBody>',) if opts.omit_current_body else ()
@@ -118,7 +128,10 @@ def _kmir_show(opts: ShowOpts) -> None:
 
     from .kprint import KMIRPrettyPrinter
 
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+    kmir = KMIR(
+        definition_dir=kdist.which(opts.haskell_target or 'mir-semantics.haskell'),
+        llvm_library_dir=kdist.which(opts.llvm_lib_target or 'mir-semantics.llvm-library'),
+    )
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
 
     # Minimize proof KCFG if requested
@@ -198,7 +211,14 @@ def _kmir_section_edge(opts: SectionEdgeOpts) -> None:
 
     smir_info = SMIRInfo.from_file(target_path / 'smir.json')
 
-    kmir = KMIR.from_kompiled_kore(smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path)
+    kmir = KMIR.from_kompiled_kore(
+        smir_info,
+        target_dir=target_path,
+        bug_report=opts.bug_report,
+        symbolic=True,
+        haskell_target=opts.haskell_target,
+        llvm_lib_target=opts.llvm_lib_target,
+    )
 
     source_id, target_id = opts.edge
     _LOGGER.info(f'Attempting to add {opts.sections} sections from node {source_id} to node {target_id}')
@@ -271,7 +291,10 @@ def _arg_parser() -> ArgumentParser:
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
-    run_parser.add_argument('--haskell-backend', action='store_true', help='Run with the haskell backend')
+    run_parser.add_argument('--symbolic', action='store_true', help='Run with the symbolic backend')
+    run_parser.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    run_parser.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
+    run_parser.add_argument('--llvm-target', metavar='TARGET', help='LLVM target to use')
 
     info_parser = command_parser.add_parser(
         'info', help='Show information about a SMIR JSON file', parents=[kcli_args.logging_args]
@@ -281,6 +304,8 @@ def _arg_parser() -> ArgumentParser:
 
     prove_args = ArgumentParser(add_help=False)
     prove_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
+    prove_args.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    prove_args.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
     prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
     prove_args.add_argument('--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg')
     prove_args.add_argument(
@@ -412,6 +437,8 @@ def _arg_parser() -> ArgumentParser:
         action='store_false',
         help='Display the <currentBody> cell completely.',
     )
+    display_args.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    display_args.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
 
     show_parser = command_parser.add_parser(
         'show', help='Show proof information', parents=[kcli_args.logging_args, proof_args, display_args]
@@ -482,6 +509,8 @@ def _arg_parser() -> ArgumentParser:
     section_edge_parser.add_argument(
         '--sections', type=int, default=2, help='Number of sections to make from edge (>= 2, default: 2)'
     )
+    section_edge_parser.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    section_edge_parser.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
 
     prove_rs_parser = command_parser.add_parser(
         'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
@@ -523,7 +552,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 target_dir=ns.target_dir,
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
-                haskell_backend=ns.haskell_backend,
+                symbolic=ns.symbolic,
             )
         case 'info':
             return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
@@ -533,6 +562,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 id=ns.id,
                 full_printer=ns.full_printer,
                 smir_info=Path(ns.smir_info) if ns.smir_info else None,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
                 omit_current_body=ns.omit_current_body,
                 nodes=ns.nodes,
                 node_deltas=ns.node_deltas,
@@ -551,6 +582,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 ns.id,
                 full_printer=ns.full_printer,
                 smir_info=ns.smir_info,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
                 omit_current_body=ns.omit_current_body,
             )
         case 'prune':
@@ -560,7 +593,14 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             if ns.proof_dir is None:
                 raise ValueError('Must pass --proof-dir to section-edge command')
             proof_dir = Path(ns.proof_dir)
-            return SectionEdgeOpts(proof_dir, ns.id, ns.edge, ns.sections)
+            return SectionEdgeOpts(
+                proof_dir,
+                ns.id,
+                ns.edge,
+                sections=ns.sections,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
+            )
         case 'prove-rs':
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file),
