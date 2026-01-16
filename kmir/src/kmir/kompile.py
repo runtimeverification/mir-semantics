@@ -20,8 +20,8 @@ if TYPE_CHECKING:
     from pathlib import Path
     from typing import Any, Final
 
-    from pyk.kast import KInner
-    from pyk.kore.syntax import Axiom, Sentence
+    from pyk.kast.inner import KInner
+    from pyk.kore.syntax import Axiom, Pattern, Sentence
 
     from .smir import SMIRInfo
 
@@ -100,6 +100,65 @@ class KompileDigest:
         return target_dir / 'smir-digest.json'
 
 
+def _collect_evars(pattern: 'Pattern') -> set[EVar]:
+    """Collect all EVar instances from a Kore pattern."""
+    from pyk.kore.syntax import EVar
+
+    evars: set[EVar] = set()
+
+    def collect_evar(p: 'Pattern') -> None:
+        if isinstance(p, EVar):
+            evars.add(p)
+
+    pattern.collect(collect_evar)
+    return evars
+
+
+def _add_exists_quantifiers(axiom: 'Axiom') -> 'Axiom':
+    """Add \\exists quantifiers for variables that appear in RHS but not in LHS.
+
+    For rewrite rules of the form:
+        axiom{} \\rewrites{Sort}(LHS, RHS)
+
+    This function finds variables in RHS that don't appear in LHS (existential variables)
+    and wraps the RHS with \\exists quantifiers for those variables:
+        axiom{} \\rewrites{Sort}(LHS, \\exists{Sort}(Var1, \\exists{Sort}(Var2, RHS)))
+    """
+    from pyk.kore.syntax import Axiom, Exists, Rewrites
+
+    pattern = axiom.pattern
+
+    # Only process rewrite rules
+    if not isinstance(pattern, Rewrites):
+        return axiom
+
+    lhs = pattern.left
+    rhs = pattern.right
+    sort = pattern.sort
+
+    # Collect variables from LHS and RHS
+    lhs_vars = _collect_evars(lhs)
+    rhs_vars = _collect_evars(rhs)
+
+    # Find existential variables (in RHS but not in LHS)
+    existential_vars = rhs_vars - lhs_vars
+
+    if not existential_vars:
+        return axiom
+
+    _LOGGER.debug(f'Adding \\exists for {len(existential_vars)} variables: {[v.name for v in existential_vars]}')
+
+    # Wrap RHS with \exists for each existential variable
+    new_rhs = rhs
+    for evar in sorted(existential_vars, key=lambda v: v.name):  # Sort for deterministic output
+        new_rhs = Exists(sort=sort, var=evar, pattern=new_rhs)
+
+    # Create new rewrite with wrapped RHS
+    new_pattern = Rewrites(sort=sort, left=lhs, right=new_rhs)
+
+    return Axiom(vars=axiom.vars, pattern=new_pattern, attrs=axiom.attrs)
+
+
 def _load_extra_module_rules(kmir: KMIR, module_path: Path) -> list[Sentence]:
     """Load a K module from JSON and convert rules to Kore axioms.
 
@@ -127,6 +186,8 @@ def _load_extra_module_rules(kmir: KMIR, module_path: Path) -> list[Sentence]:
         if isinstance(sentence, KRule):
             try:
                 axiom = krule_to_kore(kmir.definition, sentence)
+                # Add \exists quantifiers for existential variables
+                axiom = _add_exists_quantifiers(axiom)
                 axioms.append(axiom)
             except Exception:
                 _LOGGER.warning(f'Failed to convert rule to Kore: {sentence}', exc_info=True)
