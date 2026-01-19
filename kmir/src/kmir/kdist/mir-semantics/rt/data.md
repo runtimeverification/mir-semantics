@@ -1420,10 +1420,34 @@ expose the same inner value:
      andBool #zeroFieldOffset(LAYOUT)
      andBool PROJS =/=K #popTransparentTailTo(PROJS, lookupTy(FIELD_TY))
 
+  // MaybeUninit<T> is a union with field(1) = ManuallyDrop<T> - unwrap to ManuallyDrop and recurse
+  rule #alignTransparentPlace(place(LOCAL, PROJS), typeInfoUnionType(_, _, _ MANUALDROP_TY, _) #as SOURCE, TARGET)
+    => #alignTransparentPlace(
+         place(LOCAL, appendP(PROJS, projectionElemField(fieldIdx(1), MANUALDROP_TY) .ProjectionElems)),
+         lookupTy(MANUALDROP_TY),
+         TARGET
+       )
+    requires #typeNameIs(SOURCE, "std::mem::MaybeUninit<")
+
+  rule #alignTransparentPlace(place(LOCAL, PROJS), SOURCE, typeInfoUnionType(_, _, _ MANUALDROP_TY, _) #as TARGET)
+    => #alignTransparentPlace(
+         place(LOCAL, PROJS),
+         SOURCE,
+         lookupTy(MANUALDROP_TY)
+       )
+    requires #typeNameIs(TARGET, "std::mem::MaybeUninit<")
+
   rule #alignTransparentPlace(PLACE, _, _) => PLACE [owise]
 
   rule #popTransparentTailTo(
          projectionElemField(fieldIdx(0), FIELD_TY) .ProjectionElems,
+         TARGET
+       )
+    => .ProjectionElems
+    requires lookupTy(FIELD_TY) ==K TARGET
+
+  rule #popTransparentTailTo(
+         projectionElemField(fieldIdx(1), FIELD_TY) .ProjectionElems,
          TARGET
        )
     => .ProjectionElems

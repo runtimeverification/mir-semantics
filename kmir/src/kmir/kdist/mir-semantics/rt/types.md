@@ -40,6 +40,17 @@ Arrays and slices are compatible if their element type is (ignoring length)
   rule #typesCompatible ( typeInfoArrayType(TY1, _), typeInfoArrayType(TY2, _)) => #typesCompatible(lookupTy(TY1), lookupTy(TY2))
 ```
 
+MaybeUninit<T> is compatible with T (for array element compatibility)
+```k
+  rule #typesCompatible ( typeInfoUnionType(_, _, _ _MANUALDROP_TY, _) #as UNION, TARGET ) => #typesCompatible(#lookupMaybeTy(#maybeUninitInnerTy(UNION)), TARGET)
+    requires #typeNameIs(UNION, "std::mem::MaybeUninit<")
+     [priority(59)]
+
+  rule #typesCompatible ( SOURCE, typeInfoUnionType(_, _, _ _MANUALDROP_TY, _) #as UNION ) => #typesCompatible(SOURCE, #lookupMaybeTy(#maybeUninitInnerTy(UNION)))
+    requires #typeNameIs(UNION, "std::mem::MaybeUninit<")
+     [priority(59)]
+```
+
 Pointers are compatible if their pointee types are
 ```k
   rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => true
@@ -156,6 +167,11 @@ To make this function total, an optional `MaybeTy` is used.
   // --------------------------------------------------------------------
   rule getArrayElemTypeInfo(typeInfoArrayType(ELEM_TY, _)) => lookupTy(ELEM_TY)
   rule getArrayElemTypeInfo(_) => typeInfoVoidType [owise]
+
+  syntax MaybeTy ::= #maybeUninitInnerTy ( TypeInfo ) [function, total]
+  // -------------------------------------------------------------------
+  rule #maybeUninitInnerTy(typeInfoUnionType(_, _, _ MANUALDROP_TY, _)) => getFieldTy(lookupTy(MANUALDROP_TY), 0)
+  rule #maybeUninitInnerTy(_) => TyUnknown [owise]
 
   syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total]
   // -------------------------------------------------------------
