@@ -795,14 +795,14 @@ An attempt to read more elements than the length of the accessed array is undefi
   // Ptr, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, ptrOffset(PTR_OFFSET, SIZE)), // TODO ptrToElement, extra projection
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(SIZE))), // apply reference projections with pointer offset
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
@@ -817,7 +817,7 @@ An attempt to read more elements than the length of the accessed array is undefi
   // Ptr, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, ptrOrigSize(SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -833,20 +833,19 @@ An attempt to read more elements than the length of the accessed array is undefi
         <stack> STACK </stack>
     requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
      andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool PTR_OFFSET ==Int 0
     [preserves-definedness]
 
   // Ptr, 0 == OFFSET, 0 < PTR_OFFSET, Local
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, ptrOffset(PTR_OFFSET, SIZE)),// TODO ptrToElement, extra projection
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(SIZE))), // apply reference projections with pointer offset
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
@@ -862,7 +861,7 @@ An attempt to read more elements than the length of the accessed array is undefi
   // Ptr, 0 == OFFSET, 0 == PTR_OFFSET, Local
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, ptrOrigSize(SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -879,7 +878,6 @@ An attempt to read more elements than the length of the accessed array is undefi
     requires OFFSET ==Int 0
      andBool 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
-     andBool 0 ==Int PTR_OFFSET
     [preserves-definedness]
 ```
 
@@ -1084,15 +1082,15 @@ for _fat_ pointers it is a `usize` value indicating the data length.
 [^rawPtrAgg]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.AggregateKind.html#variant.RawPtr
 
 ```k
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
-        ...
-       </k>
+  // rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+  //       => PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE)) // boom, need to retain prior size but cannot
+  //       ...
+  //      </k>
 
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, metadata(noMetadataSize, PTR_OFFSET, ORIGIN_SIZE))
-        ...
-       </k>
+  // rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+  //       => PtrLocal(OFFSET, PLACE, MUT, metadata(noMetadataSize, PTR_OFFSET, ORIGIN_SIZE))
+  //       ...
+  //      </k>
 ```
 
 The `Aggregate` type carries a `VariantIdx` to distinguish the different variants for an `enum`.
@@ -1240,13 +1238,12 @@ to casts and pointer arithmetic using `BinOp::Offset`.
 The operation typically creates a pointer with empty metadata.
 
 ```k
-  syntax KItem ::= #forPtr ( Mutability, Metadata )
+  syntax KItem ::= #forPtr ( Mutability, PtrEmulation )
 
   rule <k> rvalueAddressOf(MUT, place(local(I), PROJS))
          =>
            #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
-          ~> #forPtr(MUT, metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO These initial values might get overwrote
-           // we should use #alignOf to emulate the address
+          ~> #forPtr(MUT, ptrOrigSize(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)))
        ...
        </k>
        <locals> LOCALS </locals>
@@ -1255,15 +1252,15 @@ The operation typically creates a pointer with empty metadata.
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
 
   // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
-  rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forPtr(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
-        => #mkPtr(DEST, #projectionsFor(CTXTS), MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE))
+  rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forPtr(MUT, ptrOrigSize(SIZE))
+        => #mkPtr(DEST, #projectionsFor(CTXTS), MUT, ptrOrigSize(#maybeDynamicSize(SIZE, VAL)))
         ...
       </k>
 
-  syntax Evaluation ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , Metadata ) // [function, total]
+  syntax Evaluation ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , PtrEmulation ) // [function, total]
   // ------------------------------------------------------------------------------------------
-  rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, META) ... </k>
-  rule <k> #mkPtr(toStack(STACK_OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(STACK_OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
+  rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, EMUL) => PtrLocal(    0 , place(local(I), PROJS), MUT, EMUL) ... </k>
+  rule <k> #mkPtr(toStack(STACK_OFFSET, LOCAL), PROJS, MUT, EMUL) => PtrLocal(STACK_OFFSET, place(  LOCAL , PROJS), MUT, EMUL) ... </k>
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
@@ -1291,7 +1288,13 @@ a special rule for this case is applied with higher priority.
 
   syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(Reference(STACK_OFFSET, PLACE, _, META), MUT) => PtrLocal(STACK_OFFSET, PLACE, MUT, META)
+  rule refToPtrLocal(Reference(STACK_OFFSET, PLACE, _, META), MUT) => PtrLocal(STACK_OFFSET, PLACE, MUT, metaToEmul(META))
+
+  syntax PtrEmulation ::= metaToEmul ( Metadata ) [function, total]
+  // --------------------------------------------------------------
+  rule metaToEmul(metadata(       SIZE   , OFFSET, _ORIG_SIZE)) => ptrOrigSize(SIZE)              requires OFFSET ==Int 0[priority(40)]
+  rule metaToEmul(metadata(noMetadataSize, OFFSET,  ORIG_SIZE)) => ptrToElement(OFFSET, ORIG_SIZE)
+  rule metaToEmul(metadata(       SIZE   , OFFSET, _ORIG_SIZE)) => ptrOffset(OFFSET, SIZE)        [owise]
 ```
 
 ## Type casts
@@ -1730,6 +1733,34 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
   rule #validDiscriminantAux( _VAL, .Discriminants ) => false
 ```
 
+When transmuting a `Range` (e.g. `[T; N] -> [U; N]`) the list of values of the range need the transmute
+mapped to the elements.
+```k
+  syntax KItem ::= #transmuteElems( List , Ty , Ty )
+                 | #transmuteElemsAux( List , List , Ty , Ty )
+                 | #transmuteNext( List , List , Ty , Ty )
+
+  rule <k> #transmuteElems(VALS, TY_FROM, TY_TO)
+        =>
+           #transmuteElemsAux(.List, VALS, getArrayElemTy(lookupTy(TY_FROM)), getArrayElemTy(lookupTy(TY_TO)))
+       ...
+      </k>
+
+  rule <k> #transmuteElemsAux(ACC, .List, _, _) => Range(ACC) ... </k>
+
+  rule <k> #transmuteElemsAux(ACC, ListItem(VAL) REST, TY_FROM, TY_TO)
+        =>
+           #cast(VAL, castKindTransmute, TY_FROM, TY_TO) ~> #transmuteNext(ACC, REST, TY_FROM, TY_TO)
+        ...
+       </k>
+
+  rule <k> NEWVAL:Value ~> #transmuteNext(ACC, REST, TY_FROM, TY_TO)
+        =>
+           #transmuteElemsAux(ACC ListItem(NEWVAL), REST, TY_FROM, TY_TO)
+        ...
+       </k>
+```
+
 The type `std::mem::MaybeUninit` is a union that represents a potentially uninitialised location in memory.
 This union has two fields, first `()`, and second `std::mem::ManuallyDrop<T>` which represents the initialised data.
 When [converting an array to an iterator](https://github.com/rust-lang/rust/blob/a2545fd6fc66b4323f555223a860c451885d1d2b/library/core/src/array/iter.rs#L57-L70)
@@ -1761,6 +1792,26 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
       requires #isUnionType(lookupTy(TY_TO))
         andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
         andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+
+  // Converting static or dynamic sized array of `T` to array of `std::mem::MaybeUninit<T>`.
+  // FIXME: Might need to check sizes as this cast could come from transmute_unchecked
+  rule <k>
+           #cast( Range ( LIST ) , castKindTransmute , TY_FROM , TY_TO )
+        =>
+           #transmuteElems(LIST, TY_FROM, TY_TO)
+       ...
+      </k>
+      requires #isArrayType(lookupTy(TY_FROM)) andBool #isArrayType(lookupTy(TY_TO))
+        andBool #isUnionType(getArrayElemTypeInfo(lookupTy(TY_TO)))
+        andBool #typeNameIs(getArrayElemTypeInfo(lookupTy(TY_TO)), "std::mem::MaybeUninit<")
+        andBool getArrayElemTypeInfo(lookupTy(TY_FROM))
+                  ==K #lookupMaybeTy(getFieldTy(   // ManuallyDrop<T> field 0 Ty (T)
+                        #lookupMaybeTy(getFieldTy( // MaybeUninit<T> field 1 Ty (ManuallyDrop<T>)
+                            getArrayElemTypeInfo(lookupTy(TY_TO)), // Array Element Ty
+                            1
+                          )),
+                        0
+                      ))
 ```
 
 

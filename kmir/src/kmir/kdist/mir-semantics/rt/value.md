@@ -92,17 +92,18 @@ Other types without metadata use `noMetadataSize`.
   // ----------------------------------------------------
   rule N <IM staticSize(M)  => N <Int M
   rule N <IM dynamicSize(M) => N <Int M
-  rule N <IM noMetadataSize => false
+  rule _ <IM noMetadataSize => false
 
   rule N ==IM staticSize(M)  => N ==Int M
   rule N ==IM dynamicSize(M) => N ==Int M
-  rule N ==IM noMetadataSize => false
+  rule _ ==IM noMetadataSize => false
 
-  rule X              <= noMetadataSize => X ==K noMetadataSize
   rule staticSize(N)  <= staticSize(M)  => N <=Int M
   rule dynamicSize(N) <= dynamicSize(M) => N <=Int M
   rule staticSize(N)  <= dynamicSize(M) => N <=Int M
   rule dynamicSize(N) <= staticSize(M)  => N <=Int M
+  rule X              <= noMetadataSize => false      requires X =/=K noMetadataSize
+  rule noMetadataSize <= _              => true
 ```
 
 Pointer offsets are implemented using a `PtrEmulation` type
@@ -113,7 +114,7 @@ For pointers to single elements, the original allocation and offset are retained
   syntax PtrEmulation ::= ptrOrigSize( MetadataSize )
                         | ptrOffset ( Int , MetadataSize )
                         | endOffset ( MetadataSize )
-                        | invalidOffset ( MetadataSize , List ) // once invalid => stays invalid
+                        | invalidOffset ( MetadataSize , List ) // TODO remove!
                         | ptrToElement ( Int , MetadataSize ) // 
 ```
 
