@@ -10,6 +10,7 @@ requires "../mono.md"
 
 module RT-VALUE-SYNTAX
   imports BOOL
+  imports K-EQUAL
 
   imports TYPES
   imports BODY
@@ -84,16 +85,31 @@ Other types without metadata use `noMetadataSize`.
   syntax MetadataSize ::= "noMetadataSize" [symbol(noMetadataSize)]
                     | staticSize  ( Int )  [symbol(staticSize)]
                     | dynamicSize ( Int )  [symbol(dynamicSize)]
+
+  syntax Bool ::= MetadataSize "<=" MetadataSize [function, total]
+                |     Int      "<=IM" MetadataSize [function, total]
+  // ----------------------------------------------------
+  rule N <=IM staticSize(M)  => N <=Int M
+  rule N <=IM dynamicSize(M) => N <=Int M
+  rule N <=IM noMetadataSize => 0 <=Int N // i.e. false in all sensible use cases
+
+  rule X              <= noMetadataSize => X ==K noMetadataSize
+  rule staticSize(N)  <= staticSize(M)  => N <=Int M
+  rule dynamicSize(N) <= dynamicSize(M) => N <=Int M
+  rule staticSize(N)  <= dynamicSize(M) => N <=Int M
+  rule dynamicSize(N) <= staticSize(M)  => N <=Int M
 ```
 
 Pointer offsets are implemented using a `PtrEmulation` type
 which carries the original metadata as well as an offset within the allocated array, or to its end, or an invalid-offset marker.
+For pointers to single elements, the original allocation and offset are retained in the metadata so it can be restored.
 
 ```k
   syntax PtrEmulation ::= ptrOrigSize( MetadataSize )
                         | ptrOffset ( Int , MetadataSize )
                         | endOffset ( MetadataSize )
-                        | invalidOffset ( MetadataSize , List )
+                        | invalidOffset ( MetadataSize , List ) // once invalid => stays invalid
+                        | ptrToElement ( Int , MetadataSize ) // 
 ```
 
 Pointer offsets only make sense for pointers which _originate_ from arrays,
@@ -139,6 +155,10 @@ collating successive offsets and checking the validity.
   rule ptrEmulOffset(N, endOffset(dynamicSize(M) #as SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
   // once invalid => stays invalid, remember additional offsets
   rule ptrEmulOffset(N, invalidOffset(SIZE, OFFSETS)) => invalidOffset(SIZE, OFFSETS ListItem(N))
+  // offset to an element pointer: check it remains within the allocation
+  rule ptrEmulOffset(N, ptrToElement(M, SIZE)) => ptrToElement( N +Int M, SIZE)
+    requires 0 <=Int N +Int M
+     andBool N +Int M <=IM SIZE
 ```
 
 
