@@ -2279,11 +2279,16 @@ Raw pointer comparisons ignore mutability, but require the address and metadata 
 
 
 
-#### Pointer Artithmetic
-Addding an offset is currently restricted to unsigned values of an length, this may be too restrictive TODO Check.
-A pointer is offset by adding the magnitude of the `Integer` provided, as along as it is within the bounds of the pointer.
-It is valid to offset to the end of the pointer, however I believe it in not valid to read from there TODO: Check.
-A trivial case where `binOpOffset` applies an offset of `0` is added with higher priority as it is returning the same pointer.
+#### Pointer Arithmetic
+
+The `binOpOffset` operation works on pointer types. 
+Its semantics is to increment the pointer by the size of the pointee,
+as long as the result is within the bounds of the allocated memory.
+
+The offset operation modifies an offset value stored within the pointer, and checks the bounds.
+It is however not UB to offset a pointer to an invalid offset, the UB happens when the pointer is dereferenced.
+
+An obvious optimisation for the trivial case where `binOpOffset` applies an offset of `0` is to return the same pointer.
 
 ```k
   // Trivial case when adding 0 - valid for any pointer
@@ -2296,31 +2301,21 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
           PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA )
   requires VAL ==Int 0
   [preserves-definedness, priority(40)]
-
-  // Check offset bounds against origin pointer with dynamicSize metadata
-  rule #applyBinOp(
-          binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, dynamicSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
-          _CHECKED)
-    =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, dynamicSize(ORIGIN_SIZE)) )
-    requires OFFSET_VAL >=Int 0
-     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
-   [preserves-definedness]
-
-  // Check offset bounds against origin pointer with staticSize metadata
-  rule #applyBinOp(
-          binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, staticSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
-          _CHECKED)
-    =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)) )
-    requires OFFSET_VAL >=Int 0
-     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
-   [preserves-definedness]
 ```
+
+For offsets unequal to zero, the offset is stored within the pointer emulation data.
+This pointer emulation holds the original size of the underlying array
+(as mentioned above, _all_ pointers subject to offset should ultimately derive from an array).
+
+```k
+  rule #applyBinOp(
+          binOpOffset,
+          PtrLocal( STACK_DEPTH , PLACE , MUT, EMUL),
+          Integer(N, _WIDTH, _), // can be negative, but this will only be valid if EMUL is already an offset.
+          _CHECKED)
+    => PtrLocal( STACK_DEPTH , PLACE , MUT, ptrEmulOffset(N, EMUL) )
+```
+
 
 ```k
 endmodule

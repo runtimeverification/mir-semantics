@@ -9,6 +9,8 @@ requires "../lib.md"
 requires "../mono.md"
 
 module RT-VALUE-SYNTAX
+  imports BOOL
+
   imports TYPES
   imports BODY
   imports LIB
@@ -47,7 +49,7 @@ The special `Moved` value represents values that have been used and should not b
                    // stack depth (initially 0), place, borrow kind, metadata (size, pointer offset, origin size)
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
-                 | PtrLocal( Int , Place , Mutability, Metadata )
+                 | PtrLocal( Int , Place , Mutability, PtrEmulation )
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
                    // fields are the same as in Reference
@@ -83,6 +85,62 @@ Other types without metadata use `noMetadataSize`.
                     | staticSize  ( Int )  [symbol(staticSize)]
                     | dynamicSize ( Int )  [symbol(dynamicSize)]
 ```
+
+Pointer offsets are implemented using a `PtrEmulation` type
+which carries the original metadata as well as an offset within the allocated array, or to its end, or an invalid-offset marker.
+
+```k
+  syntax PtrEmulation ::= ptrOrigSize( MetadataSize )
+                        | ptrOffset ( Int , MetadataSize )
+                        | endOffset ( MetadataSize )
+                        | invalidOffset ( MetadataSize , List )
+```
+
+Pointer offsets only make sense for pointers which _originate_ from arrays,
+and typically such a pointer is first cast to a pointer to a single element, in order to step through the array.
+It is valid to offset to the end of the pointer, however it is not valid to read from there.
+
+A pointer can be offset by any amount,
+but dereferencing the pointer is undefined behaviour if it has been offset beyond the bounds of the underlying allocation.
+The original metadata of the array allocation must be recovered or retained to be able to check the validity.
+
+Invalid offsets are marked as such but the underlying parameters are retained.
+
+**TODO** can a once invalid pointer offset become valid again, e.g. offset beyond the end then negative offset back into the array? Suppose no. Therefore storing the sequence of offsets that led to the invalid offset.
+If the offset can "become valid" again, the `ptrOffset` can be used, and `invalidOffset` can become a predicate on `PtrEmulation` instead of remembering any encountered invalid offset as we do here.
+
+**TODO** the special `endOffset` indicates the (valid) pointer to the end of an array, which OTOH cannot be dereferenced.
+
+The `ptrEmulOffset` function computes the resulting pointer emulation from an offset applied to an emulation recursively,
+collating successive offsets and checking the validity.
+
+```k
+  syntax PtrEmulation ::= ptrEmulOffset ( Int , PtrEmulation ) [function, total]
+  // ---------------------------------------------------------------------------
+  rule ptrEmulOffset(N, ptrOrigSize(noMetadataSize)) => invalidOffset(noMetadataSize, ListItem(N))
+  // static size
+  rule ptrEmulOffset(N, ptrOrigSize(staticSize(M))) => ptrOffset(N, staticSize(M))
+    requires 0 <=Int N andBool N <Int M
+  rule ptrEmulOffset(N, ptrOrigSize(staticSize(M))) => endOffset(staticSize(M))
+    requires N ==Int M
+  rule ptrEmulOffset(N, ptrOrigSize(staticSize(M))) => invalidOffset(staticSize(M), ListItem(N))
+    requires N <Int 0 orBool M <Int N
+  // dynamic size
+  rule ptrEmulOffset(N, ptrOrigSize(dynamicSize(M))) => ptrOffset(N, dynamicSize(M))
+    requires 0 <=Int N andBool N <Int M
+  rule ptrEmulOffset(N, ptrOrigSize(dynamicSize(M))) => endOffset(dynamicSize(M))
+    requires N ==Int M
+  rule ptrEmulOffset(N, ptrOrigSize(dynamicSize(M))) => invalidOffset(dynamicSize(M), ListItem(N))
+    requires N <Int 0 orBool M <Int N
+  // existing offset, aggregated
+  rule ptrEmulOffset(N, ptrOffset(M, SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
+  // existing offset to the end
+  rule ptrEmulOffset(N, endOffset(staticSize(M) #as SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
+  rule ptrEmulOffset(N, endOffset(dynamicSize(M) #as SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
+  // once invalid => stays invalid, remember additional offsets
+  rule ptrEmulOffset(N, invalidOffset(SIZE, OFFSETS)) => invalidOffset(SIZE, OFFSETS ListItem(N))
+```
+
 
 ## Local variables
 
