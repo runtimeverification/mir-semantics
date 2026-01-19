@@ -1374,7 +1374,7 @@ expose the same inner value:
   canonical prefix shared by both sides.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, EMUL), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
             PtrLocal(
               OFFSET,
@@ -1384,7 +1384,7 @@ expose the same inner value:
                 #lookupMaybeTy(pointeeTy(lookupTy(TY_TARGET)))
               ),
               MUT,
-              #convertMetadata(META, lookupTy(TY_TARGET))
+              #convertPtrEmul(EMUL, lookupTy(TY_TARGET))
             )
           ...
         </k>
@@ -1437,11 +1437,26 @@ expose the same inner value:
     requires REST =/=K .ProjectionElems
 
   rule #popTransparentTailTo(PROJS, _) => PROJS [owise]
+```
 
+The `convertPtrEmul` function translates the pointer emulation data when a pointer is cast using `castKindPtrToPtr`.
+
+Its result depends on the existing pointer emulation and the target type's metadata.
+
+
+
+
+```k
+  syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo ) [function, total]
+  // -------------------------------------------------------------------------------------
+  rule #convertPtrEmul(EMUL, _) => EMUL // WRONG, dummy definition
+```
+
+
+```k
   syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
   // -------------------------------------------------------------------------------------
 ```
-
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
 ```k
   rule #convertMetadata(     metadata(SIZE, OFFSET, _) , typeInfoRefType(POINTEE_TY) ) => metadata(noMetadataSize, OFFSET, SIZE)
