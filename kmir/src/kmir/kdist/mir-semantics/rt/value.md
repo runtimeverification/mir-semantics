@@ -87,11 +87,16 @@ Other types without metadata use `noMetadataSize`.
                     | dynamicSize ( Int )  [symbol(dynamicSize)]
 
   syntax Bool ::= MetadataSize "<=" MetadataSize [function, total]
-                |     Int      "<=IM" MetadataSize [function, total]
+                |     Int      "<IM" MetadataSize [function, total]
+                |     Int      "==IM" MetadataSize [function, total]
   // ----------------------------------------------------
-  rule N <=IM staticSize(M)  => N <=Int M
-  rule N <=IM dynamicSize(M) => N <=Int M
-  rule N <=IM noMetadataSize => 0 <=Int N // i.e. false in all sensible use cases
+  rule N <IM staticSize(M)  => N <Int M
+  rule N <IM dynamicSize(M) => N <Int M
+  rule N <IM noMetadataSize => false
+
+  rule N ==IM staticSize(M)  => N ==Int M
+  rule N ==IM dynamicSize(M) => N ==Int M
+  rule N ==IM noMetadataSize => false
 
   rule X              <= noMetadataSize => X ==K noMetadataSize
   rule staticSize(N)  <= staticSize(M)  => N <=Int M
@@ -134,31 +139,28 @@ collating successive offsets and checking the validity.
   syntax PtrEmulation ::= ptrEmulOffset ( Int , PtrEmulation ) [function, total]
   // ---------------------------------------------------------------------------
   rule ptrEmulOffset(N, ptrOrigSize(noMetadataSize)) => invalidOffset(noMetadataSize, ListItem(N))
-  // static size
-  rule ptrEmulOffset(N, ptrOrigSize(staticSize(M))) => ptrOffset(N, staticSize(M))
-    requires 0 <=Int N andBool N <Int M
-  rule ptrEmulOffset(N, ptrOrigSize(staticSize(M))) => endOffset(staticSize(M))
-    requires N ==Int M
-  rule ptrEmulOffset(N, ptrOrigSize(staticSize(M))) => invalidOffset(staticSize(M), ListItem(N))
-    requires N <Int 0 orBool M <Int N
-  // dynamic size
-  rule ptrEmulOffset(N, ptrOrigSize(dynamicSize(M))) => ptrOffset(N, dynamicSize(M))
-    requires 0 <=Int N andBool N <Int M
-  rule ptrEmulOffset(N, ptrOrigSize(dynamicSize(M))) => endOffset(dynamicSize(M))
-    requires N ==Int M
-  rule ptrEmulOffset(N, ptrOrigSize(dynamicSize(M))) => invalidOffset(dynamicSize(M), ListItem(N))
-    requires N <Int 0 orBool M <Int N
+  // valid offset from original
+  rule ptrEmulOffset(N, ptrOrigSize(SIZE)) => ptrOffset(N, SIZE)
+    requires N <IM SIZE
+  // offset to the end
+  rule ptrEmulOffset(N, ptrOrigSize(SIZE)) => endOffset(SIZE)
+    requires N ==IM SIZE
+  // invalid offset (out of bounds)
+  rule ptrEmulOffset(N, ptrOrigSize(SIZE)) => invalidOffset(SIZE, ListItem(N))
+    [owise]
   // existing offset, aggregated
   rule ptrEmulOffset(N, ptrOffset(M, SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
   // existing offset to the end
   rule ptrEmulOffset(N, endOffset(staticSize(M) #as SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
   rule ptrEmulOffset(N, endOffset(dynamicSize(M) #as SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
+  // pathological case, should never occur
+  rule ptrEmulOffset(N, endOffset(noMetadataSize)) => invalidOffset(noMetadataSize, ListItem(N))
   // once invalid => stays invalid, remember additional offsets
   rule ptrEmulOffset(N, invalidOffset(SIZE, OFFSETS)) => invalidOffset(SIZE, OFFSETS ListItem(N))
   // offset to an element pointer: check it remains within the allocation
   rule ptrEmulOffset(N, ptrToElement(M, SIZE)) => ptrToElement( N +Int M, SIZE)
     requires 0 <=Int N +Int M
-     andBool N +Int M <=IM SIZE
+     andBool N +Int M <IM SIZE
 ```
 
 
