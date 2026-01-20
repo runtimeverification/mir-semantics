@@ -88,6 +88,17 @@ Pointers to structs with a single zero-offset field are compatible with pointers
   rule #layoutOffsets(_) => .MachineSizes [owise]
 ```
 
+Pointers to `MaybeUninit<X>` can be cast to pointers to `X`.
+This is actually a 2-step compatibility:
+The `MaybeUninit<X>` union contains a `ManuallyDrop<X>` (when filled),
+which is a singleton struct (see above).
+
+```k
+  rule #typesCompatible(MAYBEUNINIT_TYINFO, ELEM_TYINFO) => true
+    requires #typeNameIs(MAYBEUNINIT_TYINFO, "std::mem::MaybeUninit<")
+     andBool #lookupMaybeTy(getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
+```
+
 Helper function to identify an `union` type, this is needed so `#setLocalValue`
 will not create an `Aggregate` instead of a `Union` `Value`.
 ```k
