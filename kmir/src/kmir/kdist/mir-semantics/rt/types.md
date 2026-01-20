@@ -142,6 +142,21 @@ To make this function total, an optional `MaybeTy` is used.
   rule getFieldTyFromList(_ REST, IDX) => getFieldTyFromList(REST, IDX -Int 1) requires IDX >Int 0
   rule getFieldTyFromList(_, _) => TyUnknown [owise]
 
+  syntax Bool ::= #isArrayType ( TypeInfo ) [function, total]
+  // --------------------------------------------------------
+  rule #isArrayType(typeInfoArrayType(_, _)) => true
+  rule #isArrayType(_) => false [owise]
+
+  syntax Ty ::= getArrayElemTy ( TypeInfo ) [function, total]
+  // --------------------------------------------------------
+  rule getArrayElemTy(typeInfoArrayType(ELEM_TY, _)) => ELEM_TY
+  rule getArrayElemTy(_) => ty(-1) [owise]
+
+  syntax TypeInfo ::= getArrayElemTypeInfo ( TypeInfo ) [function, total]
+  // --------------------------------------------------------------------
+  rule getArrayElemTypeInfo(typeInfoArrayType(ELEM_TY, _)) => lookupTy(ELEM_TY)
+  rule getArrayElemTypeInfo(_) => typeInfoVoidType [owise]
+
   syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total]
   // -------------------------------------------------------------
   rule #lookupMaybeTy(TY:Ty) => lookupTy(TY)
