@@ -107,31 +107,39 @@ Other types without metadata use `noMetadataSize`.
 ```
 
 Pointer offsets are implemented using a `PtrEmulation` type
-which carries the original metadata as well as an offset within the allocated array, or to its end, or an invalid-offset marker.
-For pointers to single elements, the original allocation and offset are retained in the metadata so it can be restored.
+which carries the original metadata as well as an offset within the allocated array (or to its end).
+Pointers to single elements are distinguished from in-array offsets.
+In both cases the original allocation is retained in the metadata for checks.
 
 ```k
   syntax PtrEmulation ::= ptrOrigSize( MetadataSize )
                         | ptrOffset ( Int , MetadataSize )
-                        | endOffset ( MetadataSize )
-                        | invalidOffset ( MetadataSize , List ) // TODO remove!
-                        | ptrToElement ( Int , MetadataSize ) // 
+                        | ptrToElement ( Int , MetadataSize )
+
+
+  syntax Int ::= offsetOf ( PtrEmulation ) [function, total]
+  // -------------------------------------------------------
+  rule offsetOf(    ptrOrigSize(_)) => 0
+  rule offsetOf(   ptrOffset(N, _)) => N
+  rule offsetOf(ptrToElement(N, _)) => N
 ```
 
 Pointer offsets only make sense for pointers which _originate_ from arrays,
 and typically such a pointer is first cast to a pointer to a single element, in order to step through the array.
-It is valid to offset to the end of the pointer, however it is not valid to read from there.
+The original metadata of the array allocation must be recovered or retained to be able to check the validity.
 
 A pointer can be offset by any amount,
 but dereferencing the pointer is undefined behaviour if it has been offset beyond the bounds of the underlying allocation.
-The original metadata of the array allocation must be recovered or retained to be able to check the validity.
+Specifically, it is valid to offset to the end of the pointer, however it is not valid to read from there.
+One other interesting consequence of this semantics is that an invalid pointer offset (e.g., beyond the end of the allocation) can become valid again by a compensating offset (e.g., a negative offset back into the array).
 
-Invalid offsets are marked as such but the underlying parameters are retained.
-
-**TODO** can a once invalid pointer offset become valid again, e.g. offset beyond the end then negative offset back into the array? Suppose no. Therefore storing the sequence of offsets that led to the invalid offset.
-If the offset can "become valid" again, the `ptrOffset` can be used, and `invalidOffset` can become a predicate on `PtrEmulation` instead of remembering any encountered invalid offset as we do here.
-
-**TODO** the special `endOffset` indicates the (valid) pointer to the end of an array, which OTOH cannot be dereferenced.
+```k
+  syntax Bool ::= isValidOffset ( PtrEmulation ) [function, total]
+  // -------------------------------------------------------------
+  rule isValidOffset(    ptrOrigSize(_)   ) => true
+  rule isValidOffset(   ptrOffset(N, SIZE)) => N <IM SIZE
+  rule isValidOffset(ptrToElement(N, SIZE)) => N <IM SIZE
+```
 
 The `ptrEmulOffset` function computes the resulting pointer emulation from an offset applied to an emulation recursively,
 collating successive offsets and checking the validity.
@@ -139,29 +147,9 @@ collating successive offsets and checking the validity.
 ```k
   syntax PtrEmulation ::= ptrEmulOffset ( Int , PtrEmulation ) [function, total]
   // ---------------------------------------------------------------------------
-  rule ptrEmulOffset(N, ptrOrigSize(noMetadataSize)) => invalidOffset(noMetadataSize, ListItem(N))
-  // valid offset from original
-  rule ptrEmulOffset(N, ptrOrigSize(SIZE)) => ptrOffset(N, SIZE)
-    requires N <IM SIZE
-  // offset to the end
-  rule ptrEmulOffset(N, ptrOrigSize(SIZE)) => endOffset(SIZE)
-    requires N ==IM SIZE
-  // invalid offset (out of bounds)
-  rule ptrEmulOffset(N, ptrOrigSize(SIZE)) => invalidOffset(SIZE, ListItem(N))
-    [owise]
-  // existing offset, aggregated
-  rule ptrEmulOffset(N, ptrOffset(M, SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
-  // existing offset to the end
-  rule ptrEmulOffset(N, endOffset(staticSize(M) #as SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
-  rule ptrEmulOffset(N, endOffset(dynamicSize(M) #as SIZE)) => ptrEmulOffset(N +Int M, ptrOrigSize(SIZE))
-  // pathological case, should never occur
-  rule ptrEmulOffset(N, endOffset(noMetadataSize)) => invalidOffset(noMetadataSize, ListItem(N))
-  // once invalid => stays invalid, remember additional offsets
-  rule ptrEmulOffset(N, invalidOffset(SIZE, OFFSETS)) => invalidOffset(SIZE, OFFSETS ListItem(N))
-  // offset to an element pointer: check it remains within the allocation
-  rule ptrEmulOffset(N, ptrToElement(M, SIZE)) => ptrToElement( N +Int M, SIZE)
-    requires 0 <=Int N +Int M
-     andBool N +Int M <IM SIZE
+  rule ptrEmulOffset(N,     ptrOrigSize(SIZE)) => ptrOffset(N, SIZE)
+  rule ptrEmulOffset(N,    ptrOffset(M, SIZE)) => ptrOffset(N +Int M, SIZE)
+  rule ptrEmulOffset(N, ptrToElement(M, SIZE)) => ptrToElement(N +Int M, SIZE)
 ```
 
 

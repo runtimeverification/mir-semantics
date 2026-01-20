@@ -172,16 +172,6 @@ the second argument, so the returned difference is always positive.
         ...
        </k>
     [priority(100)]
-
-  syntax Int ::= offsetOf ( PtrEmulation ) [function, total]
-  // -------------------------------------------------------
-  rule offsetOf(    ptrOrigSize(_)          ) => 0
-  rule offsetOf(   ptrOffset(N, _)          ) => N
-  rule offsetOf(endOffset( staticSize(SIZE))) => SIZE
-  rule offsetOf(endOffset(dynamicSize(SIZE))) => SIZE
-  rule offsetOf(endOffset(  noMetadataSize )) => 0
-  rule offsetOf(   ptrToElement(N, _)       ) => N
-  rule offsetOf(   invalidOffset(_, _)      ) => 0 // remove!
 ```
 
 ```k

@@ -2308,7 +2308,6 @@ The unary operation `unOpPtrMetadata`, when given a reference or pointer to a sl
 
   rule <k> #applyUnOp(unOpPtrMetadata,  PtrLocal(_, _, _,  ptrOrigSize(dynamicSize(SIZE)))) => Integer(SIZE, 64, false) ... </k>
   rule <k> #applyUnOp(unOpPtrMetadata,  PtrLocal(_, _, _, ptrOffset(N, dynamicSize(SIZE)))) => Integer(SIZE -Int N, 64, false) ... </k>
-  rule <k> #applyUnOp(unOpPtrMetadata,  PtrLocal(_, _, _,    endOffset(dynamicSize(_))   )) => Integer(0, 64, false) ... </k>
 ```
 
 #### Pointer equality
