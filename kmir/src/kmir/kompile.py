@@ -100,13 +100,13 @@ class KompileDigest:
         return target_dir / 'smir-digest.json'
 
 
-def _collect_evars(pattern: 'Pattern') -> set[EVar]:
+def _collect_evars(pattern: Pattern) -> set[EVar]:
     """Collect all EVar instances from a Kore pattern."""
     from pyk.kore.syntax import EVar
 
     evars: set[EVar] = set()
 
-    def collect_evar(p: 'Pattern') -> None:
+    def collect_evar(p: Pattern) -> None:
         if isinstance(p, EVar):
             evars.add(p)
 
@@ -114,7 +114,7 @@ def _collect_evars(pattern: 'Pattern') -> set[EVar]:
     return evars
 
 
-def _add_exists_quantifiers(axiom: 'Axiom') -> 'Axiom':
+def _add_exists_quantifiers(axiom: Axiom) -> Axiom:
     """Add \\exists quantifiers for variables that appear in RHS but not in LHS.
 
     For rewrite rules of the form:
