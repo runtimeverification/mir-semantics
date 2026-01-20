@@ -1446,17 +1446,72 @@ The `convertPtrEmul` function translates the pointer emulation data when a point
 
 Its result depends on the existing pointer emulation and the target type's metadata.
 
-
-
+| Target MetadataSize x PtrEmulation   |                     | `ptrOrigSize(SIZE)` | `ptrOffset(N, SIZE)` | `ptrToElement(N, SIZE)` |
+|--------------------------------------|---------------------|--------------------|-----------------------|-------------------------|
+| `noMetadataSize`                     | cast to a type without size (element pointer) |`ptrToElement(0, SIZE)` | `ptrToElement(N, SIZE)` | `ptrToElement(N, SIZE)` (cast between different element pointer types) |
+| `staticSize(M) #as SIZE1`            | cast to an array (static size) | `ptrOrigSize(SIZE1)` | ??? `ptrOffset(N, staticSize(M +Int N))` | ??? `ptrOffset(N, staticSize(M +Int N))` |
+| `dynamicSize(1) #as SIZE1`           | cast to a slice (dynamic) | `ptrOrigSize(dynamicSize(int(SIZE))))` | `ptrOffset(N, dynamicSize(int(SIZE) -Int N))` | `ptrOffset(N, dynamicSize(int(SIZE) -Int N))` |
 
 ```k
   syntax PtrEmulation ::= #convertPtrEmul ( PtrEmulation , TypeInfo ) [function, total]
   // -------------------------------------------------------------------------------------
-  rule #convertPtrEmul(EMUL, _) => EMUL // WRONG, dummy definition
+```
+Pointers to slices can be converted to pointers to single elements (`noMetadataSize` for target pointee type).
+
+If the original pointer had no size metadata, the case is simpler
+(never create an element pointer without original size metadata).
+```k
+  rule #convertPtrEmul(ptrOrigSize(noMetadataSize), typeInfoPtrType(POINTEE_TY)) => ptrOrigSize(noMetadataSize)
+    requires #metadataSize(POINTEE_TY) ==K noMetadataSize
+```
+
+Otherwise, the original size is retained in the element pointer.
+```k
+  // original size to retain, creating an element pointer
+  rule #convertPtrEmul(ptrOrigSize(SIZE), typeInfoPtrType(POINTEE_TY)) => ptrToElement(0, SIZE)
+    requires #metadataSize(POINTEE_TY) ==K noMetadataSize
+     andBool SIZE =/=K noMetadataSize
+  // creating an element pointer from an offset pointer
+  rule #convertPtrEmul(ptrOffset(N, SIZE), typeInfoPtrType(POINTEE_TY)) => ptrToElement(N, SIZE)
+    requires #metadataSize(POINTEE_TY) ==K noMetadataSize
+  // converting an element pointer to a new type
+  rule #convertPtrEmul(ptrOffset(N, SIZE), typeInfoPtrType(POINTEE_TY)) => ptrToElement(N, SIZE)
+    requires #metadataSize(POINTEE_TY) ==K noMetadataSize
+```
+
+If the target type points to an array with static size, the "original size" gets adjusted accordingly
+(which leads to an error at `Deref` if the original did not have _any metadata_ or if it was smaller).
+```k
+  rule #convertPtrEmul(ptrOrigSize(_), typeInfoPtrType(POINTEE_TY)) => ptrOrigSize(#metadataSize(POINTEE_TY))
+    requires #metadataSize(POINTEE_TY) =/=K noMetadataSize
+     andBool #metadataSize(POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertPtrEmul(ptrOffset(N, _ORIG_SIZE), typeInfoPtrType(POINTEE_TY)) => ptrOffset(N, sizeAdjust(#metadataSize(POINTEE_TY), N))
+    requires #metadataSize(POINTEE_TY) =/=K noMetadataSize
+     andBool #metadataSize(POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertPtrEmul(ptrToElement(N, _ORIG_SIZE), typeInfoPtrType(POINTEE_TY)) => ptrOffset(N, sizeAdjust(#metadataSize(POINTEE_TY), N))
+    requires #metadataSize(POINTEE_TY) =/=K noMetadataSize
+     andBool #metadataSize(POINTEE_TY) =/=K dynamicSize(1)
+```
+
+If the target type points to an array with dynamic size, the correct dynamic size has to be calculated.
+If the pointer had an offset, the correct dynamic size is smaller by this offset than the known prior size.
+```k
+  rule #convertPtrEmul(ptrOrigSize(SIZE), typeInfoPtrType(POINTEE_TY)) => ptrOrigSize(toDynamic(SIZE))
+    requires #metadataSize(POINTEE_TY) ==K dynamicSize(1)
+  rule #convertPtrEmul(ptrOffset(N, SIZE)         , typeInfoPtrType(POINTEE_TY)) => ptrOffset(N, toDynamic(sizeAdjust(SIZE, 0 -Int N)))
+    requires #metadataSize(POINTEE_TY) ==K dynamicSize(1)
+  rule #convertPtrEmul(ptrToElement(N, SIZE)      , typeInfoPtrType(POINTEE_TY)) => ptrOffset(N, toDynamic(sizeAdjust(SIZE, 0 -Int N)))
+    requires #metadataSize(POINTEE_TY) ==K dynamicSize(1)
+```
+
+All other cases, notably the ones where the target type is not a pointer, should not occur as per the call site of `#convertPtrEmul`.
+```k
+  rule #convertPtrEmul(EMUL, _) => EMUL [priority(100)]
 ```
 
 
 ```k
+  // DEAD CODE:
   syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
   // -------------------------------------------------------------------------------------
 ```

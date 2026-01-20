@@ -86,6 +86,17 @@ Other types without metadata use `noMetadataSize`.
                     | staticSize  ( Int )  [symbol(staticSize)]
                     | dynamicSize ( Int )  [symbol(dynamicSize)]
 
+  syntax MetadataSize ::= sizeAdjust ( MetadataSize, Int ) [function, total]
+                        | toDynamic ( MetadataSize )       [function, total]
+  // -------------------------------------------------------------------
+  rule sizeAdjust(noMetadataSize, _) => noMetadataSize
+  rule sizeAdjust( staticSize(N), M) => staticSize(N +Int M)
+  rule sizeAdjust(dynamicSize(N), M) => dynamicSize(N +Int M)
+
+  rule toDynamic(noMetadataSize) => dynamicSize(1)
+  rule toDynamic( staticSize(N)) => dynamicSize(N)
+  rule toDynamic(dynamicSize(N)) => dynamicSize(N)
+  
   syntax Bool ::= MetadataSize "<=" MetadataSize [function, total]
                 |     Int      "<IM" MetadataSize [function, total]
                 |     Int      "==IM" MetadataSize [function, total]
