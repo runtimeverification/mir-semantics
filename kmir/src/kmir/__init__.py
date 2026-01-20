@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from typing import Final
 
-VERSION: Final = '0.3.181'
+__version__: Final = version('kmir')
