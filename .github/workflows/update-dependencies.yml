@@ -49,7 +49,8 @@ jobs:
           git fetch --all
           git checkout "${VERSION}"
           cd ../..
-          git add deps/stable-mir-json
+          sed -i 's!__smir_version__: Final = '"'[0-9a-f]*'"'!__smir_version__: Final = '"'${VERSION}'"'!' kmir/src/kmir/__init__.py
+          git add deps/stable-mir-json kmir/src/kmir/__init__.py
           git commit -m "deps/stable-mir-json: sync submodule ${VERSION}" || true
       - name: 'Update Nix flake inputs'
         run: |
