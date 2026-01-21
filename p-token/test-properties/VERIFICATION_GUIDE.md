@@ -11,6 +11,13 @@ The codebase uses conditional compilation to separate production and verificatio
 - **Production code**: `src/entrypoint.rs` - Used for normal builds
 - **Verification code**: `src/entrypoint-runtime-verification.rs` - Used when `runtime-verification` feature is enabled
 
+Both P-Token and SPL token `entrypoint-runtime-verification.rs` have `include!` macros that import the respective prelude and shared
+verification harnesses from the `shared/` directory. The verification code has proof harnesses for each instruction, and some have multiple
+harnesses per instruction. Each proof harness calls the implementation (the instruction itself) but also has the specification as a precondition
+and postcondition. The precondition expresses domain assumptions (see below) and also capture the initial state for comparision
+with expected results in the postcondition. The postcondition checks each expected error condition (ordered) and the success case
+appropriately updates the state.
+
 ## Cheatcode Functions
 
 Cheatcode functions are markers used by the formal verification tools to inject assumptions about account types:
@@ -19,7 +26,7 @@ Cheatcode functions are markers used by the formal verification tools to inject 
 fn cheatcode_is_account(_: &AccountInfo) {}
 fn cheatcode_is_mint(_: &AccountInfo) {}
 fn cheatcode_is_rent(_: &AccountInfo) {}
-fn cheatcode_is_multisig(_: &AccountInfo) {} // Currently unsupported
+fn cheatcode_is_multisig(_: &AccountInfo) {} // Currently unsupported for SPL-Token
 ```
 
 These functions are no-ops at runtime but set up data required for the verification.
@@ -45,6 +52,52 @@ These functions are no-ops at runtime but set up data required for the verificat
    - `Transmutable::load_unchecked` and `Transmutable::load_mut_unchecked` for the instances `Account`, `Mint`, `Multisig`
    - `sysvars::rent::Rent::from_bytes_unchecked` and `sysvars::rent::Rent::get`
   and replacing their function body execution by an effect that provides the desired access (read-only or mutable).
+
+## Domain Assumptions
+Domain assumptions are added to harnesses behind feature flag `"assumptions"`, and are informed from Anza to be
+valid for the Solana Runtime.
+
+### Token Supply Cannot Exceed `u64`
+Adding the feature flag will assume checked arithmetic always succeeds for the addition of the transfer, burn, or
+mint amount with the destination account's old balance.
+
+Appears in:
+- `test_process_transfer`
+- `test_process_transfer_checked`
+- `test_process_burn`
+- `test_process_burn_checked`
+- `test_process_mint_to`
+- `test_process_mint_to_checked`
+
+The implementations `process_transfer`, `process_transfer_checked`, `process_burn`, `process_burn_checked`, `process_mint_to`,
+`process_mint_to_checked` of P-Token assume that it is impossible for the `Account` field `amount` to exceed (`u64::MAX`) due
+to the `Mint` field `supply` being a `u64`.
+
+> // Note: The amount of a token account is always within the range of the mint supply (`u64`).
+
+## Limitations
+
+### Compiling with non-solana target
+Currently stable-mir-json does not compile to the solana bpf target. All syscalls are behind feature flags that check for solana
+as the target operating system.
+
+```rust
+#[cfg(target_os = "solana")]
+sol_memset_(self.data_ptr().sub(48), 0, 48);
+```
+
+Since the syscalls are not compiled, and thus do not appear in the Stable MIR JSON, the proof harnesses will not trigger the
+assertions checking their effects due to them being behind similar feature flags.
+
+```rust
+#[cfg(any(target_os = "solana", target_arch = "bpf"))]
+{
+    // Solana-RT only syscall
+    assert_eq!(*owner!(&accounts[0]), [0; 32]);
+    assert_eq!(accounts[0].lamports(), 0);
+    assert_eq!(accounts[0].data_len(), 0);
+}
+```
 
 ## Running Verification
 
@@ -83,17 +136,18 @@ cd test-properties
 
 ## Test Functions
 
-All test functions are located in `src/entrypoint-runtime-verification.rs` and follow the pattern:
+All test functions are located in `shared/` and follow the pattern:
 - `test_process_*` functions for testing individual instructions
 - Each function has cheatcode calls at the beginning to mark account types
 - Functions use fixed-size arrays for formal verification compatibility
 
-## Feature Flag `runtime-verification`
+## Feature Flags
+
+### Feature Flag `runtime-verification`
 Required for all verification tests. Enables the verification-specific entrypoint (entrypoint-runtime-verification.rs) and test functions.
 
-## Available Tests
-
-See `proofs.md` for the complete list of available test functions.
+### Feature Flag `assumptions`
+Adds domain assumptions to the proof harnesses.
 
 ## Troubleshooting
 
