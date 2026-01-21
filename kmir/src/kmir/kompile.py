@@ -10,9 +10,9 @@ from typing import TYPE_CHECKING
 from pyk.kast.inner import KApply, KSort, KToken, KVariable
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.string import stringToken
+from pyk.kdist import kdist
 from pyk.kore.syntax import App, EVar, SortApp, String, Symbol, SymbolDecl
 
-from .build import HASKELL_DEF_DIR, LLVM_DEF_DIR, LLVM_LIB_DIR
 from .kmir import KMIR
 
 if TYPE_CHECKING:
@@ -62,6 +62,9 @@ class KompiledConcrete(KompiledSMIR):
 class KompileDigest:
     digest: str
     symbolic: bool
+    llvm_target: str
+    llvm_lib_target: str
+    haskell_target: str
 
     @staticmethod
     def load(target_dir: Path) -> KompileDigest:
@@ -74,6 +77,9 @@ class KompileDigest:
         return KompileDigest(
             digest=data['digest'],
             symbolic=data['symbolic'],
+            llvm_target=data['llvm-target'],
+            llvm_lib_target=data['llvm-lib-target'],
+            haskell_target=data['haskell-target'],
         )
 
     def write(self, target_dir: Path) -> None:
@@ -82,6 +88,9 @@ class KompileDigest:
                 {
                     'digest': self.digest,
                     'symbolic': self.symbolic,
+                    'llvm-target': self.llvm_target,
+                    'llvm-lib-target': self.llvm_lib_target,
+                    'haskell-target': self.haskell_target,
                 },
             ),
         )
@@ -91,11 +100,50 @@ class KompileDigest:
         return target_dir / 'smir-digest.json'
 
 
+def _load_extra_module_rules(kmir: KMIR, module_path: Path) -> list[Sentence]:
+    """Load a K module from JSON and convert rules to Kore axioms.
+
+    Args:
+        kmir: KMIR instance with the definition
+        module_path: Path to JSON module file (from --to-module output.json)
+
+    Returns:
+        List of Kore axioms converted from the module rules
+    """
+    from pyk.kast.outer import KFlatModule, KRule
+    from pyk.konvert import krule_to_kore
+
+    _LOGGER.info(f'Loading extra module rules: {module_path}')
+
+    if module_path.suffix != '.json':
+        _LOGGER.warning(f'Only JSON format is supported for --add-module: {module_path}')
+        return []
+
+    module_dict = json.loads(module_path.read_text())
+    k_module = KFlatModule.from_dict(module_dict)
+
+    axioms: list[Sentence] = []
+    for sentence in k_module.sentences:
+        if isinstance(sentence, KRule):
+            try:
+                axiom = krule_to_kore(kmir.definition, sentence)
+                axioms.append(axiom)
+            except Exception:
+                _LOGGER.warning(f'Failed to convert rule to Kore: {sentence}', exc_info=True)
+
+    return axioms
+
+
 def kompile_smir(
     smir_info: SMIRInfo,
     target_dir: Path,
+    *,
     bug_report: Path | None = None,
+    extra_module: Path | None = None,
     symbolic: bool = True,
+    llvm_target: str | None = None,
+    llvm_lib_target: str | None = None,
+    haskell_target: str | None = None,
 ) -> KompiledSMIR:
     kompile_digest: KompileDigest | None = None
     try:
@@ -103,11 +151,23 @@ def kompile_smir(
     except Exception:
         pass
 
+    llvm_target = llvm_target or 'mir-semantics.llvm'
+    llvm_lib_target = llvm_lib_target or 'mir-semantics.llvm-library'
+    haskell_target = haskell_target or 'mir-semantics.haskell'
+
+    expected_digest = KompileDigest(
+        digest=smir_info.digest,
+        symbolic=symbolic,
+        llvm_target=llvm_target,
+        llvm_lib_target=llvm_lib_target,
+        haskell_target=haskell_target,
+    )
+
     target_hs_path = target_dir / 'haskell'
     target_llvm_lib_path = target_dir / 'llvm-library'
     target_llvm_path = target_dir / 'llvm'
 
-    if kompile_digest is not None and kompile_digest.digest == smir_info.digest and kompile_digest.symbolic == symbolic:
+    if kompile_digest == expected_digest:
         _LOGGER.info(f'Kompiled SMIR up-to-date, no kompilation necessary: {target_dir}')
         if symbolic:
             return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
@@ -116,12 +176,23 @@ def kompile_smir(
 
     _LOGGER.info(f'Kompiling SMIR program: {target_dir}')
 
-    kompile_digest = KompileDigest(digest=smir_info.digest, symbolic=symbolic)
+    kompile_digest = expected_digest
     target_dir.mkdir(parents=True, exist_ok=True)
 
-    kmir = KMIR(HASKELL_DEF_DIR)
-    rules = make_kore_rules(kmir, smir_info)
-    _LOGGER.info(f'Generated {len(rules)} function equations to add to `definition.kore')
+    haskell_def_dir = kdist.which(haskell_target)
+    kmir = KMIR(haskell_def_dir)
+    smir_rules: list[Sentence] = list(make_kore_rules(kmir, smir_info))
+    _LOGGER.info(f'Generated {len(smir_rules)} function equations to add to `definition.kore')
+
+    # Load and convert extra module rules if provided
+    # These are kept separate because LLVM backend doesn't support configuration rewrites
+    extra_rules: list[Sentence] = []
+    if extra_module is not None:
+        extra_rules = _load_extra_module_rules(kmir, extra_module)
+        _LOGGER.info(f'Added {len(extra_rules)} rules from extra module: {extra_module}')
+
+    # Combined rules for Haskell backend (supports both function equations and rewrites)
+    all_rules = smir_rules + extra_rules
 
     if symbolic:
         # Create output directories
@@ -131,11 +202,13 @@ def kompile_smir(
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)
         target_hs_path.mkdir(parents=True, exist_ok=True)
 
-        # Process LLVM definition
+        # Process LLVM definition (only SMIR rules, not extra module rules)
+        # Extra module rules are configuration rewrites that LLVM backend doesn't support
         _LOGGER.info('Writing LLVM definition file')
-        llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
+        llvm_lib_dir = kdist.which(llvm_lib_target)
+        llvm_def_file = llvm_lib_dir / 'definition.kore'
         llvm_def_output = target_llvm_lib_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
+        _insert_rules_and_write(llvm_def_file, smir_rules, llvm_def_output)
 
         # Run llvm-kompile-matching and llvm-kompile for LLVM
         # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
@@ -161,14 +234,14 @@ def kompile_smir(
             check=True,
         )
 
-        # Process Haskell definition
+        # Process Haskell definition (includes both SMIR rules and extra module rules)
         _LOGGER.info('Writing Haskell definition file')
-        hs_def_file = HASKELL_DEF_DIR / 'definition.kore'
-        _insert_rules_and_write(hs_def_file, rules, target_hs_path / 'definition.kore')
+        hs_def_file = haskell_def_dir / 'definition.kore'
+        _insert_rules_and_write(hs_def_file, all_rules, target_hs_path / 'definition.kore')
 
         # Copy all files except definition.kore and binary from HASKELL_DEF_DIR to out/hs
         _LOGGER.info('Copying other artefacts into HS output directory')
-        for file_path in HASKELL_DEF_DIR.iterdir():
+        for file_path in haskell_def_dir.iterdir():
             if file_path.name != 'definition.kore' and file_path.name != 'haskellDefinition.bin':
                 if file_path.is_file():
                     shutil.copy2(file_path, target_hs_path / file_path.name)
@@ -183,11 +256,12 @@ def kompile_smir(
         _LOGGER.info(f'Creating directory {target_llvmdt_path}')
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)
 
-        # Process LLVM definition
+        # Process LLVM definition (only SMIR rules for concrete execution)
         _LOGGER.info('Writing LLVM definition file')
-        llvm_def_file = LLVM_LIB_DIR / 'definition.kore'
+        llvm_def_dir = kdist.which(llvm_target)
+        llvm_def_file = llvm_def_dir / 'definition.kore'
         llvm_def_output = target_llvm_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, rules, llvm_def_output)
+        _insert_rules_and_write(llvm_def_file, smir_rules, llvm_def_output)
 
         import subprocess
 
@@ -210,10 +284,10 @@ def kompile_smir(
             check=True,
         )
         blacklist = ['definition.kore', 'interpreter', 'dt']
-        to_copy = [file.name for file in LLVM_DEF_DIR.iterdir() if file.name not in blacklist]
+        to_copy = [file.name for file in llvm_def_dir.iterdir() if file.name not in blacklist]
         for file in to_copy:
             _LOGGER.info(f'Copying file {file}')
-            shutil.copy2(LLVM_DEF_DIR / file, target_llvm_path / file)
+            shutil.copy2(llvm_def_dir / file, target_llvm_path / file)
 
         kompile_digest.write(target_dir)
         return KompiledConcrete(llvm_dir=target_llvm_path)
