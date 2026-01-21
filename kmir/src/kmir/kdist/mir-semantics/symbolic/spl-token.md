@@ -258,6 +258,31 @@ RefCell<&mut [u8]>
 ```
 The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynamicSize.
 
+```k
+  // #initBorrow(RefCell, N) - Initialize RefCell borrow metadata with correct buffer size
+  // RefCell<&mut [u8]> layout:
+  //   field 0: BorrowFlag (Cell<isize>) - borrow state counter
+  //   field 1: borrow count (for runtime borrow checking)
+  //   field 2: UnsafeCell<&mut [u8]> containing the actual reference with metadata
+  // This rule:
+  //   1. Resets borrow counters to 0 (no active borrows)
+  //   2. Sets the dynamicSize in metadata to N (the known buffer length: 165/82/17)
+  syntax Evaluation ::= #initBorrow(Evaluation, Int) [seqstrict(1)]
+  rule <k> #initBorrow(Aggregate ( variantIdx ( 0 ) ,
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , false ))))))   // borrow flag
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , false ))))))   // borrow count
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , true ))))))   // inner wrapper
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( OFFSET , PLACE , MUT , metadata ( dynamicSize ( _ ) , 0 , dynamicSize ( _ ))))))))  // &mut [u8] reference
+             ), N)
+          => Aggregate ( variantIdx ( 0 ) ,
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , false ))))))   // reset borrow flag to 0
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , false ))))))   // reset borrow count to 0
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , true ))))))
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( OFFSET , PLACE , MUT , metadata ( dynamicSize ( N ) , 0 , dynamicSize ( N ))))))))  // set size to N
+             ) ...
+      </k>
+```
+
 ```{.k .symbolic}
   // Projection path constants for navigating AccountInfo structure
   // Path to the actual data buffer: AccountInfo -> data -> Rc -> RcInner -> RefCell -> UnsafeCell -> &mut [u8] -> [u8]
@@ -325,29 +350,6 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
       andBool (0 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, ?SplHasCloseAuthKey) orBool 1 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, ?SplHasCloseAuthKey))
       andBool #isSplPubkey(?SplCloseAuthKey)
     [priority(30), preserves-definedness]
-
-  // #initBorrow(RefCell, N) - Initialize RefCell borrow metadata with correct buffer size
-  // RefCell<&mut [u8]> layout:
-  //   field 0: BorrowFlag (Cell<isize>) - borrow state counter
-  //   field 1: borrow count (for runtime borrow checking)
-  //   field 2: UnsafeCell<&mut [u8]> containing the actual reference with metadata
-  // This rule:
-  //   1. Resets borrow counters to 0 (no active borrows)
-  //   2. Sets the dynamicSize in metadata to N (the known buffer length: 165/82/17)
-  syntax Evaluation ::= #initBorrow(Evaluation, Int) [seqstrict(1)]
-  rule <k> #initBorrow(Aggregate ( variantIdx ( 0 ) ,
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , false ))))))   // borrow flag
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , false ))))))   // borrow count
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , true ))))))   // inner wrapper
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( OFFSET , PLACE , MUT , metadata ( dynamicSize ( _ ) , 0 , dynamicSize ( _ ))))))))  // &mut [u8] reference
-             ), N)
-          => Aggregate ( variantIdx ( 0 ) ,
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , false ))))))   // reset borrow flag to 0
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , false ))))))   // reset borrow count to 0
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , true ))))))
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( OFFSET , PLACE , MUT , metadata ( dynamicSize ( N ) , 0 , dynamicSize ( N ))))))))  // set size to N
-             ) ...
-      </k>
 
   rule <k> #traverseProjection(DEST, SPLDataBuffer(VAL), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize (_), PROJS)
         => #traverseProjection(DEST, SPLDataBuffer(VAL), PROJS, CTXTS) ...
