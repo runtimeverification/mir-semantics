@@ -120,7 +120,7 @@ For lists that are already known to contain bytes, the following simplification 
 This ensures that branches on the key value are not duplicated.
 
 ```k
-  rule #mapOffset(VAR, _) => VAR requires allBytes(VAR)
+  rule #mapOffset(VAR, _) => VAR requires allBytes(VAR) [preserves-definedness]
 ```
 
 ```k
