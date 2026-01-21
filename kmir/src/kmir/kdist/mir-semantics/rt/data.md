@@ -1715,6 +1715,34 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
   rule #validDiscriminantAux( _VAL, .Discriminants ) => false
 ```
 
+When transmuting a `Range` (e.g. `[T; N] -> [U; N]`) the list of values of the range need the transmute
+mapped to the elements.
+```k
+  syntax KItem ::= #transmuteElems( List , Ty , Ty )
+                 | #transmuteElemsAux( List , List , Ty , Ty )
+                 | #transmuteNext( List , List , Ty , Ty )
+
+  rule <k> #transmuteElems(VALS, TY_FROM, TY_TO)
+        =>
+           #transmuteElemsAux(.List, VALS, getArrayElemTy(lookupTy(TY_FROM)), getArrayElemTy(lookupTy(TY_TO)))
+       ...
+      </k>
+
+  rule <k> #transmuteElemsAux(ACC, .List, _, _) => Range(ACC) ... </k>
+
+  rule <k> #transmuteElemsAux(ACC, ListItem(VAL) REST, TY_FROM, TY_TO)
+        =>
+           #cast(VAL, castKindTransmute, TY_FROM, TY_TO) ~> #transmuteNext(ACC, REST, TY_FROM, TY_TO)
+        ...
+       </k>
+
+  rule <k> NEWVAL:Value ~> #transmuteNext(ACC, REST, TY_FROM, TY_TO)
+        =>
+           #transmuteElemsAux(ACC ListItem(NEWVAL), REST, TY_FROM, TY_TO)
+        ...
+       </k>
+```
+
 The type `std::mem::MaybeUninit` is a union that represents a potentially uninitialised location in memory.
 This union has two fields, first `()`, and second `std::mem::ManuallyDrop<T>` which represents the initialised data.
 When [converting an array to an iterator](https://github.com/rust-lang/rust/blob/a2545fd6fc66b4323f555223a860c451885d1d2b/library/core/src/array/iter.rs#L57-L70)
@@ -1746,6 +1774,26 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
       requires #isUnionType(lookupTy(TY_TO))
         andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
         andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+
+  // Converting static or dynamic sized array of `T` to array of `std::mem::MaybeUninit<T>`.
+  // FIXME: Might need to check sizes as this cast could come from transmute_unchecked
+  rule <k>
+           #cast( Range ( LIST ) , castKindTransmute , TY_FROM , TY_TO )
+        =>
+           #transmuteElems(LIST, TY_FROM, TY_TO)
+       ...
+      </k>
+      requires #isArrayType(lookupTy(TY_FROM)) andBool #isArrayType(lookupTy(TY_TO))
+        andBool #isUnionType(getArrayElemTypeInfo(lookupTy(TY_TO)))
+        andBool #typeNameIs(getArrayElemTypeInfo(lookupTy(TY_TO)), "std::mem::MaybeUninit<")
+        andBool getArrayElemTypeInfo(lookupTy(TY_FROM))
+                  ==K #lookupMaybeTy(getFieldTy(   // ManuallyDrop<T> field 0 Ty (T)
+                        #lookupMaybeTy(getFieldTy( // MaybeUninit<T> field 1 Ty (ManuallyDrop<T>)
+                            getArrayElemTypeInfo(lookupTy(TY_TO)), // Array Element Ty
+                            1
+                          )),
+                        0
+                      ))
 ```
 
 

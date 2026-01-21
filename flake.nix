@@ -6,7 +6,7 @@
 
     flake-utils.url = "github:numtide/flake-utils";
 
-    stable-mir-json-flake.url = "github:runtimeverification/stable-mir-json/626e8fed0470078c4d980b6b5b503a3aceb355ec";
+    stable-mir-json-flake.url = "github:runtimeverification/stable-mir-json/a5b714d89d0c12c7f4b00602a95ad2d3a34530f0";
     stable-mir-json-flake = {
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
@@ -18,7 +18,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    uv2nix.url = "github:pyproject-nix/uv2nix/4cca323a547a1aaa9b94929c4901bed5343eafe8";
+    uv2nix.url = "github:pyproject-nix/uv2nix/9d357f0d2ce6f5f35ec7959d7e704452352eb4da";
     # uv2nix requires a newer version of nixpkgs
     # therefore, we pin uv2nix specifically to a newer version of nixpkgs
     # until we replaced our stale version of nixpkgs with an upstream one as well
