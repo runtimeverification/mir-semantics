@@ -574,6 +574,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 use_default_printer=ns.use_default_printer,
                 statistics=ns.statistics,
                 leaves=ns.leaves,
+                to_module=ns.to_module,
+                minimize_proof=ns.minimize_proof,
             )
         case 'view':
             proof_dir = Path(ns.proof_dir)
