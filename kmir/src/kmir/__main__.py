@@ -607,6 +607,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file),
                 proof_dir=ns.proof_dir,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
                 bug_report=ns.bug_report,
                 max_depth=ns.max_depth,
                 max_iterations=ns.max_iterations,

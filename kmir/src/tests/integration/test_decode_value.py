@@ -70,29 +70,25 @@ def dedent(s: str) -> str:
     return dedent(s).strip()
 
 
-KORE_TEMPLATE: Final = Template(
-    dedent(
-        r"""
-            Lbl'-LT-'generatedTop'-GT-'{}(
-                Lbl'-LT-'kmir'-GT-'{}(
-                    Lbl'-LT-'k'-GT-'{}(kseq{}(inj{SortEvaluation{}, SortKItem{}}($evaluation), dotk{}())),
-                    Lbl'-LT-'retVal'-GT-'{}(LblnoReturn'Unds'KMIR-CONFIGURATION'Unds'RetVal{}()),
-                    Lbl'-LT-'currentFunc'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
-                    Lbl'-LT-'currentFrame'-GT-'{}(
-                        Lbl'-LT-'currentBody'-GT-'{}(Lbl'Stop'List{}()),
-                        Lbl'-LT-'caller'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
-                        Lbl'-LT-'dest'-GT-'{}(Lblplace{}(Lbllocal{}(\dv{SortInt{}}("-1")),LblProjectionElems'ColnColn'empty{}())),
-                        Lbl'-LT-'target'-GT-'{}(LblnoBasicBlockIdx'Unds'BODY'Unds'MaybeBasicBlockIdx{}()),
-                        Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}()),
-                        Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
-                    ),
-                    Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
-                ),
-                Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
-            )
-        """
+KORE_TEMPLATE: Final = Template(dedent(r"""
+    Lbl'-LT-'generatedTop'-GT-'{}(
+        Lbl'-LT-'kmir'-GT-'{}(
+            Lbl'-LT-'k'-GT-'{}(kseq{}(inj{SortEvaluation{}, SortKItem{}}($evaluation), dotk{}())),
+            Lbl'-LT-'retVal'-GT-'{}(LblnoReturn'Unds'KMIR-CONFIGURATION'Unds'RetVal{}()),
+            Lbl'-LT-'currentFunc'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
+            Lbl'-LT-'currentFrame'-GT-'{}(
+                Lbl'-LT-'currentBody'-GT-'{}(Lbl'Stop'List{}()),
+                Lbl'-LT-'caller'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
+                Lbl'-LT-'dest'-GT-'{}(Lblplace{}(Lbllocal{}(\dv{SortInt{}}("-1")),LblProjectionElems'ColnColn'empty{}())),
+                Lbl'-LT-'target'-GT-'{}(LblnoBasicBlockIdx'Unds'BODY'Unds'MaybeBasicBlockIdx{}()),
+                Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}()),
+                Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
+            ),
+            Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
+        ),
+        Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
     )
-)
+"""))
 
 
 class _TestData(NamedTuple):
