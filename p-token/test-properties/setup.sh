@@ -9,7 +9,8 @@
 #   ./setup.sh [OPTIONS]
 #
 # Options (p-token defaults):
-#   --skip-submodules           Skip refreshing git submodules
+#   --skip-submodules           Skip refreshing git submodules (default)
+#   --with-submodules           Refresh git submodules
 #   -h, --help                  Show help
 #
 # Overridable via environment (kept minimal):
@@ -24,7 +25,7 @@ set -xeuo pipefail
 
 SCRIPT_DIR="$(realpath "$(dirname "$0")")"
 
-SKIP_SUBMODULES=false
+SKIP_SUBMODULES=true
 CRATE_DIR="${CRATE_DIR:-$(realpath "${SCRIPT_DIR}/..")}"
 ARTIFACT_BASENAME="${ARTIFACT_BASENAME:-p-token}"
 
@@ -32,6 +33,8 @@ while [[ $# -gt 0 ]]; do
     case $1 in
         --skip-submodules)
             SKIP_SUBMODULES=true; shift ;;
+        --with-submodules)
+            SKIP_SUBMODULES=false; shift ;;
         -h|--help)
             echo "Usage: $0 [--skip-submodules]"; exit 0 ;;
         *)
