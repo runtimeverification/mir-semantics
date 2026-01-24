@@ -61,6 +61,8 @@ PROVE_RS_SHOW_SPECS = [
     'transmute-maybe-uninit-fail',
     'iter_next_2-fail',
     'test_offset_from-fail',
+    'volatile_store-fail',
+    'write_volatile-fail',
 ]
 
 
