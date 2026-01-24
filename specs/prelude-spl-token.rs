@@ -314,12 +314,22 @@ macro_rules! call_process_initialize_mint2 {
         let data = $instruction_data;
         let decimals = data[0];
         let mint_authority = Pubkey::new_from_array(data[1..33].try_into().unwrap());
-        let freeze_authority = if data[33] == 1 {
-            solana_program_option::COption::Some(Pubkey::new_from_array(data[34..66].try_into().unwrap()))
-        } else {
-            solana_program_option::COption::None
-        };
-        Processor::process_initialize_mint2($accounts, decimals, mint_authority, freeze_authority)
+        match data[33] {
+            // see TokenInstruction::unpack_pubkey_option, used in TokenInstruction::unpack()
+            0 =>
+                Processor::process_initialize_mint2(
+                    $accounts,
+                    decimals,
+                    mint_authority,
+                    solana_program_option::COption::None
+                ),
+            1 => {
+                let freeze_authority =
+                    solana_program_option::COption::Some(Pubkey::new_from_array(data[34..66].try_into().unwrap()));
+                Processor::process_initialize_mint2($accounts, decimals, mint_authority, freeze_authority)
+            },
+            _ => Err(TokenError::InvalidInstruction.into()),
+        }
     }};
 }
 macro_rules! call_process_initialize_mint2_no_freeze {
@@ -327,7 +337,12 @@ macro_rules! call_process_initialize_mint2_no_freeze {
         let data = $instruction_data;
         let decimals = data[0];
         let mint_authority = Pubkey::new_from_array(data[1..33].try_into().unwrap());
-        Processor::process_initialize_mint2($accounts, decimals, mint_authority, solana_program_option::COption::None)
+        assert!(data.len() == 34);
+        if data[33] != 0 {
+            Err(TokenError::InvalidInstruction.into())
+        } else {
+            Processor::process_initialize_mint2($accounts, decimals, mint_authority, solana_program_option::COption::None)
+        }
     }};
 }
 macro_rules! call_process_initialize_mint {
@@ -335,12 +350,22 @@ macro_rules! call_process_initialize_mint {
         let data = $instruction_data;
         let decimals = data[0];
         let mint_authority = Pubkey::new_from_array(data[1..33].try_into().unwrap());
-        let freeze_authority = if data[33] == 1 {
-            solana_program_option::COption::Some(Pubkey::new_from_array(data[34..66].try_into().unwrap()))
-        } else {
-            solana_program_option::COption::None
-        };
-        Processor::process_initialize_mint($accounts, decimals, mint_authority, freeze_authority)
+        match data[33] {
+            // see TokenInstruction::unpack_pubkey_option, used in TokenInstruction::unpack()
+            0 =>
+                Processor::process_initialize_mint(
+                    $accounts,
+                    decimals,
+                    mint_authority,
+                    solana_program_option::COption::None
+                ),
+            1 => {
+                let freeze_authority =
+                    solana_program_option::COption::Some(Pubkey::new_from_array(data[34..66].try_into().unwrap()));
+                Processor::process_initialize_mint($accounts, decimals, mint_authority, freeze_authority)
+            },
+            _ => Err(TokenError::InvalidInstruction.into()),
+        }
     }};
 }
 macro_rules! call_process_initialize_mint_no_freeze {
@@ -348,7 +373,12 @@ macro_rules! call_process_initialize_mint_no_freeze {
         let data = $instruction_data;
         let decimals = data[0];
         let mint_authority = Pubkey::new_from_array(data[1..33].try_into().unwrap());
-        Processor::process_initialize_mint($accounts, decimals, mint_authority, solana_program_option::COption::None)
+        assert!(data.len() == 34);
+        if data[33] != 0 {
+            Err(TokenError::InvalidInstruction.into())
+        } else {
+            Processor::process_initialize_mint($accounts, decimals, mint_authority, solana_program_option::COption::None)
+        }
     }};
 }
 macro_rules! call_process_initialize_multisig {
