@@ -125,6 +125,24 @@ Execution gets stuck (no matching rule) when operands have different types or un
   rule #extractOperandType(_, _) => TyUnknown [owise]
 ```
 
+#### Volatile Store (`std::intrinsics::volatile_store`, `std::ptr::write_volatile`)
+
+The `volatile_store` intrinsic writes a value to a memory location through a pointer, ensuring the write is not
+optimized away by the compiler. Unlike normal stores, volatile stores are guaranteed to occur exactly once and
+in order with respect to other volatile operations. In the semantics, this is equivalent to a regular store
+through a dereferenced pointer. We extract the place from the pointer operand, add a deref projection, and
+write the value to that location.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_store")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, _DEST)
+        => #setLocalValue(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), ARG2)
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_store")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, _DEST)
+        => #setLocalValue(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), ARG2)
+       ... </k>
+```
+
 #### Ptr Offset Computations (`std::intrinsics::ptr_offset_from`, `std::intrinsics::ptr_offset_from_unsigned`)
 
 The `ptr_offset_from[_unsigned]` calculates the distance between two pointers within the same allocation,
