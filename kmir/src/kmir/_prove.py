@@ -115,6 +115,7 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
 
 
 def _cut_point_rules(
+    *,
     break_on_calls: bool,
     break_on_function_calls: bool,
     break_on_intrinsic_calls: bool,
