@@ -6,19 +6,16 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
-from pyk.cterm import CTerm, cterm_symbolic
-from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken, KVariable, Subst
-from pyk.kast.manip import abstract_term_safely, split_config_from
-from pyk.kcfg import KCFG
+from pyk.cterm import cterm_symbolic
+from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kcfg.show import NodePrinter
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRun
-from pyk.proof.reachability import APRProof
 from pyk.proof.show import APRProofNodePrinter
 
-from .kast import ConcreteMode, RandomMode, SymbolicMode, make_call_config
+from .kast import ConcreteMode, RandomMode, make_call_config
 from .kparse import KParse
 from .parse.parser import Parser
 from .smir import SMIRInfo
@@ -28,9 +25,12 @@ if TYPE_CHECKING:
     from pathlib import Path
     from typing import Final
 
+    from pyk.cterm import CTerm
     from pyk.cterm.show import CTermShow
     from pyk.kast.inner import KInner
+    from pyk.kcfg import KCFG
     from pyk.kore.syntax import Pattern
+    from pyk.proof.reachability import APRProof
     from pyk.utils import BugReport
 
     from .options import DisplayOpts, ProveRSOpts
@@ -117,32 +117,6 @@ class KMIR(KProve, KRun, KParse):
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
         return result
-
-    def apr_proof_from_smir(
-        self,
-        id: str,
-        smir_info: SMIRInfo,
-        start_symbol: str = 'main',
-        proof_dir: Path | None = None,
-    ) -> APRProof:
-        lhs_config, constraints = make_call_config(
-            self.definition,
-            smir_info=smir_info,
-            start_symbol=start_symbol,
-            mode=SymbolicMode(),
-        )
-        lhs = CTerm(lhs_config, constraints)
-
-        var_config, var_subst = split_config_from(lhs_config)
-        _rhs_subst: dict[str, KInner] = {
-            v_name: abstract_term_safely(KVariable('_'), base_name=v_name) for v_name in var_subst
-        }
-        _rhs_subst['K_CELL'] = KSequence([KMIR.Symbols.END_PROGRAM])
-        rhs = CTerm(Subst(_rhs_subst)(var_config))
-        kcfg = KCFG()
-        init_node = kcfg.create_node(lhs)
-        target_node = kcfg.create_node(rhs)
-        return APRProof(id, kcfg, [], init_node.id, target_node.id, {}, proof_dir=proof_dir)
 
     @staticmethod
     def prove_rs(opts: ProveRSOpts) -> APRProof:

@@ -5,14 +5,21 @@ import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from pyk.cterm import CTerm
+from pyk.kast.inner import KSequence, KVariable, Subst
+from pyk.kast.manip import abstract_term_safely, split_config_from
+from pyk.kcfg import KCFG
 from pyk.proof.reachability import APRProof, APRProver
 
 from .cargo import cargo_get_smir_json
+from .kast import SymbolicMode, make_call_config
 from .kmir import KMIR
 from .smir import SMIRInfo
 
 if TYPE_CHECKING:
     from typing import Final
+
+    from pyk.kast.inner import KInner
 
     from .options import ProveRSOpts
 
@@ -73,8 +80,12 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
                 llvm_lib_target=opts.llvm_lib_target,
             )
 
-            apr_proof = kmir.apr_proof_from_smir(
-                label, smir_info, start_symbol=opts.start_symbol, proof_dir=opts.proof_dir
+            apr_proof = apr_proof_from_smir(
+                kmir,
+                label,
+                smir_info,
+                start_symbol=opts.start_symbol,
+                proof_dir=opts.proof_dir,
             )
             if apr_proof.proof_dir is not None and (apr_proof.proof_dir / label).is_dir():
                 smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
@@ -112,6 +123,33 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
                 maintenance_rate=opts.maintenance_rate,
             )
             return apr_proof
+
+
+def apr_proof_from_smir(
+    kmir: KMIR,
+    id: str,
+    smir_info: SMIRInfo,
+    start_symbol: str = 'main',
+    proof_dir: Path | None = None,
+) -> APRProof:
+    lhs_config, constraints = make_call_config(
+        kmir.definition,
+        smir_info=smir_info,
+        start_symbol=start_symbol,
+        mode=SymbolicMode(),
+    )
+    lhs = CTerm(lhs_config, constraints)
+
+    var_config, var_subst = split_config_from(lhs_config)
+    _rhs_subst: dict[str, KInner] = {
+        v_name: abstract_term_safely(KVariable('_'), base_name=v_name) for v_name in var_subst
+    }
+    _rhs_subst['K_CELL'] = KSequence([KMIR.Symbols.END_PROGRAM])
+    rhs = CTerm(Subst(_rhs_subst)(var_config))
+    kcfg = KCFG()
+    init_node = kcfg.create_node(lhs)
+    target_node = kcfg.create_node(rhs)
+    return APRProof(id, kcfg, [], init_node.id, target_node.id, {}, proof_dir=proof_dir)
 
 
 def _cut_point_rules(
