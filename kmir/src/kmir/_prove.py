@@ -129,6 +129,7 @@ def apr_proof_from_smir(
     kmir: KMIR,
     id: str,
     smir_info: SMIRInfo,
+    *,
     start_symbol: str = 'main',
     proof_dir: Path | None = None,
 ) -> APRProof:
