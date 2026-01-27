@@ -189,6 +189,21 @@ macro_rules! assert_pubkey_from_slice_val {
     }};
 }
 
+// unpacking an optional pubkey.
+// code copied from interface::instruction::TokenInstruction
+fn unpack_pubkey_option(input: &[u8]) -> Result<(solana_program_option::COption<Pubkey>, &[u8]), ProgramError> {
+    match input.split_first() {
+        Option::Some((&0, rest)) => Ok((solana_program_option::COption::None, rest)),
+        Option::Some((&1, rest)) if rest.len() >= 32 => {
+            let (key, rest) = rest.split_at(32);
+            let pk = Pubkey::try_from(key).map_err(|_| TokenError::InvalidInstruction)?;
+            Ok((solana_program_option::COption::Some(pk), rest))
+        }
+        _ => Err(TokenError::InvalidInstruction.into()),
+    }
+}
+
+
 // =============================================================================
 // Cheatcodes
 // =============================================================================
@@ -425,11 +440,8 @@ macro_rules! call_process_set_authority {
             3 => crate::instruction::AuthorityType::CloseAccount,
             _ => return Err(TokenError::InvalidInstruction.into()),
         };
-        let new_authority = if data[1] == 1 {
-            solana_program_option::COption::Some(Pubkey::new_from_array(data[2..34].try_into().unwrap()))
-        } else {
-            solana_program_option::COption::None
-        };
+        // unpack optional new auth, throw error on malformed option
+        let (new_authority, _rest) = unpack_pubkey_option(&data[1..34])?;
         Processor::process_set_authority(&PROGRAM_ID, $accounts, authority_type, new_authority)
     }};
 }
