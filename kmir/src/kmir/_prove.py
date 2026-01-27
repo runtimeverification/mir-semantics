@@ -82,7 +82,7 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
         if apr_proof.passed:
             return apr_proof
 
-        cut_point_rules = KMIR.cut_point_rules(
+        cut_point_rules = _cut_point_rules(
             break_on_calls=opts.break_on_calls,
             break_on_function_calls=opts.break_on_function_calls,
             break_on_intrinsic_calls=opts.break_on_intrinsic_calls,
@@ -112,3 +112,67 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
                 maintenance_rate=opts.maintenance_rate,
             )
             return apr_proof
+
+
+def _cut_point_rules(
+    break_on_calls: bool,
+    break_on_function_calls: bool,
+    break_on_intrinsic_calls: bool,
+    break_on_thunk: bool,
+    break_every_statement: bool,
+    break_on_terminator_goto: bool,
+    break_on_terminator_switch_int: bool,
+    break_on_terminator_return: bool,
+    break_on_terminator_call: bool,
+    break_on_terminator_assert: bool,
+    break_on_terminator_drop: bool,
+    break_on_terminator_unreachable: bool,
+    break_every_terminator: bool,
+    break_every_step: bool,
+) -> list[str]:
+    cut_point_rules = []
+    if break_on_thunk:
+        cut_point_rules.append('RT-DATA.thunk')
+    if break_every_statement or break_every_step:
+        cut_point_rules.extend(
+            [
+                'KMIR-CONTROL-FLOW.execStmt',
+                'KMIR-CONTROL-FLOW.execStmt.union',
+            ]
+        )
+    if break_on_terminator_goto or break_every_terminator or break_every_step:
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termGoto')
+    if break_on_terminator_switch_int or break_every_terminator or break_every_step:
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termSwitchInt')
+    if break_on_terminator_return or break_every_terminator or break_every_step:
+        cut_point_rules.extend(
+            [
+                'KMIR-CONTROL-FLOW.termReturnSome',
+                'KMIR-CONTROL-FLOW.termReturnNone',
+                'KMIR-CONTROL-FLOW.endprogram-return',
+                'KMIR-CONTROL-FLOW.endprogram-no-return',
+            ]
+        )
+    if (
+        break_on_intrinsic_calls
+        or break_on_calls
+        or break_on_terminator_call
+        or break_every_terminator
+        or break_every_step
+    ):
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termCallIntrinsic')
+    if (
+        break_on_function_calls
+        or break_on_calls
+        or break_on_terminator_call
+        or break_every_terminator
+        or break_every_step
+    ):
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunction')
+    if break_on_terminator_assert or break_every_terminator or break_every_step:
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termAssert')
+    if break_on_terminator_drop or break_every_terminator or break_every_step:
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termDrop')
+    if break_on_terminator_unreachable or break_every_terminator or break_every_step:
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termUnreachable')
+    return cut_point_rules
