@@ -120,8 +120,22 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
         break_every_step=opts.break_every_step,
     )
 
-    _prove_sequential(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
+    if opts.max_workers and opts.max_workers > 1:
+        _prove_parallel(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
+    else:
+        _prove_sequential(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
     return proof
+
+
+def _prove_parallel(
+    kmir: KMIR,
+    proof: APRProof,
+    *,
+    opts: ProveRSOpts,
+    label: str,
+    cut_point_rules: list[str],
+) -> None:
+    raise NotImplementedError('TODO')
 
 
 def _prove_sequential(
