@@ -117,6 +117,18 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
         break_every_step=opts.break_every_step,
     )
 
+    _prove_sequential(kmir, apr_proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
+    return apr_proof
+
+
+def _prove_sequential(
+    kmir: KMIR,
+    apr_proof: APRProof,
+    *,
+    opts: ProveRSOpts,
+    label: str,
+    cut_point_rules: list[str],
+) -> None:
     with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
         prover = APRProver(
             kcfg_explore,
@@ -129,7 +141,6 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             fail_fast=opts.fail_fast,
             maintenance_rate=opts.maintenance_rate,
         )
-        return apr_proof
 
 
 def apr_proof_from_smir(
