@@ -31,6 +31,9 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
     if not opts.rs_file.is_file():
         raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
+    if opts.max_workers is not None and opts.max_workers < 1:
+        raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
+
     label = f'{opts.rs_file.stem}.{opts.start_symbol}'
 
     if opts.proof_dir is not None:
