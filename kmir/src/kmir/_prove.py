@@ -6,14 +6,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cterm import CTerm
+from pyk.cterm.symbolic import CTermSymbolic
 from pyk.kast.inner import KSequence, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
+from pyk.kcfg.explore import KCFGExplore
+from pyk.kore.rpc import BoosterServer, KoreClient
+from pyk.proof.proof import parallel_advance_proof
 from pyk.proof.reachability import APRProof, APRProver
 
 from .cargo import cargo_get_smir_json
 from .kast import SymbolicMode, make_call_config
-from .kmir import KMIR
+from .kmir import KMIR, KMIRSemantics
 from .smir import SMIRInfo
 
 if TYPE_CHECKING:
@@ -135,7 +139,49 @@ def _prove_parallel(
     label: str,
     cut_point_rules: list[str],
 ) -> None:
-    raise NotImplementedError('TODO')
+    assert opts.max_workers
+    assert kmir.llvm_library_dir
+
+    with BoosterServer(
+        {
+            'kompiled_dir': kmir.definition_dir,
+            'llvm_kompiled_dir': kmir.llvm_library_dir,
+            'module_name': kmir.definition.main_module_name,
+            'bug_report': kmir.bug_report,
+            'simplify_each': 30,
+        }
+    ) as server:
+
+        def create_prover() -> APRProver:
+            client = KoreClient(
+                'localhost',
+                server.port,
+                bug_report=kmir.bug_report,
+                bug_report_id=label if kmir.bug_report is not None else None,
+            )
+            cterm_symbolic = CTermSymbolic(
+                client,
+                kmir.definition,
+            )
+            kcfg_explore = KCFGExplore(
+                cterm_symbolic,
+                kcfg_semantics=KMIRSemantics(terminate_on_thunk=opts.terminate_on_thunk),
+            )
+            prover = APRProver(
+                kcfg_explore,
+                execute_depth=opts.max_depth,
+                cut_point_rules=cut_point_rules,
+            )
+            return prover
+
+        parallel_advance_proof(
+            proof,
+            create_prover=create_prover,
+            max_iterations=opts.max_iterations,
+            max_workers=opts.max_workers,
+            fail_fast=opts.fail_fast,
+            maintenance_rate=opts.maintenance_rate,
+        )
 
 
 def _prove_sequential(
