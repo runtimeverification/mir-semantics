@@ -45,7 +45,7 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
 def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
     if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
         _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-        apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
+        proof = APRProof.read_proof_data(opts.proof_dir, label)
 
         smir_info = SMIRInfo.from_file(target_path / 'smir.json')
         kmir = KMIR.from_kompiled_kore(
@@ -87,18 +87,18 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             llvm_lib_target=opts.llvm_lib_target,
         )
 
-        apr_proof = apr_proof_from_smir(
+        proof = apr_proof_from_smir(
             kmir,
             label,
             smir_info,
             start_symbol=opts.start_symbol,
             proof_dir=opts.proof_dir,
         )
-        if apr_proof.proof_dir is not None and (apr_proof.proof_dir / label).is_dir():
-            smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
+        if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
+            smir_info.dump(proof.proof_dir / proof.id / 'smir.json')
 
-    if apr_proof.passed:
-        return apr_proof
+    if proof.passed:
+        return proof
 
     cut_point_rules = _cut_point_rules(
         break_on_calls=opts.break_on_calls,
@@ -117,13 +117,13 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
         break_every_step=opts.break_every_step,
     )
 
-    _prove_sequential(kmir, apr_proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
-    return apr_proof
+    _prove_sequential(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
+    return proof
 
 
 def _prove_sequential(
     kmir: KMIR,
-    apr_proof: APRProof,
+    proof: APRProof,
     *,
     opts: ProveRSOpts,
     label: str,
@@ -136,7 +136,7 @@ def _prove_sequential(
             cut_point_rules=cut_point_rules,
         )
         prover.advance_proof(
-            apr_proof,
+            proof,
             max_iterations=opts.max_iterations,
             fail_fast=opts.fail_fast,
             maintenance_rate=opts.maintenance_rate,
