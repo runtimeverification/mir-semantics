@@ -1111,21 +1111,31 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
     [preserves-definedness] // valid indexing and sort coercion
 
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
+                      | #discriminantFor ( VariantIdx , TypeInfo )
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => Integer(#lookupDiscriminant(lookupTy(TY), IDX), 0, false) // HACK: bit width 0 means "flexible"
+        => #discriminantFor(IDX, lookupTy(TY))
+        ...
+        </k>
+
+  rule <k> #discriminantFor(variantIdx(I) #as IDX, typeInfoEnumType(_, _, DISCRIMINANTS:Discriminants, _, _))
+        => Integer(#lookupDiscrAux(DISCRIMINANTS, IDX), 0, false) // HACK: bit width 0 means "flexible"
         ...
        </k>
+    requires I <=Int size(DISCRIMINANTS)
+    [preserves-definedness]
 
-  syntax Int ::= #lookupDiscriminant ( TypeInfo , VariantIdx )  [function, total]
-               | #lookupDiscrAux ( Discriminants , Int ) [function]
+  syntax Int ::= size(Discriminants) [function, total]
+  rule size(.Discriminants) => 0
+  rule size(discriminant(_) REST) => 1 +Int size(REST)
+
+  // default 0 for non-enum types. May be undefined behaviour, though.
+  // rule #discriminant(_, _) => 0 [owise]
+
+  syntax Int ::= #lookupDiscrAux ( Discriminants , VariantIdx ) [function]
   // --------------------------------------------------------------------
-  rule #lookupDiscriminant(typeInfoEnumType(_, _, DISCRIMINANTS, _, _), variantIdx(IDX)) => #lookupDiscrAux(DISCRIMINANTS, IDX)
-    requires isInt(#lookupDiscrAux(DISCRIMINANTS, IDX)) [preserves-definedness]
-  rule #lookupDiscriminant(_OTHER, _) => 0 [owise, preserves-definedness] // default 0. May be undefined behaviour, though.
-  // --------------------------------------------------------------------
-  rule #lookupDiscrAux( discriminant(RESULT)         _        , IDX) => RESULT requires IDX ==Int 0
-  rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, IDX) => #lookupDiscrAux(MORE, IDX -Int 1) requires 0 <Int IDX [owise]
+  rule #lookupDiscrAux( discriminant(RESULT)         _        , variantIdx(I)) => RESULT requires I ==Int 0
+  rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, variantIdx(I)) => #lookupDiscrAux(MORE, variantIdx(I -Int 1)) requires 0 <Int I [owise]
 ```
 
 ```k
