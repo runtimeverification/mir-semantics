@@ -6,14 +6,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cterm import CTerm
+from pyk.cterm.symbolic import CTermSymbolic
 from pyk.kast.inner import KSequence, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
+from pyk.kcfg.explore import KCFGExplore
+from pyk.kore.rpc import BoosterServer, KoreClient
+from pyk.proof.proof import parallel_advance_proof
 from pyk.proof.reachability import APRProof, APRProver
 
 from .cargo import cargo_get_smir_json
 from .kast import SymbolicMode, make_call_config
-from .kmir import KMIR
+from .kmir import KMIR, KMIRSemantics
 from .smir import SMIRInfo
 
 if TYPE_CHECKING:
@@ -31,6 +35,9 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
     if not opts.rs_file.is_file():
         raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
+    if opts.max_workers is not None and opts.max_workers < 1:
+        raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
+
     label = f'{opts.rs_file.stem}.{opts.start_symbol}'
 
     if opts.proof_dir is not None:
@@ -45,7 +52,7 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
 def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
     if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
         _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-        apr_proof = APRProof.read_proof_data(opts.proof_dir, label)
+        proof = APRProof.read_proof_data(opts.proof_dir, label)
 
         smir_info = SMIRInfo.from_file(target_path / 'smir.json')
         kmir = KMIR.from_kompiled_kore(
@@ -87,18 +94,18 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             llvm_lib_target=opts.llvm_lib_target,
         )
 
-        apr_proof = apr_proof_from_smir(
+        proof = apr_proof_from_smir(
             kmir,
             label,
             smir_info,
             start_symbol=opts.start_symbol,
             proof_dir=opts.proof_dir,
         )
-        if apr_proof.proof_dir is not None and (apr_proof.proof_dir / label).is_dir():
-            smir_info.dump(apr_proof.proof_dir / apr_proof.id / 'smir.json')
+        if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
+            smir_info.dump(proof.proof_dir / proof.id / 'smir.json')
 
-    if apr_proof.passed:
-        return apr_proof
+    if proof.passed:
+        return proof
 
     cut_point_rules = _cut_point_rules(
         break_on_calls=opts.break_on_calls,
@@ -117,6 +124,74 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
         break_every_step=opts.break_every_step,
     )
 
+    if opts.max_workers and opts.max_workers > 1:
+        _prove_parallel(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
+    else:
+        _prove_sequential(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
+    return proof
+
+
+def _prove_parallel(
+    kmir: KMIR,
+    proof: APRProof,
+    *,
+    opts: ProveRSOpts,
+    label: str,
+    cut_point_rules: list[str],
+) -> None:
+    assert opts.max_workers
+    assert kmir.llvm_library_dir
+
+    with BoosterServer(
+        {
+            'kompiled_dir': kmir.definition_dir,
+            'llvm_kompiled_dir': kmir.llvm_library_dir,
+            'module_name': kmir.definition.main_module_name,
+            'bug_report': kmir.bug_report,
+            'simplify_each': 30,
+        }
+    ) as server:
+
+        def create_prover() -> APRProver:
+            client = KoreClient(
+                'localhost',
+                server.port,
+                bug_report=kmir.bug_report,
+                bug_report_id=label if kmir.bug_report is not None else None,
+            )
+            cterm_symbolic = CTermSymbolic(
+                client,
+                kmir.definition,
+            )
+            kcfg_explore = KCFGExplore(
+                cterm_symbolic,
+                kcfg_semantics=KMIRSemantics(terminate_on_thunk=opts.terminate_on_thunk),
+            )
+            prover = APRProver(
+                kcfg_explore,
+                execute_depth=opts.max_depth,
+                cut_point_rules=cut_point_rules,
+            )
+            return prover
+
+        parallel_advance_proof(
+            proof,
+            create_prover=create_prover,
+            max_iterations=opts.max_iterations,
+            max_workers=opts.max_workers,
+            fail_fast=opts.fail_fast,
+            maintenance_rate=opts.maintenance_rate,
+        )
+
+
+def _prove_sequential(
+    kmir: KMIR,
+    proof: APRProof,
+    *,
+    opts: ProveRSOpts,
+    label: str,
+    cut_point_rules: list[str],
+) -> None:
     with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
         prover = APRProver(
             kcfg_explore,
@@ -124,12 +199,11 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             cut_point_rules=cut_point_rules,
         )
         prover.advance_proof(
-            apr_proof,
+            proof,
             max_iterations=opts.max_iterations,
             fail_fast=opts.fail_fast,
             maintenance_rate=opts.maintenance_rate,
         )
-        return apr_proof
 
 
 def apr_proof_from_smir(
