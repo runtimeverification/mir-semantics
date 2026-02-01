@@ -531,6 +531,9 @@ def _arg_parser() -> ArgumentParser:
         metavar='FILE',
         help='K module file to include (.json format from --to-module)',
     )
+    prove_rs_parser.add_argument(
+        '--max-workers', metavar='N', type=int, help='Maximum number of workers for parallel exploration'
+    )
 
     link_parser = command_parser.add_parser(
         'link', help='Link together 2 or more SMIR JSON files', parents=[kcli_args.logging_args]
@@ -574,6 +577,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 use_default_printer=ns.use_default_printer,
                 statistics=ns.statistics,
                 leaves=ns.leaves,
+                to_module=ns.to_module,
+                minimize_proof=ns.minimize_proof,
             )
         case 'view':
             proof_dir = Path(ns.proof_dir)
@@ -605,9 +610,12 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             return ProveRSOpts(
                 rs_file=Path(ns.rs_file),
                 proof_dir=ns.proof_dir,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
                 bug_report=ns.bug_report,
                 max_depth=ns.max_depth,
                 max_iterations=ns.max_iterations,
+                max_workers=ns.max_workers,
                 reload=ns.reload,
                 fail_fast=ns.fail_fast,
                 maintenance_rate=ns.maintenance_rate,

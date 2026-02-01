@@ -147,6 +147,7 @@ class ProveRSOpts(ProveOpts):
     smir: bool
     start_symbol: str
     add_module: Path | None
+    max_workers: int | None
 
     def __init__(
         self,
@@ -158,6 +159,7 @@ class ProveRSOpts(ProveOpts):
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
+        max_workers: int | None = None,
         reload: bool = False,
         fail_fast: bool = False,
         maintenance_rate: int = 1,
@@ -188,6 +190,7 @@ class ProveRSOpts(ProveOpts):
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations
+        self.max_workers = max_workers
         self.reload = reload
         self.fail_fast = fail_fast
         self.maintenance_rate = maintenance_rate
