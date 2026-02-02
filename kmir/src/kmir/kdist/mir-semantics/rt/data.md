@@ -1111,31 +1111,36 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
     [preserves-definedness] // valid indexing and sort coercion
 
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
-                      | #discriminantFor ( VariantIdx , TypeInfo )
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => #discriminantFor(IDX, lookupTy(TY))
-        ...
-        </k>
-
-  rule <k> #discriminantFor(variantIdx(I) #as IDX, typeInfoEnumType(_, _, DISCRIMINANTS:Discriminants, _, _))
-        => Integer(#lookupDiscrAux(DISCRIMINANTS, IDX), 0, false) // HACK: bit width 0 means "flexible"
+        => Integer(#lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX), 0, false) // HACK: bit width 0 means "flexible"
         ...
        </k>
-    requires I <=Int size(DISCRIMINANTS)
+    requires asInt(IDX) <Int size(discriminantsOf(lookupTy(TY)))
+     andBool 0 <Int size(discriminantsOf(lookupTy(TY))) // must be an enum
     [preserves-definedness]
+
+  // // default 0 for non-enum types. May be undefined behaviour, though.
+  // rule #discriminant(_, _) => Integer(0, 0, false) [priority(100)]
+
+  syntax Int ::= asInt( VariantIdx ) [function, total]
+  // -------------------------------------------------
+  rule asInt(variantIdx(I)) => I
+  rule asInt(err(_)) => 1024 // HAAAAAAACK
 
   syntax Int ::= size(Discriminants) [function, total]
   rule size(.Discriminants) => 0
   rule size(discriminant(_) REST) => 1 +Int size(REST)
 
-  // default 0 for non-enum types. May be undefined behaviour, though.
-  // rule #discriminant(_, _) => 0 [owise]
+  syntax Discriminants ::= discriminantsOf( TypeInfo ) [function, total]
+  // -------------------------------------------------------------------
+  rule discriminantsOf(typeInfoEnumType(_, _, DISCRIMINANTS, _, _)) => DISCRIMINANTS
+  rule discriminantsOf(            _OTHER_                        ) => .Discriminants [owise]
 
   syntax Int ::= #lookupDiscrAux ( Discriminants , VariantIdx ) [function]
   // --------------------------------------------------------------------
   rule #lookupDiscrAux( discriminant(RESULT)         _        , variantIdx(I)) => RESULT requires I ==Int 0
-  rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, variantIdx(I)) => #lookupDiscrAux(MORE, variantIdx(I -Int 1)) requires 0 <Int I [owise]
+  rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, variantIdx(I)) => #lookupDiscrAux(MORE, variantIdx(I -Int 1)) requires 0 <Int I
 ```
 
 ```k
