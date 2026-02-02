@@ -624,6 +624,94 @@ Since float casts create thunks, we simplify this pattern directly to `PRODUCT *
     => Integer(PRODUCT *Int 2, 64, false)
 ```
 
+## Linking identical accounts
+
+When the `AccountInfo` are provided to the program from the solana runtime,
+we restrict that if they have the same `key` then the rest of their fields are
+the same. This cheatcode should only be on two `AccountInfo` after `cheatcode_is_account`
+is called on those `AccountInfo` to set up the symbolic state. Furthermore this should
+be called prior to capturing initial state and prior to executing the implementation.
+
+```{.k .symbolic}
+  // Path to account key: &AccountInfo -> AccountInfo -> key -> &Pubkey -> Pubkey
+  syntax ProjectionElems ::= "KEY_PROJS" [alias]
+  rule KEY_PROJS => projectionElemDeref                        // deref &AccountInfo
+                    projectionElemField(fieldIdx(0), #hack())  // .key (&Pubkey)
+                    projectionElemDeref                        // deref to Pubkey
+                    .ProjectionElems
+
+  // Cheatcode to link two accounts if they have the same key
+  // Usage: cheatcode_maybe_same_account(&account1, &account2)
+  // Effect: If account1.key == account2.key, then all SPL data fields are constrained equal
+  rule [cheatcode-maybe-same-account]:
+    <k> #execTerminatorCall(_, FUNC,
+          operandCopy(place(LOCAL1, PROJS1))
+          operandCopy(place(LOCAL2, PROJS2))
+          .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+      => #maybeLinkAccounts(
+           operandCopy(place(LOCAL1, appendP(PROJS1, KEY_PROJS))),
+           operandCopy(place(LOCAL2, appendP(PROJS2, KEY_PROJS))),
+           operandCopy(place(LOCAL1, appendP(PROJS1, DATA_BUFFER_PROJS))),
+           operandCopy(place(LOCAL2, appendP(PROJS2, DATA_BUFFER_PROJS)))
+         ) ~> #continueAt(TARGET)
+    </k>
+    requires #functionName(FUNC) ==String "cheatcode_maybe_same_account"
+      orBool #functionName(FUNC) ==String "spl_token::entrypoint::cheatcode_maybe_same_account"
+    [priority(30), preserves-definedness]
+
+  // Helper to evaluate keys and data, then apply constraint
+  syntax KItem ::= #maybeLinkAccounts(Evaluation, Evaluation, Evaluation, Evaluation) [seqstrict]
+
+  // Case: keys are equal - add ensures clause to constrain SPL data equality
+  // The ensures clause adds the constraint that all SPL fields must be equal
+  rule <k> #maybeLinkAccounts(
+          Aggregate(variantIdx(0), ListItem(Range(KEY1))),
+          Aggregate(variantIdx(0), ListItem(Range(KEY2))),
+          SPLDataBuffer(Aggregate(variantIdx(0),
+            ListItem(Aggregate(variantIdx(0), ListItem(Range(MINT1))))
+            ListItem(Aggregate(variantIdx(0), ListItem(Range(OWNER1))))
+            ListItem(Integer(AMOUNT1, 64, false))
+            ListItem(Aggregate(variantIdx(HAS_DELEG1), ListItem(Aggregate(variantIdx(0), ListItem(Range(DELEG1))))))
+            ListItem(Aggregate(variantIdx(STATE1), .List))
+            ListItem(Aggregate(variantIdx(HAS_NATIVE1), ListItem(Integer(NATIVE1, 64, false))))
+            ListItem(Integer(DELEG_AMT1, 64, false))
+            ListItem(Aggregate(variantIdx(HAS_CLOSE1), ListItem(Aggregate(variantIdx(0), ListItem(Range(CLOSE1))))))
+          )),
+          SPLDataBuffer(Aggregate(variantIdx(0),
+            ListItem(Aggregate(variantIdx(0), ListItem(Range(MINT2))))
+            ListItem(Aggregate(variantIdx(0), ListItem(Range(OWNER2))))
+            ListItem(Integer(AMOUNT2, 64, false))
+            ListItem(Aggregate(variantIdx(HAS_DELEG2), ListItem(Aggregate(variantIdx(0), ListItem(Range(DELEG2))))))
+            ListItem(Aggregate(variantIdx(STATE2), .List))
+            ListItem(Aggregate(variantIdx(HAS_NATIVE2), ListItem(Integer(NATIVE2, 64, false))))
+            ListItem(Integer(DELEG_AMT2, 64, false))
+            ListItem(Aggregate(variantIdx(HAS_CLOSE2), ListItem(Aggregate(variantIdx(0), ListItem(Range(CLOSE2))))))
+          ))
+        ) => .K ... </k>
+    requires KEY1 ==K KEY2
+    ensures MINT1 ==K MINT2
+      andBool OWNER1 ==K OWNER2
+      andBool AMOUNT1 ==Int AMOUNT2
+      andBool HAS_DELEG1 ==Int HAS_DELEG2
+      andBool DELEG1 ==K DELEG2
+      andBool STATE1 ==Int STATE2
+      andBool HAS_NATIVE1 ==Int HAS_NATIVE2
+      andBool NATIVE1 ==Int NATIVE2
+      andBool DELEG_AMT1 ==Int DELEG_AMT2
+      andBool HAS_CLOSE1 ==Int HAS_CLOSE2
+      andBool CLOSE1 ==K CLOSE2
+    [priority(30)]
+
+  // Case: keys are different - no constraint needed
+  rule <k> #maybeLinkAccounts(
+          Aggregate(variantIdx(0), ListItem(Range(KEY1))),
+          Aggregate(variantIdx(0), ListItem(Range(KEY2))),
+          _, _
+        ) => .K ... </k>
+    requires notBool (KEY1 ==K KEY2)
+    [priority(30)]
+```
+
 ```k
 endmodule
 ```
