@@ -1122,7 +1122,7 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
         => Integer(#lookupDiscrAux(DISCRIMINANTS, IDX), 0, false) // HACK: bit width 0 means "flexible"
         ...
        </k>
-    requires I <=Int size(DISCRIMINANTS)
+    requires I <Int size(DISCRIMINANTS)
     [preserves-definedness]
 
   syntax Int ::= size(Discriminants) [function, total]
