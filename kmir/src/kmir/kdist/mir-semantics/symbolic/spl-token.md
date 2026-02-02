@@ -665,8 +665,8 @@ be called prior to capturing initial state and prior to executing the implementa
   // Case: keys are equal - add ensures clause to constrain SPL data equality
   // The ensures clause adds the constraint that all SPL fields must be equal
   rule <k> #maybeLinkAccounts(
-          Aggregate(variantIdx(0), ListItem(Range(KEY))),
-          Aggregate(variantIdx(0), ListItem(Range(KEY))),
+          Aggregate(variantIdx(0), ListItem(Range(KEY1))),
+          Aggregate(variantIdx(0), ListItem(Range(KEY2))),
           SPLDataBuffer(Aggregate(variantIdx(0),
             ListItem(Aggregate(variantIdx(0), ListItem(Range(MINT1))))
             ListItem(Aggregate(variantIdx(0), ListItem(Range(OWNER1))))
@@ -688,6 +688,7 @@ be called prior to capturing initial state and prior to executing the implementa
             ListItem(Aggregate(variantIdx(HAS_CLOSE2), ListItem(Aggregate(variantIdx(0), ListItem(Range(CLOSE2))))))
           ))
         ) => .K ... </k>
+    requires KEY1 ==K KEY2
     ensures MINT1 ==K MINT2
       andBool OWNER1 ==K OWNER2
       andBool AMOUNT1 ==Int AMOUNT2
