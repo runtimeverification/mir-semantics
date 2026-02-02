@@ -5,6 +5,7 @@
 # Options and defaults:
 #   -t NUM   : timeout in seconds (default 2h=7200)
 #   -o STRING: prove-rs options. Default "--max-iterations 10000 --max-depth 10000"
+#   -w NUM   : max workers for parallel exploration (default: sequential)
 #   -a       : run all start symbols from first table in `proofs.md` (1st column)
 #   -m       : run all start symbols from multisig table in `proofs.md` (2nd column)
 #   -c       : continue existing proofs instead of reloading (which is default)
@@ -27,14 +28,18 @@ TIMEOUT=7200
 PROVE_OPTS="--max-iterations 10000 --max-depth 10000"
 RELOAD_OPT="--reload"
 LOG_FILE=""
+MAX_WORKERS=""
 
-while getopts ":t:o:l:amc" opt; do
+while getopts ":t:o:l:w:amc" opt; do
     case $opt in
         t)
             TIMEOUT=$OPTARG
             ;;
         o)
             PROVE_OPTS=$OPTARG
+            ;;
+        w)
+            MAX_WORKERS="--max-workers $OPTARG"
             ;;
         l)
             LOG_FILE="$OPTARG.$$"
@@ -104,7 +109,7 @@ for name in $TESTS; do
     timeout --preserve-status -v ${TIMEOUT} \
         uv --project mir-semantics/kmir run -- \
         kmir prove-rs --smir "${ARTIFACTS_DIR:-artefacts}/${ARTIFACT_BASENAME}.smir.json" \
-        --proof-dir "${PROOF_DIR}" --verbose --start-symbol $start ${RELOAD_OPT} ${PROVE_OPTS}
+        --proof-dir "${PROOF_DIR}" --verbose --start-symbol $start ${RELOAD_OPT} ${MAX_WORKERS} ${PROVE_OPTS}
     prove_rc=$?
 
     end_time=$(date +%s)
