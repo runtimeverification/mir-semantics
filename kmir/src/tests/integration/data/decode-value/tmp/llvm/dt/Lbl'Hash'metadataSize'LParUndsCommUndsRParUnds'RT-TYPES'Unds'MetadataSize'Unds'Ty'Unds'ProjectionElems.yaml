@@ -1,6 +1,0 @@
-action:
-- 5961
-- - - ['2']
-    - STRING.String
-  - - ['1']
-    - STRING.String

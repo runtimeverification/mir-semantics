@@ -1,6 +1,0 @@
-action:
-- 6329
-- - - ['1']
-    - FLOAT.Float
-  - - ['2']
-    - FLOAT.Float

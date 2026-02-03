@@ -1,6 +1,0 @@
-action:
-- 5908
-- - - ['2']
-    - SET.Set
-  - - ['1']
-    - STRING.String
