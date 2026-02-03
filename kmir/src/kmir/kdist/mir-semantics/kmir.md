@@ -30,6 +30,7 @@ module KMIR-CONTROL-FLOW
   imports BOOL
   imports LIST
   imports MAP
+  imports SET
   imports STRING
   imports K-EQUAL
 
@@ -342,7 +343,28 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+       <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
     requires notBool isIntrinsicFunction(FUNC)
+     andBool notBool (getFunctionName(FUNC) in BREAKFUNCS)
+
+  // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
+  rule [termCallFunctionFilter]:
+       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND) ~> _
+        => #setUpCalleeData(FUNC, ARGS)
+       </k>
+       <currentFunc> CALLER => FTY </currentFunc>
+       <currentFrame>
+         <currentBody> _ </currentBody>
+         <caller> OLDCALLER => CALLER </caller>
+         <dest> OLDDEST => DEST </dest>
+         <target> OLDTARGET => TARGET </target>
+         <unwind> OLDUNWIND => UNWIND </unwind>
+         <locals> LOCALS </locals>
+       </currentFrame>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+       <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
+    requires notBool isIntrinsicFunction(FUNC)
+     andBool getFunctionName(FUNC) in BREAKFUNCS
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
