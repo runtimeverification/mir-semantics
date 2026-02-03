@@ -415,7 +415,7 @@ def _arg_parser() -> ArgumentParser:
         dest='break_on_function',
         type=str,
         default=None,
-        help='Break when calling a specific function by name',
+        help='Break when calling functions / intrinsics matching these names (comma-separated)',
     )
 
     proof_args = ArgumentParser(add_help=False)
@@ -645,7 +645,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 break_every_step=ns.break_every_step,
                 terminate_on_thunk=ns.terminate_on_thunk,
                 add_module=ns.add_module,
-                break_on_function=ns.break_on_function,
+                break_on_function=[s.strip() for s in ns.break_on_function.split(',')] if ns.break_on_function else [],
             )
         case 'link':
             return LinkOpts(

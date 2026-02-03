@@ -216,7 +216,7 @@ def apr_proof_from_smir(
     *,
     start_symbol: str = 'main',
     proof_dir: Path | None = None,
-    break_on_function: str | None = None,
+    break_on_function: list[str] | None = None,
 ) -> APRProof:
     lhs_config, constraints = make_call_config(
         kmir.definition,
@@ -255,7 +255,7 @@ def _cut_point_rules(
     break_on_terminator_unreachable: bool,
     break_every_terminator: bool,
     break_every_step: bool,
-    break_on_function: str | None = None,
+    break_on_function: list[str] | None = None,
 ) -> list[str]:
     cut_point_rules = []
     if break_on_thunk:
@@ -296,7 +296,7 @@ def _cut_point_rules(
         or break_every_step
     ):
         cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunction')
-    if break_on_function is not None:
+    if break_on_function:
         cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunctionFilter')
         cut_point_rules.append('KMIR-CONTROL-FLOW.termCallIntrinsicFilter')
     if break_on_terminator_assert or break_every_terminator or break_every_step:
