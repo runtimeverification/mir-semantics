@@ -1,0 +1,377 @@
+default:
+  action:
+  - 5990
+  - - - &id029 ['1']
+      - STRING.String
+specializations:
+- - LblTypeInfo'ColnColn'ArrayType{}
+  - default: null
+    specializations:
+    - - LblsomeTyConst'LParUndsRParUnds'TYPES'Unds'MaybeTyConst'Unds'TyConst{}
+      - default: null
+        specializations:
+        - - LbltyConst'LParUndsCommUndsRParUnds'TYPES'Unds'TyConst'Unds'TyConstKind'Unds'TyConstId{}
+          - action:
+            - 5991
+            - - - ['1', '0', '1', '1']
+                - STRING.String
+              - - &id001 ['0', '1']
+                - STRING.String
+              - - ['0', '0', '1', '1']
+                - STRING.String
+          - [STRING.String, STRING.String]
+        sort: STRING.String
+        occurrence: ['0', '1', '1']
+      - [STRING.String]
+    - - LblnoTyConst'Unds'TYPES'Unds'MaybeTyConst{}
+      - action:
+        - 5992
+        - - - *id001
+            - STRING.String
+      - []
+    sort: STRING.String
+    occurrence: ['1', '1']
+  - [STRING.String, STRING.String]
+- - LblTypeInfo'ColnColn'EnumType{}
+  - default: null
+    specializations:
+    - - LblnoLayoutShape'Unds'TYPES'Unds'MaybeLayoutShape{}
+      - action:
+        - 5993
+        - - - &id002 ['0', '1']
+            - STRING.String
+          - - &id003 ['1', '1']
+            - STRING.String
+          - - &id004 ['2', '1']
+            - STRING.String
+          - - &id005 ['3', '1']
+            - STRING.String
+      - []
+    - - LblsomeLayoutShape'LParUndsRParUnds'TYPES'Unds'MaybeLayoutShape'Unds'LayoutShape{}
+      - default: null
+        specializations:
+        - - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+          - default: null
+            specializations:
+            - - LblMachineSize'ColnColn'num'Unds'bits{}
+              - default: null
+                specializations:
+                - - LblMIRInt'ColnColn'Int{}
+                  - action:
+                    - 5994
+                    - - - *id002
+                        - STRING.String
+                      - - *id003
+                        - STRING.String
+                      - - *id004
+                        - STRING.String
+                      - - *id005
+                        - STRING.String
+                      - - &id006 ['0', '0', '4', '1']
+                        - STRING.String
+                      - - &id007 ['1', '0', '4', '1']
+                        - STRING.String
+                      - - &id008 ['2', '0', '4', '1']
+                        - STRING.String
+                      - - &id009 ['3', '0', '4', '1']
+                        - STRING.String
+                      - - ['0', '0', '4', '0', '4', '1']
+                        - INT.Int
+                  - [INT.Int]
+                - - inj{SortInt{}, SortMIRInt{}}
+                  - action:
+                    - 5995
+                    - - - *id002
+                        - STRING.String
+                      - - *id003
+                        - STRING.String
+                      - - *id004
+                        - STRING.String
+                      - - *id005
+                        - STRING.String
+                      - - *id006
+                        - STRING.String
+                      - - *id007
+                        - STRING.String
+                      - - *id008
+                        - STRING.String
+                      - - *id009
+                        - STRING.String
+                      - - ['0', '0', '4', '0', '4', '1']
+                        - INT.Int
+                  - [INT.Int]
+                sort: STRING.String
+                occurrence: ['0', '4', '0', '4', '1']
+              - [STRING.String]
+            sort: STRING.String
+            occurrence: ['4', '0', '4', '1']
+          - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+        sort: STRING.String
+        occurrence: ['0', '4', '1']
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['4', '1']
+  - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+- - LblTypeInfo'ColnColn'PrimitiveType{}
+  - default: null
+    specializations:
+    - - LblPrimitiveType'ColnColn'Bool{}
+      - action:
+        - 5996
+        - []
+      - []
+    - - LblPrimitiveType'ColnColn'Char{}
+      - action:
+        - 5997
+        - []
+      - []
+    - - LblPrimitiveType'ColnColn'Float{}
+      - action:
+        - 5998
+        - - - ['0', '0', '1']
+            - STRING.String
+      - [STRING.String]
+    - - LblPrimitiveType'ColnColn'Int{}
+      - action:
+        - 5999
+        - - - ['0', '0', '1']
+            - STRING.String
+      - [STRING.String]
+    - - LblPrimitiveType'ColnColn'Str{}
+      - action:
+        - 6000
+        - []
+      - []
+    - - LblPrimitiveType'ColnColn'Uint{}
+      - action:
+        - 6001
+        - - - ['0', '0', '1']
+            - STRING.String
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+- - LblTypeInfo'ColnColn'PtrType{}
+  - action:
+    - 6002
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+- - LblTypeInfo'ColnColn'RefType{}
+  - action:
+    - 6003
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+- - LblTypeInfo'ColnColn'StructType{}
+  - default: null
+    specializations:
+    - - LblnoLayoutShape'Unds'TYPES'Unds'MaybeLayoutShape{}
+      - action:
+        - 6004
+        - - - &id010 ['0', '1']
+            - STRING.String
+          - - &id011 ['1', '1']
+            - STRING.String
+          - - &id012 ['2', '1']
+            - STRING.String
+      - []
+    - - LblsomeLayoutShape'LParUndsRParUnds'TYPES'Unds'MaybeLayoutShape'Unds'LayoutShape{}
+      - default: null
+        specializations:
+        - - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+          - default: null
+            specializations:
+            - - LblMachineSize'ColnColn'num'Unds'bits{}
+              - default: null
+                specializations:
+                - - LblMIRInt'ColnColn'Int{}
+                  - action:
+                    - 6005
+                    - - - *id010
+                        - STRING.String
+                      - - *id011
+                        - STRING.String
+                      - - *id012
+                        - STRING.String
+                      - - &id013 ['0', '0', '3', '1']
+                        - STRING.String
+                      - - &id014 ['1', '0', '3', '1']
+                        - STRING.String
+                      - - &id015 ['2', '0', '3', '1']
+                        - STRING.String
+                      - - &id016 ['3', '0', '3', '1']
+                        - STRING.String
+                      - - ['0', '0', '4', '0', '3', '1']
+                        - INT.Int
+                  - [INT.Int]
+                - - inj{SortInt{}, SortMIRInt{}}
+                  - action:
+                    - 6006
+                    - - - *id010
+                        - STRING.String
+                      - - *id011
+                        - STRING.String
+                      - - *id012
+                        - STRING.String
+                      - - *id013
+                        - STRING.String
+                      - - *id014
+                        - STRING.String
+                      - - *id015
+                        - STRING.String
+                      - - *id016
+                        - STRING.String
+                      - - ['0', '0', '4', '0', '3', '1']
+                        - INT.Int
+                  - [INT.Int]
+                sort: STRING.String
+                occurrence: ['0', '4', '0', '3', '1']
+              - [STRING.String]
+            sort: STRING.String
+            occurrence: ['4', '0', '3', '1']
+          - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+        sort: STRING.String
+        occurrence: ['0', '3', '1']
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['3', '1']
+  - [STRING.String, STRING.String, STRING.String, STRING.String]
+- - LblTypeInfo'ColnColn'TupleType{}
+  - default: null
+    specializations:
+    - - LblnoLayoutShape'Unds'TYPES'Unds'MaybeLayoutShape{}
+      - action:
+        - 6007
+        - - - &id017 ['0', '1']
+            - STRING.String
+      - []
+    - - LblsomeLayoutShape'LParUndsRParUnds'TYPES'Unds'MaybeLayoutShape'Unds'LayoutShape{}
+      - default: null
+        specializations:
+        - - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+          - default: null
+            specializations:
+            - - LblMachineSize'ColnColn'num'Unds'bits{}
+              - default: null
+                specializations:
+                - - LblMIRInt'ColnColn'Int{}
+                  - action:
+                    - 6008
+                    - - - *id017
+                        - STRING.String
+                      - - &id018 ['0', '0', '1', '1']
+                        - STRING.String
+                      - - &id019 ['1', '0', '1', '1']
+                        - STRING.String
+                      - - &id020 ['2', '0', '1', '1']
+                        - STRING.String
+                      - - &id021 ['3', '0', '1', '1']
+                        - STRING.String
+                      - - ['0', '0', '4', '0', '1', '1']
+                        - INT.Int
+                  - [INT.Int]
+                - - inj{SortInt{}, SortMIRInt{}}
+                  - action:
+                    - 6009
+                    - - - *id017
+                        - STRING.String
+                      - - *id018
+                        - STRING.String
+                      - - *id019
+                        - STRING.String
+                      - - *id020
+                        - STRING.String
+                      - - *id021
+                        - STRING.String
+                      - - ['0', '0', '4', '0', '1', '1']
+                        - INT.Int
+                  - [INT.Int]
+                sort: STRING.String
+                occurrence: ['0', '4', '0', '1', '1']
+              - [STRING.String]
+            sort: STRING.String
+            occurrence: ['4', '0', '1', '1']
+          - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+        sort: STRING.String
+        occurrence: ['0', '1', '1']
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['1', '1']
+  - [STRING.String, STRING.String]
+- - LblTypeInfo'ColnColn'UnionType{}
+  - default: null
+    specializations:
+    - - LblnoLayoutShape'Unds'TYPES'Unds'MaybeLayoutShape{}
+      - action:
+        - 6010
+        - - - &id022 ['0', '1']
+            - STRING.String
+          - - &id023 ['1', '1']
+            - STRING.String
+          - - &id024 ['2', '1']
+            - STRING.String
+      - []
+    - - LblsomeLayoutShape'LParUndsRParUnds'TYPES'Unds'MaybeLayoutShape'Unds'LayoutShape{}
+      - default: null
+        specializations:
+        - - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+          - default: null
+            specializations:
+            - - LblMachineSize'ColnColn'num'Unds'bits{}
+              - default: null
+                specializations:
+                - - LblMIRInt'ColnColn'Int{}
+                  - action:
+                    - 6011
+                    - - - *id022
+                        - STRING.String
+                      - - *id023
+                        - STRING.String
+                      - - *id024
+                        - STRING.String
+                      - - &id025 ['0', '0', '3', '1']
+                        - STRING.String
+                      - - &id026 ['1', '0', '3', '1']
+                        - STRING.String
+                      - - &id027 ['2', '0', '3', '1']
+                        - STRING.String
+                      - - &id028 ['3', '0', '3', '1']
+                        - STRING.String
+                      - - ['0', '0', '4', '0', '3', '1']
+                        - INT.Int
+                  - [INT.Int]
+                - - inj{SortInt{}, SortMIRInt{}}
+                  - action:
+                    - 6012
+                    - - - *id022
+                        - STRING.String
+                      - - *id023
+                        - STRING.String
+                      - - *id024
+                        - STRING.String
+                      - - *id025
+                        - STRING.String
+                      - - *id026
+                        - STRING.String
+                      - - *id027
+                        - STRING.String
+                      - - *id028
+                        - STRING.String
+                      - - ['0', '0', '4', '0', '3', '1']
+                        - INT.Int
+                  - [INT.Int]
+                sort: STRING.String
+                occurrence: ['0', '4', '0', '3', '1']
+              - [STRING.String]
+            sort: STRING.String
+            occurrence: ['4', '0', '3', '1']
+          - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+        sort: STRING.String
+        occurrence: ['0', '3', '1']
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['3', '1']
+  - [STRING.String, STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: *id029

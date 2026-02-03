@@ -1,0 +1,28 @@
+default:
+  action:
+  - 6970
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblBinOp'ColnColn'Shl{}
+  - action:
+    - 6971
+    - []
+  - []
+- - LblBinOp'ColnColn'ShlUnchecked{}
+  - action:
+    - 6972
+    - []
+  - []
+- - LblBinOp'ColnColn'Shr{}
+  - action:
+    - 6973
+    - []
+  - []
+- - LblBinOp'ColnColn'ShrUnchecked{}
+  - action:
+    - 6974
+    - []
+  - []
+sort: STRING.String
+occurrence: *id001

@@ -1,0 +1,16 @@
+default: null
+specializations:
+- - LblfnSig'LParUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'FnSig'Unds'Tys'Unds'MIRBool'Unds'Safety'Unds'Abi{}
+  - action:
+    - 7614
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+      - - ['2', '1']
+        - STRING.String
+      - - ['3', '1']
+        - STRING.String
+  - [STRING.String, STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

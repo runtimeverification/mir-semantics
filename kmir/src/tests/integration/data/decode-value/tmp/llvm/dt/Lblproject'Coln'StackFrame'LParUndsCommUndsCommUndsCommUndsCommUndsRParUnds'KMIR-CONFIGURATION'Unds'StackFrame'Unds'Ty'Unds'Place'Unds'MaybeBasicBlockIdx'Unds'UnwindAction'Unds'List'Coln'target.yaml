@@ -1,0 +1,18 @@
+default: null
+specializations:
+- - LblStackFrame'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'KMIR-CONFIGURATION'Unds'StackFrame'Unds'Ty'Unds'Place'Unds'MaybeBasicBlockIdx'Unds'UnwindAction'Unds'List{}
+  - action:
+    - 7447
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+      - - ['2', '1']
+        - STRING.String
+      - - ['3', '1']
+        - STRING.String
+      - - ['4', '1']
+        - LIST.List
+  - [STRING.String, STRING.String, STRING.String, STRING.String, LIST.List]
+sort: STRING.String
+occurrence: ['1']

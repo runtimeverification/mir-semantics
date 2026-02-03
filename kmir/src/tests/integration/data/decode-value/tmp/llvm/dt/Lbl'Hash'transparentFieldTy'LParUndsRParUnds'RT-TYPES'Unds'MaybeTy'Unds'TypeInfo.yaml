@@ -1,0 +1,49 @@
+default: &id001
+  action:
+  - 6025
+  - - - &id004 ['1']
+      - STRING.String
+specializations:
+- - LblTypeInfo'ColnColn'StructType{}
+  - default: *id001
+    specializations:
+    - - LblTys'ColnColn'append{}
+      - default: *id001
+        specializations:
+        - - LblTys'ColnColn'empty{}
+          - args:
+            - - &id002 ['3', '1']
+              - STRING.String
+            next:
+              default: null
+              specializations:
+              - - '1'
+                - action:
+                  - 6026
+                  - - - ['0', '1']
+                      - STRING.String
+                    - - ['1', '1']
+                      - STRING.String
+                    - - ['0', '2', '1']
+                      - STRING.String
+                    - - *id002
+                      - STRING.String
+                - []
+              - - '0'
+                - *id001
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: &id003 [side_condition_6026]
+            function: side_condition_6026
+            sort: BOOL.Bool
+            occurrence: *id003
+          - []
+        sort: STRING.String
+        occurrence: ['1', '2', '1']
+      - [STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: ['2', '1']
+  - [STRING.String, STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: *id004

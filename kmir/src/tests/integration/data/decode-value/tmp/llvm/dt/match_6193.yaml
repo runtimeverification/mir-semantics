@@ -1,0 +1,116 @@
+default: null
+specializations:
+- - Lbl'-LT-'generatedTop'-GT-'{}
+  - default: null
+    specializations:
+    - - Lbl'-LT-'kmir'-GT-'{}
+      - default: null
+        specializations:
+        - - Lbl'-LT-'stack'-GT-'{}
+          - default: null
+            specializations:
+            - - Lbl'-LT-'k'-GT-'{}
+              - default: fail
+                specializations:
+                - - kseq{}
+                  - default: fail
+                    specializations:
+                    - - kseq{}
+                      - default: fail
+                        specializations:
+                        - - Lbl'Hash'writeMoved'Unds'RT-DATA'Unds'KItem{}
+                          - default: fail
+                            specializations:
+                            - - Lbl'Hash'traverseProjection'LParUndsCommUndsCommUndsCommUndsRParUnds'RT-DATA'Unds'KItem'Unds'WriteTo'Unds'Value'Unds'ProjectionElems'Unds'Contexts{}
+                              - default: fail
+                                specializations:
+                                - - LblProjectionElems'ColnColn'empty{}
+                                  - default: fail
+                                    specializations:
+                                    - - LbltoStack'LParUndsCommUndsRParUnds'RT-DATA'Unds'WriteTo'Unds'Int'Unds'Local{}
+                                      - default: null
+                                        specializations:
+                                        - - Lbllocal{}
+                                          - args:
+                                            - - &id001 ['0', '0', '0', '0', '0', '0',
+                                                '1']
+                                              - INT.Int
+                                            - - &id002 ['0', '4', '0', '1']
+                                              - LIST.List
+                                            next:
+                                              default: null
+                                              specializations:
+                                              - - '1'
+                                                - action:
+                                                  - 6193
+                                                  - - - ['1', '1']
+                                                      - STRING.String
+                                                    - - ['1', '1', '0', '0', '0',
+                                                        '1']
+                                                      - STRING.String
+                                                    - - ['1', '0', '1']
+                                                      - STRING.String
+                                                    - - ['2', '0', '1']
+                                                      - STRING.String
+                                                    - - ['3', '0', '1']
+                                                      - STRING.String
+                                                    - - ['5', '0', '1']
+                                                      - STRING.String
+                                                    - - ['1', '0', '0', '0', '0',
+                                                        '1']
+                                                      - STRING.String
+                                                    - - ['3', '0', '0', '0', '0',
+                                                        '1']
+                                                      - STRING.String
+                                                    - - *id001
+                                                      - INT.Int
+                                                    - - ['0', '1', '0', '0', '0',
+                                                        '0', '0', '1']
+                                                      - INT.Int
+                                                    - - *id002
+                                                      - LIST.List
+                                                - []
+                                              - - '0'
+                                                - fail
+                                                - []
+                                              bitwidth: 1
+                                              sort: BOOL.Bool
+                                              occurrence: &id003 [side_condition_6193]
+                                            function: side_condition_6193
+                                            sort: BOOL.Bool
+                                            occurrence: *id003
+                                          - [INT.Int]
+                                        sort: STRING.String
+                                        occurrence: ['1', '0', '0', '0', '0', '0',
+                                          '1']
+                                      - [INT.Int, STRING.String]
+                                    sort: STRING.String
+                                    occurrence: ['0', '0', '0', '0', '0', '1']
+                                  - []
+                                sort: STRING.String
+                                occurrence: ['2', '0', '0', '0', '0', '1']
+                              - [STRING.String, STRING.String, STRING.String, STRING.String]
+                            sort: STRING.String
+                            occurrence: ['0', '0', '0', '0', '1']
+                          - []
+                        sort: STRING.String
+                        occurrence: ['0', '1', '0', '0', '0', '1']
+                      - [STRING.String, STRING.String]
+                    sort: STRING.String
+                    occurrence: ['1', '0', '0', '0', '1']
+                  - [STRING.String, STRING.String]
+                sort: STRING.String
+                occurrence: ['0', '0', '0', '1']
+              - [STRING.String]
+            sort: STRING.String
+            occurrence: ['0', '0', '1']
+          - [LIST.List]
+        sort: STRING.String
+        occurrence: ['4', '0', '1']
+      - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String,
+        STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

@@ -1,0 +1,26 @@
+default:
+  action:
+  - 5907
+  - - - &id001 ['1']
+      - INT.Int
+    - - &id002 ['2']
+      - STRING.String
+specializations:
+- - LblTypeInfo'ColnColn'EnumType{}
+  - action:
+    - 5906
+    - - - ['0', '2']
+        - STRING.String
+      - - ['1', '2']
+        - STRING.String
+      - - ['3', '2']
+        - STRING.String
+      - - ['4', '2']
+        - STRING.String
+      - - ['2', '2']
+        - STRING.String
+      - - *id001
+        - INT.Int
+  - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: *id002

@@ -1,0 +1,12 @@
+default: null
+specializations:
+- - LbltyAndLayout'LParUndsCommUndsRParUnds'ABI'Unds'TyAndLayout'Unds'Ty'Unds'Layout{}
+  - action:
+    - 7720
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

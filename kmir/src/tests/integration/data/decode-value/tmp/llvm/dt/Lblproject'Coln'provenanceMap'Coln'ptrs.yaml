@@ -1,0 +1,10 @@
+default: null
+specializations:
+- - LblprovenanceMap{}
+  - action:
+    - 7689
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

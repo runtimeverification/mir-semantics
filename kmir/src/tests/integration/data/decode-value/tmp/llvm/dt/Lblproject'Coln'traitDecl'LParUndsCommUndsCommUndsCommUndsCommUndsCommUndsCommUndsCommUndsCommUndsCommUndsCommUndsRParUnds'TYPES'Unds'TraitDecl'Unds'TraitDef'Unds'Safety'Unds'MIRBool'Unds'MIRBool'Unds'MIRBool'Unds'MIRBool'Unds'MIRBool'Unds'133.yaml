@@ -1,0 +1,31 @@
+default: null
+specializations:
+- - LbltraitDecl'LParUndsCommUndsCommUndsCommUndsCommUndsCommUndsCommUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'TraitDecl'Unds'TraitDef'Unds'Safety'Unds'MIRBool'Unds'MIRBool'Unds'MIRBool'Unds'MIRBool'Unds'MIRBool'Unds'TraitSpecializationKind'Unds'MaybeIdents'Unds'MIRBool'Unds'MIRBool{}
+  - action:
+    - 7709
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+      - - ['10', '1']
+        - STRING.String
+      - - ['2', '1']
+        - STRING.String
+      - - ['3', '1']
+        - STRING.String
+      - - ['4', '1']
+        - STRING.String
+      - - ['5', '1']
+        - STRING.String
+      - - ['6', '1']
+        - STRING.String
+      - - ['7', '1']
+        - STRING.String
+      - - ['8', '1']
+        - STRING.String
+      - - ['9', '1']
+        - STRING.String
+  - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String, STRING.String,
+    STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

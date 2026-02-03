@@ -1,0 +1,16 @@
+default:
+  action:
+  - 6400
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblTypeInfo'ColnColn'ArrayType{}
+  - action:
+    - 6401
+    - - - ['1', '1']
+        - STRING.String
+      - - ['0', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: *id001

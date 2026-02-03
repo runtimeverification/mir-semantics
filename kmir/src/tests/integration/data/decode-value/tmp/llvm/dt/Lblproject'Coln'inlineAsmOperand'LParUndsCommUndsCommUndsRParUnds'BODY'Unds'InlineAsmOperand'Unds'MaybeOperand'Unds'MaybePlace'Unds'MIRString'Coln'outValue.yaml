@@ -1,0 +1,14 @@
+default: null
+specializations:
+- - LblinlineAsmOperand'LParUndsCommUndsCommUndsRParUnds'BODY'Unds'InlineAsmOperand'Unds'MaybeOperand'Unds'MaybePlace'Unds'MIRString{}
+  - action:
+    - 7634
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+      - - ['2', '1']
+        - STRING.String
+  - [STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

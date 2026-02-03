@@ -1,0 +1,275 @@
+args:
+- - &id001 ['1']
+  - STRING.String
+next:
+  default: null
+  specializations:
+  - - '1'
+    - action:
+      - 5879
+      - - - *id001
+          - STRING.String
+    - []
+  - - '0'
+    - default: &id003
+        action:
+        - 5880
+        - - - *id001
+            - STRING.String
+      specializations:
+      - - LblTypeInfo'ColnColn'ArrayType{}
+        - default: null
+          specializations:
+          - - LblsomeTyConst'LParUndsRParUnds'TYPES'Unds'MaybeTyConst'Unds'TyConst{}
+            - default: null
+              specializations:
+              - - LbltyConst'LParUndsCommUndsRParUnds'TYPES'Unds'TyConst'Unds'TyConstKind'Unds'TyConstId{}
+                - action:
+                  - 5881
+                  - - - ['1', '0', '1', '1']
+                      - STRING.String
+                    - - &id002 ['0', '1']
+                      - STRING.String
+                    - - ['0', '0', '1', '1']
+                      - STRING.String
+                - [STRING.String, STRING.String]
+              sort: STRING.String
+              occurrence: ['0', '1', '1']
+            - [STRING.String]
+          - - LblnoTyConst'Unds'TYPES'Unds'MaybeTyConst{}
+            - action:
+              - 5882
+              - - - *id002
+                  - STRING.String
+            - []
+          sort: STRING.String
+          occurrence: ['1', '1']
+        - [STRING.String, STRING.String]
+      - - LblTypeInfo'ColnColn'EnumType{}
+        - default: *id003
+          specializations:
+          - - LblsomeLayoutShape'LParUndsRParUnds'TYPES'Unds'MaybeLayoutShape'Unds'LayoutShape{}
+            - default: null
+              specializations:
+              - - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+                - action:
+                  - 5883
+                  - - - ['0', '1']
+                      - STRING.String
+                    - - ['1', '1']
+                      - STRING.String
+                    - - ['2', '1']
+                      - STRING.String
+                    - - ['3', '1']
+                      - STRING.String
+                    - - ['0', '0', '4', '1']
+                      - STRING.String
+                    - - ['1', '0', '4', '1']
+                      - STRING.String
+                    - - ['2', '0', '4', '1']
+                      - STRING.String
+                    - - ['3', '0', '4', '1']
+                      - STRING.String
+                    - - ['4', '0', '4', '1']
+                      - STRING.String
+                - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+              sort: STRING.String
+              occurrence: ['0', '4', '1']
+            - [STRING.String]
+          sort: STRING.String
+          occurrence: ['4', '1']
+        - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+      - - LblTypeInfo'ColnColn'FunType{}
+        - action:
+          - 5884
+          - - - ['0', '1']
+              - STRING.String
+        - [STRING.String]
+      - - LblTypeInfo'ColnColn'PrimitiveType{}
+        - default: *id003
+          specializations:
+          - - LblPrimitiveType'ColnColn'Bool{}
+            - action:
+              - 5885
+              - []
+            - []
+          - - LblPrimitiveType'ColnColn'Char{}
+            - action:
+              - 5886
+              - []
+            - []
+          - - LblPrimitiveType'ColnColn'Float{}
+            - default: null
+              specializations:
+              - - LblFloatTy'ColnColn'F128{}
+                - action:
+                  - 5887
+                  - []
+                - []
+              - - LblFloatTy'ColnColn'F16{}
+                - action:
+                  - 5888
+                  - []
+                - []
+              - - LblFloatTy'ColnColn'F32{}
+                - action:
+                  - 5889
+                  - []
+                - []
+              - - LblFloatTy'ColnColn'F64{}
+                - action:
+                  - 5890
+                  - []
+                - []
+              sort: STRING.String
+              occurrence: ['0', '0', '1']
+            - [STRING.String]
+          - - LblPrimitiveType'ColnColn'Str{}
+            - action:
+              - 5891
+              - []
+            - []
+          sort: STRING.String
+          occurrence: ['0', '1']
+        - [STRING.String]
+      - - LblTypeInfo'ColnColn'PtrType{}
+        - args:
+          - - &id004 ['0', '1']
+            - STRING.String
+          next:
+            default: null
+            specializations:
+            - - '1'
+              - action:
+                - 5892
+                - - - *id004
+                    - STRING.String
+              - []
+            - - '0'
+              - *id003
+              - []
+            bitwidth: 1
+            sort: BOOL.Bool
+            occurrence: &id005 [side_condition_5892]
+          function: side_condition_5892
+          sort: BOOL.Bool
+          occurrence: *id005
+        - [STRING.String]
+      - - LblTypeInfo'ColnColn'RefType{}
+        - args:
+          - - &id006 ['0', '1']
+            - STRING.String
+          next:
+            default: null
+            specializations:
+            - - '1'
+              - action:
+                - 5894
+                - - - *id006
+                    - STRING.String
+              - []
+            - - '0'
+              - *id003
+              - []
+            bitwidth: 1
+            sort: BOOL.Bool
+            occurrence: &id007 [side_condition_5894]
+          function: side_condition_5894
+          sort: BOOL.Bool
+          occurrence: *id007
+        - [STRING.String]
+      - - LblTypeInfo'ColnColn'StructType{}
+        - default: *id003
+          specializations:
+          - - LblsomeLayoutShape'LParUndsRParUnds'TYPES'Unds'MaybeLayoutShape'Unds'LayoutShape{}
+            - default: null
+              specializations:
+              - - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+                - action:
+                  - 5896
+                  - - - ['0', '1']
+                      - STRING.String
+                    - - ['1', '1']
+                      - STRING.String
+                    - - ['2', '1']
+                      - STRING.String
+                    - - ['0', '0', '3', '1']
+                      - STRING.String
+                    - - ['1', '0', '3', '1']
+                      - STRING.String
+                    - - ['2', '0', '3', '1']
+                      - STRING.String
+                    - - ['3', '0', '3', '1']
+                      - STRING.String
+                    - - ['4', '0', '3', '1']
+                      - STRING.String
+                - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+              sort: STRING.String
+              occurrence: ['0', '3', '1']
+            - [STRING.String]
+          sort: STRING.String
+          occurrence: ['3', '1']
+        - [STRING.String, STRING.String, STRING.String, STRING.String]
+      - - LblTypeInfo'ColnColn'TupleType{}
+        - default: null
+          specializations:
+          - - LblsomeLayoutShape'LParUndsRParUnds'TYPES'Unds'MaybeLayoutShape'Unds'LayoutShape{}
+            - default: null
+              specializations:
+              - - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+                - action:
+                  - 5897
+                  - - - ['0', '0', '1', '1']
+                      - STRING.String
+                    - - ['1', '0', '1', '1']
+                      - STRING.String
+                    - - ['2', '0', '1', '1']
+                      - STRING.String
+                    - - ['3', '0', '1', '1']
+                      - STRING.String
+                    - - &id008 ['0', '1']
+                      - STRING.String
+                    - - ['4', '0', '1', '1']
+                      - STRING.String
+                - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+              sort: STRING.String
+              occurrence: ['0', '1', '1']
+            - [STRING.String]
+          - - LblnoLayoutShape'Unds'TYPES'Unds'MaybeLayoutShape{}
+            - default: null
+              specializations:
+              - - LblTys'ColnColn'append{}
+                - action:
+                  - 5898
+                  - - - &id009 ['1', '1']
+                      - STRING.String
+                    - - ['0', '0', '1']
+                      - STRING.String
+                    - - ['1', '0', '1']
+                      - STRING.String
+                - [STRING.String, STRING.String]
+              - - LblTys'ColnColn'empty{}
+                - action:
+                  - 5899
+                  - []
+                - []
+              sort: STRING.String
+              occurrence: *id008
+            - []
+          sort: STRING.String
+          occurrence: *id009
+        - [STRING.String, STRING.String]
+      - - LblTypeInfo'ColnColn'VoidType{}
+        - action:
+          - 5900
+          - []
+        - []
+      sort: STRING.String
+      occurrence: *id001
+    - []
+  bitwidth: 1
+  sort: BOOL.Bool
+  occurrence: &id010 [side_condition_5879]
+function: side_condition_5879
+sort: BOOL.Bool
+occurrence: *id010

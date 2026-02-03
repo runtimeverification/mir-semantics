@@ -1,0 +1,483 @@
+default: null
+specializations:
+- - Lbl'-LT-'generatedTop'-GT-'{}
+  - default: null
+    specializations:
+    - - Lbl'-LT-'kmir'-GT-'{}
+      - default: null
+        specializations:
+        - - Lbl'-LT-'stack'-GT-'{}
+          - default: null
+            specializations:
+            - - Lbl'-LT-'currentFunc'-GT-'{}
+              - default: null
+                specializations:
+                - - Lbl'-LT-'k'-GT-'{}
+                  - default: null
+                    specializations:
+                    - - Lbl'-LT-'currentFrame'-GT-'{}
+                      - default: null
+                        specializations:
+                        - - Lbl'-LT-'locals'-GT-'{}
+                          - default: null
+                            specializations:
+                            - - Lbl'-LT-'unwind'-GT-'{}
+                              - default: null
+                                specializations:
+                                - - Lbl'-LT-'target'-GT-'{}
+                                  - default: null
+                                    specializations:
+                                    - - Lbl'-LT-'dest'-GT-'{}
+                                      - default: null
+                                        specializations:
+                                        - - Lbl'-LT-'caller'-GT-'{}
+                                          - default: null
+                                            specializations:
+                                            - - Lbl'-LT-'currentBody'-GT-'{}
+                                              - default: fail
+                                                specializations:
+                                                - - LblsomeBasicBlockIdx'LParUndsRParUnds'BODY'Unds'MaybeBasicBlockIdx'Unds'BasicBlockIdx{}
+                                                  - default: fail
+                                                    specializations:
+                                                    - - kseq{}
+                                                      - default: fail
+                                                        specializations:
+                                                        - - Lbl'Hash'execTerminator'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'Terminator{}
+                                                          - default: null
+                                                            specializations:
+                                                            - - Lblterminator'LParUndsCommUndsRParUnds'BODY'Unds'Terminator'Unds'TerminatorKind'Unds'Span{}
+                                                              - default: fail
+                                                                specializations:
+                                                                - - LblTerminatorKind'ColnColn'Return{}
+                                                                  - args:
+                                                                    - - &id001 ['0',
+                                                                        '4', '0',
+                                                                        '1']
+                                                                      - LIST.List
+                                                                    next:
+                                                                      default: &id005
+                                                                        args:
+                                                                        - - *id001
+                                                                          - LIST.List
+                                                                        - - [lit,
+                                                                            '0', MINT.MInt
+                                                                              64]
+                                                                          - MINT.MInt
+                                                                            64
+                                                                        next:
+                                                                          default: fail
+                                                                          specializations:
+                                                                          - - inj{SortStackFrame{},
+                                                                              SortKItem{}}
+                                                                            - default: null
+                                                                              specializations:
+                                                                              - - LblStackFrame'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'KMIR-CONFIGURATION'Unds'StackFrame'Unds'Ty'Unds'Place'Unds'MaybeBasicBlockIdx'Unds'UnwindAction'Unds'List{}
+                                                                                - args:
+                                                                                  - - &id002 [
+                                                                                      '0',
+                                                                                      '5',
+                                                                                      '3',
+                                                                                      '0',
+                                                                                      '1']
+                                                                                    - LIST.List
+                                                                                  next:
+                                                                                    default: &id003
+                                                                                      args:
+                                                                                      - - *id002
+                                                                                        - LIST.List
+                                                                                      - - [
+                                                                                          lit,
+                                                                                          '0',
+                                                                                          MINT.MInt
+                                                                                            64]
+                                                                                        - MINT.MInt
+                                                                                          64
+                                                                                      next:
+                                                                                        default: fail
+                                                                                        specializations:
+                                                                                        - - inj{SortTypedValue{},
+                                                                                            SortKItem{}}
+                                                                                          - default: null
+                                                                                            specializations:
+                                                                                            - - LbltypedValue{}
+                                                                                              - args:
+                                                                                                - - [
+                                                                                                    '0',
+                                                                                                    '4',
+                                                                                                    '0',
+                                                                                                    '1']
+                                                                                                  - LIST.List
+                                                                                                - - [
+                                                                                                    lit,
+                                                                                                    '1',
+                                                                                                    MINT.MInt
+                                                                                                      64]
+                                                                                                  - MINT.MInt
+                                                                                                    64
+                                                                                                - - [
+                                                                                                    lit,
+                                                                                                    '0',
+                                                                                                    MINT.MInt
+                                                                                                      64]
+                                                                                                  - MINT.MInt
+                                                                                                    64
+                                                                                                next:
+                                                                                                  args:
+                                                                                                  - - [
+                                                                                                      '0',
+                                                                                                      '5',
+                                                                                                      '3',
+                                                                                                      '0',
+                                                                                                      '1']
+                                                                                                    - LIST.List
+                                                                                                  - - [
+                                                                                                      lit,
+                                                                                                      '1',
+                                                                                                      MINT.MInt
+                                                                                                        64]
+                                                                                                    - MINT.MInt
+                                                                                                      64
+                                                                                                  - - [
+                                                                                                      lit,
+                                                                                                      '0',
+                                                                                                      MINT.MInt
+                                                                                                        64]
+                                                                                                    - MINT.MInt
+                                                                                                      64
+                                                                                                  next:
+                                                                                                    action:
+                                                                                                    - 6119
+                                                                                                    - - - [
+                                                                                                          '1',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '1',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '0',
+                                                                                                          '2',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - LIST.List
+                                                                                                      - - [
+                                                                                                          '0',
+                                                                                                          '4',
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '1',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '5',
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '2',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '5',
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '1',
+                                                                                                          '0',
+                                                                                                          '5',
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - LIST.List
+                                                                                                      - - [
+                                                                                                          '1',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '5',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '1',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '0',
+                                                                                                          '1',
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '0',
+                                                                                                          '2',
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '4',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '1',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '4',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '4',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '4',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - LIST.List
+                                                                                                      - - [
+                                                                                                          '2',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '4',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '1',
+                                                                                                          '0',
+                                                                                                          '4',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - LIST.List
+                                                                                                      - - [
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '3',
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '4',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                      - - [
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '0',
+                                                                                                          '5',
+                                                                                                          '3',
+                                                                                                          '0',
+                                                                                                          '1']
+                                                                                                        - STRING.String
+                                                                                                  function: hook_LIST_range_long
+                                                                                                  sort: LIST.List
+                                                                                                  occurrence: [
+                                                                                                    '1',
+                                                                                                    '0',
+                                                                                                    '5',
+                                                                                                    '3',
+                                                                                                    '0',
+                                                                                                    '1']
+                                                                                                function: hook_LIST_range_long
+                                                                                                sort: LIST.List
+                                                                                                occurrence: [
+                                                                                                  '1',
+                                                                                                  '0',
+                                                                                                  '4',
+                                                                                                  '0',
+                                                                                                  '1']
+                                                                                              - [
+                                                                                                STRING.String,
+                                                                                                STRING.String,
+                                                                                                STRING.String]
+                                                                                            sort: STRING.String
+                                                                                            occurrence: [
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '5',
+                                                                                              '3',
+                                                                                              '0',
+                                                                                              '1']
+                                                                                          - [
+                                                                                            STRING.String]
+                                                                                        sort: STRING.String
+                                                                                        occurrence: [
+                                                                                          '0',
+                                                                                          '0',
+                                                                                          '5',
+                                                                                          '3',
+                                                                                          '0',
+                                                                                          '1']
+                                                                                      function: hook_LIST_get_long
+                                                                                      sort: STRING.String
+                                                                                      occurrence: [
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '5',
+                                                                                        '3',
+                                                                                        '0',
+                                                                                        '1']
+                                                                                    specializations:
+                                                                                    - - '0'
+                                                                                      - fail
+                                                                                      - []
+                                                                                    - - '1'
+                                                                                      - *id003
+                                                                                      - [
+                                                                                        STRING.String]
+                                                                                    bitwidth: 64
+                                                                                    sort: MINT.MInt
+                                                                                      64
+                                                                                    occurrence: &id004 [
+                                                                                      size,
+                                                                                      '0',
+                                                                                      '5',
+                                                                                      '3',
+                                                                                      '0',
+                                                                                      '1']
+                                                                                  function: hook_LIST_size_long
+                                                                                  sort: MINT.MInt
+                                                                                    64
+                                                                                  occurrence: *id004
+                                                                                - [
+                                                                                  STRING.String,
+                                                                                  STRING.String,
+                                                                                  STRING.String,
+                                                                                  STRING.String,
+                                                                                  LIST.List]
+                                                                              sort: STRING.String
+                                                                              occurrence: [
+                                                                                '0',
+                                                                                '0',
+                                                                                '0',
+                                                                                '4',
+                                                                                '0',
+                                                                                '1']
+                                                                            - [STRING.String]
+                                                                          sort: STRING.String
+                                                                          occurrence: [
+                                                                            '0', '0',
+                                                                            '4', '0',
+                                                                            '1']
+                                                                        function: hook_LIST_get_long
+                                                                        sort: STRING.String
+                                                                        occurrence: [
+                                                                          '0', '0',
+                                                                          '4', '0',
+                                                                          '1']
+                                                                      specializations:
+                                                                      - - '0'
+                                                                        - fail
+                                                                        - []
+                                                                      - - '1'
+                                                                        - *id005
+                                                                        - [STRING.String]
+                                                                      bitwidth: 64
+                                                                      sort: MINT.MInt
+                                                                        64
+                                                                      occurrence: &id006 [
+                                                                        size, '0',
+                                                                        '4', '0',
+                                                                        '1']
+                                                                    function: hook_LIST_size_long
+                                                                    sort: MINT.MInt
+                                                                      64
+                                                                    occurrence: *id006
+                                                                  - []
+                                                                sort: STRING.String
+                                                                occurrence: ['0',
+                                                                  '0', '0', '0', '0',
+                                                                  '0', '1']
+                                                              - [STRING.String, STRING.String]
+                                                            sort: STRING.String
+                                                            occurrence: ['0', '0',
+                                                              '0', '0', '0', '1']
+                                                          - [STRING.String]
+                                                        sort: STRING.String
+                                                        occurrence: ['0', '0', '0',
+                                                          '0', '1']
+                                                      - [STRING.String, STRING.String]
+                                                    sort: STRING.String
+                                                    occurrence: ['0', '0', '0', '1']
+                                                  - [STRING.String]
+                                                sort: STRING.String
+                                                occurrence: ['0', '3', '3', '0', '1']
+                                              - [LIST.List]
+                                            sort: STRING.String
+                                            occurrence: ['0', '3', '0', '1']
+                                          - [STRING.String]
+                                        sort: STRING.String
+                                        occurrence: ['1', '3', '0', '1']
+                                      - [STRING.String]
+                                    sort: STRING.String
+                                    occurrence: ['2', '3', '0', '1']
+                                  - [STRING.String]
+                                sort: STRING.String
+                                occurrence: ['3', '3', '0', '1']
+                              - [STRING.String]
+                            sort: STRING.String
+                            occurrence: ['4', '3', '0', '1']
+                          - [LIST.List]
+                        sort: STRING.String
+                        occurrence: ['5', '3', '0', '1']
+                      - [STRING.String, STRING.String, STRING.String, STRING.String,
+                        STRING.String, STRING.String]
+                    sort: STRING.String
+                    occurrence: ['3', '0', '1']
+                  - [STRING.String]
+                sort: STRING.String
+                occurrence: ['0', '0', '1']
+              - [STRING.String]
+            sort: STRING.String
+            occurrence: ['2', '0', '1']
+          - [LIST.List]
+        sort: STRING.String
+        occurrence: ['4', '0', '1']
+      - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String,
+        STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

@@ -1,0 +1,12 @@
+default: null
+specializations:
+- - LblvarDebugInfoFragment'LParUndsCommUndsRParUnds'BODY'Unds'VarDebugInfoFragment'Unds'Ty'Unds'ProjectionElems{}
+  - action:
+    - 7737
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

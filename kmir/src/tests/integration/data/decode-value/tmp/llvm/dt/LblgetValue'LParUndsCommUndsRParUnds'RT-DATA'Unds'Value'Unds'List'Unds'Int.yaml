@@ -1,0 +1,49 @@
+args:
+- - &id001 ['2']
+  - INT.Int
+- - &id002 ['1']
+  - LIST.List
+next:
+  default: null
+  specializations:
+  - - '1'
+    - action:
+      - 6438
+      - - - *id001
+          - INT.Int
+        - - *id002
+          - LIST.List
+    - []
+  - - '0'
+    - args:
+      - - *id001
+        - INT.Int
+      - - *id002
+        - LIST.List
+      next:
+        default: null
+        specializations:
+        - - '1'
+          - action:
+            - 6439
+            - - - *id001
+                - INT.Int
+              - - *id002
+                - LIST.List
+          - []
+        - - '0'
+          - fail
+          - []
+        bitwidth: 1
+        sort: BOOL.Bool
+        occurrence: &id003 [side_condition_6439]
+      function: side_condition_6439
+      sort: BOOL.Bool
+      occurrence: *id003
+    - []
+  bitwidth: 1
+  sort: BOOL.Bool
+  occurrence: &id004 [side_condition_6438]
+function: side_condition_6438
+sort: BOOL.Bool
+occurrence: *id004

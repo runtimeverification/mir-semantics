@@ -1,0 +1,102 @@
+default: null
+specializations:
+- - inj{SortFloatTy{}, SortNumTy{}}
+  - default: null
+    specializations:
+    - - LblFloatTy'ColnColn'F128{}
+      - action:
+        - 5826
+        - []
+      - []
+    - - LblFloatTy'ColnColn'F16{}
+      - action:
+        - 5827
+        - []
+      - []
+    - - LblFloatTy'ColnColn'F32{}
+      - action:
+        - 5828
+        - []
+      - []
+    - - LblFloatTy'ColnColn'F64{}
+      - action:
+        - 5829
+        - []
+      - []
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+- - inj{SortIntTy{}, SortNumTy{}}
+  - default: null
+    specializations:
+    - - LblIntTy'ColnColn'I128{}
+      - action:
+        - 5830
+        - []
+      - []
+    - - LblIntTy'ColnColn'I16{}
+      - action:
+        - 5831
+        - []
+      - []
+    - - LblIntTy'ColnColn'I32{}
+      - action:
+        - 5832
+        - []
+      - []
+    - - LblIntTy'ColnColn'I64{}
+      - action:
+        - 5833
+        - []
+      - []
+    - - LblIntTy'ColnColn'I8{}
+      - action:
+        - 5834
+        - []
+      - []
+    - - LblIntTy'ColnColn'Isize{}
+      - action:
+        - 5835
+        - []
+      - []
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+- - inj{SortUintTy{}, SortNumTy{}}
+  - default: null
+    specializations:
+    - - LblUintTy'ColnColn'U128{}
+      - action:
+        - 5836
+        - []
+      - []
+    - - LblUintTy'ColnColn'U16{}
+      - action:
+        - 5837
+        - []
+      - []
+    - - LblUintTy'ColnColn'U32{}
+      - action:
+        - 5838
+        - []
+      - []
+    - - LblUintTy'ColnColn'U64{}
+      - action:
+        - 5839
+        - []
+      - []
+    - - LblUintTy'ColnColn'U8{}
+      - action:
+        - 5840
+        - []
+      - []
+    - - LblUintTy'ColnColn'Usize{}
+      - action:
+        - 5841
+        - []
+      - []
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

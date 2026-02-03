@@ -1,0 +1,38 @@
+default:
+  action:
+  - 6558
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblBinOp'ColnColn'Eq{}
+  - action:
+    - 6559
+    - []
+  - []
+- - LblBinOp'ColnColn'Ge{}
+  - action:
+    - 6560
+    - []
+  - []
+- - LblBinOp'ColnColn'Gt{}
+  - action:
+    - 6561
+    - []
+  - []
+- - LblBinOp'ColnColn'Le{}
+  - action:
+    - 6562
+    - []
+  - []
+- - LblBinOp'ColnColn'Lt{}
+  - action:
+    - 6563
+    - []
+  - []
+- - LblBinOp'ColnColn'Ne{}
+  - action:
+    - 6564
+    - []
+  - []
+sort: STRING.String
+occurrence: *id001

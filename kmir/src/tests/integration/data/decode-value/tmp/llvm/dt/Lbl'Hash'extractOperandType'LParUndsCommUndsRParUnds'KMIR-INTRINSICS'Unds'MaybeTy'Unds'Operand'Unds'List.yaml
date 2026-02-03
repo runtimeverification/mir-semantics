@@ -1,0 +1,120 @@
+default: null
+specializations:
+- - LblOperand'ColnColn'Constant{}
+  - default: null
+    specializations:
+    - - LblconstOperand'LParUndsCommUndsCommUndsRParUnds'BODY'Unds'ConstOperand'Unds'Span'Unds'MaybeUserTypeAnnotationIndex'Unds'MirConst{}
+      - default: null
+        specializations:
+        - - LblmirConst'LParUndsCommUndsCommUndsRParUnds'TYPES'Unds'MirConst'Unds'ConstantKind'Unds'Ty'Unds'MirConstId{}
+          - action:
+            - 5903
+            - - - ['0', '0', '1']
+                - STRING.String
+              - - ['1', '0', '1']
+                - STRING.String
+              - - ['0', '2', '0', '1']
+                - STRING.String
+              - - ['2', '2', '0', '1']
+                - STRING.String
+              - - &id001 ['2']
+                - LIST.List
+              - - ['1', '2', '0', '1']
+                - STRING.String
+          - [STRING.String, STRING.String, STRING.String]
+        sort: STRING.String
+        occurrence: ['2', '0', '1']
+      - [STRING.String, STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+- - LblOperand'ColnColn'Copy{}
+  - default: null
+    specializations:
+    - - Lblplace{}
+      - default: null
+        specializations:
+        - - Lbllocal{}
+          - args:
+            - - &id002 ['0', '0', '0', '1']
+              - INT.Int
+            - - *id001
+              - LIST.List
+            next:
+              default: null
+              specializations:
+              - - '1'
+                - action:
+                  - 5904
+                  - - - *id002
+                      - INT.Int
+                    - - *id001
+                      - LIST.List
+                    - - ['1', '0', '1']
+                      - STRING.String
+                - []
+              - - '0'
+                - &id005
+                  action:
+                  - 5902
+                  - - - &id007 ['1']
+                      - STRING.String
+                    - - *id001
+                      - LIST.List
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: &id003 [side_condition_5904]
+            function: side_condition_5904
+            sort: BOOL.Bool
+            occurrence: *id003
+          - [INT.Int]
+        sort: STRING.String
+        occurrence: ['0', '0', '1']
+      - [STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+- - LblOperand'ColnColn'Move{}
+  - default: null
+    specializations:
+    - - Lblplace{}
+      - default: null
+        specializations:
+        - - Lbllocal{}
+          - args:
+            - - &id004 ['0', '0', '0', '1']
+              - INT.Int
+            - - *id001
+              - LIST.List
+            next:
+              default: null
+              specializations:
+              - - '1'
+                - action:
+                  - 5905
+                  - - - *id004
+                      - INT.Int
+                    - - *id001
+                      - LIST.List
+                    - - ['1', '0', '1']
+                      - STRING.String
+                - []
+              - - '0'
+                - *id005
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: &id006 [side_condition_5905]
+            function: side_condition_5905
+            sort: BOOL.Bool
+            occurrence: *id006
+          - [INT.Int]
+        sort: STRING.String
+        occurrence: ['0', '0', '1']
+      - [STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+sort: STRING.String
+occurrence: *id007

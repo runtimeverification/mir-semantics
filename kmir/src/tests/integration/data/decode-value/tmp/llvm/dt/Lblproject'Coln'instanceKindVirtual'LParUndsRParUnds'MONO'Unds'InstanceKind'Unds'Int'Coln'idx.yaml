@@ -1,0 +1,10 @@
+default: fail
+specializations:
+- - LblinstanceKindVirtual'LParUndsRParUnds'MONO'Unds'InstanceKind'Unds'Int{}
+  - action:
+    - 7638
+    - - - ['0', '1']
+        - INT.Int
+  - [INT.Int]
+sort: STRING.String
+occurrence: ['1']

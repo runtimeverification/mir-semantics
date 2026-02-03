@@ -1,0 +1,31 @@
+// macros
+// rule `bitmask128_KMIR-LEMMAS_Int`(.KList)=>#token("340282366920938463463374607431768211455","Int") requires #token("true","Bool") ensures #token("true","Bool") [UNIQUE_ID(88839371d2d8f0f871f4238aca3f946a876d64c36f0f37b766f25063140f74f7), macro, org.kframework.attributes.Location(Location(149,8,149,43)), org.kframework.attributes.Source(Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)), org.kframework.definition.Production(syntax #RuleContent ::= #RuleBody [symbol(#ruleNoConditions)])]
+  axiom{R} \equals{SortInt{},R} (
+    Lblbitmask128'Unds'KMIR-LEMMAS'Unds'Int{}(),
+    \dv{SortInt{}}("340282366920938463463374607431768211455"))
+  [UNIQUE'Unds'ID{}("88839371d2d8f0f871f4238aca3f946a876d64c36f0f37b766f25063140f74f7"), macro{}(), org'Stop'kframework'Stop'attributes'Stop'Location{}("Location(149,8,149,43)"), org'Stop'kframework'Stop'attributes'Stop'Source{}("Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)"), priority{}("50")]
+
+// rule `bitmask16_KMIR-LEMMAS_Int`(.KList)=>#token("65535","Int") requires #token("true","Bool") ensures #token("true","Bool") [UNIQUE_ID(7b34ee871ecaed3ecf9a0934ffda9795d204b98add91d2a012979adcc5474e3b), macro, org.kframework.attributes.Location(Location(146,8,146,43)), org.kframework.attributes.Source(Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)), org.kframework.definition.Production(syntax #RuleContent ::= #RuleBody [symbol(#ruleNoConditions)])]
+  axiom{R} \equals{SortInt{},R} (
+    Lblbitmask16'Unds'KMIR-LEMMAS'Unds'Int{}(),
+    \dv{SortInt{}}("65535"))
+  [UNIQUE'Unds'ID{}("7b34ee871ecaed3ecf9a0934ffda9795d204b98add91d2a012979adcc5474e3b"), macro{}(), org'Stop'kframework'Stop'attributes'Stop'Location{}("Location(146,8,146,43)"), org'Stop'kframework'Stop'attributes'Stop'Source{}("Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)"), priority{}("50")]
+
+// rule `bitmask32_KMIR-LEMMAS_Int`(.KList)=>#token("4294967295","Int") requires #token("true","Bool") ensures #token("true","Bool") [UNIQUE_ID(069c49807663071ca9d48ceb873053304ace4593cbd076ca93ea21c945972d94), macro, org.kframework.attributes.Location(Location(147,8,147,43)), org.kframework.attributes.Source(Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)), org.kframework.definition.Production(syntax #RuleContent ::= #RuleBody [symbol(#ruleNoConditions)])]
+  axiom{R} \equals{SortInt{},R} (
+    Lblbitmask32'Unds'KMIR-LEMMAS'Unds'Int{}(),
+    \dv{SortInt{}}("4294967295"))
+  [UNIQUE'Unds'ID{}("069c49807663071ca9d48ceb873053304ace4593cbd076ca93ea21c945972d94"), macro{}(), org'Stop'kframework'Stop'attributes'Stop'Location{}("Location(147,8,147,43)"), org'Stop'kframework'Stop'attributes'Stop'Source{}("Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)"), priority{}("50")]
+
+// rule `bitmask64_KMIR-LEMMAS_Int`(.KList)=>#token("18446744073709551615","Int") requires #token("true","Bool") ensures #token("true","Bool") [UNIQUE_ID(239bd489c4c734ba81e6116cf39cdfb4c34265f6ac74c4369dc8b40279bbc76f), macro, org.kframework.attributes.Location(Location(148,8,148,43)), org.kframework.attributes.Source(Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)), org.kframework.definition.Production(syntax #RuleContent ::= #RuleBody [symbol(#ruleNoConditions)])]
+  axiom{R} \equals{SortInt{},R} (
+    Lblbitmask64'Unds'KMIR-LEMMAS'Unds'Int{}(),
+    \dv{SortInt{}}("18446744073709551615"))
+  [UNIQUE'Unds'ID{}("239bd489c4c734ba81e6116cf39cdfb4c34265f6ac74c4369dc8b40279bbc76f"), macro{}(), org'Stop'kframework'Stop'attributes'Stop'Location{}("Location(148,8,148,43)"), org'Stop'kframework'Stop'attributes'Stop'Source{}("Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)"), priority{}("50")]
+
+// rule `bitmask8_KMIR-LEMMAS_Int`(.KList)=>#token("255","Int") requires #token("true","Bool") ensures #token("true","Bool") [UNIQUE_ID(0e8765dd2406bc7154b9a0acfeb503c3048e73fb64fe79eb6137af519c2a72c0), macro, org.kframework.attributes.Location(Location(145,8,145,43)), org.kframework.attributes.Source(Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)), org.kframework.definition.Production(syntax #RuleContent ::= #RuleBody [symbol(#ruleNoConditions)])]
+  axiom{R} \equals{SortInt{},R} (
+    Lblbitmask8'Unds'KMIR-LEMMAS'Unds'Int{}(),
+    \dv{SortInt{}}("255"))
+  [UNIQUE'Unds'ID{}("0e8765dd2406bc7154b9a0acfeb503c3048e73fb64fe79eb6137af519c2a72c0"), macro{}(), org'Stop'kframework'Stop'attributes'Stop'Location{}("Location(145,8,145,43)"), org'Stop'kframework'Stop'attributes'Stop'Source{}("Source(/home/daniel/.cache/kdist-a315c6b/mir-semantics/source/mir-semantics/lemmas/kmir-lemmas.md)"), priority{}("50")]
+

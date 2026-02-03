@@ -1,0 +1,30 @@
+default:
+  action:
+  - 6015
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblValue'ColnColn'BoolVal{}
+  - action:
+    - 6016
+    - - - ['0', '1']
+        - BOOL.Bool
+  - [BOOL.Bool]
+- - LblValue'ColnColn'Integer{}
+  - action:
+    - 6017
+    - - - ['0', '1']
+        - INT.Int
+      - - ['1', '1']
+        - INT.Int
+      - - ['2', '1']
+        - BOOL.Bool
+  - [INT.Int, INT.Int, BOOL.Bool]
+- - Lblthunk'LParUndsRParUnds'RT-DATA'Unds'Value'Unds'Evaluation{}
+  - action:
+    - 6018
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: *id001

@@ -1,0 +1,12 @@
+default: null
+specializations:
+- - LbluserTypeProjection'LParUndsCommUndsRParUnds'BODY'Unds'UserTypeProjection'Unds'UserTypeAnnotationIndex'Unds'Opaque{}
+  - action:
+    - 7729
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

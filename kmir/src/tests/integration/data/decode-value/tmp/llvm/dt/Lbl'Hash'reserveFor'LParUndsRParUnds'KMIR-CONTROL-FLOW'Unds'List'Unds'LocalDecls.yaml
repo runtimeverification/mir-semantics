@@ -1,0 +1,27 @@
+default: null
+specializations:
+- - LblLocalDecls'ColnColn'append{}
+  - default: null
+    specializations:
+    - - LbllocalDecl'LParUndsCommUndsCommUndsRParUnds'BODY'Unds'LocalDecl'Unds'Ty'Unds'Span'Unds'Mutability{}
+      - action:
+        - 5988
+        - - - ['1', '0', '1']
+            - STRING.String
+          - - ['2', '0', '1']
+            - STRING.String
+          - - ['1', '1']
+            - STRING.String
+          - - ['0', '0', '1']
+            - STRING.String
+      - [STRING.String, STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String]
+- - LblLocalDecls'ColnColn'empty{}
+  - action:
+    - 5989
+    - []
+  - []
+sort: STRING.String
+occurrence: ['1']

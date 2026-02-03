@@ -1,0 +1,10 @@
+default: fail
+specializations:
+- - LblAbi'ColnColn'C{}
+  - action:
+    - 7166
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

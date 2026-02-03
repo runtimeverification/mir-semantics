@@ -1,0 +1,36 @@
+default:
+  action:
+  - 6047
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblOperand'ColnColn'Copy{}
+  - default: null
+    specializations:
+    - - Lblplace{}
+      - action:
+        - 6048
+        - - - ['0', '0', '1']
+            - STRING.String
+          - - ['1', '0', '1']
+            - STRING.String
+      - [STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+- - LblOperand'ColnColn'Move{}
+  - default: null
+    specializations:
+    - - Lblplace{}
+      - action:
+        - 6049
+        - - - ['0', '0', '1']
+            - STRING.String
+          - - ['1', '0', '1']
+            - STRING.String
+      - [STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+sort: STRING.String
+occurrence: *id001

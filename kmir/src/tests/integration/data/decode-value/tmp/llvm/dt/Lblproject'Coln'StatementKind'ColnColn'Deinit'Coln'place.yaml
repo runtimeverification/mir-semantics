@@ -1,0 +1,10 @@
+default: fail
+specializations:
+- - LblStatementKind'ColnColn'Deinit{}
+  - action:
+    - 7455
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

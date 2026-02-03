@@ -1,0 +1,12 @@
+default: null
+specializations:
+- - LbltraitPredicate'LParUndsCommUndsRParUnds'TYPES'Unds'TraitPredicate'Unds'TraitDef'Unds'PredicatePolarity{}
+  - action:
+    - 7717
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

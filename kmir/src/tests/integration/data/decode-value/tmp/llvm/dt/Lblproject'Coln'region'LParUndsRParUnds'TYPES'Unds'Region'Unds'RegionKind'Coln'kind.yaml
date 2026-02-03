@@ -1,0 +1,10 @@
+default: null
+specializations:
+- - Lblregion'LParUndsRParUnds'TYPES'Unds'Region'Unds'RegionKind{}
+  - action:
+    - 7694
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

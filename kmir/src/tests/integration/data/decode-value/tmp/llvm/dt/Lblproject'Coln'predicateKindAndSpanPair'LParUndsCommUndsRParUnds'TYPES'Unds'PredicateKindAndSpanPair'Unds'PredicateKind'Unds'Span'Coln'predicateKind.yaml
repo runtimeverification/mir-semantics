@@ -1,0 +1,12 @@
+default: null
+specializations:
+- - LblpredicateKindAndSpanPair'LParUndsCommUndsRParUnds'TYPES'Unds'PredicateKindAndSpanPair'Unds'PredicateKind'Unds'Span{}
+  - action:
+    - 7685
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

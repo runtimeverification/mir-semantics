@@ -1,0 +1,14 @@
+default:
+  action:
+  - 6748
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblIntrinsicFunction{}
+  - action:
+    - 6749
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: *id001

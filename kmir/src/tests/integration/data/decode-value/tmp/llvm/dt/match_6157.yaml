@@ -1,0 +1,78 @@
+default: null
+specializations:
+- - Lbl'-LT-'generatedTop'-GT-'{}
+  - default: null
+    specializations:
+    - - Lbl'-LT-'kmir'-GT-'{}
+      - default: null
+        specializations:
+        - - Lbl'-LT-'k'-GT-'{}
+          - default: fail
+            specializations:
+            - - kseq{}
+              - default: fail
+                specializations:
+                - - Lbl'Hash'setTupleArgs'LParUndsCommUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'Int'Unds'Value{}
+                  - default: fail
+                    specializations:
+                    - - LblValue'ColnColn'Aggregate{}
+                      - default: fail
+                        specializations:
+                        - - LblvariantIdx{}
+                          - args:
+                            - - ['0', '0', '1', '0', '0', '0', '0', '1']
+                              - INT.Int
+                            next:
+                              default: fail
+                              specializations:
+                              - - '0'
+                                - action:
+                                  - 6157
+                                  - - - ['1', '1']
+                                      - STRING.String
+                                    - - ['1', '0', '0', '0', '1']
+                                      - STRING.String
+                                    - - ['1', '0', '1']
+                                      - STRING.String
+                                    - - ['2', '0', '1']
+                                      - STRING.String
+                                    - - ['3', '0', '1']
+                                      - STRING.String
+                                    - - ['4', '0', '1']
+                                      - STRING.String
+                                    - - ['5', '0', '1']
+                                      - STRING.String
+                                    - - ['1', '1', '0', '0', '0', '0', '1']
+                                      - LIST.List
+                                    - - ['0', '0', '0', '0', '0', '1']
+                                      - INT.Int
+                                - []
+                              bitwidth: 32
+                              sort: MINT.MInt 32
+                              occurrence: &id001 [size, '0', '0', '1', '0', '0', '0',
+                                '0', '1']
+                            function: hook_INT_size_int
+                            sort: MINT.MInt 32
+                            occurrence: *id001
+                          - [INT.Int]
+                        sort: STRING.String
+                        occurrence: ['0', '1', '0', '0', '0', '0', '1']
+                      - [STRING.String, LIST.List]
+                    sort: STRING.String
+                    occurrence: ['1', '0', '0', '0', '0', '1']
+                  - [INT.Int, STRING.String]
+                sort: STRING.String
+                occurrence: ['0', '0', '0', '0', '1']
+              - [STRING.String, STRING.String]
+            sort: STRING.String
+            occurrence: ['0', '0', '0', '1']
+          - [STRING.String]
+        sort: STRING.String
+        occurrence: ['0', '0', '1']
+      - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String,
+        STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

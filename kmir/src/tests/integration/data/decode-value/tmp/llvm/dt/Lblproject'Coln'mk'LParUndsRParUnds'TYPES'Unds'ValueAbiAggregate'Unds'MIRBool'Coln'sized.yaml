@@ -1,0 +1,10 @@
+default: null
+specializations:
+- - Lblmk'LParUndsRParUnds'TYPES'Unds'ValueAbiAggregate'Unds'MIRBool{}
+  - action:
+    - 7657
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

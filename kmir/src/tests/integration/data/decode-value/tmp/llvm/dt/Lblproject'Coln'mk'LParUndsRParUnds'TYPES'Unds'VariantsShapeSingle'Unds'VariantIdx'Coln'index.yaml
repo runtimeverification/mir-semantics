@@ -1,0 +1,10 @@
+default: null
+specializations:
+- - Lblmk'LParUndsRParUnds'TYPES'Unds'VariantsShapeSingle'Unds'VariantIdx{}
+  - action:
+    - 7658
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

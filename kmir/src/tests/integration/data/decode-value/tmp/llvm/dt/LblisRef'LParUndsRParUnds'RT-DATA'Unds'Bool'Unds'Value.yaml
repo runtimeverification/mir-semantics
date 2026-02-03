@@ -1,0 +1,20 @@
+default:
+  action:
+  - 6938
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblValue'ColnColn'Reference{}
+  - action:
+    - 6939
+    - - - ['0', '1']
+        - INT.Int
+      - - ['1', '1']
+        - STRING.String
+      - - ['2', '1']
+        - STRING.String
+      - - ['3', '1']
+        - STRING.String
+  - [INT.Int, STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: *id001

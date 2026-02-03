@@ -1,0 +1,10 @@
+default: fail
+specializations:
+- - LblBorrowKind'ColnColn'Mut{}
+  - action:
+    - 7202
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

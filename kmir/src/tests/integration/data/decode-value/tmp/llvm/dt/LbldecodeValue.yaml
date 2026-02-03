@@ -1,0 +1,1480 @@
+args:
+- - &id001 ['1']
+  - BYTES.Bytes
+- - &id002 ['2']
+  - STRING.String
+next:
+  default: null
+  specializations:
+  - - '1'
+    - action:
+      - 6390
+      - - - *id001
+          - BYTES.Bytes
+        - - *id002
+          - STRING.String
+    - []
+  - - '0'
+    - default: &id004
+        action:
+        - 6389
+        - - - *id001
+            - BYTES.Bytes
+          - - *id002
+            - STRING.String
+      specializations:
+      - - LblTypeInfo'ColnColn'EnumType{}
+        - args:
+          - - &id003 ['3', '2']
+            - STRING.String
+          next:
+            default: null
+            specializations:
+            - - '1'
+              - action:
+                - 6393
+                - - - &id006 ['0', '2']
+                    - STRING.String
+                  - - &id007 ['1', '2']
+                    - STRING.String
+                  - - &id036 ['4', '2']
+                    - STRING.String
+                  - - *id001
+                    - BYTES.Bytes
+                  - - &id012 ['2', '2']
+                    - STRING.String
+                  - - *id003
+                    - STRING.String
+              - []
+            - - '0'
+              - default: *id004
+                specializations:
+                - - LblsomeLayoutShape'LParUndsRParUnds'TYPES'Unds'MaybeLayoutShape'Unds'LayoutShape{}
+                  - default: null
+                    specializations:
+                    - - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+                      - default: *id004
+                        specializations:
+                        - - LblVariantsShape'ColnColn'Multiple{}
+                          - default: null
+                            specializations:
+                            - - Lblmk'LParUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'VariantsShapeMultiple'Unds'Scalar'Unds'TagEncoding'Unds'MIRInt'Unds'LayoutShapes{}
+                              - default: null
+                                specializations:
+                                - - LblTagEncoding'ColnColn'Direct{}
+                                  - default: *id004
+                                    specializations:
+                                    - - LblFieldsShape'ColnColn'Arbitrary{}
+                                      - default: null
+                                        specializations:
+                                        - - Lblmk'LParUndsRParUnds'TYPES'Unds'FieldsShapeArbitrary'Unds'MachineSizes{}
+                                          - default: *id004
+                                            specializations:
+                                            - - inj{SortInt{}, SortMIRInt{}}
+                                              - args:
+                                                - - ['0', '2', '0', '1', '0', '4',
+                                                    '2']
+                                                  - INT.Int
+                                                next:
+                                                  default: *id004
+                                                  specializations:
+                                                  - - '0'
+                                                    - default: *id004
+                                                      specializations:
+                                                      - - LblScalar'ColnColn'Initialized{}
+                                                        - default: null
+                                                          specializations:
+                                                          - - Lblmk'LParUndsCommUndsRParUnds'TYPES'Unds'ScalarInitialized'Unds'Primitive'Unds'WrappingRange{}
+                                                            - default: *id004
+                                                              specializations:
+                                                              - - LblPrimitive'ColnColn'Int{}
+                                                                - default: null
+                                                                  specializations:
+                                                                  - - Lblmk'LParUndsCommUndsRParUnds'TYPES'Unds'PrimitiveInt'Unds'IntegerLength'Unds'MIRBool{}
+                                                                    - default: *id004
+                                                                      specializations:
+                                                                      - - LblTyss'ColnColn'append{}
+                                                                        - default: *id004
+                                                                          specializations:
+                                                                          - - LblTys'ColnColn'empty{}
+                                                                            - default: *id004
+                                                                              specializations:
+                                                                              - - LblDiscriminants'ColnColn'append{}
+                                                                                - default: null
+                                                                                  specializations:
+                                                                                  - - Lbldiscriminant'LParUndsRParUnds'TYPES'Unds'Discriminant'Unds'MIRInt{}
+                                                                                    - default: *id004
+                                                                                      specializations:
+                                                                                      - - inj{SortInt{},
+                                                                                          SortMIRInt{}}
+                                                                                        - args:
+                                                                                          - - [
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '2',
+                                                                                              '2']
+                                                                                            - INT.Int
+                                                                                          next:
+                                                                                            default: *id004
+                                                                                            specializations:
+                                                                                            - - '0'
+                                                                                              - default: *id004
+                                                                                                specializations:
+                                                                                                - - LblTyss'ColnColn'append{}
+                                                                                                  - default: *id004
+                                                                                                    specializations:
+                                                                                                    - - LblTyss'ColnColn'empty{}
+                                                                                                      - default: *id004
+                                                                                                        specializations:
+                                                                                                        - - LblDiscriminants'ColnColn'append{}
+                                                                                                          - default: null
+                                                                                                            specializations:
+                                                                                                            - - Lbldiscriminant'LParUndsRParUnds'TYPES'Unds'Discriminant'Unds'MIRInt{}
+                                                                                                              - default: *id004
+                                                                                                                specializations:
+                                                                                                                - - LblDiscriminants'ColnColn'empty{}
+                                                                                                                  - default: *id004
+                                                                                                                    specializations:
+                                                                                                                    - - inj{SortInt{},
+                                                                                                                        SortMIRInt{}}
+                                                                                                                      - args:
+                                                                                                                        - - &id005 [
+                                                                                                                            '0',
+                                                                                                                            '0',
+                                                                                                                            '0',
+                                                                                                                            '1',
+                                                                                                                            '2',
+                                                                                                                            '2']
+                                                                                                                          - INT.Int
+                                                                                                                        next:
+                                                                                                                          default: *id004
+                                                                                                                          specializations:
+                                                                                                                          - - '1'
+                                                                                                                            - args:
+                                                                                                                              - - *id005
+                                                                                                                                - INT.Int
+                                                                                                                              - - [
+                                                                                                                                  lit,
+                                                                                                                                  '0',
+                                                                                                                                  MINT.MInt
+                                                                                                                                    64]
+                                                                                                                                - MINT.MInt
+                                                                                                                                  64
+                                                                                                                              next:
+                                                                                                                                default: *id004
+                                                                                                                                specializations:
+                                                                                                                                - - '1'
+                                                                                                                                  - default: *id004
+                                                                                                                                    specializations:
+                                                                                                                                    - - LblTys'ColnColn'append{}
+                                                                                                                                      - default: *id004
+                                                                                                                                        specializations:
+                                                                                                                                        - - LblTys'ColnColn'empty{}
+                                                                                                                                          - default: *id004
+                                                                                                                                            specializations:
+                                                                                                                                            - - LblMachineSizes'ColnColn'append{}
+                                                                                                                                              - default: null
+                                                                                                                                                specializations:
+                                                                                                                                                - - LblMachineSize'ColnColn'num'Unds'bits{}
+                                                                                                                                                  - default: *id004
+                                                                                                                                                    specializations:
+                                                                                                                                                    - - LblMachineSizes'ColnColn'empty{}
+                                                                                                                                                      - default: *id004
+                                                                                                                                                        specializations:
+                                                                                                                                                        - - inj{SortInt{},
+                                                                                                                                                            SortMIRInt{}}
+                                                                                                                                                          - args:
+                                                                                                                                                            - - [
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '4',
+                                                                                                                                                                '2']
+                                                                                                                                                              - INT.Int
+                                                                                                                                                            next:
+                                                                                                                                                              default: *id004
+                                                                                                                                                              specializations:
+                                                                                                                                                              - - '0'
+                                                                                                                                                                - action:
+                                                                                                                                                                  - 6388
+                                                                                                                                                                  - - - &id020 [
+                                                                                                                                                                        '2',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '4',
+                                                                                                                                                                        '2']
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - &id021 [
+                                                                                                                                                                        '3',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '4',
+                                                                                                                                                                        '2']
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - *id006
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - *id007
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - [
+                                                                                                                                                                        '1',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '1',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '4',
+                                                                                                                                                                        '2']
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - [
+                                                                                                                                                                        '1',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '1',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '4',
+                                                                                                                                                                        '2']
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - &id022 [
+                                                                                                                                                                        '4',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '4',
+                                                                                                                                                                        '2']
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - &id023 [
+                                                                                                                                                                        '3',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '1',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '4',
+                                                                                                                                                                        '2']
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - *id001
+                                                                                                                                                                      - BYTES.Bytes
+                                                                                                                                                                    - - *id002
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - [
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '1',
+                                                                                                                                                                        '3',
+                                                                                                                                                                        '2']
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                    - - [
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '1',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '4',
+                                                                                                                                                                        '2']
+                                                                                                                                                                      - STRING.String
+                                                                                                                                                                - []
+                                                                                                                                                              bitwidth: 32
+                                                                                                                                                              sort: MINT.MInt
+                                                                                                                                                                32
+                                                                                                                                                              occurrence: &id008 [
+                                                                                                                                                                size,
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '0',
+                                                                                                                                                                '4',
+                                                                                                                                                                '2']
+                                                                                                                                                            function: hook_INT_size_int
+                                                                                                                                                            sort: MINT.MInt
+                                                                                                                                                              32
+                                                                                                                                                            occurrence: *id008
+                                                                                                                                                          - [
+                                                                                                                                                            INT.Int]
+                                                                                                                                                        sort: STRING.String
+                                                                                                                                                        occurrence: [
+                                                                                                                                                          '0',
+                                                                                                                                                          '0',
+                                                                                                                                                          '0',
+                                                                                                                                                          '0',
+                                                                                                                                                          '0',
+                                                                                                                                                          '0',
+                                                                                                                                                          '4',
+                                                                                                                                                          '2']
+                                                                                                                                                      - []
+                                                                                                                                                    sort: STRING.String
+                                                                                                                                                    occurrence: [
+                                                                                                                                                      '1',
+                                                                                                                                                      '0',
+                                                                                                                                                      '0',
+                                                                                                                                                      '0',
+                                                                                                                                                      '0',
+                                                                                                                                                      '4',
+                                                                                                                                                      '2']
+                                                                                                                                                  - [
+                                                                                                                                                    STRING.String]
+                                                                                                                                                sort: STRING.String
+                                                                                                                                                occurrence: [
+                                                                                                                                                  '0',
+                                                                                                                                                  '0',
+                                                                                                                                                  '0',
+                                                                                                                                                  '0',
+                                                                                                                                                  '0',
+                                                                                                                                                  '4',
+                                                                                                                                                  '2']
+                                                                                                                                              - [
+                                                                                                                                                STRING.String,
+                                                                                                                                                STRING.String]
+                                                                                                                                            sort: STRING.String
+                                                                                                                                            occurrence: [
+                                                                                                                                              '0',
+                                                                                                                                              '0',
+                                                                                                                                              '0',
+                                                                                                                                              '0',
+                                                                                                                                              '4',
+                                                                                                                                              '2']
+                                                                                                                                          - []
+                                                                                                                                        sort: STRING.String
+                                                                                                                                        occurrence: [
+                                                                                                                                          '1',
+                                                                                                                                          '0',
+                                                                                                                                          '1',
+                                                                                                                                          '3',
+                                                                                                                                          '2']
+                                                                                                                                      - [
+                                                                                                                                        STRING.String,
+                                                                                                                                        STRING.String]
+                                                                                                                                    sort: STRING.String
+                                                                                                                                    occurrence: [
+                                                                                                                                      '0',
+                                                                                                                                      '1',
+                                                                                                                                      '3',
+                                                                                                                                      '2']
+                                                                                                                                  - []
+                                                                                                                                bitwidth: 64
+                                                                                                                                sort: MINT.MInt
+                                                                                                                                  64
+                                                                                                                                occurrence: &id009 [
+                                                                                                                                  '0',
+                                                                                                                                  '0',
+                                                                                                                                  '0',
+                                                                                                                                  '0',
+                                                                                                                                  '1',
+                                                                                                                                  '2',
+                                                                                                                                  '2']
+                                                                                                                              function: hook_INT_limb
+                                                                                                                              sort: MINT.MInt
+                                                                                                                                64
+                                                                                                                              occurrence: *id009
+                                                                                                                            - []
+                                                                                                                          bitwidth: 32
+                                                                                                                          sort: MINT.MInt
+                                                                                                                            32
+                                                                                                                          occurrence: &id010 [
+                                                                                                                            size,
+                                                                                                                            '0',
+                                                                                                                            '0',
+                                                                                                                            '0',
+                                                                                                                            '1',
+                                                                                                                            '2',
+                                                                                                                            '2']
+                                                                                                                        function: hook_INT_size_int
+                                                                                                                        sort: MINT.MInt
+                                                                                                                          32
+                                                                                                                        occurrence: *id010
+                                                                                                                      - [
+                                                                                                                        INT.Int]
+                                                                                                                    sort: STRING.String
+                                                                                                                    occurrence: [
+                                                                                                                      '0',
+                                                                                                                      '0',
+                                                                                                                      '1',
+                                                                                                                      '2',
+                                                                                                                      '2']
+                                                                                                                  - []
+                                                                                                                sort: STRING.String
+                                                                                                                occurrence: [
+                                                                                                                  '1',
+                                                                                                                  '1',
+                                                                                                                  '2',
+                                                                                                                  '2']
+                                                                                                              - [
+                                                                                                                STRING.String]
+                                                                                                            sort: STRING.String
+                                                                                                            occurrence: [
+                                                                                                              '0',
+                                                                                                              '1',
+                                                                                                              '2',
+                                                                                                              '2']
+                                                                                                          - [
+                                                                                                            STRING.String,
+                                                                                                            STRING.String]
+                                                                                                        sort: STRING.String
+                                                                                                        occurrence: [
+                                                                                                          '1',
+                                                                                                          '2',
+                                                                                                          '2']
+                                                                                                      - []
+                                                                                                    sort: STRING.String
+                                                                                                    occurrence: [
+                                                                                                      '1',
+                                                                                                      '1',
+                                                                                                      '3',
+                                                                                                      '2']
+                                                                                                  - [
+                                                                                                    STRING.String,
+                                                                                                    STRING.String]
+                                                                                                sort: STRING.String
+                                                                                                occurrence: [
+                                                                                                  '1',
+                                                                                                  '3',
+                                                                                                  '2']
+                                                                                              - []
+                                                                                            bitwidth: 32
+                                                                                            sort: MINT.MInt
+                                                                                              32
+                                                                                            occurrence: &id011 [
+                                                                                              size,
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '2',
+                                                                                              '2']
+                                                                                          function: hook_INT_size_int
+                                                                                          sort: MINT.MInt
+                                                                                            32
+                                                                                          occurrence: *id011
+                                                                                        - [
+                                                                                          INT.Int]
+                                                                                      sort: STRING.String
+                                                                                      occurrence: [
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '2',
+                                                                                        '2']
+                                                                                    - [
+                                                                                      STRING.String]
+                                                                                  sort: STRING.String
+                                                                                  occurrence: [
+                                                                                    '0',
+                                                                                    '2',
+                                                                                    '2']
+                                                                                - [
+                                                                                  STRING.String,
+                                                                                  STRING.String]
+                                                                              sort: STRING.String
+                                                                              occurrence: *id012
+                                                                            - []
+                                                                          sort: STRING.String
+                                                                          occurrence: [
+                                                                            '0', '3',
+                                                                            '2']
+                                                                        - [STRING.String,
+                                                                          STRING.String]
+                                                                      sort: STRING.String
+                                                                      occurrence: *id003
+                                                                    - [STRING.String,
+                                                                      STRING.String]
+                                                                  sort: STRING.String
+                                                                  occurrence: ['0',
+                                                                    '0', '0', '0',
+                                                                    '0', '1', '0',
+                                                                    '4', '2']
+                                                                - [STRING.String]
+                                                              sort: STRING.String
+                                                              occurrence: ['0', '0',
+                                                                '0', '0', '1', '0',
+                                                                '4', '2']
+                                                            - [STRING.String, STRING.String]
+                                                          sort: STRING.String
+                                                          occurrence: ['0', '0', '0',
+                                                            '1', '0', '4', '2']
+                                                        - [STRING.String]
+                                                      sort: STRING.String
+                                                      occurrence: &id032 ['0', '0',
+                                                        '1', '0', '4', '2']
+                                                    - []
+                                                  bitwidth: 32
+                                                  sort: MINT.MInt 32
+                                                  occurrence: &id013 [size, '0', '2',
+                                                    '0', '1', '0', '4', '2']
+                                                function: hook_INT_size_int
+                                                sort: MINT.MInt 32
+                                                occurrence: *id013
+                                              - [INT.Int]
+                                            sort: STRING.String
+                                            occurrence: &id034 ['2', '0', '1', '0',
+                                              '4', '2']
+                                          - [STRING.String]
+                                        sort: STRING.String
+                                        occurrence: ['0', '0', '0', '4', '2']
+                                      - [STRING.String]
+                                    sort: STRING.String
+                                    occurrence: &id035 ['0', '0', '4', '2']
+                                  - []
+                                - - LblTagEncoding'ColnColn'Niche{}
+                                  - default: *id004
+                                    specializations:
+                                    - - LblFieldsShape'ColnColn'Arbitrary{}
+                                      - default: null
+                                        specializations:
+                                        - - Lblmk'LParUndsRParUnds'TYPES'Unds'FieldsShapeArbitrary'Unds'MachineSizes{}
+                                          - default: *id004
+                                            specializations:
+                                            - - inj{SortInt{}, SortMIRInt{}}
+                                              - args:
+                                                - - &id016 ['0', '2', '0', '1', '0',
+                                                    '4', '2']
+                                                  - INT.Int
+                                                next:
+                                                  default: *id004
+                                                  specializations:
+                                                  - - '0'
+                                                    - default: *id004
+                                                      specializations:
+                                                      - - LblScalar'ColnColn'Initialized{}
+                                                        - default: null
+                                                          specializations:
+                                                          - - Lblmk'LParUndsCommUndsRParUnds'TYPES'Unds'ScalarInitialized'Unds'Primitive'Unds'WrappingRange{}
+                                                            - default: null
+                                                              specializations:
+                                                              - - LblwrappingRange'LParUndsCommUndsRParUnds'TYPES'Unds'WrappingRange'Unds'MIRInt'Unds'MIRInt{}
+                                                                - default: *id004
+                                                                  specializations:
+                                                                  - - LblPrimitive'ColnColn'Pointer{}
+                                                                    - default: *id004
+                                                                      specializations:
+                                                                      - - inj{SortInt{},
+                                                                          SortMIRInt{}}
+                                                                        - args:
+                                                                          - - &id017 [
+                                                                              '0',
+                                                                              '1',
+                                                                              '1',
+                                                                              '0',
+                                                                              '0',
+                                                                              '0',
+                                                                              '1',
+                                                                              '0',
+                                                                              '4',
+                                                                              '2']
+                                                                            - INT.Int
+                                                                          next:
+                                                                            default: *id004
+                                                                            specializations:
+                                                                            - - '0'
+                                                                              - default: *id004
+                                                                                specializations:
+                                                                                - - inj{SortInt{},
+                                                                                    SortMIRInt{}}
+                                                                                  - args:
+                                                                                    - - &id014 [
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '1',
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '1',
+                                                                                        '0',
+                                                                                        '4',
+                                                                                        '2']
+                                                                                      - INT.Int
+                                                                                    next:
+                                                                                      default: *id004
+                                                                                      specializations:
+                                                                                      - - '1'
+                                                                                        - args:
+                                                                                          - - *id014
+                                                                                            - INT.Int
+                                                                                          - - [
+                                                                                              lit,
+                                                                                              '0',
+                                                                                              MINT.MInt
+                                                                                                64]
+                                                                                            - MINT.MInt
+                                                                                              64
+                                                                                          next:
+                                                                                            default: *id004
+                                                                                            specializations:
+                                                                                            - - '1'
+                                                                                              - default: *id004
+                                                                                                specializations:
+                                                                                                - - LblTyss'ColnColn'append{}
+                                                                                                  - default: *id004
+                                                                                                    specializations:
+                                                                                                    - - LblTys'ColnColn'empty{}
+                                                                                                      - default: *id004
+                                                                                                        specializations:
+                                                                                                        - - LblDiscriminants'ColnColn'append{}
+                                                                                                          - default: null
+                                                                                                            specializations:
+                                                                                                            - - Lbldiscriminant'LParUndsRParUnds'TYPES'Unds'Discriminant'Unds'MIRInt{}
+                                                                                                              - default: *id004
+                                                                                                                specializations:
+                                                                                                                - - inj{SortInt{},
+                                                                                                                    SortMIRInt{}}
+                                                                                                                  - args:
+                                                                                                                    - - &id018 [
+                                                                                                                        '0',
+                                                                                                                        '0',
+                                                                                                                        '0',
+                                                                                                                        '2',
+                                                                                                                        '2']
+                                                                                                                      - INT.Int
+                                                                                                                    next:
+                                                                                                                      default: *id004
+                                                                                                                      specializations:
+                                                                                                                      - - '0'
+                                                                                                                        - default: *id004
+                                                                                                                          specializations:
+                                                                                                                          - - LblTyss'ColnColn'append{}
+                                                                                                                            - default: *id004
+                                                                                                                              specializations:
+                                                                                                                              - - LblTyss'ColnColn'empty{}
+                                                                                                                                - default: *id004
+                                                                                                                                  specializations:
+                                                                                                                                  - - LblDiscriminants'ColnColn'append{}
+                                                                                                                                    - default: null
+                                                                                                                                      specializations:
+                                                                                                                                      - - Lbldiscriminant'LParUndsRParUnds'TYPES'Unds'Discriminant'Unds'MIRInt{}
+                                                                                                                                        - default: *id004
+                                                                                                                                          specializations:
+                                                                                                                                          - - LblDiscriminants'ColnColn'empty{}
+                                                                                                                                            - default: *id004
+                                                                                                                                              specializations:
+                                                                                                                                              - - inj{SortInt{},
+                                                                                                                                                  SortMIRInt{}}
+                                                                                                                                                - args:
+                                                                                                                                                  - - &id015 [
+                                                                                                                                                      '0',
+                                                                                                                                                      '0',
+                                                                                                                                                      '0',
+                                                                                                                                                      '1',
+                                                                                                                                                      '2',
+                                                                                                                                                      '2']
+                                                                                                                                                    - INT.Int
+                                                                                                                                                  next:
+                                                                                                                                                    default: *id004
+                                                                                                                                                    specializations:
+                                                                                                                                                    - - '1'
+                                                                                                                                                      - args:
+                                                                                                                                                        - - *id015
+                                                                                                                                                          - INT.Int
+                                                                                                                                                        - - [
+                                                                                                                                                            lit,
+                                                                                                                                                            '0',
+                                                                                                                                                            MINT.MInt
+                                                                                                                                                              64]
+                                                                                                                                                          - MINT.MInt
+                                                                                                                                                            64
+                                                                                                                                                        next:
+                                                                                                                                                          default: *id004
+                                                                                                                                                          specializations:
+                                                                                                                                                          - - '1'
+                                                                                                                                                            - default: *id004
+                                                                                                                                                              specializations:
+                                                                                                                                                              - - LblTys'ColnColn'append{}
+                                                                                                                                                                - default: *id004
+                                                                                                                                                                  specializations:
+                                                                                                                                                                  - - LblTys'ColnColn'empty{}
+                                                                                                                                                                    - default: *id004
+                                                                                                                                                                      specializations:
+                                                                                                                                                                      - - LblMachineSizes'ColnColn'append{}
+                                                                                                                                                                        - default: null
+                                                                                                                                                                          specializations:
+                                                                                                                                                                          - - LblMachineSize'ColnColn'num'Unds'bits{}
+                                                                                                                                                                            - default: *id004
+                                                                                                                                                                              specializations:
+                                                                                                                                                                              - - LblMachineSizes'ColnColn'empty{}
+                                                                                                                                                                                - default: *id004
+                                                                                                                                                                                  specializations:
+                                                                                                                                                                                  - - inj{SortInt{},
+                                                                                                                                                                                      SortMIRInt{}}
+                                                                                                                                                                                    - args:
+                                                                                                                                                                                      - - &id019 [
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '4',
+                                                                                                                                                                                          '2']
+                                                                                                                                                                                        - INT.Int
+                                                                                                                                                                                      next:
+                                                                                                                                                                                        default: *id004
+                                                                                                                                                                                        specializations:
+                                                                                                                                                                                        - - '0'
+                                                                                                                                                                                          - args:
+                                                                                                                                                                                            - - *id016
+                                                                                                                                                                                              - INT.Int
+                                                                                                                                                                                            - - *id017
+                                                                                                                                                                                              - INT.Int
+                                                                                                                                                                                            next:
+                                                                                                                                                                                              default: null
+                                                                                                                                                                                              specializations:
+                                                                                                                                                                                              - - '1'
+                                                                                                                                                                                                - args:
+                                                                                                                                                                                                  - - *id017
+                                                                                                                                                                                                    - INT.Int
+                                                                                                                                                                                                  - - *id018
+                                                                                                                                                                                                    - INT.Int
+                                                                                                                                                                                                  next:
+                                                                                                                                                                                                    default: null
+                                                                                                                                                                                                    specializations:
+                                                                                                                                                                                                    - - '1'
+                                                                                                                                                                                                      - args:
+                                                                                                                                                                                                        - - *id018
+                                                                                                                                                                                                          - INT.Int
+                                                                                                                                                                                                        - - *id019
+                                                                                                                                                                                                          - INT.Int
+                                                                                                                                                                                                        next:
+                                                                                                                                                                                                          default: null
+                                                                                                                                                                                                          specializations:
+                                                                                                                                                                                                          - - '1'
+                                                                                                                                                                                                            - args:
+                                                                                                                                                                                                              - - *id016
+                                                                                                                                                                                                                - INT.Int
+                                                                                                                                                                                                              - - *id001
+                                                                                                                                                                                                                - BYTES.Bytes
+                                                                                                                                                                                                              next:
+                                                                                                                                                                                                                default: null
+                                                                                                                                                                                                                specializations:
+                                                                                                                                                                                                                - - '1'
+                                                                                                                                                                                                                  - action:
+                                                                                                                                                                                                                    - 6394
+                                                                                                                                                                                                                    - - - *id020
+                                                                                                                                                                                                                        - STRING.String
+                                                                                                                                                                                                                      - - *id021
+                                                                                                                                                                                                                        - STRING.String
+                                                                                                                                                                                                                      - - [
+                                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                                          '1',
+                                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                                          '4',
+                                                                                                                                                                                                                          '2']
+                                                                                                                                                                                                                        - STRING.String
+                                                                                                                                                                                                                      - - [
+                                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                                          '1',
+                                                                                                                                                                                                                          '3',
+                                                                                                                                                                                                                          '2']
+                                                                                                                                                                                                                        - STRING.String
+                                                                                                                                                                                                                      - - *id006
+                                                                                                                                                                                                                        - STRING.String
+                                                                                                                                                                                                                      - - *id007
+                                                                                                                                                                                                                        - STRING.String
+                                                                                                                                                                                                                      - - *id016
+                                                                                                                                                                                                                        - INT.Int
+                                                                                                                                                                                                                      - - *id022
+                                                                                                                                                                                                                        - STRING.String
+                                                                                                                                                                                                                      - - *id023
+                                                                                                                                                                                                                        - STRING.String
+                                                                                                                                                                                                                      - - *id001
+                                                                                                                                                                                                                        - BYTES.Bytes
+                                                                                                                                                                                                                  - []
+                                                                                                                                                                                                                - - '0'
+                                                                                                                                                                                                                  - *id004
+                                                                                                                                                                                                                  - []
+                                                                                                                                                                                                                bitwidth: 1
+                                                                                                                                                                                                                sort: BOOL.Bool
+                                                                                                                                                                                                                occurrence: &id024 [
+                                                                                                                                                                                                                  side_condition_6394]
+                                                                                                                                                                                                              function: side_condition_6394
+                                                                                                                                                                                                              sort: BOOL.Bool
+                                                                                                                                                                                                              occurrence: *id024
+                                                                                                                                                                                                            - []
+                                                                                                                                                                                                          - - '0'
+                                                                                                                                                                                                            - *id004
+                                                                                                                                                                                                            - []
+                                                                                                                                                                                                          bitwidth: 1
+                                                                                                                                                                                                          sort: BOOL.Bool
+                                                                                                                                                                                                          occurrence: [
+                                                                                                                                                                                                            eq,
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '2',
+                                                                                                                                                                                                            '2',
+                                                                                                                                                                                                            and,
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '0',
+                                                                                                                                                                                                            '4',
+                                                                                                                                                                                                            '2']
+                                                                                                                                                                                                        function: hook_INT_eq
+                                                                                                                                                                                                        sort: BOOL.Bool
+                                                                                                                                                                                                        occurrence: [
+                                                                                                                                                                                                          eq,
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '2',
+                                                                                                                                                                                                          '2',
+                                                                                                                                                                                                          and,
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '0',
+                                                                                                                                                                                                          '4',
+                                                                                                                                                                                                          '2']
+                                                                                                                                                                                                      - []
+                                                                                                                                                                                                    - - '0'
+                                                                                                                                                                                                      - *id004
+                                                                                                                                                                                                      - []
+                                                                                                                                                                                                    bitwidth: 1
+                                                                                                                                                                                                    sort: BOOL.Bool
+                                                                                                                                                                                                    occurrence: [
+                                                                                                                                                                                                      eq,
+                                                                                                                                                                                                      '0',
+                                                                                                                                                                                                      '1',
+                                                                                                                                                                                                      '1',
+                                                                                                                                                                                                      '0',
+                                                                                                                                                                                                      '0',
+                                                                                                                                                                                                      '0',
+                                                                                                                                                                                                      '1',
+                                                                                                                                                                                                      '0',
+                                                                                                                                                                                                      '4',
+                                                                                                                                                                                                      '2',
+                                                                                                                                                                                                      and,
+                                                                                                                                                                                                      '0',
+                                                                                                                                                                                                      '0',
+                                                                                                                                                                                                      '0',
+                                                                                                                                                                                                      '2',
+                                                                                                                                                                                                      '2']
+                                                                                                                                                                                                  function: hook_INT_eq
+                                                                                                                                                                                                  sort: BOOL.Bool
+                                                                                                                                                                                                  occurrence: [
+                                                                                                                                                                                                    eq,
+                                                                                                                                                                                                    '0',
+                                                                                                                                                                                                    '1',
+                                                                                                                                                                                                    '1',
+                                                                                                                                                                                                    '0',
+                                                                                                                                                                                                    '0',
+                                                                                                                                                                                                    '0',
+                                                                                                                                                                                                    '1',
+                                                                                                                                                                                                    '0',
+                                                                                                                                                                                                    '4',
+                                                                                                                                                                                                    '2',
+                                                                                                                                                                                                    and,
+                                                                                                                                                                                                    '0',
+                                                                                                                                                                                                    '0',
+                                                                                                                                                                                                    '0',
+                                                                                                                                                                                                    '2',
+                                                                                                                                                                                                    '2']
+                                                                                                                                                                                                - []
+                                                                                                                                                                                              - - '0'
+                                                                                                                                                                                                - *id004
+                                                                                                                                                                                                - []
+                                                                                                                                                                                              bitwidth: 1
+                                                                                                                                                                                              sort: BOOL.Bool
+                                                                                                                                                                                              occurrence: [
+                                                                                                                                                                                                eq,
+                                                                                                                                                                                                '0',
+                                                                                                                                                                                                '2',
+                                                                                                                                                                                                '0',
+                                                                                                                                                                                                '1',
+                                                                                                                                                                                                '0',
+                                                                                                                                                                                                '4',
+                                                                                                                                                                                                '2',
+                                                                                                                                                                                                and,
+                                                                                                                                                                                                '0',
+                                                                                                                                                                                                '1',
+                                                                                                                                                                                                '1',
+                                                                                                                                                                                                '0',
+                                                                                                                                                                                                '0',
+                                                                                                                                                                                                '0',
+                                                                                                                                                                                                '1',
+                                                                                                                                                                                                '0',
+                                                                                                                                                                                                '4',
+                                                                                                                                                                                                '2']
+                                                                                                                                                                                            function: hook_INT_eq
+                                                                                                                                                                                            sort: BOOL.Bool
+                                                                                                                                                                                            occurrence: [
+                                                                                                                                                                                              eq,
+                                                                                                                                                                                              '0',
+                                                                                                                                                                                              '2',
+                                                                                                                                                                                              '0',
+                                                                                                                                                                                              '1',
+                                                                                                                                                                                              '0',
+                                                                                                                                                                                              '4',
+                                                                                                                                                                                              '2',
+                                                                                                                                                                                              and,
+                                                                                                                                                                                              '0',
+                                                                                                                                                                                              '1',
+                                                                                                                                                                                              '1',
+                                                                                                                                                                                              '0',
+                                                                                                                                                                                              '0',
+                                                                                                                                                                                              '0',
+                                                                                                                                                                                              '1',
+                                                                                                                                                                                              '0',
+                                                                                                                                                                                              '4',
+                                                                                                                                                                                              '2']
+                                                                                                                                                                                          - []
+                                                                                                                                                                                        bitwidth: 32
+                                                                                                                                                                                        sort: MINT.MInt
+                                                                                                                                                                                          32
+                                                                                                                                                                                        occurrence: &id025 [
+                                                                                                                                                                                          size,
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '0',
+                                                                                                                                                                                          '4',
+                                                                                                                                                                                          '2']
+                                                                                                                                                                                      function: hook_INT_size_int
+                                                                                                                                                                                      sort: MINT.MInt
+                                                                                                                                                                                        32
+                                                                                                                                                                                      occurrence: *id025
+                                                                                                                                                                                    - [
+                                                                                                                                                                                      INT.Int]
+                                                                                                                                                                                  sort: STRING.String
+                                                                                                                                                                                  occurrence: [
+                                                                                                                                                                                    '0',
+                                                                                                                                                                                    '0',
+                                                                                                                                                                                    '0',
+                                                                                                                                                                                    '0',
+                                                                                                                                                                                    '0',
+                                                                                                                                                                                    '0',
+                                                                                                                                                                                    '4',
+                                                                                                                                                                                    '2']
+                                                                                                                                                                                - []
+                                                                                                                                                                              sort: STRING.String
+                                                                                                                                                                              occurrence: [
+                                                                                                                                                                                '1',
+                                                                                                                                                                                '0',
+                                                                                                                                                                                '0',
+                                                                                                                                                                                '0',
+                                                                                                                                                                                '0',
+                                                                                                                                                                                '4',
+                                                                                                                                                                                '2']
+                                                                                                                                                                            - [
+                                                                                                                                                                              STRING.String]
+                                                                                                                                                                          sort: STRING.String
+                                                                                                                                                                          occurrence: [
+                                                                                                                                                                            '0',
+                                                                                                                                                                            '0',
+                                                                                                                                                                            '0',
+                                                                                                                                                                            '0',
+                                                                                                                                                                            '0',
+                                                                                                                                                                            '4',
+                                                                                                                                                                            '2']
+                                                                                                                                                                        - [
+                                                                                                                                                                          STRING.String,
+                                                                                                                                                                          STRING.String]
+                                                                                                                                                                      sort: STRING.String
+                                                                                                                                                                      occurrence: [
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '0',
+                                                                                                                                                                        '4',
+                                                                                                                                                                        '2']
+                                                                                                                                                                    - []
+                                                                                                                                                                  sort: STRING.String
+                                                                                                                                                                  occurrence: [
+                                                                                                                                                                    '1',
+                                                                                                                                                                    '0',
+                                                                                                                                                                    '1',
+                                                                                                                                                                    '3',
+                                                                                                                                                                    '2']
+                                                                                                                                                                - [
+                                                                                                                                                                  STRING.String,
+                                                                                                                                                                  STRING.String]
+                                                                                                                                                              sort: STRING.String
+                                                                                                                                                              occurrence: [
+                                                                                                                                                                '0',
+                                                                                                                                                                '1',
+                                                                                                                                                                '3',
+                                                                                                                                                                '2']
+                                                                                                                                                            - []
+                                                                                                                                                          bitwidth: 64
+                                                                                                                                                          sort: MINT.MInt
+                                                                                                                                                            64
+                                                                                                                                                          occurrence: &id026 [
+                                                                                                                                                            '0',
+                                                                                                                                                            '0',
+                                                                                                                                                            '0',
+                                                                                                                                                            '0',
+                                                                                                                                                            '1',
+                                                                                                                                                            '2',
+                                                                                                                                                            '2']
+                                                                                                                                                        function: hook_INT_limb
+                                                                                                                                                        sort: MINT.MInt
+                                                                                                                                                          64
+                                                                                                                                                        occurrence: *id026
+                                                                                                                                                      - []
+                                                                                                                                                    bitwidth: 32
+                                                                                                                                                    sort: MINT.MInt
+                                                                                                                                                      32
+                                                                                                                                                    occurrence: &id027 [
+                                                                                                                                                      size,
+                                                                                                                                                      '0',
+                                                                                                                                                      '0',
+                                                                                                                                                      '0',
+                                                                                                                                                      '1',
+                                                                                                                                                      '2',
+                                                                                                                                                      '2']
+                                                                                                                                                  function: hook_INT_size_int
+                                                                                                                                                  sort: MINT.MInt
+                                                                                                                                                    32
+                                                                                                                                                  occurrence: *id027
+                                                                                                                                                - [
+                                                                                                                                                  INT.Int]
+                                                                                                                                              sort: STRING.String
+                                                                                                                                              occurrence: [
+                                                                                                                                                '0',
+                                                                                                                                                '0',
+                                                                                                                                                '1',
+                                                                                                                                                '2',
+                                                                                                                                                '2']
+                                                                                                                                            - []
+                                                                                                                                          sort: STRING.String
+                                                                                                                                          occurrence: [
+                                                                                                                                            '1',
+                                                                                                                                            '1',
+                                                                                                                                            '2',
+                                                                                                                                            '2']
+                                                                                                                                        - [
+                                                                                                                                          STRING.String]
+                                                                                                                                      sort: STRING.String
+                                                                                                                                      occurrence: [
+                                                                                                                                        '0',
+                                                                                                                                        '1',
+                                                                                                                                        '2',
+                                                                                                                                        '2']
+                                                                                                                                    - [
+                                                                                                                                      STRING.String,
+                                                                                                                                      STRING.String]
+                                                                                                                                  sort: STRING.String
+                                                                                                                                  occurrence: [
+                                                                                                                                    '1',
+                                                                                                                                    '2',
+                                                                                                                                    '2']
+                                                                                                                                - []
+                                                                                                                              sort: STRING.String
+                                                                                                                              occurrence: [
+                                                                                                                                '1',
+                                                                                                                                '1',
+                                                                                                                                '3',
+                                                                                                                                '2']
+                                                                                                                            - [
+                                                                                                                              STRING.String,
+                                                                                                                              STRING.String]
+                                                                                                                          sort: STRING.String
+                                                                                                                          occurrence: [
+                                                                                                                            '1',
+                                                                                                                            '3',
+                                                                                                                            '2']
+                                                                                                                        - []
+                                                                                                                      bitwidth: 32
+                                                                                                                      sort: MINT.MInt
+                                                                                                                        32
+                                                                                                                      occurrence: &id028 [
+                                                                                                                        size,
+                                                                                                                        '0',
+                                                                                                                        '0',
+                                                                                                                        '0',
+                                                                                                                        '2',
+                                                                                                                        '2']
+                                                                                                                    function: hook_INT_size_int
+                                                                                                                    sort: MINT.MInt
+                                                                                                                      32
+                                                                                                                    occurrence: *id028
+                                                                                                                  - [
+                                                                                                                    INT.Int]
+                                                                                                                sort: STRING.String
+                                                                                                                occurrence: [
+                                                                                                                  '0',
+                                                                                                                  '0',
+                                                                                                                  '2',
+                                                                                                                  '2']
+                                                                                                              - [
+                                                                                                                STRING.String]
+                                                                                                            sort: STRING.String
+                                                                                                            occurrence: [
+                                                                                                              '0',
+                                                                                                              '2',
+                                                                                                              '2']
+                                                                                                          - [
+                                                                                                            STRING.String,
+                                                                                                            STRING.String]
+                                                                                                        sort: STRING.String
+                                                                                                        occurrence: *id012
+                                                                                                      - []
+                                                                                                    sort: STRING.String
+                                                                                                    occurrence: [
+                                                                                                      '0',
+                                                                                                      '3',
+                                                                                                      '2']
+                                                                                                  - [
+                                                                                                    STRING.String,
+                                                                                                    STRING.String]
+                                                                                                sort: STRING.String
+                                                                                                occurrence: *id003
+                                                                                              - []
+                                                                                            bitwidth: 64
+                                                                                            sort: MINT.MInt
+                                                                                              64
+                                                                                            occurrence: &id029 [
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '1',
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '1',
+                                                                                              '0',
+                                                                                              '4',
+                                                                                              '2']
+                                                                                          function: hook_INT_limb
+                                                                                          sort: MINT.MInt
+                                                                                            64
+                                                                                          occurrence: *id029
+                                                                                        - []
+                                                                                      bitwidth: 32
+                                                                                      sort: MINT.MInt
+                                                                                        32
+                                                                                      occurrence: &id030 [
+                                                                                        size,
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '1',
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '1',
+                                                                                        '0',
+                                                                                        '4',
+                                                                                        '2']
+                                                                                    function: hook_INT_size_int
+                                                                                    sort: MINT.MInt
+                                                                                      32
+                                                                                    occurrence: *id030
+                                                                                  - [
+                                                                                    INT.Int]
+                                                                                sort: STRING.String
+                                                                                occurrence: [
+                                                                                  '0',
+                                                                                  '1',
+                                                                                  '0',
+                                                                                  '0',
+                                                                                  '0',
+                                                                                  '1',
+                                                                                  '0',
+                                                                                  '4',
+                                                                                  '2']
+                                                                              - []
+                                                                            bitwidth: 32
+                                                                            sort: MINT.MInt
+                                                                              32
+                                                                            occurrence: &id031 [
+                                                                              size,
+                                                                              '0',
+                                                                              '1',
+                                                                              '1',
+                                                                              '0',
+                                                                              '0',
+                                                                              '0',
+                                                                              '1',
+                                                                              '0',
+                                                                              '4',
+                                                                              '2']
+                                                                          function: hook_INT_size_int
+                                                                          sort: MINT.MInt
+                                                                            32
+                                                                          occurrence: *id031
+                                                                        - [INT.Int]
+                                                                      sort: STRING.String
+                                                                      occurrence: [
+                                                                        '1', '1',
+                                                                        '0', '0',
+                                                                        '0', '1',
+                                                                        '0', '4',
+                                                                        '2']
+                                                                    - [STRING.String]
+                                                                  sort: STRING.String
+                                                                  occurrence: ['0',
+                                                                    '0', '0', '0',
+                                                                    '1', '0', '4',
+                                                                    '2']
+                                                                - [STRING.String,
+                                                                  STRING.String]
+                                                              sort: STRING.String
+                                                              occurrence: ['1', '0',
+                                                                '0', '0', '1', '0',
+                                                                '4', '2']
+                                                            - [STRING.String, STRING.String]
+                                                          sort: STRING.String
+                                                          occurrence: ['0', '0', '0',
+                                                            '1', '0', '4', '2']
+                                                        - [STRING.String]
+                                                      sort: STRING.String
+                                                      occurrence: *id032
+                                                    - []
+                                                  bitwidth: 32
+                                                  sort: MINT.MInt 32
+                                                  occurrence: &id033 [size, '0', '2',
+                                                    '0', '1', '0', '4', '2']
+                                                function: hook_INT_size_int
+                                                sort: MINT.MInt 32
+                                                occurrence: *id033
+                                              - [INT.Int]
+                                            sort: STRING.String
+                                            occurrence: *id034
+                                          - [STRING.String]
+                                        sort: STRING.String
+                                        occurrence: ['0', '0', '0', '4', '2']
+                                      - [STRING.String]
+                                    sort: STRING.String
+                                    occurrence: *id035
+                                  - []
+                                sort: STRING.String
+                                occurrence: ['1', '0', '1', '0', '4', '2']
+                              - [STRING.String, STRING.String, STRING.String, STRING.String]
+                            sort: STRING.String
+                            occurrence: ['0', '1', '0', '4', '2']
+                          - [STRING.String]
+                        sort: STRING.String
+                        occurrence: ['1', '0', '4', '2']
+                      - [STRING.String, STRING.String, STRING.String, STRING.String,
+                        STRING.String]
+                    sort: STRING.String
+                    occurrence: ['0', '4', '2']
+                  - [STRING.String]
+                sort: STRING.String
+                occurrence: *id036
+              - []
+            bitwidth: 1
+            sort: BOOL.Bool
+            occurrence: &id037 [side_condition_6393]
+          function: side_condition_6393
+          sort: BOOL.Bool
+          occurrence: *id037
+        - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+      - - LblTypeInfo'ColnColn'ArrayType{}
+        - default: null
+          specializations:
+          - - LblnoTyConst'Unds'TYPES'Unds'MaybeTyConst{}
+            - action:
+              - 6391
+              - - - *id001
+                  - BYTES.Bytes
+                - - &id038 ['0', '2']
+                  - STRING.String
+            - []
+          - - LblsomeTyConst'LParUndsRParUnds'TYPES'Unds'MaybeTyConst'Unds'TyConst{}
+            - default: null
+              specializations:
+              - - LbltyConst'LParUndsCommUndsRParUnds'TYPES'Unds'TyConst'Unds'TyConstKind'Unds'TyConstId{}
+                - args:
+                  - - &id039 ['0', '0', '1', '2']
+                    - STRING.String
+                  next:
+                    default: null
+                    specializations:
+                    - - '1'
+                      - action:
+                        - 6392
+                        - - - ['1', '0', '1', '2']
+                            - STRING.String
+                          - - *id001
+                            - BYTES.Bytes
+                          - - *id038
+                            - STRING.String
+                          - - *id039
+                            - STRING.String
+                      - []
+                    - - '0'
+                      - *id004
+                      - []
+                    bitwidth: 1
+                    sort: BOOL.Bool
+                    occurrence: &id040 [side_condition_6392]
+                  function: side_condition_6392
+                  sort: BOOL.Bool
+                  occurrence: *id040
+                - [STRING.String, STRING.String]
+              sort: STRING.String
+              occurrence: ['0', '1', '2']
+            - [STRING.String]
+          sort: STRING.String
+          occurrence: ['1', '2']
+        - [STRING.String, STRING.String]
+      - - LblTypeInfo'ColnColn'PrimitiveType{}
+        - default: *id004
+          specializations:
+          - - LblPrimitiveType'ColnColn'Bool{}
+            - args:
+              - - *id001
+                - BYTES.Bytes
+              next:
+                default: null
+                specializations:
+                - - '1'
+                  - action:
+                    - 6395
+                    - - - *id001
+                        - BYTES.Bytes
+                  - []
+                - - '0'
+                  - args:
+                    - - *id001
+                      - BYTES.Bytes
+                    next:
+                      default: null
+                      specializations:
+                      - - '1'
+                        - action:
+                          - 6396
+                          - - - *id001
+                              - BYTES.Bytes
+                        - []
+                      - - '0'
+                        - *id004
+                        - []
+                      bitwidth: 1
+                      sort: BOOL.Bool
+                      occurrence: &id041 [side_condition_6396]
+                    function: side_condition_6396
+                    sort: BOOL.Bool
+                    occurrence: *id041
+                  - []
+                bitwidth: 1
+                sort: BOOL.Bool
+                occurrence: &id042 [side_condition_6395]
+              function: side_condition_6395
+              sort: BOOL.Bool
+              occurrence: *id042
+            - []
+          sort: STRING.String
+          occurrence: ['0', '2']
+        - [STRING.String]
+      - - LblTypeInfo'ColnColn'StructType{}
+        - args:
+          - - *id001
+            - BYTES.Bytes
+          - - &id043 ['3', '2']
+            - STRING.String
+          - - &id044 ['2', '2']
+            - STRING.String
+          next:
+            default: null
+            specializations:
+            - - '1'
+              - action:
+                - 6397
+                - - - ['0', '2']
+                    - STRING.String
+                  - - ['1', '2']
+                    - STRING.String
+                  - - *id001
+                    - BYTES.Bytes
+                  - - *id043
+                    - STRING.String
+                  - - *id044
+                    - STRING.String
+              - []
+            - - '0'
+              - *id004
+              - []
+            bitwidth: 1
+            sort: BOOL.Bool
+            occurrence: &id045 [side_condition_6397]
+          function: side_condition_6397
+          sort: BOOL.Bool
+          occurrence: *id045
+        - [STRING.String, STRING.String, STRING.String, STRING.String]
+      - - LblTypeInfo'ColnColn'TupleType{}
+        - args:
+          - - *id001
+            - BYTES.Bytes
+          - - &id046 ['1', '2']
+            - STRING.String
+          - - &id047 ['0', '2']
+            - STRING.String
+          next:
+            default: null
+            specializations:
+            - - '1'
+              - action:
+                - 6398
+                - - - *id001
+                    - BYTES.Bytes
+                  - - *id046
+                    - STRING.String
+                  - - *id047
+                    - STRING.String
+              - []
+            - - '0'
+              - default: *id004
+                specializations:
+                - - LblTys'ColnColn'empty{}
+                  - args:
+                    - - *id001
+                      - BYTES.Bytes
+                    next:
+                      default: null
+                      specializations:
+                      - - '1'
+                        - action:
+                          - 6399
+                          - - - *id046
+                              - STRING.String
+                            - - *id001
+                              - BYTES.Bytes
+                        - []
+                      - - '0'
+                        - *id004
+                        - []
+                      bitwidth: 1
+                      sort: BOOL.Bool
+                      occurrence: &id048 [side_condition_6399]
+                    function: side_condition_6399
+                    sort: BOOL.Bool
+                    occurrence: *id048
+                  - []
+                sort: STRING.String
+                occurrence: *id047
+              - []
+            bitwidth: 1
+            sort: BOOL.Bool
+            occurrence: &id049 [side_condition_6398]
+          function: side_condition_6398
+          sort: BOOL.Bool
+          occurrence: *id049
+        - [STRING.String, STRING.String]
+      sort: STRING.String
+      occurrence: *id002
+    - []
+  bitwidth: 1
+  sort: BOOL.Bool
+  occurrence: &id050 [side_condition_6390]
+function: side_condition_6390
+sort: BOOL.Bool
+occurrence: *id050

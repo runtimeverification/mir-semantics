@@ -1,0 +1,64 @@
+default: &id001
+  action:
+  - 6027
+  - - - &id002 ['1']
+      - STRING.String
+specializations:
+- - LblTypeInfo'ColnColn'EnumType{}
+  - default: *id001
+    specializations:
+    - - inj{SortString{}, SortMIRString{}}
+      - action:
+        - 6028
+        - - - ['1', '1']
+            - STRING.String
+          - - ['2', '1']
+            - STRING.String
+          - - ['3', '1']
+            - STRING.String
+          - - ['4', '1']
+            - STRING.String
+          - - ['0', '0', '1']
+            - STRING.String
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+- - LblTypeInfo'ColnColn'StructType{}
+  - default: *id001
+    specializations:
+    - - inj{SortString{}, SortMIRString{}}
+      - action:
+        - 6029
+        - - - ['1', '1']
+            - STRING.String
+          - - ['2', '1']
+            - STRING.String
+          - - ['3', '1']
+            - STRING.String
+          - - ['0', '0', '1']
+            - STRING.String
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String, STRING.String, STRING.String]
+- - LblTypeInfo'ColnColn'UnionType{}
+  - default: *id001
+    specializations:
+    - - inj{SortString{}, SortMIRString{}}
+      - action:
+        - 6030
+        - - - ['1', '1']
+            - STRING.String
+          - - ['2', '1']
+            - STRING.String
+          - - ['3', '1']
+            - STRING.String
+          - - ['0', '0', '1']
+            - STRING.String
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: *id002

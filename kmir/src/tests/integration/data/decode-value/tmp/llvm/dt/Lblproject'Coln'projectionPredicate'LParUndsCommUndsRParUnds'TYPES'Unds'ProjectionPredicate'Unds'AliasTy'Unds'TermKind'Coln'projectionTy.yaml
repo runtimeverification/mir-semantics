@@ -1,0 +1,12 @@
+default: null
+specializations:
+- - LblprojectionPredicate'LParUndsCommUndsRParUnds'TYPES'Unds'ProjectionPredicate'Unds'AliasTy'Unds'TermKind{}
+  - action:
+    - 7687
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

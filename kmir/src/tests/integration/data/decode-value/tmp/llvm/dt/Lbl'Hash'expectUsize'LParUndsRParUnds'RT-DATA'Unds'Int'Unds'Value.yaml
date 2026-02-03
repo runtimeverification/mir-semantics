@@ -1,0 +1,47 @@
+default: fail
+specializations:
+- - LblValue'ColnColn'Integer{}
+  - default: fail
+    specializations:
+    - - '0'
+      - args:
+        - - &id001 ['1', '1']
+          - INT.Int
+        next:
+          default: fail
+          specializations:
+          - - '1'
+            - args:
+              - - *id001
+                - INT.Int
+              - - [lit, '0', MINT.MInt 64]
+                - MINT.MInt 64
+              next:
+                default: fail
+                specializations:
+                - - '64'
+                  - action:
+                    - 5901
+                    - - - ['0', '1']
+                        - INT.Int
+                  - []
+                bitwidth: 64
+                sort: MINT.MInt 64
+                occurrence: &id002 ['0', '1', '1']
+              function: hook_INT_limb
+              sort: MINT.MInt 64
+              occurrence: *id002
+            - []
+          bitwidth: 32
+          sort: MINT.MInt 32
+          occurrence: &id003 [size, '1', '1']
+        function: hook_INT_size_int
+        sort: MINT.MInt 32
+        occurrence: *id003
+      - []
+    bitwidth: 1
+    sort: BOOL.Bool
+    occurrence: ['2', '1']
+  - [INT.Int, INT.Int, BOOL.Bool]
+sort: STRING.String
+occurrence: ['1']

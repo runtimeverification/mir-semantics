@@ -1,0 +1,86 @@
+default: null
+specializations:
+- - Lbl'Stop'List'LBraQuotUndsUndsUnds'RT-DATA'Unds'Contexts'Unds'Context'Unds'Contexts'QuotRBraUnds'Contexts{}
+  - action:
+    - 5980
+    - - - &id001 ['2']
+        - STRING.String
+  - []
+- - Lbl'UndsUndsUnds'RT-DATA'Unds'Contexts'Unds'Context'Unds'Contexts{}
+  - default: null
+    specializations:
+    - - LblCtxField'LParUndsCommUndsCommUndsCommUndsRParUnds'RT-DATA'Unds'Context'Unds'VariantIdx'Unds'List'Unds'Int'Unds'Ty{}
+      - action:
+        - 5981
+        - - - ['0', '0', '1']
+            - STRING.String
+          - - ['1', '0', '1']
+            - LIST.List
+          - - &id002 ['1', '1']
+            - STRING.String
+          - - ['2', '0', '1']
+            - INT.Int
+          - - *id001
+            - STRING.String
+          - - ['3', '0', '1']
+            - STRING.String
+      - [STRING.String, LIST.List, INT.Int, STRING.String]
+    - - LblCtxFieldUnion'LParUndsCommUndsCommUndsRParUnds'RT-DATA'Unds'Context'Unds'FieldIdx'Unds'Value'Unds'Ty{}
+      - action:
+        - 5982
+        - - - ['1', '0', '1']
+            - STRING.String
+          - - *id002
+            - STRING.String
+          - - ['0', '0', '1']
+            - STRING.String
+          - - *id001
+            - STRING.String
+          - - ['2', '0', '1']
+            - STRING.String
+      - [STRING.String, STRING.String, STRING.String]
+    - - LblCtxIndex'LParUndsCommUndsRParUnds'RT-DATA'Unds'Context'Unds'List'Unds'Int{}
+      - action:
+        - 5983
+        - - - ['0', '0', '1']
+            - LIST.List
+          - - *id002
+            - STRING.String
+          - - ['1', '0', '1']
+            - INT.Int
+          - - *id001
+            - STRING.String
+      - [LIST.List, INT.Int]
+    - - LblCtxPointerOffset'LParUndsCommUndsCommUndsRParUnds'RT-DATA'Unds'Context'Unds'List'Unds'Int'Unds'Int{}
+      - action:
+        - 5984
+        - - - ['0', '0', '1']
+            - LIST.List
+          - - *id002
+            - STRING.String
+          - - ['1', '0', '1']
+            - INT.Int
+          - - ['2', '0', '1']
+            - INT.Int
+          - - *id001
+            - STRING.String
+      - [LIST.List, INT.Int, INT.Int]
+    - - LblCtxSubslice'LParUndsCommUndsCommUndsRParUnds'RT-DATA'Unds'Context'Unds'List'Unds'Int'Unds'Int{}
+      - action:
+        - 5985
+        - - - ['0', '0', '1']
+            - LIST.List
+          - - *id002
+            - STRING.String
+          - - ['1', '0', '1']
+            - INT.Int
+          - - ['2', '0', '1']
+            - INT.Int
+          - - *id001
+            - STRING.String
+      - [LIST.List, INT.Int, INT.Int]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

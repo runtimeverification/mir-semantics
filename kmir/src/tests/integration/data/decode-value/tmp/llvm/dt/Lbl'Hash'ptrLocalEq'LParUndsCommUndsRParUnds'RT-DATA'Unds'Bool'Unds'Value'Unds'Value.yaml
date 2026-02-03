@@ -1,0 +1,36 @@
+default: &id001
+  action:
+  - 5986
+  - - - &id002 ['1']
+      - STRING.String
+    - - &id003 ['2']
+      - STRING.String
+specializations:
+- - LblValue'ColnColn'PtrLocal{}
+  - default: *id001
+    specializations:
+    - - LblValue'ColnColn'PtrLocal{}
+      - action:
+        - 5987
+        - - - ['2', '1']
+            - STRING.String
+          - - ['2', '2']
+            - STRING.String
+          - - ['0', '1']
+            - INT.Int
+          - - ['0', '2']
+            - INT.Int
+          - - ['1', '1']
+            - STRING.String
+          - - ['1', '2']
+            - STRING.String
+          - - ['3', '1']
+            - STRING.String
+          - - ['3', '2']
+            - STRING.String
+      - [INT.Int, STRING.String, STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: *id002
+  - [INT.Int, STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: *id003

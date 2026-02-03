@@ -1,0 +1,10 @@
+default: null
+specializations:
+- - LblMachineSize'ColnColn'num'Unds'bits{}
+  - action:
+    - 7346
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

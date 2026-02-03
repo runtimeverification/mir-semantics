@@ -1,0 +1,18 @@
+default: null
+specializations:
+- - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+  - action:
+    - 7640
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+      - - ['2', '1']
+        - STRING.String
+      - - ['3', '1']
+        - STRING.String
+      - - ['4', '1']
+        - STRING.String
+  - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

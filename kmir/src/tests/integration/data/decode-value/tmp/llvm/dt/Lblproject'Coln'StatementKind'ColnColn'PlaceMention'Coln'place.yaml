@@ -1,0 +1,10 @@
+default: fail
+specializations:
+- - LblStatementKind'ColnColn'PlaceMention{}
+  - action:
+    - 7458
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

@@ -1,0 +1,52 @@
+- next:
+    action:
+    - 6268
+    - - - ['1', '1']
+        - STRING.String
+      - - ['1', '0', '0', '0', '1']
+        - STRING.String
+      - - ['1', '0', '1']
+        - STRING.String
+      - - ['2', '0', '1']
+        - STRING.String
+      - - ['3', '0', '1']
+        - STRING.String
+      - - ['4', '0', '1']
+        - STRING.String
+      - - ['5', '0', '1']
+        - STRING.String
+      - - ['0', '0', '0', '0', '1']
+        - STRING.String
+  pattern:
+    args:
+    - args:
+      - hook: STRING.String
+        occurrence: &id001 ['0', '0', '0', '0', '0', '0', '1']
+      - hook: STRING.String
+        occurrence: &id002 ['1', '0', '0', '0', '0', '0', '1']
+      - hook: BOOL.Bool
+        occurrence: &id003 ['2', '0', '0', '0', '0', '0', '1']
+      constructor: Lbl'Hash'UBErrorPtrOffsetDiff'LParUndsCommUndsCommUndsRParUnds'KMIR-INTRINSICS'Unds'UBPtrOffsetDiff'Unds'Value'Unds'Value'Unds'Bool{}
+    constructor: inj{SortUBPtrOffsetDiff{}, SortKItem{}}
+  occurrence: ['0', '0', '0', '0', '1']
+  sort: STRING.String
+- - - {hook: STRING.String, occurrence: VarPTR1}
+    - *id001
+  - - {hook: STRING.String, occurrence: VarPTR2}
+    - *id002
+  - - {hook: BOOL.Bool, occurrence: VarSIGNED'Unds'FLAG}
+    - *id003
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar2}
+    - ['1', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen8}
+    - ['1', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen9}
+    - ['2', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen10}
+    - ['3', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen11}
+    - ['4', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen12}
+    - ['5', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar0}
+    - ['1', '1']

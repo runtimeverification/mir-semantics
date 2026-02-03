@@ -1,0 +1,12 @@
+default: null
+specializations:
+- - LblearlyParamRegion'LParUndsCommUndsRParUnds'TYPES'Unds'EarlyParamRegion'Unds'MIRInt'Unds'Symbol{}
+  - action:
+    - 7598
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: ['1']

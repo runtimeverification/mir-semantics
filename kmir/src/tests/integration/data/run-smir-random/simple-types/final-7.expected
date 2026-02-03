@@ -81,4 +81,7 @@
     ListItem ( typedValue ( Integer ( 77 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
     ListItem ( typedValue ( Integer ( -1940095024 , 32 , true ) , ty ( 8 ) , mutabilityNot ) ) ) )
   </stack>
+  <breakOnFunctions>
+    .Set
+  </breakOnFunctions>
 </kmir>

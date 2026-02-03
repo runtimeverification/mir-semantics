@@ -1,0 +1,346 @@
+default: null
+specializations:
+- - LblMetadata{}
+  - default: &id006
+      action:
+      - 5863
+      - - - &id001 ['2', '1']
+          - STRING.String
+        - - &id023 ['2']
+          - STRING.String
+        - - &id003 ['1', '1']
+          - INT.Int
+        - - &id002 ['0', '1']
+          - STRING.String
+    specializations:
+    - - LblTypeInfo'ColnColn'PtrType{}
+      - default: null
+        specializations:
+        - - LbldynamicSize{}
+          - args:
+            - - &id004 ['0', '2']
+              - STRING.String
+            next:
+              default: null
+              specializations:
+              - - '1'
+                - action:
+                  - 5853
+                  - - - *id001
+                      - STRING.String
+                    - - *id002
+                      - STRING.String
+                    - - *id003
+                      - INT.Int
+                    - - *id004
+                      - STRING.String
+                    - - &id005 ['0', '0', '1']
+                      - INT.Int
+                - []
+              - - '0'
+                - args:
+                  - - *id004
+                    - STRING.String
+                  next:
+                    default: null
+                    specializations:
+                    - - '1'
+                      - action:
+                        - 5855
+                        - - - *id005
+                            - INT.Int
+                          - - *id001
+                            - STRING.String
+                          - - *id003
+                            - INT.Int
+                          - - *id002
+                            - STRING.String
+                          - - *id004
+                            - STRING.String
+                      - []
+                    - - '0'
+                      - &id011
+                        args:
+                        - - *id004
+                          - STRING.String
+                        next:
+                          default: null
+                          specializations:
+                          - - '1'
+                            - action:
+                              - 5864
+                              - - - *id001
+                                  - STRING.String
+                                - - *id003
+                                  - INT.Int
+                                - - *id004
+                                  - STRING.String
+                                - - *id002
+                                  - STRING.String
+                            - []
+                          - - '0'
+                            - *id006
+                            - []
+                          bitwidth: 1
+                          sort: BOOL.Bool
+                          occurrence: &id007 [side_condition_5864]
+                        function: side_condition_5864
+                        sort: BOOL.Bool
+                        occurrence: *id007
+                      - []
+                    bitwidth: 1
+                    sort: BOOL.Bool
+                    occurrence: &id008 [side_condition_5855]
+                  function: side_condition_5855
+                  sort: BOOL.Bool
+                  occurrence: *id008
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: &id009 [side_condition_5853]
+            function: side_condition_5853
+            sort: BOOL.Bool
+            occurrence: *id009
+          - [INT.Int]
+        - - LblnoMetadataSize{}
+          - action:
+            - 5857
+            - - - *id001
+                - STRING.String
+              - - *id002
+                - STRING.String
+              - - *id003
+                - INT.Int
+              - - *id004
+                - STRING.String
+          - []
+        - - LblstaticSize{}
+          - args:
+            - - *id004
+              - STRING.String
+            next:
+              default: null
+              specializations:
+              - - '1'
+                - action:
+                  - 5859
+                  - - - *id001
+                      - STRING.String
+                    - - *id002
+                      - STRING.String
+                    - - *id003
+                      - INT.Int
+                    - - *id004
+                      - STRING.String
+                    - - &id010 ['0', '0', '1']
+                      - INT.Int
+                - []
+              - - '0'
+                - args:
+                  - - *id004
+                    - STRING.String
+                  next:
+                    default: null
+                    specializations:
+                    - - '1'
+                      - action:
+                        - 5861
+                        - - - *id010
+                            - INT.Int
+                          - - *id001
+                            - STRING.String
+                          - - *id003
+                            - INT.Int
+                          - - *id002
+                            - STRING.String
+                          - - *id004
+                            - STRING.String
+                      - []
+                    - - '0'
+                      - *id011
+                      - []
+                    bitwidth: 1
+                    sort: BOOL.Bool
+                    occurrence: &id012 [side_condition_5861]
+                  function: side_condition_5861
+                  sort: BOOL.Bool
+                  occurrence: *id012
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: &id013 [side_condition_5859]
+            function: side_condition_5859
+            sort: BOOL.Bool
+            occurrence: *id013
+          - [INT.Int]
+        sort: STRING.String
+        occurrence: *id002
+      - [STRING.String]
+    - - LblTypeInfo'ColnColn'RefType{}
+      - default: null
+        specializations:
+        - - LbldynamicSize{}
+          - args:
+            - - &id014 ['0', '2']
+              - STRING.String
+            next:
+              default: null
+              specializations:
+              - - '1'
+                - action:
+                  - 5854
+                  - - - *id001
+                      - STRING.String
+                    - - *id002
+                      - STRING.String
+                    - - *id003
+                      - INT.Int
+                    - - *id014
+                      - STRING.String
+                    - - &id015 ['0', '0', '1']
+                      - INT.Int
+                - []
+              - - '0'
+                - args:
+                  - - *id014
+                    - STRING.String
+                  next:
+                    default: null
+                    specializations:
+                    - - '1'
+                      - action:
+                        - 5856
+                        - - - *id015
+                            - INT.Int
+                          - - *id001
+                            - STRING.String
+                          - - *id003
+                            - INT.Int
+                          - - *id002
+                            - STRING.String
+                          - - *id014
+                            - STRING.String
+                      - []
+                    - - '0'
+                      - &id020
+                        args:
+                        - - *id014
+                          - STRING.String
+                        next:
+                          default: null
+                          specializations:
+                          - - '1'
+                            - action:
+                              - 5865
+                              - - - *id001
+                                  - STRING.String
+                                - - *id003
+                                  - INT.Int
+                                - - *id014
+                                  - STRING.String
+                                - - *id002
+                                  - STRING.String
+                            - []
+                          - - '0'
+                            - *id006
+                            - []
+                          bitwidth: 1
+                          sort: BOOL.Bool
+                          occurrence: &id016 [side_condition_5865]
+                        function: side_condition_5865
+                        sort: BOOL.Bool
+                        occurrence: *id016
+                      - []
+                    bitwidth: 1
+                    sort: BOOL.Bool
+                    occurrence: &id017 [side_condition_5856]
+                  function: side_condition_5856
+                  sort: BOOL.Bool
+                  occurrence: *id017
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: &id018 [side_condition_5854]
+            function: side_condition_5854
+            sort: BOOL.Bool
+            occurrence: *id018
+          - [INT.Int]
+        - - LblnoMetadataSize{}
+          - action:
+            - 5858
+            - - - *id001
+                - STRING.String
+              - - *id002
+                - STRING.String
+              - - *id003
+                - INT.Int
+              - - *id014
+                - STRING.String
+          - []
+        - - LblstaticSize{}
+          - args:
+            - - *id014
+              - STRING.String
+            next:
+              default: null
+              specializations:
+              - - '1'
+                - action:
+                  - 5860
+                  - - - *id001
+                      - STRING.String
+                    - - *id002
+                      - STRING.String
+                    - - *id003
+                      - INT.Int
+                    - - *id014
+                      - STRING.String
+                    - - &id019 ['0', '0', '1']
+                      - INT.Int
+                - []
+              - - '0'
+                - args:
+                  - - *id014
+                    - STRING.String
+                  next:
+                    default: null
+                    specializations:
+                    - - '1'
+                      - action:
+                        - 5862
+                        - - - *id019
+                            - INT.Int
+                          - - *id001
+                            - STRING.String
+                          - - *id003
+                            - INT.Int
+                          - - *id002
+                            - STRING.String
+                          - - *id014
+                            - STRING.String
+                      - []
+                    - - '0'
+                      - *id020
+                      - []
+                    bitwidth: 1
+                    sort: BOOL.Bool
+                    occurrence: &id021 [side_condition_5862]
+                  function: side_condition_5862
+                  sort: BOOL.Bool
+                  occurrence: *id021
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: &id022 [side_condition_5860]
+            function: side_condition_5860
+            sort: BOOL.Bool
+            occurrence: *id022
+          - [INT.Int]
+        sort: STRING.String
+        occurrence: *id002
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: *id023
+  - [STRING.String, INT.Int, STRING.String]
+sort: STRING.String
+occurrence: ['1']

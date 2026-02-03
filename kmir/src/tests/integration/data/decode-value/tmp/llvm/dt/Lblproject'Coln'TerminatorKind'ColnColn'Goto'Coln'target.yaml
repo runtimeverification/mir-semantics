@@ -1,0 +1,10 @@
+default: fail
+specializations:
+- - LblTerminatorKind'ColnColn'Goto{}
+  - action:
+    - 7488
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

@@ -1,0 +1,73 @@
+args:
+- - &id001 ['1']
+  - BOOL.Bool
+- - &id002 ['2']
+  - BOOL.Bool
+next:
+  default: null
+  specializations:
+  - - '1'
+    - action:
+      - 6368
+      - - - *id001
+          - BOOL.Bool
+        - - *id002
+          - BOOL.Bool
+    - []
+  - - '0'
+    - args:
+      - - *id001
+        - BOOL.Bool
+      - - *id002
+        - BOOL.Bool
+      next:
+        default: null
+        specializations:
+        - - '1'
+          - action:
+            - 6369
+            - - - *id001
+                - BOOL.Bool
+              - - *id002
+                - BOOL.Bool
+          - []
+        - - '0'
+          - args:
+            - - *id001
+              - BOOL.Bool
+            - - *id002
+              - BOOL.Bool
+            next:
+              default: null
+              specializations:
+              - - '1'
+                - action:
+                  - 6370
+                  - - - *id001
+                      - BOOL.Bool
+                    - - *id002
+                      - BOOL.Bool
+                - []
+              - - '0'
+                - fail
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: &id003 [side_condition_6370]
+            function: side_condition_6370
+            sort: BOOL.Bool
+            occurrence: *id003
+          - []
+        bitwidth: 1
+        sort: BOOL.Bool
+        occurrence: &id004 [side_condition_6369]
+      function: side_condition_6369
+      sort: BOOL.Bool
+      occurrence: *id004
+    - []
+  bitwidth: 1
+  sort: BOOL.Bool
+  occurrence: &id005 [side_condition_6368]
+function: side_condition_6368
+sort: BOOL.Bool
+occurrence: *id005

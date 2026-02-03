@@ -1,0 +1,75 @@
+default: fail
+specializations:
+- - inj{SortIntTy{}, SortNumTy{}}
+  - args:
+    - - &id001 ['3']
+      - STRING.String
+    - - &id002 ['2']
+      - INT.Int
+    next:
+      default: null
+      specializations:
+      - - '1'
+        - action:
+          - 5919
+          - - - *id001
+              - STRING.String
+            - - &id003 ['0', '3']
+              - STRING.String
+            - - &id004 ['1']
+              - INT.Int
+            - - *id002
+              - INT.Int
+        - []
+      - - '0'
+        - args:
+          - - *id001
+            - STRING.String
+          - - *id002
+            - INT.Int
+          next:
+            default: null
+            specializations:
+            - - '1'
+              - action:
+                - 5920
+                - - - *id001
+                    - STRING.String
+                  - - *id003
+                    - STRING.String
+                  - - *id004
+                    - INT.Int
+                  - - *id002
+                    - INT.Int
+              - []
+            - - '0'
+              - fail
+              - []
+            bitwidth: 1
+            sort: BOOL.Bool
+            occurrence: &id005 [side_condition_5920]
+          function: side_condition_5920
+          sort: BOOL.Bool
+          occurrence: *id005
+        - []
+      bitwidth: 1
+      sort: BOOL.Bool
+      occurrence: &id006 [side_condition_5919]
+    function: side_condition_5919
+    sort: BOOL.Bool
+    occurrence: *id006
+  - [STRING.String]
+- - inj{SortUintTy{}, SortNumTy{}}
+  - action:
+    - 5921
+    - - - *id002
+        - INT.Int
+      - - *id001
+        - STRING.String
+      - - ['0', '3']
+        - STRING.String
+      - - *id004
+        - INT.Int
+  - [STRING.String]
+sort: STRING.String
+occurrence: *id001
