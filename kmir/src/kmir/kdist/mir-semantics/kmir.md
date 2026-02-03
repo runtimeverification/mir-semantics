@@ -327,7 +327,18 @@ where the returned result should go.
         <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND) ~> _
          => #execIntrinsic(FUNC, ARGS, DEST) ~> #continueAt(TARGET)
         </k>
+        <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
     requires isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesAny(getFunctionName(FUNC), BREAKFUNCS)
+
+  // Intrinsic function call to a function in the break-on set - same as termCallIntrinsic but separate rule id for cut-point
+  rule [termCallIntrinsicFilter]:
+        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST) ~> #continueAt(TARGET)
+        </k>
+        <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
+    requires isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesAny(getFunctionName(FUNC), BREAKFUNCS)
 
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
