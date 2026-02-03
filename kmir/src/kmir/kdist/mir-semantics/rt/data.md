@@ -1110,25 +1110,13 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid indexing and sort coercion
 
-  syntax KItem ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
-
-  syntax MIRError ::= "#UBInvalidVariantIdx"
-
+  syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
         => #lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX)
         ...
        </k>
     requires discriminantsOf(lookupTy(TY)) =/=K .Discriminants // must be an enum
-     andBool #lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX) =/=K Integer(-1, 0, false)
-    [preserves-definedness]
-
-  rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => #UBInvalidVariantIdx
-        ...
-       </k>
-    requires discriminantsOf(lookupTy(TY)) =/=K .Discriminants // must be an enum
-     andBool #lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX) ==K Integer(-1, 0, false)
     [preserves-definedness]
 
   // default 0 for non-enum types. May be undefined behaviour, though.
@@ -1147,7 +1135,7 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   // --------------------------------------------------------------------
   rule #lookupDiscrAux( discriminant(RESULT)         _        , variantIdx(I)) => Integer(RESULT, 0, false) requires I ==Int 0 // HACK: bit width 0 means "flexible"
   rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, variantIdx(I)) => #lookupDiscrAux(MORE, variantIdx(I -Int 1)) requires 0 <Int I
-  rule #lookupDiscrAux( _:Discriminants, _) => Integer(-1, 0, false) [priority(100)] // HACK
+  rule #lookupDiscrAux( _:Discriminants, _) => Integer(-1, -1, false) [priority(100)] // HACK
 ```
 
 ```k
