@@ -30,6 +30,7 @@ module KMIR-CONTROL-FLOW
   imports BOOL
   imports LIST
   imports MAP
+  imports STRING
   imports K-EQUAL
 
   imports MONO
@@ -346,6 +347,13 @@ where the returned result should go.
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
   rule isIntrinsicFunction(_) => false [owise]
+
+  syntax String ::= getFunctionName(MonoItemKind) [function, total]
+  //---------------------------------------------------------------
+  rule getFunctionName(monoItemFn(symbol(NAME), _, _)) => NAME
+  rule getFunctionName(monoItemStatic(symbol(NAME), _, _)) => NAME
+  rule getFunctionName(monoItemGlobalAsm(_)) => ""
+  rule getFunctionName(IntrinsicFunction(symbol(NAME))) => NAME
 
   syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
   rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>
