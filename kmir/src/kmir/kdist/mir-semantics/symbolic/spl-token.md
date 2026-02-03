@@ -360,16 +360,16 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
     ensures #isSplPubkey(?SplMintKey)
       andBool #isSplPubkey(?SplTokenOwnerKey)
       andBool 0 <=Int ?SplHasDelegateKey andBool ?SplHasDelegateKey <=Int 1
-      andBool (Integer(0, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplHasDelegateKey)) orBool Integer(1, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplHasDelegateKey)))
+      andBool (0 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplHasDelegateKey)) orBool 1 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplHasDelegateKey)))
       andBool #isSplPubkey(?SplDelegateKey)
       andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <=Int 2
       andBool 0 <=Int ?SplDelegatedAmount andBool ?SplDelegatedAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplIsNativeLamportsVariant andBool ?SplIsNativeLamportsVariant <=Int 1
-      andBool (Integer(0, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplIsNativeLamportsVariant)) orBool Integer(1, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplIsNativeLamportsVariant)))
+      andBool (0 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplIsNativeLamportsVariant)) orBool 1 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplIsNativeLamportsVariant)))
       andBool 0 <=Int ?SplIsNativeLamports andBool ?SplIsNativeLamports <Int (1 <<Int 64)
       andBool 0 <=Int ?SplHasCloseAuthKey andBool ?SplHasCloseAuthKey <=Int 1
-      andBool (Integer(0, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplHasCloseAuthKey)) orBool Integer(1, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplHasCloseAuthKey)))
+      andBool (0 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplHasCloseAuthKey)) orBool 1 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplHasCloseAuthKey)))
       andBool #isSplPubkey(?SplCloseAuthKey)
     [priority(30), preserves-definedness]
 
@@ -404,10 +404,10 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
     requires #functionName(FUNC) ==String "spl_token::entrypoint::cheatcode_is_spl_mint"
       orBool #functionName(FUNC) ==String "cheatcode_is_spl_mint"
     ensures 0 <=Int ?SplMintHasAuthKey andBool ?SplMintHasAuthKey <=Int 1
-      andBool (Integer(0, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplMintHasAuthKey)) orBool Integer(1, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplMintHasAuthKey)))
+      andBool (0 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplMintHasAuthKey)) orBool 1 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplMintHasAuthKey)))
       andBool #isSplPubkey(?SplMintAuthorityKey)
       andBool 0 <=Int ?SplMintHasFreezeKey andBool ?SplMintHasFreezeKey <=Int 1
-      andBool (Integer(0, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplMintHasFreezeKey)) orBool Integer(1, 0, false) ==K #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplMintHasFreezeKey)))
+      andBool (0 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplMintHasFreezeKey)) orBool 1 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplMintHasFreezeKey)))
       andBool #isSplPubkey(?SplMintFreezeAuthorityKey)
       andBool 0 <=Int ?SplMintSupply andBool ?SplMintSupply <Int (1 <<Int 64)
       andBool 0 <=Int ?SplMintDecimals andBool ?SplMintDecimals <Int 256

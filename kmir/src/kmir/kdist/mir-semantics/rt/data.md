@@ -1113,7 +1113,7 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => #lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX)
+        => Integer(#lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX), 0, false) // HACK: bit width 0 means "flexible"
         ...
        </k>
     requires discriminantsOf(lookupTy(TY)) =/=K .Discriminants // must be an enum
@@ -1131,11 +1131,11 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   rule discriminantsOf(typeInfoEnumType(_, _, DISCRIMINANTS, _, _)) => DISCRIMINANTS
   rule discriminantsOf(            _OTHER_                        ) => .Discriminants [owise]
 
-  syntax Value ::= #lookupDiscrAux ( Discriminants , VariantIdx ) [function, total]
+  syntax Int ::= #lookupDiscrAux ( Discriminants , VariantIdx ) [function, total]
   // --------------------------------------------------------------------
-  rule #lookupDiscrAux( discriminant(RESULT)         _        , variantIdx(I)) => Integer(RESULT, 0, false) requires I ==Int 0 // HACK: bit width 0 means "flexible"
+  rule #lookupDiscrAux( discriminant(RESULT)         _        , variantIdx(I)) => RESULT requires I ==Int 0
   rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, variantIdx(I)) => #lookupDiscrAux(MORE, variantIdx(I -Int 1)) requires 0 <Int I
-  rule #lookupDiscrAux( _:Discriminants, _) => Integer(-1, -1, false) [priority(100)] // HACK
+  rule #lookupDiscrAux( _:Discriminants, _) => -1 [priority(100)] // HACK
 ```
 
 ```k
