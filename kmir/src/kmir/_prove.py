@@ -100,6 +100,7 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             smir_info,
             start_symbol=opts.start_symbol,
             proof_dir=opts.proof_dir,
+            break_on_function=opts.break_on_function,
         )
         if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
             smir_info.dump(proof.proof_dir / proof.id / 'smir.json')
@@ -122,6 +123,7 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
         break_on_terminator_unreachable=opts.break_on_terminator_unreachable,
         break_every_terminator=opts.break_every_terminator,
         break_every_step=opts.break_every_step,
+        break_on_function=opts.break_on_function,
     )
 
     if opts.max_workers and opts.max_workers > 1:
@@ -214,12 +216,14 @@ def apr_proof_from_smir(
     *,
     start_symbol: str = 'main',
     proof_dir: Path | None = None,
+    break_on_function: str | None = None,
 ) -> APRProof:
     lhs_config, constraints = make_call_config(
         kmir.definition,
         smir_info=smir_info,
         start_symbol=start_symbol,
         mode=SymbolicMode(),
+        break_on_function=break_on_function,
     )
     lhs = CTerm(lhs_config, constraints)
 
@@ -251,6 +255,7 @@ def _cut_point_rules(
     break_on_terminator_unreachable: bool,
     break_every_terminator: bool,
     break_every_step: bool,
+    break_on_function: str | None = None,
 ) -> list[str]:
     cut_point_rules = []
     if break_on_thunk:
@@ -291,6 +296,8 @@ def _cut_point_rules(
         or break_every_step
     ):
         cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunction')
+    if break_on_function is not None:
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunctionFilter')
     if break_on_terminator_assert or break_every_terminator or break_every_step:
         cut_point_rules.append('KMIR-CONTROL-FLOW.termAssert')
     if break_on_terminator_drop or break_every_terminator or break_every_step:

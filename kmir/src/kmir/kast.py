@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, NamedTuple
 
 from pyk.kast.inner import KApply, KSequence, KSort, KVariable, Subst, build_cons
 from pyk.kast.manip import free_vars, split_config_from
-from pyk.kast.prelude.collections import list_empty, list_of
+from pyk.kast.prelude.collections import list_empty, list_of, set_empty, set_of
 from pyk.kast.prelude.kint import eqInt, intToken, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
@@ -73,6 +73,7 @@ def make_call_config(
     smir_info: SMIRInfo,
     start_symbol: str,
     mode: CallConfigMode,
+    break_on_function: str | None = None,
 ) -> CallConfig:
     fn_data = _FunctionData.load(smir_info=smir_info, start_symbol=start_symbol)
     match mode:
@@ -80,6 +81,7 @@ def make_call_config(
             config = _make_concrete_call_config(
                 definition=definition,
                 fn_data=fn_data,
+                break_on_function=break_on_function,
             )
             return CallConfig(config=config, constraints=())
         case SymbolicMode():
@@ -87,6 +89,7 @@ def make_call_config(
                 definition=definition,
                 fn_data=fn_data,
                 types=smir_info.types,
+                break_on_function=break_on_function,
             )
             return CallConfig(config=config, constraints=tuple(constraints))
         case RandomMode(seed):
@@ -95,6 +98,7 @@ def make_call_config(
                 fn_data=fn_data,
                 types=smir_info.types,
                 seed=seed,
+                break_on_function=break_on_function,
             )
             return CallConfig(config=config, constraints=())
 
@@ -140,6 +144,7 @@ def _make_concrete_call_config(
     *,
     definition: KDefinition,
     fn_data: _FunctionData,
+    break_on_function: str | None = None,
 ) -> KInner:
     if fn_data.args:
         raise ValueError(f'Cannot create concrete call configuration for {fn_data.symbol}: function has parameters')
@@ -149,6 +154,7 @@ def _make_concrete_call_config(
         fn_data=fn_data,
         localvars=[],
         seed=None,
+        break_on_function=break_on_function,
     )
 
 
@@ -158,6 +164,7 @@ def _make_random_call_config(
     fn_data: _FunctionData,
     types: Mapping[Ty, TypeMetadata],
     seed: int,
+    break_on_function: str | None = None,
 ) -> KInner:
     localvars = _random_locals(Random(seed), fn_data.args, types)
     return _make_concrete_call_config_with_locals(
@@ -165,6 +172,7 @@ def _make_random_call_config(
         fn_data=fn_data,
         localvars=localvars,
         seed=seed,
+        break_on_function=break_on_function,
     )
 
 
@@ -174,6 +182,7 @@ def _make_concrete_call_config_with_locals(
     fn_data: _FunctionData,
     localvars: list[KInner],
     seed: int | None,
+    break_on_function: str | None = None,
 ) -> KInner:
     def init_subst() -> dict[str, KInner]:
         init_config = definition.init_config(KSort('GeneratedTopCell'))
@@ -192,12 +201,16 @@ def _make_concrete_call_config_with_locals(
             k_cell,
         )
 
+    # Build the break-on-functions set for filtered cut-point rules
+    break_on_functions_cell = set_of([token(break_on_function)]) if break_on_function else set_empty()
+
     subst = Subst(
         {
             **init_subst(),
             **{
                 'K_CELL': k_cell,
                 'LOCALS_CELL': list_of(localvars),
+                'BREAKONFUNCTIONS_CELL': break_on_functions_cell,
             },
         }
     )
@@ -213,13 +226,19 @@ def _make_symbolic_call_config(
     definition: KDefinition,
     fn_data: _FunctionData,
     types: Mapping[Ty, TypeMetadata],
+    break_on_function: str | None = None,
 ) -> tuple[KInner, list[KInner]]:
     locals, constraints = _symbolic_locals(fn_data.args, types)
+
+    # Build the break-on-functions set for filtered cut-point rules
+    break_on_functions_cell = set_of([token(break_on_function)]) if break_on_function else set_empty()
+
     subst = Subst(
         {
             'K_CELL': fn_data.call_terminator,
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
+            'BREAKONFUNCTIONS_CELL': break_on_functions_cell,
         },
     )
     empty_config = definition.empty_config(KSort('GeneratedTopCell'))
