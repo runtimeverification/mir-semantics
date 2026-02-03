@@ -28,6 +28,7 @@ See [`rt/configuration.md`](./rt/configuration.md) for a detailed description of
 ```k
 module KMIR-CONTROL-FLOW
   imports BOOL
+  imports COLLECTIONS
   imports LIST
   imports MAP
   imports SET
@@ -345,7 +346,7 @@ where the returned result should go.
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
        <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
     requires notBool isIntrinsicFunction(FUNC)
-     andBool notBool (getFunctionName(FUNC) in BREAKFUNCS)
+     andBool notBool #functionNameMatchesAny(getFunctionName(FUNC), BREAKFUNCS)
 
   // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
   rule [termCallFunctionFilter]:
@@ -364,7 +365,7 @@ where the returned result should go.
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
        <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
     requires notBool isIntrinsicFunction(FUNC)
-     andBool getFunctionName(FUNC) in BREAKFUNCS
+     andBool #functionNameMatchesAny(getFunctionName(FUNC), BREAKFUNCS)
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
@@ -376,6 +377,17 @@ where the returned result should go.
   rule getFunctionName(monoItemStatic(symbol(NAME), _, _)) => NAME
   rule getFunctionName(monoItemGlobalAsm(_)) => ""
   rule getFunctionName(IntrinsicFunction(symbol(NAME))) => NAME
+
+  syntax Bool ::= #functionNameMatchesAny(String, Set) [function, total]
+  //---------------------------------------------------------------------
+  rule #functionNameMatchesAny(NAME, FILTERS) => #functionNameMatchesAnyList(NAME, Set2List(FILTERS))
+
+  syntax Bool ::= #functionNameMatchesAnyList(String, List) [function, total]
+  //-------------------------------------------------------------------------
+  rule #functionNameMatchesAnyList(_, .List) => false
+  rule #functionNameMatchesAnyList(NAME, ListItem(FILTER:String) REST) =>
+      0 <=Int findString(NAME, FILTER, 0) orBool #functionNameMatchesAnyList(NAME, REST)
+  rule #functionNameMatchesAnyList(_, _) => false [owise]
 
   syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
   rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>
