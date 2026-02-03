@@ -86,7 +86,7 @@ For symbolic enum values, the variant index remains unevaluated but the original
      #And {true #Equals I <Int size(DISCRS)}
     [simplification]
 
-  rule #lookupDiscrAux(DISCRS, #findVariantIdxAux(DISCR, DISCRS, _IDX)) => DISCR
+  rule #lookupDiscrAux(DISCRS, #findVariantIdxAux(DISCR, DISCRS, _IDX)) => Integer(DISCR, 0, false)
     requires isOneOf(DISCR, DISCRS)
     [simplification, preserves-definedness, symbolic(DISCR)]
 
