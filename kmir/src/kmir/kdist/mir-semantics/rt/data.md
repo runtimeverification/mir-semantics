@@ -1117,6 +1117,7 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
         ...
        </k>
     requires asInt(IDX) <Int size(discriminantsOf(lookupTy(TY)))
+     andBool 0 <=Int asInt(IDX) // must not be `err(_)`
      andBool 0 <Int size(discriminantsOf(lookupTy(TY))) // must be an enum
     [preserves-definedness]
 
@@ -1126,7 +1127,7 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   syntax Int ::= asInt( VariantIdx ) [function, total]
   // -------------------------------------------------
   rule asInt(variantIdx(I)) => I
-  rule asInt(err(_)) => 1024 // HAAAAAAACK
+  rule asInt(err(_)) => -1 // HAAAAAAACK
 
   syntax Int ::= size(Discriminants) [function, total]
   rule size(.Discriminants) => 0
