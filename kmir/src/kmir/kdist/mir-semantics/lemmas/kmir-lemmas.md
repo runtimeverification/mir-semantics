@@ -94,6 +94,10 @@ For symbolic enum values, the variant index remains unevaluated but the original
     requires isOneOf(DISCR, DISCRS)
     [simplification, symbolic(DISCR)]
 
+  rule 0 <=Int asInt(#findVariantIdxAux(DISCR, DISCRS, _)) => true
+    requires isOneOf(DISCR, DISCRS)
+    [simplification, symbolic(DISCR)]
+
   syntax Bool ::= isOneOf ( Int , Discriminants ) [function, total]
   // --------------------------------------------------------------
   rule isOneOf( _,                       .Discriminants                      ) => false
