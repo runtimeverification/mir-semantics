@@ -62,8 +62,8 @@ PROVE_RS_SHOW_SPECS = [
     'iter_next_2-fail',
     'test_offset_from-fail',
     'ref-ptr-cast-arr-offset-fail',  # Should pass
-    'ref-ptr-cast-elem-fail',        # Should pass
-    'ref-ptr-cast-elem-offset-fail', # Should pass
+    'ref-ptr-cast-elem-fail',  # Should pass
+    'ref-ptr-cast-elem-offset-fail',  # Should pass
 ]
 
 
