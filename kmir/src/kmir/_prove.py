@@ -149,6 +149,7 @@ def _prove_parallel(
             'module_name': kmir.definition.main_module_name,
             'bug_report': kmir.bug_report,
             'simplify_each': 30,
+            'haskell_threads': opts.max_workers,
         }
     ) as server:
 
