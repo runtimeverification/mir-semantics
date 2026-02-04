@@ -75,4 +75,7 @@
     ListItem ( newLocal ( ty ( 69 ) , mutabilityNot ) ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <breakOnFunctions>
+    .Set
+  </breakOnFunctions>
 </kmir>

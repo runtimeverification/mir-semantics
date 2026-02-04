@@ -85,6 +85,7 @@ class ProveOpts(KMirOpts):
     break_every_terminator: bool
     break_every_step: bool
     terminate_on_thunk: bool
+    break_on_function: list[str]
 
     def __init__(
         self,
@@ -113,6 +114,7 @@ class ProveOpts(KMirOpts):
         break_every_terminator: bool = False,
         break_every_step: bool = False,
         terminate_on_thunk: bool = False,
+        break_on_function: list[str] | None = None,
     ) -> None:
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.haskell_target = haskell_target
@@ -138,6 +140,7 @@ class ProveOpts(KMirOpts):
         self.break_every_terminator = break_every_terminator
         self.break_every_step = break_every_step
         self.terminate_on_thunk = terminate_on_thunk
+        self.break_on_function = break_on_function if break_on_function is not None else []
 
 
 @dataclass
@@ -182,6 +185,7 @@ class ProveRSOpts(ProveOpts):
         break_every_step: bool = False,
         terminate_on_thunk: bool = False,
         add_module: Path | None = None,
+        break_on_function: list[str] | None = None,
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -213,6 +217,7 @@ class ProveRSOpts(ProveOpts):
         self.break_every_step = break_every_step
         self.terminate_on_thunk = terminate_on_thunk
         self.add_module = add_module
+        self.break_on_function = break_on_function if break_on_function is not None else []
 
 
 @dataclass

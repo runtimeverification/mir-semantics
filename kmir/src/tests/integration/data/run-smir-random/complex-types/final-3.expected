@@ -158,4 +158,7 @@
     ListItem ( Integer ( 1870830728 , 32 , true ) )
     ListItem ( Integer ( 1627219933 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) ) ) )
   </stack>
+  <breakOnFunctions>
+    .Set
+  </breakOnFunctions>
 </kmir>
