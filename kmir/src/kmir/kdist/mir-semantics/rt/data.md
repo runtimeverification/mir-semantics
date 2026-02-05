@@ -2365,7 +2365,7 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
   rule #applyBinOp(
           binOpOffset,
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, dynamicSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
+          Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, dynamicSize(ORIGIN_SIZE)) )
@@ -2377,7 +2377,7 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
   rule #applyBinOp(
           binOpOffset,
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, staticSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
+          Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)) )
