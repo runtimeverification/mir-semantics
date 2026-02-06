@@ -26,14 +26,15 @@
    │   #execBlockIdx ( basicBlockIdx ( 4 ) ) ~> .K
    │   function: main
    │
-   │  (7 steps)
-   └─ 7 (stuck, leaf)
-       #traverseProjection ( toLocal ( 5 ) , thunk ( #applyBinOp ( binOpOffset , PtrLoc
-       function: main
-       span: 147
+   │  (26 steps)
+   ├─ 7 (terminal)
+   │   #EndProgram ~> .K
+   │   function: main
+   │
+   ┊  constraint: true
+   ┊  subst: ...
+   └─ 2 (leaf, target, terminal)
+       #EndProgram ~> .K
 
-
-┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram ~> .K
 
 
