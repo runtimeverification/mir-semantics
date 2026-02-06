@@ -59,6 +59,7 @@ PROVE_RS_SHOW_SPECS = [
     'iterator-simple-fail',
     'unions-fail',
     'transmute-maybe-uninit-fail',
+    'ptr-through-wrapper-fail',
     'iter_next_2-fail',
     'test_offset_from-fail',
     'ref-ptr-cast-arr-offset-fail',
