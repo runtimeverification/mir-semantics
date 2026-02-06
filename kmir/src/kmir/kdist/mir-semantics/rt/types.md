@@ -99,6 +99,96 @@ which is a singleton struct (see above).
      andBool #lookupMaybeTy(getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
 ```
 
+--------------------------------------------------
+
+For compatible pointer types, the `#typeProjection` function computes a projection that can be appended to the pointer's projection to return the correct type when the pointer is cast to a different pointee type.
+Most notably, casting between arrays and single elements as well as casting to and from transparent wrappers.
+This projection computation happens _recursively_, for instance casting from `*const [[T]]` to `*const T`.
+
+Note that certain projections can cancel each other, such as casting from one transparent wrapper to another.
+This can be done in an extended `append` function for projections, and already in the concatenation here. **TODO**
+
+```k
+  syntax ProjectionElem ::= "projectionElemSingletonArray" // elem -> array. Incomplete information! (relies on elimination)
+                          | "projectionElemWrapStruct"     // transparent wrapper (singleton struct)
+
+  syntax MaybeProjectionElems ::= ProjectionElems
+                                | "NoProjectionElems"
+
+  syntax MaybeProjectionElems ::= #typeProjection ( TypeInfo , TypeInfo )    [function, total]
+                                | #pointeeProjection ( TypeInfo , TypeInfo ) [function, total]
+                                | maybeConcatProj ( ProjectionElem, MaybeProjectionElems ) [function, total]
+
+  rule maybeConcatProj(PROJ, REST:ProjectionElems) => PROJ REST
+  rule maybeConcatProj(  _ , NoProjectionElems   ) => NoProjectionElems
+
+  // ---------------------------------------------------------------------------------------
+  // The helper function is meant for pointer casts to compute pointee projections
+  rule #typeProjection ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => #pointeeProjection(lookupTy(TY1), lookupTy(TY2))
+  rule #typeProjection ( _, _ ) => NoProjectionElems [owise]
+```
+
+As a default, no projection elements are returned for incompatible types.
+A short-cut rule for identical types takes preference.
+```k
+  rule #pointeeProjection (          T                ,           T              ) => .ProjectionElems  [priority(40)] 
+  rule #pointeeProjection (          _                ,           _              ) => NoProjectionElems [owise] 
+```
+
+Pointers to arrays/slices are compatible with pointers to the element type
+```k
+  rule #pointeeProjection ( typeInfoArrayType(TY1, _) ,         TY2              ) => projectionElemConstantIndex(0, 0, false) .ProjectionElems
+    requires lookupTy(TY1) ==K TY2
+  rule #pointeeProjection (         TY1               , typeInfoArrayType(TY2, _)) => projectionElemSingletonArray .ProjectionElems
+    requires TY1 ==K lookupTy(TY2)
+  // TODO what about the recursion case?
+```
+
+Pointers to zero-sized types can be converted without projection.
+**TODO** is this true? Empty arrays and empty struct/unit have different representation.
+```k
+  rule #pointeeProjection(SRC, OTHER) => .ProjectionElems
+    requires #zeroSizedType(SRC) andBool #zeroSizedType(OTHER)
+```
+
+Pointers to structs with a single zero-offset field are compatible with pointers to that field's type
+```k
+
+  rule #pointeeProjection(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
+    => maybeConcatProj(
+          projectionElemField(fieldIdx(0), FIELD),
+          #pointeeProjection(lookupTy(FIELD), OTHER)
+        )
+    requires #zeroFieldOffset(LAYOUT)
+
+  rule #pointeeProjection(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+    => maybeConcatProj(
+          projectionElemWrapStruct,
+          #pointeeProjection(OTHER, lookupTy(FIELD))
+        )
+    requires #zeroFieldOffset(LAYOUT)
+```
+
+Pointers to `MaybeUninit<X>` can be cast to pointers to `X`.
+This is actually a 2-step compatibility:
+The `MaybeUninit<X>` union contains a `ManuallyDrop<X>` (when filled),
+which is a singleton struct (see above).
+
+```k
+  rule #pointeeProjection(MAYBEUNINIT_TYINFO, ELEM_TYINFO)
+    => maybeConcatProj(
+          projectionElemField(fieldIdx(1), {getFieldTy(MAYBEUNINIT_TYINFO, 1)}:>Ty),
+          maybeConcatProj(
+            projectionElemField(fieldIdx(0), {getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)}:>Ty),
+           .ProjectionElems // TODO recursion?
+          )
+        )
+    requires #typeNameIs(MAYBEUNINIT_TYINFO, "std::mem::MaybeUninit<")
+     andBool #lookupMaybeTy(getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
+```
+
+--------------------------------------------------
+
 Helper function to identify an `union` type, this is needed so `#setLocalValue`
 will not create an `Aggregate` instead of a `Union` `Value`.
 ```k
