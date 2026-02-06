@@ -467,7 +467,7 @@ fn test_spltoken_domain_data(acc: &AccountInfo, mint: &AccountInfo, rent: &Accou
 /// accounts[0] // First account
 /// accounts[1] // Second account (may be same as first)
 #[inline(never)]
-pub fn test_process_maybe_same_account(accounts: &[AccountInfo; 2]) {
+pub fn test_process_maybe_same_account(accounts: &[&AccountInfo; 2]) {
     // Set up symbolic state for both accounts
     cheatcode_account!(&accounts[0]);
     cheatcode_account!(&accounts[1]);
