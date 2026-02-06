@@ -420,10 +420,11 @@ fn inner_process_instruction(
     }
 }
 
-// wrapper to ensure the test below is in the SMIR JSON
+// wrapper to ensure the tests below are in the SMIR JSON
 #[no_mangle]
 pub unsafe extern "C" fn use_tests(acc: &AccountInfo) {
     test_spltoken_domain_data(acc, acc, acc);
+    test_process_maybe_same_account(&[acc, acc]);
 }
 
 // special test for basic domain data access (SPL types)
@@ -460,6 +461,34 @@ fn test_spltoken_domain_data(acc: &AccountInfo, mint: &AccountInfo, rent: &Accou
     let prent = solana_rent::Rent::from_account_info(rent).unwrap_or(sysrent);
     let (acct_burnt, acct_distributed) = prent.calculate_burn(rent_collected);
     assert!(prent.burn_percent > 100 || (acct_burnt <= rent_collected && acct_distributed <= rent_collected));
+}
+
+/// Simple test to verify cheatcode_maybe_same_account linking works
+/// accounts[0] // First account
+/// accounts[1] // Second account (may be same as first)
+#[inline(never)]
+pub fn test_process_maybe_same_account(accounts: &[AccountInfo; 2]) {
+    // Set up symbolic state for both accounts
+    cheatcode_account!(&accounts[0]);
+    cheatcode_account!(&accounts[1]);
+
+    // Link the accounts - if keys are equal, SPL data must be equal
+    cheatcode_maybe_same_account(&accounts[0], &accounts[1]);
+
+    let acc0 = get_account(&accounts[0]);
+    let acc1 = get_account(&accounts[1]);
+
+    let state0 = acc0.account_state();
+    let state1 = acc1.account_state();
+    let owner0 = acc0.owner;
+    let owner1 = acc1.owner;
+
+    if same_account!(accounts[0], accounts[1]) {
+        // interface::Account (not sdk Account) fields should now be the same
+        assert_eq!(state0, state1);
+        assert_eq!(owner0, owner1);
+    }
+    // else: accounts are different, states are independent which is viewable in KCFG
 }
 
 // Shared test harnesses ---------------------------------------------------

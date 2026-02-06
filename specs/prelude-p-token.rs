@@ -55,6 +55,8 @@ fn cheatcode_is_mint(_: &AccountInfo) {}
 fn cheatcode_is_rent(_: &AccountInfo) {}
 #[inline(never)]
 fn cheatcode_is_multisig(_: &AccountInfo) {}
+#[inline(never)]
+fn cheatcode_maybe_same_account(_: &AccountInfo, _: &AccountInfo) {}
 
 /// Cheatcode macros to abstract naming differences.
 macro_rules! cheatcode_account {

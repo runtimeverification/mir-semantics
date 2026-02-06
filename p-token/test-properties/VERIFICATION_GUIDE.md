@@ -75,6 +75,13 @@ to the `Mint` field `supply` being a `u64`.
 
 > // Note: The amount of a token account is always within the range of the mint supply (`u64`).
 
+### AccountInfo Arguments Duplicates
+It is assumed that if two `AccountInfo` for `Accounts` with the same `key` are provided as input to an instruction,
+then the `Account` fields will be equivalent. Cheatcode `maybe_same_account` will link the symbolic state instantiated by
+`cheatcode_is_account` (note this must be called prior), this should also be called prior to any state manipulation.
+Currently this cheatcode will only link symbolic state for SPL Token _Account_ (not `AccountInfo` and not P-Token),
+that would be valid under the same assumptions but has not been necessary for the current proofs.
+
 ## Limitations
 
 ### Compiling with non-solana target

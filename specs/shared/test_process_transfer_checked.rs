@@ -13,6 +13,10 @@ fn test_process_transfer_checked(
     cheatcode_account!(&accounts[2]);
     cheatcode_account!(&accounts[3]); // Excluding the multisig case
 
+    #[cfg(feature = "assumptions")]
+    // Link symbolic state of dst and src if they have the same key
+    cheatcode_maybe_same_account(&accounts[0], &accounts[2]);
+
     //-Initial State-----------------------------------------------------------
     let src_old = get_account(&accounts[0]);
     let dst_old = get_account(&accounts[2]);
