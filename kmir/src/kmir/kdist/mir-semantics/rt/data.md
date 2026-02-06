@@ -1535,17 +1535,17 @@ Specifically, pointers to arrays of statically-known length are cast to pointers
 The original metadata is therefore already stored as `staticSize` to avoid having to look it up here.
 
 ```k
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+          =>
+            PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
+          ...
+        </k>
+
   rule <k> #cast(Reference(OFFSET, PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
             Reference(OFFSET, PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
           ...
         </k>
-      //   <types> TYPEMAP </types>
-      // could look up the static size here instead of caching it:
-      // requires TY_SOURCE in_keys(TYPEMAP)
-      //  andBool isTypeInfo(TYPEMAP[TY_SOURCE])
-      // andBool notBool hasMetadata(_TY_TARGET, TYPEMAP)
-      // [preserves-definedness] // valid type map indexing and sort coercion
 
   rule <k> #cast(AllocRef(ID, PROJS, metadata(staticSize(SIZE), OFF, ORIG)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
