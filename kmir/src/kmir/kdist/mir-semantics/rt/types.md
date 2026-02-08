@@ -128,7 +128,7 @@ The `#maybeConsProj` function is a "cons" for projection lists with a short-cut 
 It also implements cancellation of inverse projections (such as casting from one transparent wrapper to another, or between arrays).
 
 ```k
-  syntax ProjectionElem ::= "projectionElemSingletonArray" // elem -> array. Incomplete information! (relies on elimination)
+  syntax ProjectionElem ::= "projectionElemSingletonArray" // elem -> array. Incomplete information! (relies on cancellation, or caller must consider metadata)
                           | "projectionElemWrapStruct"     // transparent wrapper (singleton struct)
 
   syntax MaybeProjectionElems ::= maybeConcatProj ( ProjectionElem, MaybeProjectionElems ) [function, total]
@@ -139,6 +139,7 @@ It also implements cancellation of inverse projections (such as casting from one
 // TODO special cancellation rules with higher priority
 
 ```
+
 The `#pointeeProjection` function computes, for compatible pointee types, how to project from one pointee to the other.
 
 ```k
@@ -148,23 +149,29 @@ The `#pointeeProjection` function computes, for compatible pointee types, how to
 A short-cut rule for identical types takes preference.
 As a default, no projection elements are returned for incompatible types.
 ```k
-  rule #pointeeProjection (          T                ,           T              ) => .ProjectionElems  [priority(40)] 
-  rule #pointeeProjection (          _                ,           _              ) => NoProjectionElems [owise] 
+  rule #pointeeProjection(T , T) => .ProjectionElems  [priority(40)]
+  rule #pointeeProjection(_ , _) => NoProjectionElems [owise]
 ```
 
 Pointers to arrays/slices are compatible with pointers to the element type
 ```k
-  rule #pointeeProjection ( typeInfoArrayType(TY1, _) ,         TY2              ) => projectionElemConstantIndex(0, 0, false) .ProjectionElems
-    requires lookupTy(TY1) ==K TY2
-  rule #pointeeProjection (         TY1               , typeInfoArrayType(TY2, _)) => projectionElemSingletonArray .ProjectionElems
-    requires TY1 ==K lookupTy(TY2)
-  // TODO what about the recursion case?
+  rule #pointeeProjection(typeInfoArrayType(TY1, _), TY2)
+    => maybeConcatProj(
+          projectionElemConstantIndex(0, 0, false),
+          #pointeeProjection(lookupTy(TY1), TY2)
+        )
+  rule #pointeeProjection(TY1, typeInfoArrayType(TY2, _))
+    => maybeConcatProj(
+          projectionElemSingletonArray,
+          #pointeeProjection(TY1, lookupTy(TY2))
+        )
 ```
 
 Pointers to zero-sized types can be converted without projection.
 **TODO** is this true? Empty arrays and empty struct/unit have different representation.
 ```k
-  rule #pointeeProjection(SRC, OTHER) => .ProjectionElems
+  rule #pointeeProjection(SRC, OTHER)
+    => .ProjectionElems
     requires #zeroSizedType(SRC) andBool #zeroSizedType(OTHER)
 ```
 
