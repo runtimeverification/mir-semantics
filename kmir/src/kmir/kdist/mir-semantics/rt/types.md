@@ -101,35 +101,52 @@ which is a singleton struct (see above).
 
 --------------------------------------------------
 
-For compatible pointer types, the `#typeProjection` function computes a projection that can be appended to the pointer's projection to return the correct type when the pointer is cast to a different pointee type.
+For compatible pointer types, the `#typeProjection` function computes a projection that can be appended to the pointer's projection
+to return the correct type when the pointer is cast to a different pointee type.
 Most notably, casting between arrays and single elements as well as casting to and from transparent wrappers.
 This projection computation happens _recursively_, for instance casting from `*const [[T]]` to `*const T`.
 
+The interface function is meant for pointer casts to compute pointee projections and returns nothing for other types.
+
+```k
+  syntax MaybeProjectionElems ::= ProjectionElems
+                                | "NoProjectionElems"
+
+  syntax MaybeProjectionElems ::= #typeProjection ( TypeInfo , TypeInfo )    [function, total]
+  // ---------------------------------------------------------------------------------------
+  rule #typeProjection ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => #pointeeProjection(lookupTy(TY1), lookupTy(TY2))
+  rule #typeProjection ( _, _ ) => NoProjectionElems [owise]
+```
+
 Note that certain projections can cancel each other, such as casting from one transparent wrapper to another.
-This can be done in an extended `append` function for projections, and already in the concatenation here. **TODO**
+In case of casting an element pointer to an array pointer, we rely on this cancellation to recover the array length
+(NB ultimately there needs to be an underlying array if there is more than one element in the original allocation).
+
+This can be done in an extended `append` function for projections, and already in the special cons function here. **TODO**
+
+The `#maybeConsProj` function is a "cons" for projection lists with a short-cut case for when the second argument is not a projection list.
+It also implements cancellation of inverse projections (such as casting from one transparent wrapper to another, or between arrays).
 
 ```k
   syntax ProjectionElem ::= "projectionElemSingletonArray" // elem -> array. Incomplete information! (relies on elimination)
                           | "projectionElemWrapStruct"     // transparent wrapper (singleton struct)
 
-  syntax MaybeProjectionElems ::= ProjectionElems
-                                | "NoProjectionElems"
-
-  syntax MaybeProjectionElems ::= #typeProjection ( TypeInfo , TypeInfo )    [function, total]
-                                | #pointeeProjection ( TypeInfo , TypeInfo ) [function, total]
-                                | maybeConcatProj ( ProjectionElem, MaybeProjectionElems ) [function, total]
+  syntax MaybeProjectionElems ::= maybeConcatProj ( ProjectionElem, MaybeProjectionElems ) [function, total]
 
   rule maybeConcatProj(PROJ, REST:ProjectionElems) => PROJ REST
   rule maybeConcatProj(  _ , NoProjectionElems   ) => NoProjectionElems
 
-  // ---------------------------------------------------------------------------------------
-  // The helper function is meant for pointer casts to compute pointee projections
-  rule #typeProjection ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => #pointeeProjection(lookupTy(TY1), lookupTy(TY2))
-  rule #typeProjection ( _, _ ) => NoProjectionElems [owise]
+// TODO special cancellation rules with higher priority
+
+```
+The `#pointeeProjection` function computes, for compatible pointee types, how to project from one pointee to the other.
+
+```k
+  syntax MaybeProjectionElems ::= #pointeeProjection ( TypeInfo , TypeInfo ) [function, total]
 ```
 
-As a default, no projection elements are returned for incompatible types.
 A short-cut rule for identical types takes preference.
+As a default, no projection elements are returned for incompatible types.
 ```k
   rule #pointeeProjection (          T                ,           T              ) => .ProjectionElems  [priority(40)] 
   rule #pointeeProjection (          _                ,           _              ) => NoProjectionElems [owise] 
