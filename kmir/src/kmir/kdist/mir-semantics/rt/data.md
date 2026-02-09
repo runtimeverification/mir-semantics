@@ -816,7 +816,7 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendPOff(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
@@ -860,7 +860,7 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendPOff(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
