@@ -371,8 +371,24 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     [preserves-definedness] // valid list indexing and sort checked
 
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+                           | consP ( ProjectionElem , ProjectionElems ) [function, total]
+  // ----------------------------------------------------------------------------------------
   rule appendP(.ProjectionElems, TAIL) => TAIL
-  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
+  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => consP(X, appendP(REST, TAIL))
+  // default
+  rule consP(      PROJ      ,           .ProjectionElems           ) => PROJ .ProjectionElems
+  rule consP(      PROJ      ,   P:ProjectionElem PS:ProjectionElems) => PROJ (P PS)
+  // high-priority rules to cancel out projection pairs at the head
+  rule consP(projectionElemSingletonArray, projectionElemConstantIndex(0, 0, false) PS:ProjectionElems) => PS [priority(40)]
+  rule consP(projectionElemConstantIndex(0, 0, false), projectionElemSingletonArray PS:ProjectionElems) => PS [priority(40)]
+  rule consP(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) PS:ProjectionElems) => PS [priority(40)]
+  // this rule is not valid if the original pointee has more than one field
+  // rule consP(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct PS:ProjectionElems) => PS [priority(40)]
+  // HACK: special rule which munges together constant-indexing and offset projections 
+  rule consP( projectionElemConstantIndex(I, 0, false), PointerOffset(OFF, _SIZE) REST)
+    => projectionElemConstantIndex(I +Int OFF, 0, false) REST
+    // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
 
   syntax Value ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
@@ -712,7 +728,7 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendPOff(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
              .Contexts
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
@@ -723,20 +739,6 @@ An attempt to read more elements than the length of the accessed array is undefi
      andBool isStackFrame(STACK[OFFSET -Int 1])
      andBool 0 <Int PTR_OFFSET
     [preserves-definedness]
-
-  // HACK: special projection append function which munges together indexing and offset projections 
-  syntax ProjectionElems ::= appendPOff ( ProjectionElems , ProjectionElem) [function, total]
-  // ----------------------------------------------------------------------
-  rule appendPOff(.ProjectionElems, P) => P .ProjectionElems
-  // combine pointer offset and indexing (checking size, TODO)
-  rule appendPOff( projectionElemConstantIndex(I, 0, false) .ProjectionElems, PointerOffset(OFF, _SIZE))
-    => projectionElemConstantIndex(I +Int OFF, 0, false)
-    // requires I +Int OFF < _SIZE
-
-  rule appendPOff( OTHER:ProjectionElem .ProjectionElems, P ) => OTHER (P .ProjectionElems) [owise]
-  // boil down to last projection element
-  rule appendPOff( FIRST:ProjectionElem ((_:ProjectionElem _:ProjectionElems) #as MORE), P) => FIRST appendPOff(MORE, P)
-
 
   // Ref, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
@@ -770,7 +772,7 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             appendPOff(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
              .Contexts
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
@@ -816,7 +818,7 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendPOff(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
@@ -860,7 +862,7 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             appendPOff(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
