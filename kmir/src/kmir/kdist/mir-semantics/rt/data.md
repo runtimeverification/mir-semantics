@@ -712,7 +712,7 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendPOff(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
              .Contexts
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
@@ -723,6 +723,20 @@ An attempt to read more elements than the length of the accessed array is undefi
      andBool isStackFrame(STACK[OFFSET -Int 1])
      andBool 0 <Int PTR_OFFSET
     [preserves-definedness]
+
+  // HACK: special projection append function which munges together indexing and offset projections 
+  syntax ProjectionElems ::= appendPOff ( ProjectionElems , ProjectionElem) [function, total]
+  // ----------------------------------------------------------------------
+  rule appendPOff(.ProjectionElems, P) => P .ProjectionElems
+  // combine pointer offset and indexing (checking size, TODO)
+  rule appendPOff( projectionElemConstantIndex(I, 0, false) .ProjectionElems, PointerOffset(OFF, _SIZE))
+    => projectionElemConstantIndex(I +Int OFF, 0, false)
+    // requires I +Int OFF < _SIZE
+
+  rule appendPOff( OTHER:ProjectionElem .ProjectionElems, P ) => OTHER (P .ProjectionElems) [owise]
+  // boil down to last projection element
+  rule appendPOff( FIRST:ProjectionElem ((_:ProjectionElem _:ProjectionElems) #as MORE), P) => FIRST appendPOff(MORE, P)
+
 
   // Ref, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
@@ -756,7 +770,7 @@ An attempt to read more elements than the length of the accessed array is undefi
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             appendPOff(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
              .Contexts
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
@@ -1083,16 +1097,41 @@ for _fat_ pointers it is a `usize` value indicating the data length.
 
 [^rawPtrAgg]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.AggregateKind.html#variant.RawPtr
 
+The data pointer is assumed to point to a single element of an array that was originally present, 
+and an array of the indeicated size gets reconstructed if the provided metadata is a `usize` value
+(potentially removing an indexing operation to get the element).
+
 ```k
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
+  rule <k> ListItem(PtrLocal(OFFSET, place(LOCAL, PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) 
+           ListItem(Integer(LENGTH, 64, false))
+           ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(OFFSET, place(LOCAL, removeIndexTail(PROJS)), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
+    // requires LENGTH +Int PTR_OFFSET <=Int ORIGIN_SIZE // refuse to create an invalid fat pointer
+    //  andBool dynamicSize(1) ==K #metadataSize(lookupTy(_TY)) // expect a slice type
+    //  andBool hasIndexTail(PROJS) ???
 
   rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
         => PtrLocal(OFFSET, PLACE, MUT, metadata(noMetadataSize, PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
+
+  syntax Bool ::= hasIndexTail ( ProjectionElems ) [function, total]
+  // ---------------------------------------------------------------
+  rule hasIndexTail(           .ProjectionElems                          ) => false
+  rule hasIndexTail(projectionElemConstantIndex(0, _, _) .ProjectionElems) => true
+  rule hasIndexTail(     _OTHER:ProjectionElem           .ProjectionElems) => false [owise]
+  rule hasIndexTail(_:ProjectionElem ((_:ProjectionElem _:ProjectionElems) #as MORE)) => hasIndexTail(MORE)
+
+  // remove ConstantIndex(0, _, _) at the end if present, otherwise identity
+  syntax ProjectionElems ::= removeIndexTail ( ProjectionElems ) [function, total]
+  // ---------------------------------------------------------------
+  rule removeIndexTail(           .ProjectionElems                          ) => .ProjectionElems
+  rule removeIndexTail(projectionElemConstantIndex(0, _, _) .ProjectionElems) => .ProjectionElems
+  rule removeIndexTail(      OTHER:ProjectionElem           .ProjectionElems) => OTHER .ProjectionElems [owise]
+  rule removeIndexTail(FIRST:ProjectionElem ((_:ProjectionElem _:ProjectionElems) #as MORE)) => FIRST removeIndexTail(MORE)
+
 ```
 
 The `Aggregate` type carries a `VariantIdx` to distinguish the different variants for an `enum`.
@@ -1376,6 +1415,31 @@ Casts involving `Float` values are currently not implemented.
 | PtrToPtr | Convert between references when representations compatible |
 
 Pointers can be converted from one type to another (`PtrToPtr`) when the representations are compatible.
+For compatible types, an additional projection is added to the pointer's place projections,
+which transforms the previous pointee type to the new one (computation defined in `rt/types.md`).
+If types are not compatible, no such projection exists and the cast is invalid.
+
+Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
+which have the same representation `Value::Range`.
+Also, casts to and from _transparent wrappers_ (newtypes that just forward field `0`, i.e. `struct Wrapper<T>(T)`)
+are allowed, and supported by a special projection `WrapStruct`.
+
+```k
+  rule <k> #cast(PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+          =>
+            PtrLocal(
+              OFFSET,
+              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
+              MUT,
+              #convertMetadata(META, lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires NoProjectionElems =/=K #typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+      [preserves-definedness] // valid map lookups checked
+```
+
+
 The compatibility of types (defined in `rt/types.md`) considers their representations (recursively) in
 the `Value` sort.
 
@@ -1390,22 +1454,22 @@ expose the same inner value:
   canonical prefix shared by both sides.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
-          =>
-            PtrLocal(
-              OFFSET,
-              #alignTransparentPlace(
-                PLACE,
-                #lookupMaybeTy(pointeeTy(lookupTy(TY_SOURCE))),
-                #lookupMaybeTy(pointeeTy(lookupTy(TY_TARGET)))
-              ),
-              MUT,
-              #convertMetadata(META, lookupTy(TY_TARGET))
-            )
-          ...
-        </k>
-      requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
-      [preserves-definedness] // valid map lookups checked
+  // rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  //         =>
+  //           PtrLocal(
+  //             OFFSET,
+  //             #alignTransparentPlace(
+  //               PLACE,
+  //               #lookupMaybeTy(pointeeTy(lookupTy(TY_SOURCE))),
+  //               #lookupMaybeTy(pointeeTy(lookupTy(TY_TARGET)))
+  //             ),
+  //             MUT,
+  //             #convertMetadata(META, lookupTy(TY_TARGET))
+  //           )
+  //         ...
+  //       </k>
+  //     requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+  //     [preserves-definedness] // valid map lookups checked
 
   syntax Place ::= #alignTransparentPlace ( Place , TypeInfo , TypeInfo ) [function, total]
   syntax ProjectionElems ::= #popTransparentTailTo ( ProjectionElems , TypeInfo ) [function, total]
