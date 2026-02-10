@@ -62,7 +62,6 @@ PROVE_RS_SHOW_SPECS = [
     'ptr-through-wrapper-fail',
     'iter_next_2-fail',
     'test_offset_from-fail',
-    'ref-ptr-cast-arr-offset-fail',
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
 ]
