@@ -104,8 +104,12 @@ Pointers to arrays/slices are compatible with pointers to the element type
 Pointers to zero-sized types can be converted from and to. No recursion beyond the ZST.
 **TODO** Problem: our ZSTs have different representation: compare empty arrays and empty structs/unit tuples.
 ```k
-  rule #pointeeProjection(SRC, OTHER) => projectionElemToZST   .ProjectionElems requires #zeroSizedType(OTHER) andBool notBool #zeroSizedType(SRC)
-  rule #pointeeProjection(SRC, OTHER) => projectionElemFromZST .ProjectionElems requires #zeroSizedType(SRC) andBool notBool #zeroSizedType(OTHER)
+  rule #pointeeProjection(SRC, OTHER) => projectionElemToZST   .ProjectionElems
+    requires #zeroSizedType(OTHER) andBool notBool #zeroSizedType(SRC)
+    [priority(45)]
+  rule #pointeeProjection(SRC, OTHER) => projectionElemFromZST .ProjectionElems
+    requires #zeroSizedType(SRC) andBool notBool #zeroSizedType(OTHER)
+    [priority(45)]
 ```
 
 Pointers to structs with a single zero-offset field are compatible with pointers to that field's type
@@ -148,8 +152,7 @@ which is a singleton struct (see above).
   syntax Bool ::= #zeroFieldOffset ( MaybeLayoutShape ) [function, total]
   // --------------------------------------------------------------------
   rule #zeroFieldOffset(LAYOUT)
-    =>      #layoutOffsets(LAYOUT) ==K .MachineSizes
-     orBool #layoutOffsets(LAYOUT) ==K machineSize(mirInt(0)) .MachineSizes
+    =>      #layoutOffsets(LAYOUT) ==K machineSize(mirInt(0)) .MachineSizes
      orBool #layoutOffsets(LAYOUT) ==K machineSize(0) .MachineSizes
 
   // Extract field offsets from the struct layout when available (Arbitrary only).
