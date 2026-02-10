@@ -23,83 +23,7 @@ This module contains helper functions to operate on this type information.
 
 ## Compatibility of types (high-level representation)
 
-When two types use the same representation for their values, these
-values, and pointers to them, can be converted from one type to the other.
-The `#typesCompatible` function determines this compatibility, and is by default `false`.
-
-```k
-  syntax Bool ::= #typesCompatible ( TypeInfo , TypeInfo ) [function, total]
-
-  // by default, only identical types are compatible
-  rule #typesCompatible (             T            ,           T              ) => true  [priority(60)] 
-  rule #typesCompatible (             _            ,           _              ) => false [owise] 
-```
-
-Arrays and slices are compatible if their element type is (ignoring length)
-```k
-  rule #typesCompatible ( typeInfoArrayType(TY1, _), typeInfoArrayType(TY2, _)) => #typesCompatible(lookupTy(TY1), lookupTy(TY2))
-```
-
-Pointers are compatible if their pointee types are
-```k
-  rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => true
-    requires #typesCompatible(lookupTy(TY1), lookupTy(TY2))
-     [priority(59)]
-```
-
-Pointers to arrays/slices are compatible with pointers to the element type
-```k
-  rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => true
-    requires #isArrayOf(lookupTy(TY1), TY2)
-
-  rule #typesCompatible ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => true
-    requires #isArrayOf(lookupTy(TY2), TY1)
-
-  syntax Bool ::= #isArrayOf ( TypeInfo , Ty ) [function, total]
-
-  rule #isArrayOf(typeInfoArrayType(TY, _), TY) => true
-  rule #isArrayOf(      _                 , _ ) => false [owise]
-```
-
-Pointers to structs with a single zero-offset field are compatible with pointers to that field's type
-```k
-  rule #typesCompatible(SRC, OTHER) => true
-    requires #zeroSizedType(SRC) orBool #zeroSizedType(OTHER)
-
-  rule #typesCompatible(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
-    => #typesCompatible(lookupTy(FIELD), OTHER)
-    requires #zeroFieldOffset(LAYOUT)
-
-  rule #typesCompatible(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
-    => #typesCompatible(OTHER, lookupTy(FIELD))
-    requires #zeroFieldOffset(LAYOUT)
-
-  syntax Bool ::= #zeroFieldOffset ( MaybeLayoutShape ) [function, total]
-
-  rule #zeroFieldOffset(LAYOUT)
-    =>      #layoutOffsets(LAYOUT) ==K .MachineSizes
-     orBool #layoutOffsets(LAYOUT) ==K machineSize(mirInt(0)) .MachineSizes
-     orBool #layoutOffsets(LAYOUT) ==K machineSize(0) .MachineSizes
-
-  // Extract field offsets from the struct layout when available (Arbitrary only).
-  syntax MachineSizes ::= #layoutOffsets ( MaybeLayoutShape ) [function, total]
-  rule #layoutOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
-  rule #layoutOffsets(noLayoutShape) => .MachineSizes
-  rule #layoutOffsets(_) => .MachineSizes [owise]
-```
-
-Pointers to `MaybeUninit<X>` can be cast to pointers to `X`.
-This is actually a 2-step compatibility:
-The `MaybeUninit<X>` union contains a `ManuallyDrop<X>` (when filled),
-which is a singleton struct (see above).
-
-```k
-  rule #typesCompatible(MAYBEUNINIT_TYINFO, ELEM_TYINFO) => true
-    requires #typeNameIs(MAYBEUNINIT_TYINFO, "std::mem::MaybeUninit<")
-     andBool #lookupMaybeTy(getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
-```
-
---------------------------------------------------
+When two types use the same (low-level) representation for their values, pointers to them can be converted from one type to the other.
 
 For compatible pointer types, the `#typeProjection` function computes a projection that can be appended to the pointer's projection
 to return the correct type when the pointer is cast to a different pointee type.
@@ -218,6 +142,22 @@ which is a singleton struct (see above).
         )
     requires #typeNameIs(MAYBEUNINIT_TYINFO, "std::mem::MaybeUninit<")
      andBool #lookupMaybeTy(getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
+```
+
+```k
+  syntax Bool ::= #zeroFieldOffset ( MaybeLayoutShape ) [function, total]
+  // --------------------------------------------------------------------
+  rule #zeroFieldOffset(LAYOUT)
+    =>      #layoutOffsets(LAYOUT) ==K .MachineSizes
+     orBool #layoutOffsets(LAYOUT) ==K machineSize(mirInt(0)) .MachineSizes
+     orBool #layoutOffsets(LAYOUT) ==K machineSize(0) .MachineSizes
+
+  // Extract field offsets from the struct layout when available (Arbitrary only).
+  syntax MachineSizes ::= #layoutOffsets ( MaybeLayoutShape ) [function, total]
+  // --------------------------------------------------------------------------
+  rule #layoutOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
+  rule #layoutOffsets(noLayoutShape) => .MachineSizes
+  rule #layoutOffsets(_) => .MachineSizes [owise]
 ```
 
 --------------------------------------------------
