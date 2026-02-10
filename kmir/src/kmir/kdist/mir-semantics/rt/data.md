@@ -386,8 +386,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   // this rule is not valid if the original pointee has more than one field
   // rule consP(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct PS:ProjectionElems) => PS [priority(40)]
   // HACK: special rule which munges together constant-indexing and offset projections 
-  rule consP( projectionElemConstantIndex(I, 0, false), PointerOffset(OFF, _SIZE) REST)
-    => projectionElemConstantIndex(I +Int OFF, 0, false) REST
+  rule consP( projectionElemConstantIndex(I, 0, false), PointerOffset(OFF, _SIZE) PS) => projectionElemConstantIndex(I +Int OFF, 0, false) PS [priority(40)]
     // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
 
   syntax Value ::= #localFromFrame ( StackFrame, Local, Int ) [function]
