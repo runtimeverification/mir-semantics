@@ -327,6 +327,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | CtxIndex( List , Int ) // array index constant or has been read before
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
+                   | "CtxWrapStruct" // special context adding a singleton Aggregate(0, _) around a value
 
   syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
 
@@ -360,6 +361,11 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
       => #buildUpdate( Range(updateList(ELEMS, START, INNER)), CTXS)
     requires size(INNER) ==Int END -Int START // ensures updateList is defined
      [preserves-definedness] // START,END indexes checked before, length check for update here
+
+  // removing a struct wrapper added by a WrapStruct projection
+  rule #buildUpdate(Aggregate(variantIdx(0), ListItem(VALUE) .List), CtxWrapStruct CTXS)
+    => #buildUpdate(VALUE, CTXS)
+
 
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
 
@@ -477,21 +483,19 @@ This is done without consideration of the validity of the Downcast[^downcast].
 ```
 
 In context with pointer casts, the semantics handles the special case of a _transparent wrapper struct_:
-A pointer to a struct containing a single element can be cast to a pointer to the single element itself.
-While the pointer cast tries to insert and remove field projections to the singleton field,
-it is still possible that a field projection occurs on a value which is not an Aggregate (nor a union).
-This necessitates a special rule which allows the semantics to perform a field projection to field 0 as a Noop.
-The situation typically arises when the stored value is a pointer (`NonNull`), therefore the rule is restricted to this case.
-The context is populated with the correct field access data, so that write-backs will correct the stored value to an Aggregate.
+A pointer to a struct containing a single element can be cast to a pointer to the single element itself, and back.
+The special projection used to enable this is `projectionElemWrapStruct`, inserted by the pointer `#cast` operation.
+
+The situation typically arises when the stored value is a pointer (`NonNull`) but the rule is not restricted to this.
 
 ```k
   rule <k> #traverseProjection(
              DEST,
-             PtrLocal(_, _, _, _) #as VALUE,
-             projectionElemField(fieldIdx(0), TY) PROJS,
+             VALUE,
+             projectionElemWrapStruct PROJS,
              CTXTS
            )
-        => #traverseProjection(DEST, VALUE, PROJS, CtxField(variantIdx(0), ListItem(VALUE), 0, TY) CTXTS) ... </k>
+        => #traverseProjection(DEST, Aggregate(variantIdx(0), ListItem(VALUE)), PROJS, CtxWrapStruct CTXTS) ... </k>
     [preserves-definedness, priority(100)]
 ```
 
@@ -1220,6 +1224,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
   rule #projectionsFor(CtxFieldUnion(F_IDX, _, TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(F_IDX, TY) PROJS)
+  rule #projectionsFor(  CtxWrapStruct       CTXS, PROJS) => #projectionsFor(CTXS,                 projectionElemWrapStruct PROJS)
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
