@@ -394,6 +394,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   // HACK: special rule which munges together constant-indexing and offset projections 
   rule consP( projectionElemConstantIndex(I, 0, false), PointerOffset(OFF, _SIZE) PS) => projectionElemConstantIndex(I +Int OFF, 0, false) PS [priority(40)]
     // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
+  rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
+  rule consP(projectionElemFromZST, projectionElemToZST PS:ProjectionElems) => PS [priority(40)]
 
   syntax Value ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 

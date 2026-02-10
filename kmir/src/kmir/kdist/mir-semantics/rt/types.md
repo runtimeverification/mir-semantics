@@ -130,6 +130,8 @@ It also implements cancellation of inverse projections (such as casting from one
 ```k
   syntax ProjectionElem ::= "projectionElemSingletonArray" // elem -> array. Incomplete information! (relies on cancellation, or caller must consider metadata)
                           | "projectionElemWrapStruct"     // transparent wrapper (singleton struct)
+                          | "projectionElemToZST"          // cast to ZST (immaterial data)
+                          | "projectionElemFromZST"        // ...and back from ZST to something material (the two cancel out in sequence)
 
   syntax MaybeProjectionElems ::= maybeConcatProj ( ProjectionElem, MaybeProjectionElems ) [function, total]
 
@@ -143,6 +145,9 @@ It also implements cancellation of inverse projections (such as casting from one
   rule maybeConcatProj(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) REST:ProjectionElems) => REST [priority(40)]
   // this rule would not be valid if the original pointee had more than one field. In the calling context, this won't occur, though.
   rule maybeConcatProj(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct REST:ProjectionElems) => REST [priority(40)]
+
+  rule maybeConcatProj(projectionElemToZST, projectionElemFromZST REST:ProjectionElems) => REST [priority(40)]
+  rule maybeConcatProj(projectionElemFromZST, projectionElemToZST REST:ProjectionElems) => REST [priority(40)]
 ```
 
 The `#pointeeProjection` function computes, for compatible pointee types, how to project from one pointee to the other.
@@ -172,12 +177,11 @@ Pointers to arrays/slices are compatible with pointers to the element type
         )
 ```
 
-Pointers to zero-sized types can be converted without projection.
-**TODO** is this true? Empty arrays and empty struct/unit have different representation.
+Pointers to zero-sized types can be converted from and to. No recursion beyond the ZST.
+**TODO** Problem: our ZSTs have different representation: compare empty arrays and empty structs/unit tuples.
 ```k
-  rule #pointeeProjection(SRC, OTHER)
-    => .ProjectionElems
-    requires #zeroSizedType(SRC) andBool #zeroSizedType(OTHER)
+  rule #pointeeProjection(SRC, OTHER) => projectionElemToZST   .ProjectionElems requires #zeroSizedType(OTHER) andBool notBool #zeroSizedType(SRC)
+  rule #pointeeProjection(SRC, OTHER) => projectionElemFromZST .ProjectionElems requires #zeroSizedType(SRC) andBool notBool #zeroSizedType(OTHER)
 ```
 
 Pointers to structs with a single zero-offset field are compatible with pointers to that field's type
