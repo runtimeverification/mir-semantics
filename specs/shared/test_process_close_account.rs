@@ -55,6 +55,7 @@ pub fn test_process_close_account(accounts: &[AccountInfo; 3]) -> ProgramResult 
             assert_eq!(result, Err(ProgramError::InvalidAccountData));
             return result;
         }
+
         if dst_init_lamports.checked_add(src_init_lamports).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;

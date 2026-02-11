@@ -135,6 +135,7 @@ fn test_process_transfer_checked(
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
         }
+
         if !same_account!(accounts[0], accounts[2]) && amount != 0 {
             if src_new.is_native() && src_initial_lamports < amount {
                 // Not sure how to fund native mint
@@ -157,6 +158,7 @@ fn test_process_transfer_checked(
                 assert_eq!(accounts[2].lamports(), dst_initial_lamports + amount);
             }
         }
+
         assert!(result.is_ok());
 
         // Delegate updates

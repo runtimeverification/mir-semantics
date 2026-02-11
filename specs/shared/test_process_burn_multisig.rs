@@ -4,7 +4,7 @@
 /// accounts[3..14] // Signers
 /// instruction_data[0..8] // Little Endian Bytes of u64 amount
 #[inline(never)]
-fn test_process_burn_multisig(
+pub fn test_process_burn_multisig(
     accounts: &[AccountInfo; 4],
     instruction_data: &[u8; 8],
 ) -> ProgramResult {
@@ -26,11 +26,20 @@ fn test_process_burn_multisig(
     let src_mint = src_old.mint;
     let src_owned_sys_inc = src_old.is_owned_by_system_program_or_incinerator();
     let src_owner = src_old.owner;
+    let src_info_owner = owner!(&accounts[0]);
     let old_src_delgate = src_old.delegate().cloned();
     let old_src_delgated_amount = src_old.delegated_amount();
     let mint_initialised = mint_old.is_initialized();
     let mint_init_supply = mint_old.supply();
+    let mint_info_owner = *owner!(&accounts[1]);
     let maybe_multisig_is_initialised = Some(get_multisig(&accounts[2]).is_initialized());
+
+    #[cfg(feature = "assumptions")]
+    // account.amount() <= mint.supply(), account.delegated_amount() <= account.amount()
+    // otherwise processing could lead to overflows, see processor::shared::burn,L83
+    if !(src_init_amount <= mint_init_supply && old_src_delgated_amount <= src_init_amount) {
+        return Err(ProgramError::Custom(99));
+    }
 
     //-Process Instruction-----------------------------------------------------
     let result = call_process_burn!(accounts, instruction_data);
@@ -86,9 +95,9 @@ fn test_process_burn_multisig(
             }
         }
 
-        if amount == 0 && owner!(&accounts[0]) != &PROGRAM_ID {
+        if amount == 0 && *src_info_owner != PROGRAM_ID {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId))
-        } else if amount == 0 && owner!(&accounts[1]) != &PROGRAM_ID {
+        } else if amount == 0 && mint_info_owner != PROGRAM_ID {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId))
         } else {
             let src_new = get_account(&accounts[0]);
@@ -97,11 +106,19 @@ fn test_process_burn_multisig(
             assert!(result.is_ok());
 
             // Delegate updates
-            if old_src_delgate.is_some() && *key!(&accounts[2]) == old_src_delgate.unwrap() {
-                assert_eq!(src_new.delegated_amount(), old_src_delgated_amount - amount);
+            let new_src_delegate = src_new.delegate().cloned();
+            let new_src_delegated_amount = src_new.delegated_amount();
+            if !src_owned_sys_inc
+                && old_src_delgate.is_some()
+                && *key!(&accounts[2]) == old_src_delgate.unwrap()
+            {
+                assert_eq!(new_src_delegated_amount, old_src_delgated_amount - amount);
                 if old_src_delgated_amount - amount == 0 {
-                    assert_eq!(src_new.delegate(), None);
+                    assert_eq!(new_src_delegate, None);
                 }
+            } else {
+                assert_eq!(old_src_delgate, new_src_delegate);
+                assert_eq!(old_src_delgated_amount, new_src_delegated_amount);
             }
         }
     }

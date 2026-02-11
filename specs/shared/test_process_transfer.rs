@@ -77,7 +77,6 @@ pub fn test_process_transfer(
         assert_eq!(result, Err(ProgramError::Custom(3)));
         return result;
     } else {
-        let src_new = get_account(&accounts[0]);
         if old_src_delgate == Some(*key!(&accounts[2])) {
             inner_test_validate_owner(
                 &old_src_delgate.unwrap(), // expected_owner
@@ -100,6 +99,9 @@ pub fn test_process_transfer(
                 result.clone(),
             )?;
         }
+
+        let src_new = get_account(&accounts[0]);
+
         if ((same_account!(accounts[0], accounts[1])) || amount == 0)
             && owner!(&accounts[0]) != &PROGRAM_ID
         {

@@ -22,10 +22,25 @@ fn test_process_mint_to_checked_multisig(
     let dst_init_state = dst_old.account_state();
     let maybe_multisig_is_initialised = Some(get_multisig(&accounts[2]).is_initialized());
 
+    #[cfg(feature = "assumptions")]
+    {
+        // Do not execute if adding to the account balance would overflow.
+        // shared::mint_to.rs,L68 is based on the assumption that initial_amount <=
+        // mint.supply() and therefore cannot overflow because the minting itself
+        // would already error out.
+        let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
+        if initial_amount.checked_add(amount).is_none() {
+            return Err(ProgramError::Custom(99));
+        }
+    }
+
     //-Process Instruction-----------------------------------------------------
     let result = call_process_mint_to_checked!(accounts, instruction_data);
 
     //-Assert Postconditions---------------------------------------------------
+    let mint_new = get_mint(&accounts[0]);
+    let dst_new = get_account(&accounts[1]);
+
     if instruction_data.len() < 9 {
         assert_eq!(result, Err(ProgramError::Custom(12)));
         return result;
@@ -47,10 +62,10 @@ fn test_process_mint_to_checked_multisig(
         // unwrap must succeed due to dst_initialised not being err
         assert_eq!(result, Err(ProgramError::Custom(17)));
         return result;
-    } else if get_account(&accounts[1]).is_native() {
+    } else if dst_new.is_native() {
         assert_eq!(result, Err(ProgramError::Custom(10)));
         return result;
-    } else if key!(&accounts[0]) != &get_account(&accounts[1]).mint {
+    } else if key!(accounts[0]) != &dst_new.mint {
         assert_eq!(result, Err(ProgramError::Custom(3)));
         return result;
     } else if accounts[0].data_len() != Mint::LEN {
@@ -63,11 +78,10 @@ fn test_process_mint_to_checked_multisig(
     } else if !mint_initialised.unwrap() {
         assert_eq!(result, Err(ProgramError::UninitializedAccount));
         return result;
-    } else if instruction_data[8] != get_mint(&accounts[0]).decimals {
+    } else if instruction_data[8] != mint_new.decimals {
         assert_eq!(result, Err(ProgramError::Custom(18)));
         return result;
     } else {
-        let mint_new = get_mint(&accounts[0]);
         if mint_new.mint_authority().is_some() {
             // Validate Owner
             inner_test_validate_owner(
@@ -82,24 +96,21 @@ fn test_process_mint_to_checked_multisig(
             return result;
         }
 
-        let amount = u64::from_le_bytes([
-            instruction_data[0], instruction_data[1], instruction_data[2], instruction_data[3],
-            instruction_data[4], instruction_data[5], instruction_data[6], instruction_data[7],
-        ]);
+        let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };
 
-        if amount == 0 && owner!(&accounts[0]) != &PROGRAM_ID {
+        if amount == 0 && owner!(accounts[0]) != &PROGRAM_ID {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if amount == 0 && owner!(&accounts[1]) != &PROGRAM_ID {
+        } else if amount == 0 && owner!(accounts[1]) != &PROGRAM_ID {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if amount != 0 && amount.checked_add(initial_supply).is_none() {
+        } else if amount != 0 && initial_supply.checked_add(amount).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
 
-        assert_eq!(get_mint(&accounts[0]).supply(), initial_supply + amount);
-        assert_eq!(get_account(&accounts[1]).amount(), initial_amount + amount);
+        assert_eq!(mint_new.supply(), initial_supply + amount);
+        assert_eq!(dst_new.amount(), initial_amount + amount);
         assert!(result.is_ok());
     }
 

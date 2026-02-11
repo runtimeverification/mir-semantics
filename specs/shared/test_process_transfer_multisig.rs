@@ -12,6 +12,10 @@ fn test_process_transfer_multisig(
     cheatcode_account!(&accounts[1]);
     cheatcode_multisig!(&accounts[2]);
 
+    #[cfg(feature = "assumptions")]
+    // Link symbolic state of dst and src if they have the same key
+    cheatcode_maybe_same_account(&accounts[0], &accounts[1]);
+
     //-Initial State-----------------------------------------------------------
     let src_old = get_account(&accounts[0]);
     let amount = u64::from_le_bytes([
@@ -28,6 +32,12 @@ fn test_process_transfer_multisig(
     let old_src_delgate = src_old.delegate().cloned();
     let old_src_delgated_amount = src_old.delegated_amount();
     let maybe_multisig_is_initialised = Some(get_multisig(&accounts[2]).is_initialized());
+
+    #[cfg(feature = "assumptions")]
+    // avoids potential overflow in destination account. assuming global supply bound by u64
+    if !same_account!(accounts[0], accounts[1]) && dst_initial_amount.checked_add(amount).is_none() {
+        return Err(ProgramError::Custom(99));
+    }
 
     //-Process Instruction-----------------------------------------------------
     let result = call_process_transfer!(accounts, instruction_data);
@@ -68,13 +78,14 @@ fn test_process_transfer_multisig(
         assert_eq!(result, Err(ProgramError::Custom(3)));
         return result;
     } else {
+        let src_new = get_account(&accounts[0]);
         let tx_signers: &[AccountInfo] = &accounts[3..];
         if old_src_delgate == Some(*key!(&accounts[2])) {
             inner_test_validate_owner(
-                old_src_delgate.as_ref().unwrap(), // expected_owner
+                &old_src_delgate.unwrap(), // expected_owner
                 &accounts[2],                      // owner_account_info
                 tx_signers,                        // tx_signers
-                maybe_multisig_is_initialised.clone(),
+                maybe_multisig_is_initialised,
                 result.clone(),
             )?;
 
@@ -92,7 +103,6 @@ fn test_process_transfer_multisig(
             )?;
         }
 
-        let src_new = get_account(&accounts[0]);
         if ((same_account!(accounts[0], accounts[1])) || amount == 0)
             && owner!(&accounts[0]) != &PROGRAM_ID
         {
@@ -117,7 +127,11 @@ fn test_process_transfer_multisig(
         {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
-        } else if !same_account!(accounts[0], accounts[1]) && amount != 0 {
+        }
+
+        assert!(result.is_ok());
+
+        if !same_account!(accounts[0], accounts[1]) && amount != 0 {
             assert_eq!(src_new.amount(), src_initial_amount - amount);
             assert_eq!(
                 get_account(&accounts[1]).amount(),
@@ -129,8 +143,6 @@ fn test_process_transfer_multisig(
                 assert_eq!(accounts[1].lamports(), dst_initial_lamports + amount);
             }
         }
-
-        assert!(result.is_ok());
 
         // Delegate updates
         if old_src_delgate == Some(*key!(&accounts[2])) && !same_account!(accounts[0], accounts[1]) {

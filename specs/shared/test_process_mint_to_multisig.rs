@@ -22,6 +22,21 @@ fn test_process_mint_to_multisig(
     let dst_init_state = dst_old.account_state();
     let maybe_multisig_is_initialised = Some(get_multisig(&accounts[2]).is_initialized());
 
+    #[cfg(feature = "assumptions")]
+    {
+        // Do not execute if adding to the account balance would overflow.
+        // shared::mint_to.rs,L68 is based on the assumption that initial_amount <=
+        // mint.supply and therefore cannot overflow because the minting itself
+        // would already error out.
+        let amount = u64::from_le_bytes([
+            instruction_data[0], instruction_data[1], instruction_data[2], instruction_data[3],
+            instruction_data[4], instruction_data[5], instruction_data[6], instruction_data[7],
+        ]);
+        if initial_amount.checked_add(amount).is_none() {
+            return Err(ProgramError::Custom(99));
+        }
+    }
+
     //-Process Instruction-----------------------------------------------------
     let result = call_process_mint_to!(accounts, instruction_data);
 

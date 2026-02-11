@@ -1,6 +1,8 @@
 /// accounts[0] // Account Info - Mint Case
 /// accounts[1] // Authority Info
 /// instruction_data[0] // Authority Type (instruction)
+/// instruction_data[1] // New Authority Follows (0 -> No, 1 -> Yes)
+/// instruction_data[2..34] // New Authority Pubkey
 #[inline(never)]
 fn test_process_set_authority_mint(
     accounts: &[AccountInfo; 2],

@@ -14,6 +14,10 @@ fn test_process_transfer_checked_multisig(
     cheatcode_account!(&accounts[2]);
     cheatcode_multisig!(&accounts[3]);
 
+    #[cfg(feature = "assumptions")]
+    // Link symbolic state of dst and src if they have the same key
+    cheatcode_maybe_same_account(&accounts[0], &accounts[2]);
+
     //-Initial State-----------------------------------------------------------
     let src_old = get_account(&accounts[0]);
     let dst_old = get_account(&accounts[2]);
@@ -32,6 +36,12 @@ fn test_process_transfer_checked_multisig(
     let old_src_delgated_amount = src_old.delegated_amount();
     let mint_initialised = get_mint(&accounts[1]).is_initialized();
     let maybe_multisig_is_initialised = Some(get_multisig(&accounts[3]).is_initialized());
+
+    #[cfg(feature = "assumptions")]
+    // avoids potential overflow in destination account. assuming global supply bound by u64
+    if !same_account!(accounts[0], accounts[2]) && dst_initial_amount.checked_add(amount).is_none() {
+        return Err(ProgramError::Custom(99));
+    }
 
     //-Process Instruction-----------------------------------------------------
     let result = call_process_transfer_checked!(accounts, instruction_data);
@@ -125,12 +135,14 @@ fn test_process_transfer_checked_multisig(
         {
             assert_eq!(result, Err(ProgramError::IncorrectProgramId));
             return result;
-        } else if !same_account!(accounts[0], accounts[2]) && amount != 0 {
+        }
+
+        if !same_account!(accounts[0], accounts[2]) && amount != 0 {
             if src_new.is_native() && src_initial_lamports < amount {
                 // Not sure how to fund native mint
                 assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
-            } else if src_new.is_native() && u64::MAX - amount < dst_initial_lamports {
+            } else if src_new.is_native() && dst_initial_lamports.checked_add(amount).is_none() {
                 // Not sure how to fund native mint
                 assert_eq!(result, Err(ProgramError::Custom(14)));
                 return result;
@@ -149,6 +161,7 @@ fn test_process_transfer_checked_multisig(
         }
 
         assert!(result.is_ok());
+
         // Delegate updates
         if old_src_delgate == Some(*key!(&accounts[3])) && !same_account!(accounts[0], accounts[2]) {
             assert_eq!(src_new.delegated_amount(), old_src_delgated_amount - amount);

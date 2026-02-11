@@ -1,3 +1,6 @@
+/// accounts[0] // Source Account Info
+/// accounts[1] // Delegate Info
+/// accounts[2] // Owner Info
 fn test_process_approve(accounts: &[AccountInfo; 3], instruction_data: &[u8; 8]) -> ProgramResult {
     cheatcode_account!(&accounts[0]); // Source Account
     cheatcode_account!(&accounts[1]); // Delegate

@@ -55,19 +55,26 @@ fn test_process_close_account_multisig(accounts: &[AccountInfo; 4]) -> ProgramRe
         } else if key!(&accounts[1]) != &INCINERATOR_ID {
             assert_eq!(result, Err(ProgramError::InvalidAccountData));
             return result;
-        } else if dst_init_lamports.checked_add(src_init_lamports).is_none() {
+        }
+
+        if dst_init_lamports.checked_add(src_init_lamports).is_none() {
             assert_eq!(result, Err(ProgramError::Custom(14)));
             return result;
         }
+        assert!(result.is_ok());
 
         // Validate owner falls through to here if no error
-        assert_eq!(accounts[0].lamports(), 0);
         assert_eq!(
             accounts[1].lamports(),
             dst_init_lamports + src_init_lamports
         );
-        assert_eq!(accounts[0].data_len(), 0);
-        assert!(result.is_ok());
+        #[cfg(any(target_os = "solana", target_arch = "bpf"))]
+        {
+            // Solana-RT only syscall
+            assert_eq!(*owner!(&accounts[0]), [0; 32]);
+            assert_eq!(accounts[0].lamports(), 0);
+            assert_eq!(accounts[0].data_len(), 0);
+        }
     }
     result
 }
