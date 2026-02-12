@@ -130,7 +130,7 @@ This ensures that branches on the key value are not duplicated.
 
   syntax Signers ::= toSigners ( Value ) [function, total]
   // -----------------------------------------------------
-  rule toSigners(Range(ELEMS)) => Signers( ELEMS ) requires size(ELEMS) ==Int 11 andBool allKeys(ELEMS) [preserves-definedness]
+  rule toSigners(Range(ELEMS)) => Signers( toKeys(ELEMS) ) requires size(ELEMS) ==Int 11 andBool allKeys(ELEMS)
   rule toSigners(VAL) => SignersError(VAL) [owise]
 
   syntax Value ::= fromSigners ( Signers ) [function, total]
@@ -138,14 +138,17 @@ This ensures that branches on the key value are not duplicated.
   // We assume that the Signers always contains valid data, because it is constructed via toSigners.
   rule fromSigners(SignersError(VAL)) => VAL
   rule fromSigners(Signers(VAL))      => Range(fromKeys(VAL))
-    requires allKeys(VAL)
-  rule fromSigners(Signers(_)) => StringVal("ErrorSigners") [owise] // HACK
 
   syntax List ::= fromKeys ( List ) [function, total]
+                | toKeys ( List ) [function, total]
   // ------------------------------------------------
   rule fromKeys(.List) => .List
-  rule fromKeys(ListItem(Key(VAL)) REST) => ListItem(VAL) fromKeys(REST)
-  rule fromKeys(_) => .List [owise]
+  rule fromKeys(ListItem(KEY:Key) REST) => ListItem(fromKey(KEY)) fromKeys(REST)
+  rule fromKeys(ListItem(_NOTKEY) REST) => ListItem(StringVal("Not a Key")) fromKeys(REST) [owise] // HACK
+
+  rule toKeys(.List) => .List
+  rule toKeys(ListItem(KEYBYTES:Value) REST) => ListItem(toKey(KEYBYTES)) toKeys(REST)
+  rule toKeys(ListItem(   _NOTBYTES  ) REST) => ListItem(KeyError(StringVal("Not Bytes"))) toKeys(REST) [owise]
 
   syntax Bool ::= allKeys ( List ) [function, total]
   // -----------------------------------------------------------
