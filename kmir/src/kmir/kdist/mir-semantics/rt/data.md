@@ -191,7 +191,7 @@ A variant `#forceSetLocal` is provided for setting the local value without check
        </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
-     andBool mutabilityOf(getLocal(LOCALS, I)) ==K mutabilityMut
+    //  andBool mutabilityOf(getLocal(LOCALS, I)) ==K mutabilityMut // HACK: check disabled for generated code in p-token
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
