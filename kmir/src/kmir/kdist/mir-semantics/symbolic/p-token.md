@@ -100,7 +100,7 @@ The code uses some helper sorts for better readability.
                | KeyError ( Value )
 
   syntax Key ::= toKey ( Value ) [function, total]
-  // -----------------------------------------------------------
+  // ---------------------------------------------
   rule toKey(Range(ELEMS)) => Key( ELEMS ) requires size(ELEMS) ==Int 32 andBool allBytes(ELEMS) [preserves-definedness]
   rule toKey(VAL) => KeyError(VAL) [owise]
 
@@ -111,7 +111,7 @@ The code uses some helper sorts for better readability.
   rule allBytes( ListItem(_OTHER) _:List) => false [owise]
 
   syntax Value ::= fromKey ( Key ) [function, total]
-  // -----------------------------------------------------------
+  // -----------------------------------------------
   // We assume that the Key always contains valid data, because it is constructed via toKey.
   rule fromKey(KeyError(VAL)) => VAL
   rule fromKey(Key(VAL))      => Range(VAL) [preserves-definedness]
@@ -129,15 +129,23 @@ This ensures that branches on the key value are not duplicated.
                    | SignersError ( Value )
 
   syntax Signers ::= toSigners ( Value ) [function, total]
-  // -----------------------------------------------------------
+  // -----------------------------------------------------
   rule toSigners(Range(ELEMS)) => Signers( ELEMS ) requires size(ELEMS) ==Int 11 andBool allKeys(ELEMS) [preserves-definedness]
   rule toSigners(VAL) => SignersError(VAL) [owise]
 
   syntax Value ::= fromSigners ( Signers ) [function, total]
-  // -----------------------------------------------------------
+  // -------------------------------------------------------
   // We assume that the Signers always contains valid data, because it is constructed via toSigners.
   rule fromSigners(SignersError(VAL)) => VAL
-  rule fromSigners(Signers(VAL))      => Range(VAL) [preserves-definedness]
+  rule fromSigners(Signers(VAL))      => Range(fromKeys(VAL))
+    requires allKeys(VAL)
+  rule fromSigners(Signers(_)) => StringVal("ErrorSigners") [owise] // HACK
+
+  syntax List ::= fromKeys ( List ) [function, total]
+  // ------------------------------------------------
+  rule fromKeys(.List) => .List
+  rule fromKeys(ListItem(Key(VAL)) REST) => ListItem(VAL) fromKeys(REST)
+  rule fromKeys(_) => .List [owise]
 
   syntax Bool ::= allKeys ( List ) [function, total]
   // -----------------------------------------------------------
@@ -648,13 +656,34 @@ An `AccountInfo` reference is passed to the function.
            IMulti(U8(?M),
                   U8(?N),
                   U8(?INITIALISED),
-                  Signers(?SIGNERS)
+                  Signers( ListItem(Key(?Signer0)) 
+                           ListItem(Key(?Signer1))
+                           ListItem(Key(?Signer2))
+                           ListItem(Key(?Signer3))
+                           ListItem(Key(?Signer4))
+                           ListItem(Key(?Signer5))
+                           ListItem(Key(?Signer6))
+                           ListItem(Key(?Signer7)) 
+                           ListItem(Key(?Signer8)) 
+                           ListItem(Key(?Signer9)) 
+                           ListItem(Key(?Signer10)) 
+                  )
            )
          )
     ensures 0 <=Int ?M andBool ?M <=Int 256
     andBool 0 <=Int ?N andBool ?N <=Int 256
     andBool 0 <=Int ?INITIALISED andBool ?INITIALISED <=Int 256
-    andBool size(?SIGNERS) ==Int 11 andBool allKeys(?SIGNERS)
+    andBool size(?Signer0)  ==Int 32 andBool allBytes(?Signer0)
+    andBool size(?Signer1)  ==Int 32 andBool allBytes(?Signer1)
+    andBool size(?Signer2)  ==Int 32 andBool allBytes(?Signer2)
+    andBool size(?Signer3)  ==Int 32 andBool allBytes(?Signer3)
+    andBool size(?Signer4)  ==Int 32 andBool allBytes(?Signer4)
+    andBool size(?Signer5)  ==Int 32 andBool allBytes(?Signer5)
+    andBool size(?Signer6)  ==Int 32 andBool allBytes(?Signer6)
+    andBool size(?Signer7)  ==Int 32 andBool allBytes(?Signer7)
+    andBool size(?Signer8)  ==Int 32 andBool allBytes(?Signer8)
+    andBool size(?Signer9)  ==Int 32 andBool allBytes(?Signer9)
+    andBool size(?Signer10) ==Int 32 andBool allBytes(?Signer10)
     andBool DATA_LEN ==Int 355 // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
 ```
 
