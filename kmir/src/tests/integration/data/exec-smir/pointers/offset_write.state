@@ -34,7 +34,7 @@
       ListItem ( typedValue ( Range ( ListItem ( Integer ( 11 , 32 , true ) )
       ListItem ( Integer ( 44 , 32 , true ) )
       ListItem ( Integer ( 33 , 32 , true ) ) ) , ty ( 48 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: PointerOffset ( 1 , 3 )  .ProjectionElems ) , mutabilityMut , metadata ( dynamicSize ( 2 ) , 0 , noMetadataSize ) ) , ty ( 11 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: PointerOffset ( 1 , 3 )  .ProjectionElems ) , mutabilityMut , metadata ( dynamicSize ( 2 ) , 0 , dynamicSize ( 2 ) ) ) , ty ( 11 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 40 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 12 ) , mutabilityMut ) )
       ListItem ( typedValue ( Integer ( 0 , 64 , false ) , ty ( 3 ) , mutabilityNot ) )
