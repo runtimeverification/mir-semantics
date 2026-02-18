@@ -1469,7 +1469,7 @@ the original allocation size must be checked to be sufficient.
 ```k
   // no metadata to begin with, fill it in from target type (NB dynamicSize(1) if dynamic)
   rule #convertMetadata(   metadata(noMetadataSize, OFFSET, _)    , typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, noMetadataSize)
-  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, _)    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, noMetadataSize)
+  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, ORIGIN_SIZE )    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, ORIGIN_SIZE)
 ```
 
 Conversion from an array to a slice pointer requires adding metadata (`dynamicSize`) with the previously-static length.
