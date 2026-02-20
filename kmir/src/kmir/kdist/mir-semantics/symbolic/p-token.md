@@ -130,7 +130,7 @@ This ensures that branches on the key value are not duplicated.
 
   syntax Signers ::= toSigners ( Value ) [function, total]
   // -----------------------------------------------------
-  rule toSigners(Range(ELEMS)) => Signers( toKeys(ELEMS) ) requires size(ELEMS) ==Int 11 andBool allKeys(ELEMS)
+  rule toSigners(Range(ELEMS)) => Signers( toKeys(ELEMS) ) requires size(ELEMS) ==Int 11 andBool allRangeWrappedKeys(ELEMS)
   rule toSigners(VAL) => SignersError(VAL) [owise]
 
   syntax Value ::= fromSigners ( Signers ) [function, total]
@@ -155,6 +155,12 @@ This ensures that branches on the key value are not duplicated.
   rule allKeys( .List ) => true
   rule allKeys( ListItem(ELEMS) REST:List ) => allKeys(REST) requires size(ELEMS) ==Int 32 andBool allBytes(ELEMS)
   rule allKeys( ListItem(_OTHER) _:List )   => false [owise]
+
+  syntax Bool ::= allRangeWrappedKeys ( List ) [function, total]
+  // -----------------------------------------------------------
+  rule allRangeWrappedKeys( .List ) => true
+  rule allRangeWrappedKeys( ListItem(Range(ELEMS)) REST:List ) => allRangeWrappedKeys(REST) requires size(ELEMS) ==Int 32 andBool allBytes(ELEMS)
+  rule allRangeWrappedKeys( ListItem(_OTHER) _:List )   => false [owise]
 ```
 
 ### SPL Token Interface Account
