@@ -60,7 +60,6 @@ PROVE_RS_SHOW_SPECS = [
     'unions-fail',
     'transmute-maybe-uninit-fail',
     'ptr-through-wrapper-fail',
-    'iter_next_2-fail',
     'test_offset_from-fail',
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
