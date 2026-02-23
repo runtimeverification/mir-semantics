@@ -9,6 +9,8 @@ if TYPE_CHECKING:
     from pyk.kcfg.kcfg import KCFG
     from pyk.proof.reachability import APRProof
 
+    from .smir import SMIRInfo
+
 
 def _rule_to_markdown_link(rule: object) -> str:
     """Render a single rule as a Markdown file link if possible.
@@ -231,7 +233,12 @@ def render_statistics(proof: APRProof) -> list[str]:
     return lines
 
 
-def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow) -> list[str]:
+def _annotate_unknown_function(k_text: str, smir_info: SMIRInfo) -> list[str]:
+    """TODO"""
+    return []
+
+
+def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow, smir_info: SMIRInfo | None = None) -> list[str]:
     """Render the <k> cell for every leaf node in the proof."""
 
     leaves = sorted(
@@ -255,6 +262,11 @@ def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow) -> list[str]:
             lines.append('  (empty)')
         else:
             lines.extend(f'  {k_line}' for k_line in k_lines)
+
+        if smir_info is not None:
+            k_text = '\n'.join(k_lines)
+            annotations = _annotate_unknown_function(k_text, smir_info)
+            lines.extend(annotations)
 
         if idx != len(leaves) - 1:
             lines.append('')
