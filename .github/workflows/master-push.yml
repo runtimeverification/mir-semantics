@@ -37,13 +37,25 @@ jobs:
           prior_version=$(cat package/version)
           old_master="$(git merge-base origin/master origin/release)"
           new_master="$(git rev-parse origin/master)"
+
+          resolve_submodule_conflicts {
+            git checkout origin/master -- deps/stable-mir-json
+            difference=$(git diff --name-only --diff-filter=U)
+            if [ -m "$difference" ]; then
+              echo "Unresolved merge conflicts remain:"
+              echo "$difference"
+              exit 1
+            fi
+            GIT_EDITOR=true git merge --continue
+          }
+
           # otherwise bump the prior_version
           if git diff --exit-code ${old_master} ${new_master} -- package/version; then
-              git merge --no-edit origin/master
+              git merge --no-edit origin/master || resolve_submodule_conflicts
               package/version.sh bump ${prior_version}
           else
               # if the version has changed on master, use it unmodified
-              git merge --no-edit --strategy-option=theirs origin/master
+              git merge --no-edit --strategy-option=theirs origin/master || resolve_submodule_conflicts
           fi
           # substitute the version in all relevant files
           package/version.sh sub
