@@ -69,17 +69,17 @@
 
 ## Phase 3 — Triage and Baseline
 
-- [x] 2e83c52 Task: Run Miri pass suite and establish baseline
+- [x] 6fb25c2 Task: Run Miri pass suite and establish baseline
     - [x] Execute full Miri pass suite (skip list from JSON)
     - [x] Record pass/fail counts, categorize failures by Reference section
     - [x] Move newly discovered failing tests to `skip` in `coverage-matrix.json`
 
-- [x] 2e83c52 Task: Run ui run-pass suite and establish baseline
+- [x] 6fb25c2 Task: Run ui run-pass suite and establish baseline
     - [x] Execute filtered ui run-pass suite
     - [x] Record pass/fail counts
     - [x] Update `coverage-matrix.json`
 
-- [x] 2e83c52 Task: Run Kani suite and establish baseline
+- [x] 6fb25c2 Task: Run Kani suite and establish baseline
     - [x] Execute Kani suite
     - [x] Record pass/fail counts
     - [x] Update `coverage-matrix.json`
@@ -99,7 +99,7 @@
     - [x] Write `scripts/generate-rustlantis.sh` to generate N random MIR programs
     - [x] Create `kmir/src/tests/integration/data/rustlantis/` directory structure
 
-- [x] 2e83c52 Task: Create pytest harness for Rustlantis programs
+- [x] 6fb25c2 Task: Create pytest harness for Rustlantis programs
     - [x] Create `test_rustlantis.py` with seed-based parameterization
     - [x] Run initial batch and record baseline results
     - [x] Update `coverage-matrix.json` with Rustlantis findings
