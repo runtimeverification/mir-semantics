@@ -258,11 +258,13 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
                         ],
                     ),
                     _,
-                    _,
+                    KApply(label=KLabel(name='span'), args=[KToken(token=span_str)]),
                 ] if (
                     symbol_name == '\"** UNKNOWN FUNCTION **\"'
                 ):
-                    annotations.append(f'Matched kcell with ** UNKNOWN FUNCTION defid={def_id_str}')
+                    annotations.append(
+                        f'Matched kcell with ** UNKNOWN FUNCTION **, defid={def_id_str}, span={span_str}'
+                    )
                 case _:
                     return []
         case _:
