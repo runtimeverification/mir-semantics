@@ -282,6 +282,9 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
         annotations.append(f'  >> function: {name}')
 
     # Use extracted Span for call site
+    if span in smir_info.spans:
+        path, start_row, start_col, _, _ = smir_info.spans[span]
+        annotations.append(f'  >> call span: {path}:{start_row}:{start_col}')
 
     # Use extracted allocId from provenance and try to decode the referenced string
 
