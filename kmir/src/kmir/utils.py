@@ -4,6 +4,8 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
 
+from pyk.kast.inner import KApply, KLabel, KSequence, KToken
+
 if TYPE_CHECKING:
     from pyk.cterm.show import CTermShow
     from pyk.kast.inner import KInner
@@ -234,10 +236,47 @@ def render_statistics(proof: APRProof) -> list[str]:
     return lines
 
 
+def _drill(term: KInner, *path: tuple[str, int]) -> KInner | None:
+    """Navigate a nested KApply by a sequence of (label_name, arg_index) steps.
+
+    Returns the nested KInner at the end of the path, or None if any step
+    doesn't match (wrong label, insufficient args, or not a KApply).
+    """
+
+    current: KInner = term
+    for label, index in path:
+        match current:
+            case KApply(label=KLabel(name=name), args=args) if name == label and index < len(args):
+                current = args[index]
+            case _:
+                return None
+    return current
+
+
+def _extract_alloc_ptrs(operands: KInner) -> KInner | None:
+    """Extract ptrs from alloc"""
+
+    const_operand = 'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst'
+    mir_const = 'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId'
+
+    ptrs = _drill(
+        operands,
+        ('Operands::append', 0),  # first operand
+        ('Operand::Constant', 0),  # constOperand
+        (const_operand, 2),  # mirConst  (3rd arg)
+        (mir_const, 0),  # ConstantKind::Allocated
+        ('ConstantKind::Allocated', 0),  # allocation
+        ('allocation', 1),  # provenanceMap  (2nd arg)
+        ('provenanceMap', 0),  # provenance entries
+    )
+    if ptrs is None:
+        return None
+
+    return ptrs
+
+
 def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
     """If the k cell is `#setUpCalleeData` for `** UNKNOWN FUNCTION **`, return annotation lines with decoded info."""
-
-    from pyk.kast.inner import KApply, KLabel, KSequence, KToken
 
     from .linker import _demangle
 
@@ -259,7 +298,7 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
                             _,
                         ],
                     ),
-                    _,
+                    operands,
                     KApply(label=KLabel(name='span'), args=[KToken(token=span_str)]),
                 ] if (
                     symbol_name == '\"** UNKNOWN FUNCTION **\"'
@@ -286,7 +325,9 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
         path, start_row, start_col, _, _ = smir_info.spans[span]
         annotations.append(f'  >> call span: {path}:{start_row}:{start_col}')
 
-    # Use extracted allocId from provenance and try to decode the referenced string
+    # Extract allocId from provenance and try to decode the referenced string
+    alloc_ptrs = _extract_alloc_ptrs(operands)
+    annotations.append(f'Matched alloc ptrs: {alloc_ptrs}')
 
     return annotations
 
