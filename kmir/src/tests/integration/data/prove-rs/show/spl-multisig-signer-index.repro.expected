@@ -1,0 +1,30 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: ry/core/src/num/uint_macros.rs:659
+│
+│  (200 steps)
+├─ 3
+│   #traverseProjection ( toStack ( 1 , local ( 9 ) ) , Aggregate ( variantIdx ( 0 )
+│   function: <std::cell::Ref<'_, &mut [u8]> as std::ops::Deref>::deref
+│   span: brary/core/src/ptr/non_null.rs:338
+│
+│  (200 steps)
+├─ 4
+│   rvalueUse ( operandCopy ( place ( ... local: local ( 2 ) , projection: .Projecti
+│   function: repro
+│   span: no-location:0
+│
+│  (6 steps)
+└─ 5 (stuck, leaf)
+    #traverseProjection ( toLocal ( 4 ) , Range ( ListItem (?SplSigner0:List)
+ ListI
+    function: repro
+    span: no-location:0
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
+
