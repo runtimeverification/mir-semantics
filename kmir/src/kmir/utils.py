@@ -251,14 +251,18 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
                 case [
                     KApply(
                         label=KLabel(name='MonoItemKind::MonoItemFn'),
-                        args=[KApply(args=[KToken(token=symbol_name)]), _, _],
+                        args=[
+                            KApply(args=[KToken(token=symbol_name)]),
+                            KApply(label=KLabel(name='defId(_)_BODY_DefId_Int'), args=[KToken(token=def_id_str)]),
+                            _,
+                        ],
                     ),
                     _,
                     _,
                 ] if (
                     symbol_name == '\"** UNKNOWN FUNCTION **\"'
                 ):
-                    annotations.append('Matched kcell with #setUpCalleeData of ** UNKNOWN FUNCTION **')
+                    annotations.append(f'Matched kcell with ** UNKNOWN FUNCTION defid={def_id_str}')
                 case _:
                     return []
         case _:
