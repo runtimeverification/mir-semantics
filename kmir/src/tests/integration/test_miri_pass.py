@@ -7,7 +7,14 @@ import pytest
 
 from kmir.options import ProveRSOpts
 
-from .coverage_matrix import discover_suite_rs_files, integration_data_relative, load_coverage_matrix, suite_declared_entries
+from .coverage_matrix import (
+    discover_suite_rs_files,
+    external_max_depth,
+    integration_data_relative,
+    load_coverage_matrix,
+    run_all_external_enabled,
+    suite_declared_entries,
+)
 
 if TYPE_CHECKING:
     from kmir.kmir import KMIR
@@ -17,6 +24,7 @@ SUITE = 'miri-pass'
 RS_FILES = discover_suite_rs_files(SUITE)
 MATRIX = load_coverage_matrix()
 TEST_SET, SKIP_SET = suite_declared_entries(MATRIX, SUITE)
+MAX_DEPTH = external_max_depth(default=200)
 DECLARED = TEST_SET | SKIP_SET
 UNDECLARED = sorted(integration_data_relative(path) for path in RS_FILES if integration_data_relative(path) not in DECLARED)
 
@@ -32,8 +40,8 @@ def test_miri_pass_suite_matrix_alignment() -> None:
 @pytest.mark.parametrize('rs_file', RS_FILES, ids=[integration_data_relative(path) for path in RS_FILES])
 def test_miri_pass(rs_file: Path, kmir: KMIR) -> None:
     rel = integration_data_relative(rs_file)
-    if rel in SKIP_SET:
+    if rel in SKIP_SET and not run_all_external_enabled():
         pytest.skip('Skipped by coverage-matrix.json')
 
-    proof = kmir.prove_rs(ProveRSOpts(rs_file, max_depth=200))
+    proof = kmir.prove_rs(ProveRSOpts(rs_file, max_depth=MAX_DEPTH))
     assert proof.passed
