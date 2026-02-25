@@ -239,6 +239,8 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
 
     from pyk.kast.inner import KApply, KLabel, KSequence, KToken
 
+    from .linker import _demangle
+
     setup_call_label = '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span'
 
     annotations: list[str] = []
@@ -262,15 +264,22 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
                 ] if (
                     symbol_name == '\"** UNKNOWN FUNCTION **\"'
                 ):
-                    annotations.append(
-                        f'Matched kcell with ** UNKNOWN FUNCTION **, defid={def_id_str}, span={span_str}'
-                    )
+                    def_id = int(def_id_str)
+                    span = int(span_str)
+                    annotations.append(f'Matched kcell with ** UNKNOWN FUNCTION **, defid={def_id}, span={span}')
                 case _:
                     return []
         case _:
             return []
 
     # Use extracted DefId for function name
+    func_sym = smir_info.function_symbols.get(def_id, {})
+    if name := func_sym.get('NormalSym') or func_sym.get('IntrinsicSym'):
+        try:
+            name = _demangle(name)
+        except Exception:
+            pass
+        annotations.append(f'  >> function: {name}')
 
     # Use extracted Span for call site
 
