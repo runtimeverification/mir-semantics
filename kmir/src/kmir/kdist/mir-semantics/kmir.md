@@ -306,7 +306,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
 where the returned result should go.
 
 ```k
-  syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, span: Span)
+  syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), SPAN))
         => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
