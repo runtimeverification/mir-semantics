@@ -23,7 +23,7 @@ its argument to the destination without modification.
 
 ```k
   // Black box intrinsic implementation - identity function
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("black_box")), ARG:Operand .Operands, DEST)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("black_box")), ARG:Operand .Operands, DEST, _SPAN)
         => #setLocalValue(DEST, ARG)
        ... </k>
 ```
@@ -36,7 +36,7 @@ a NO OP for program semantics. `std::intrinsics::likely` and `std::intrinsics::u
 "normal" `MonoItemFn`s that call the `cold_path` intrinsic.
 
 ```k
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("cold_path")), .Operands, _DEST) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("cold_path")), .Operands, _DEST, _SPAN) => .K ... </k>
 ```
 
 #### Prefetch (`std::intrinsics::prefetch_*`)
@@ -46,11 +46,11 @@ intrinsics in Rust are performance hints that request the CPU to load or prepare
 before it's used. They have no effect on program semantics, and are implemented as a NO OP in this semantics.
 
 ```k
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_read_data")),  _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_data")), _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_read_data")),  _ARG1:Operand _ARG2:Operand .Operands, _DEST, _SPAN) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_data")), _ARG1:Operand _ARG2:Operand .Operands, _DEST, _SPAN) => .K ... </k>
 
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_read_instruction")),  _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_instruction")), _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_read_instruction")),  _ARG1:Operand _ARG2:Operand .Operands, _DEST, _SPAN) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_instruction")), _ARG1:Operand _ARG2:Operand .Operands, _DEST, _SPAN) => .K ... </k>
 ```
 
 #### Assert Inhabited (`std::intrinsics::assert_inhabited`)
@@ -63,13 +63,13 @@ error with `#AssertInhabitedFailure` if we see that following the intrinsic. Oth
 
 ```k
   syntax MIRError ::= "AssertInhabitedFailure"
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST, _SPAN)
             ~> #continueAt(noBasicBlockIdx)
         => AssertInhabitedFailure
        ...
       </k>
 
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST, _SPAN)
         => .K
        ...
       </k>
@@ -88,7 +88,7 @@ Execution gets stuck (no matching rule) when operands have different types or un
 
 ```k
   // Raw eq: dereference operands, extract types, and delegate to typed comparison
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE, _SPAN)
         => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS),
                                   #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS))
        ... </k>
@@ -134,11 +134,11 @@ through a dereferenced pointer. We extract the place from the pointer operand, a
 write the value to that location.
 
 ```k
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_store")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, _DEST)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_store")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, _DEST, _SPAN)
         => #setLocalValue(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), ARG2)
        ... </k>
 
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_store")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, _DEST)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_store")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, _DEST, _SPAN)
         => #setLocalValue(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), ARG2)
        ... </k>
 ```
@@ -153,12 +153,12 @@ the second argument, so the returned difference is always positive.
 
 
 ```k
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from")), ARG1:Operand ARG2:Operand .Operands, DEST)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
         => #ptrOffsetDiff(ARG1, ARG2, true, DEST)
         ...
        </k>
 
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from_unsigned")), ARG1:Operand ARG2:Operand .Operands, DEST)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from_unsigned")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
         => #ptrOffsetDiff(ARG1, ARG2, false, DEST)
         ...
        </k>

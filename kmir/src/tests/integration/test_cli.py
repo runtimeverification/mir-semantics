@@ -17,6 +17,10 @@ if TYPE_CHECKING:
     from kmir.kmir import KMIR
 
 PROVE_RS_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
+# Repo root: used to normalise absolute paths in expected-output snapshots so
+# they don't differ between local checkouts and CI (e.g. symbolic-args-fail.main.cli-stats-leaves).
+_REPO_ROOT = str(Path(__file__).resolve().parents[4])
+_PATH_REPLACEMENTS: dict[str, str] = {_REPO_ROOT + '/': '<REPO>/'}
 
 
 def _prove_and_store(
@@ -120,6 +124,7 @@ def test_cli_show_statistics_and_leaves(
         out,
         PROVE_RS_DIR / f'show/{src.stem}.{start_symbol}.cli-stats-leaves.expected',
         update=update_expected_output,
+        path_replacements=_PATH_REPLACEMENTS,
     )
 
 
