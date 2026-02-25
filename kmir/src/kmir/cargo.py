@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import shlex
 import shutil
 import subprocess
 from functools import cached_property
@@ -177,6 +178,9 @@ def cargo_get_smir_json(
 ) -> dict[str, Any]:
     command = [str(stable_mir_json()), '-Zno-codegen']
     command += flags or []
+    extra_flags = os.getenv('KMIR_EXTRA_RUSTC_FLAGS', '').strip()
+    if extra_flags:
+        command += shlex.split(extra_flags)
     command.append(str(rs_file.resolve()))
 
     cwd = cwd or Path.cwd()

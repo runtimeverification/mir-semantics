@@ -69,7 +69,7 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
         if opts.smir:
             smir_info = SMIRInfo.from_file(opts.rs_file)
         else:
-            smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
+            smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, flags=opts.rustc_flags, save_smir=opts.save_smir))
 
         smir_info = smir_info.reduce_to(opts.start_symbol)
         # Report whether the reduced call graph includes any functions without MIR bodies
