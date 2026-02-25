@@ -146,6 +146,7 @@ class ProveRSOpts(ProveOpts):
     save_smir: bool
     smir: bool
     start_symbol: str
+    rustc_flags: tuple[str, ...]
     add_module: Path | None
     max_workers: int | None
 
@@ -166,6 +167,7 @@ class ProveRSOpts(ProveOpts):
         save_smir: bool = False,
         smir: bool = False,
         start_symbol: str = 'main',
+        rustc_flags: tuple[str, ...] | None = None,
         break_on_calls: bool = False,
         break_on_function_calls: bool = False,
         break_on_intrinsic_calls: bool = False,
@@ -197,6 +199,7 @@ class ProveRSOpts(ProveOpts):
         self.save_smir = save_smir
         self.smir = smir
         self.start_symbol = start_symbol
+        self.rustc_flags = tuple(rustc_flags or ())
         self.break_on_calls = break_on_calls
         self.break_on_function_calls = break_on_function_calls
         self.break_on_intrinsic_calls = break_on_intrinsic_calls
