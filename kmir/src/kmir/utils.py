@@ -253,8 +253,8 @@ def _drill(term: KInner, *path: tuple[str, int]) -> KInner | None:
     return current
 
 
-def _extract_alloc_ptrs(operands: KInner) -> KInner | None:
-    """Extract ptrs from alloc"""
+def _extract_alloc_id(operands: KInner) -> int | None:
+    """Extract allocId from the first constant operand's provenance, if present."""
 
     const_operand = 'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst'
     mir_const = 'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId'
@@ -272,7 +272,20 @@ def _extract_alloc_ptrs(operands: KInner) -> KInner | None:
     if ptrs is None:
         return None
 
-    return ptrs
+    match ptrs:
+        case KApply(
+            label=KLabel(name='ProvenanceMapEntries::append'),
+            args=[
+                KApply(
+                    label=KLabel(name='provenanceMapEntry'),
+                    args=[_, KApply(label=KLabel(name='allocId'), args=[KToken(token=n)])],
+                ),
+                *_,
+            ],
+        ):
+            return int(n)
+        case _:
+            return None
 
 
 def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
@@ -326,8 +339,8 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
         annotations.append(f'  >> call span: {path}:{start_row}:{start_col}')
 
     # Extract allocId from provenance and try to decode the referenced string
-    alloc_ptrs = _extract_alloc_ptrs(operands)
-    annotations.append(f'Matched alloc ptrs: {alloc_ptrs}')
+    alloc_id = _extract_alloc_id(operands)
+    annotations.append(f'Matched alloc id: {alloc_id}')
 
     return annotations
 
