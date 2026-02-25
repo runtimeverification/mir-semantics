@@ -3,28 +3,68 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: ry/core/src/num/uint_macros.rs:659
 │
-│  (200 steps)
+│  (1 step)
 ├─ 3
-│   #traverseProjection ( toStack ( 1 , local ( 9 ) ) , Aggregate ( variantIdx ( 0 )
+│   #execTerminatorCall ( ... fty: ty ( 173 ) , func: monoItemFn ( ... name: symbol
+│   span: s/spl-multisig-signer-index.rs:12
+│
+│  (1 step)
+├─ 4
+│   #setUpCalleeData ( monoItemFn ( ... name: symbol ( "repro" ) , id: defId ( 44 )
+│   function: repro
+│   span: s/spl-multisig-signer-index.rs:12
+│
+│  (65 steps)
+├─ 5
+│   #execTerminatorCall ( ... fty: ty ( 176 ) , func: monoItemFn ( ... name: symbol
+│   function: repro
+│   span: c/rust/library/alloc/src/rc.rs:362
+│
+│  (1 step)
+├─ 6
+│   #setUpCalleeData ( monoItemFn ( ... name: symbol ( "<std::rc::Rc<std::cell::RefC
+│   function: <std::rc::Rc<std::cell::RefCell<&mut [u8]>> as std::ops::Deref>::deref
+│   span: c/rust/library/alloc/src/rc.rs:362
+│
+│  (80 steps)
+├─ 7
+│   #execTerminatorCall ( ... fty: ty ( 178 ) , func: monoItemFn ( ... name: symbol
+│   function: repro
+│   span: /rust/library/core/src/cell.rs:992
+│
+│  (20 steps)
+├─ 8
+│   #execTerminatorCall ( ... fty: ty ( 179 ) , func: monoItemFn ( ... name: symbol
+│   function: repro
+│   span: /rust/library/core/src/cell.rs:1481
+│
+│  (1 step)
+├─ 9
+│   #setUpCalleeData ( monoItemFn ( ... name: symbol ( "<std::cell::Ref<'_, &mut [u8
 │   function: <std::cell::Ref<'_, &mut [u8]> as std::ops::Deref>::deref
-│   span: brary/core/src/ptr/non_null.rs:338
+│   span: /rust/library/core/src/cell.rs:1481
+│
+│  (80 steps)
+├─ 10
+│   #execBlockIdx ( basicBlockIdx ( 4 ) ) ~> .K
+│   function: repro
 │
 │  (200 steps)
-├─ 4
-│   rvalueUse ( operandCopy ( place ( ... local: local ( 2 ) , projection: .Projecti
+├─ 11
+│   #traverseProjection ( toLocal ( 4 ) , Aggregate ( variantIdx ( 0 ) , ListItem (R
 │   function: repro
-│   span: no-location:0
+│   span: library/core/src/macros/mod.rs:44
 │
-│  (6 steps)
-└─ 5 (stuck, leaf)
-    #traverseProjection ( toLocal ( 4 ) , Range ( ListItem (?SplSigner0:List)
- ListI
-    function: repro
-    span: no-location:0
-
-
-┌─ 2 (root, leaf, target, terminal)
+│  (180 steps)
+├─ 12 (terminal)
 │   #EndProgram ~> .K
+│   function: repro
+│
+┊  constraint: true
+┊  subst: ...
+└─ 2 (leaf, target, terminal)
+    #EndProgram ~> .K
+
 
 
 
