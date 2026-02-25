@@ -237,7 +237,7 @@ def render_statistics(proof: APRProof) -> list[str]:
 def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
     """If the k cell is `#setUpCalleeData` for `** UNKNOWN FUNCTION **`, return annotation lines with decoded info."""
 
-    from pyk.kast.inner import KApply, KLabel, KSequence
+    from pyk.kast.inner import KApply, KLabel, KSequence, KToken
 
     setup_call_label = '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span'
 
@@ -248,8 +248,17 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
             label=KLabel(name=label_name), args=args
         ) if (label_name == setup_call_label):
             match args:
-                case [KApply(label=KLabel(name='MonoItemKind::MonoItemFn')), _, _]:
-                    annotations.append('Matched kcell with #setUpCalleeData of MonoItemFn')
+                case [
+                    KApply(
+                        label=KLabel(name='MonoItemKind::MonoItemFn'),
+                        args=[KApply(args=[KToken(token=symbol_name)]), _, _],
+                    ),
+                    _,
+                    _,
+                ] if (
+                    symbol_name == '\"** UNKNOWN FUNCTION **\"'
+                ):
+                    annotations.append('Matched kcell with #setUpCalleeData of ** UNKNOWN FUNCTION **')
                 case _:
                     return []
         case _:
