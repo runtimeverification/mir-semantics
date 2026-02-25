@@ -67,3 +67,8 @@ skip-string-normalization = true
 
 [tool.mypy]
 disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+markers = [
+    "external_suite: tests imported from external ecosystems (Miri, rustc ui, Kani, Rustlantis)",
+]
