@@ -22,6 +22,7 @@ make build
 ```
 
 Use `make` to run common tasks (see the [Makefile](Makefile) for a complete list of available targets).
+Coverage planning and external-suite workflow is documented in [docs/dev/test-coverage.md](docs/dev/test-coverage.md).
 
 For interactive use, first sync the environment with `uv --directory kmir sync`, then either:
 - Run Python directly: `uv --directory kmir run python`

@@ -2,6 +2,7 @@ UV     := uv --project kmir
 UV_RUN := $(UV) run --
 
 PARALLEL := 4
+INTEGRATION_DEFAULT_MARKER := not external_suite
 
 TOP_DIR    := $(shell pwd)
 
@@ -15,6 +16,12 @@ build:
 .PHONY: test
 test: test-unit test-integration smir-parse-tests
 
+.PHONY: fetch-test-suites
+fetch-test-suites:
+	./scripts/fetch-miri-tests.sh
+	./scripts/fetch-ui-run-pass.sh
+	./scripts/fetch-kani-tests.sh
+
 ##################################################
 # for integration tests: build stable-mir-json in-tree
 
@@ -22,7 +29,12 @@ stable-mir-json: CARGO_BUILD_OPTS =
 stable-mir-json:
 	cd deps/stable-mir-json && cargo build ${CARGO_BUILD_OPTS}
 	cd deps/stable-mir-json && cargo run --bin cargo_stable_mir_json -- ${TOP_DIR}/deps/stable-mir-json ${TOP_DIR}/deps
-	${TOP_DIR}/deps/.stable-mir-json/release.sh --version || ${TOP_DIR}/deps/.stable-mir-json/debug.sh --version
+	./scripts/patch-stable-mir-json-wrapper.sh
+	@if [ -x "${TOP_DIR}/deps/.stable-mir-json/release.sh" ]; then \
+		${TOP_DIR}/deps/.stable-mir-json/release.sh --version; \
+	else \
+		${TOP_DIR}/deps/.stable-mir-json/debug.sh --version; \
+	fi
 
 # generate smir and parse given test files (from parameter or run-rs subdirectory)
 smir-parse-tests: TESTS = $(shell find $(PWD)/kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
@@ -53,7 +65,28 @@ test-unit:
 
 test-integration: stable-mir-json build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
-			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
+			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal \
+			-m "$(INTEGRATION_DEFAULT_MARKER)" $(TEST_ARGS)
+
+test-integration-external: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
+			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal \
+			-m "external_suite" $(TEST_ARGS)
+
+test-miri-pass: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_miri_pass.py --maxfail=1 --verbose $(TEST_ARGS)
+
+test-miri-fail: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_miri_fail.py --maxfail=1 --verbose $(TEST_ARGS)
+
+test-ui-run-pass: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_ui_run_pass.py --maxfail=1 --verbose $(TEST_ARGS)
+
+test-kani: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_kani.py --maxfail=1 --verbose $(TEST_ARGS)
+
+test-rustlantis: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_rustlantis.py --maxfail=1 --verbose $(TEST_ARGS)
 
 # Checks and formatting
 

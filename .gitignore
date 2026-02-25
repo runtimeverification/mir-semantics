@@ -4,6 +4,11 @@ __pycache__/
 /deps/.stable-mir-json
 /.vscode/
 kmir/src/tests/integration/data/**/target
+kmir/src/tests/integration/data/miri-pass/
+kmir/src/tests/integration/data/miri-fail/
+kmir/src/tests/integration/data/ui-run-pass/
+kmir/src/tests/integration/data/kani/
+kmir/src/tests/integration/data/rustlantis/
 .DS_Store
 proof/
 /result*
