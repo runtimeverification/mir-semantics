@@ -291,6 +291,7 @@ def _extract_alloc_id(operands: KInner) -> int | None:
 def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
     """If the k cell is `#setUpCalleeData` for `** UNKNOWN FUNCTION **`, return annotation lines with decoded info."""
 
+    from .alloc import Allocation, AllocId, AllocInfo, Memory
     from .linker import _demangle
 
     setup_call_label = '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span'
@@ -318,7 +319,6 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
                 ):
                     def_id = int(def_id_str)
                     span = int(span_str)
-                    annotations.append(f'Matched kcell with ** UNKNOWN FUNCTION **, defid={def_id}, span={span}')
                 case _:
                     return []
         case _:
@@ -340,7 +340,14 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
 
     # Extract allocId from provenance and try to decode the referenced string
     alloc_id = _extract_alloc_id(operands)
-    annotations.append(f'Matched alloc id: {alloc_id}')
+    if alloc_id is not None:
+        match smir_info.allocs.get(AllocId(alloc_id)):
+            case AllocInfo(global_alloc=Memory(allocation=Allocation(bytez=bytez))):
+                try:
+                    message = bytes(b for b in bytez if b is not None).decode('utf-8')
+                    annotations.append(f'  >> message: {message!r}')
+                except ValueError:
+                    pass
 
     return annotations
 
