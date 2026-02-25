@@ -244,18 +244,22 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
     annotations: list[str] = []
 
     match k_cell:
-        case KSequence(items=(KApply(label=KLabel(name=label_name)), *_)) | KApply(label=KLabel(name=label_name)) if (
-            label_name == setup_call_label
-        ):
-            annotations.append('Matched kcell with #setUpCalleeData')
+        case KSequence(items=(KApply(label=KLabel(name=label_name), args=args), *_)) | KApply(
+            label=KLabel(name=label_name), args=args
+        ) if (label_name == setup_call_label):
+            match args:
+                case [KApply(label=KLabel(name='MonoItemKind::MonoItemFn')), _, _]:
+                    annotations.append('Matched kcell with #setUpCalleeData of MonoItemFn')
+                case _:
+                    return []
         case _:
             return []
 
-    # Extract defId for the called function
+    # Use extracted DefId for function name
 
-    # Extract call-site span
+    # Use extracted Span for call site
 
-    # Extract allocId from provenance and try to decode the referenced string
+    # Use extracted allocId from provenance and try to decode the referenced string
 
     return annotations
 
