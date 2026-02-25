@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Sequence
 
 if TYPE_CHECKING:
     from pyk.cterm.show import CTermShow
+    from pyk.kast.inner import KInner
     from pyk.kcfg.kcfg import KCFG
     from pyk.proof.reachability import APRProof
 
@@ -233,9 +234,26 @@ def render_statistics(proof: APRProof) -> list[str]:
     return lines
 
 
-def _annotate_unknown_function(k_text: str, smir_info: SMIRInfo) -> list[str]:
-    """TODO"""
-    return []
+def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
+    """If the k cell is `#setUpCalleeData` for `** UNKNOWN FUNCTION **`, return annotation lines with decoded info."""
+
+    from pyk.kast.inner import KSequence
+
+    annotations: list[str] = []
+
+    match k_cell:
+        case KSequence(kapply):
+            annotations.append(f'Matched kcell as KSequence {kapply}')
+        case _:
+            return []
+
+    # Extract defId for the called function
+
+    # Extract call-site span
+
+    # Extract allocId from provenance and try to decode the referenced string
+
+    return annotations
 
 
 def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow, smir_info: SMIRInfo | None = None) -> list[str]:
@@ -256,6 +274,7 @@ def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow, smir_info: SMIRI
             k_cell = leaf.cterm.cell('K_CELL')
             k_lines = cterm_show.print_lines(k_cell)
         except KeyError:
+            k_cell = None
             k_lines = ['<K_CELL unavailable>']
 
         if not k_lines:
@@ -263,9 +282,8 @@ def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow, smir_info: SMIRI
         else:
             lines.extend(f'  {k_line}' for k_line in k_lines)
 
-        if smir_info is not None:
-            k_text = '\n'.join(k_lines)
-            annotations = _annotate_unknown_function(k_text, smir_info)
+        if smir_info is not None and k_cell is not None:
+            annotations = _annotate_unknown_function(k_cell, smir_info)
             lines.extend(annotations)
 
         if idx != len(leaves) - 1:
