@@ -237,13 +237,17 @@ def render_statistics(proof: APRProof) -> list[str]:
 def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
     """If the k cell is `#setUpCalleeData` for `** UNKNOWN FUNCTION **`, return annotation lines with decoded info."""
 
-    from pyk.kast.inner import KSequence
+    from pyk.kast.inner import KApply, KLabel, KSequence
+
+    setup_call_label = '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span'
 
     annotations: list[str] = []
 
     match k_cell:
-        case KSequence(kapply):
-            annotations.append(f'Matched kcell as KSequence {kapply}')
+        case KSequence(items=(KApply(label=KLabel(name=label_name)), *_)) | KApply(label=KLabel(name=label_name)) if (
+            label_name == setup_call_label
+        ):
+            annotations.append('Matched kcell with #setUpCalleeData')
         case _:
             return []
 
