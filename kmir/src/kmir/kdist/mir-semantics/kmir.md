@@ -604,6 +604,12 @@ Therefore a heuristics is used here:
         => #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(VAL)) ~> #setTupleArgs(IDX +Int 1, REST)
         ...
        </k>
+
+  // Fallback for closure-call paths where the argument is not wrapped as a tuple.
+  rule <k> #setTupleArgs(IDX, VAL:Value)
+        => #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(VAL))
+        ...
+       </k> [owise]
 ```
 
 
