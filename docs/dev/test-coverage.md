@@ -11,6 +11,7 @@ external suite imports, and coverage reporting.
   - per-suite `tests` (passing) and `skip` (known gaps)
 - Keep default CI-friendly integration test runs small.
 - Allow explicit opt-in execution of external suites.
+- Prevent architecture-only failures from being mixed with semantic failures in external-suite baselines.
 
 ## Coverage Matrix Contract
 
@@ -75,6 +76,7 @@ make test-miri-pass
 make test-miri-fail
 make test-ui-run-pass
 make test-kani
+make test-kani-adapted
 make test-rustlantis
 ```
 
@@ -84,12 +86,42 @@ All external harnesses:
 - verify every discovered file is listed in matrix `tests` or `skip`
 - skip test cases listed in matrix `skip`
 
+## UI Directive-Aware Execution
+
+`scripts/run-external-suite.py --suite ui-run-pass` now performs a prep phase before `prove-rs`:
+
+- parses `//@` directives, including revision-prefixed directives
+- handles `revisions` by generating per-revision sub-cases and aggregating back to one source-file result
+- supports `edition`, `compile-flags`, `rustc-env`
+- supports `aux-build`, `aux-crate`, and `proc-macro` by compiling auxiliary crates and wiring them through `-L/--extern`
+- applies platform gating from `only-*` and `ignore-*` directives
+- performs compile-probe before proving to classify architecture/compiler failures explicitly
+
+File-level status for UI is still strict pass criteria:
+
+- `ProofStatus.PASSED`
+- linear proof chain
+
 ## Rustlantis Corpus
 
-Generate a deterministic corpus (default seeds from `0`):
+Generate a deterministic corpus (default seeds from `0`) with profile-based size:
 
 ```bash
-./scripts/generate-rustlantis.sh --count 10 --seed-start 0
+./scripts/generate-rustlantis.sh --profile small --count 20 --seed-start 0
+```
+
+Available profiles:
+
+- `small` (default): fast, smaller programs
+- `medium`: balanced size
+- `large`: deeper programs for stress testing
+
+Convenience targets:
+
+```bash
+make rustlantis-small
+make rustlantis-medium
+make rustlantis-large
 ```
 
 Optional SMIR generation:
@@ -99,6 +131,18 @@ Optional SMIR generation:
 ```
 
 Then map each generated `rustlantis/seed-*.rs` path into matrix `tests` or `skip`.
+
+## Kani Deferred Policy
+
+Kani is imported and mapped in coverage matrix, but default gate behavior is deferred:
+
+- `make test-kani` runs with `KMIR_KANI_MODE=deferred` and skips semantic prove cases
+- `make test-kani-adapted` enables experimental adapted mode (`KMIR_KANI_MODE=adapted`)
+  - strips proof-only Kani attributes
+  - runs only cases that do not require `kani::*` runtime APIs
+  - cases requiring runtime APIs are classified as policy skips
+
+Coverage/reporting should treat this as a deferred lane (`deferred-not-in-scope`) until full Kani integration is implemented.
 
 ## Triage Loop
 
@@ -111,6 +155,14 @@ When running any external suite target:
 
 This keeps matrix metadata and harness behavior synchronized.
 
+`scripts/run-external-suite.py` emits:
+
+- `results` (file-level passed/failed/skipped)
+- full `reason_histogram` and `detail_histogram`
+- sample non-pass cases with reason/detail
+
+Use those histograms to distinguish architecture failures (`prep_failed`, `compile_failed`, `policy_skip`) from semantic failures (`proof_failed`, `non_linear_proof`, `timeout`).
+
 ## Remote Execution Protocol (`zhaoji`)
 
 Local code editing stays in the worktree. Gate/test execution runs remotely:
@@ -121,12 +173,14 @@ rsync -az --delete \
   --exclude 'kmir/.venv' \
   --exclude '.pytest_cache' \
   --exclude '__pycache__' \
+  --exclude 'deps/.stable-mir-json/' \
   --exclude 'deps/stable-mir-json/' \
   /Users/steven/.codex/worktrees/b1dc/mir-semantics/ \
   zhaoji:/home/zhaoji/projs/mir-semantics-b1dc/
 
 ssh zhaoji 'cd /home/zhaoji/projs/mir-semantics-b1dc && \
   export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH" && \
+  make stable-mir-json && \
   <CMD>'
 ```
 

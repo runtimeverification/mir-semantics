@@ -1,5 +1,8 @@
 {
   "schema_version": 1,
+  "suite_policy": {
+    "kani": "deferred-not-in-scope"
+  },
   "sections": {
     "constant-evaluation/const-contexts": {
       "note": "",
@@ -600,7 +603,6 @@
           "ui-run-pass/array-slice-vec/vec-matching-fold.rs",
           "ui-run-pass/array-slice-vec/vec-matching-legal-tail-element-borrow.rs",
           "ui-run-pass/array-slice-vec/vec-matching.rs",
-          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs",
           "ui-run-pass/array-slice-vec/vec-tail-matching.rs",
           "ui-run-pass/array-slice-vec/vector-no-ann-2.rs",
           "ui-run-pass/array-slice-vec/vector-slice-matching-8498.rs",
@@ -669,6 +671,9 @@
         ],
         "miri-fail": [
           "miri-fail/function_pointers/abi_mismatch_array_vs_struct.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs"
         ]
       }
     },
@@ -867,9 +872,6 @@
           "kani/FatPointers/boxtrait.rs",
           "kani/FatPointers/boxtrait_fail.rs",
           "kani/FatPointers/metadata.rs",
-          "kani/FatPointers/slice1.rs",
-          "kani/FatPointers/slice2.rs",
-          "kani/FatPointers/slice3.rs",
           "kani/FatPointers/structslice.rs",
           "kani/FatPointers/trait1.rs",
           "kani/FatPointers/trait1_fail.rs",
@@ -927,7 +929,6 @@
           "kani/Intrinsics/Assert/zero_valid.rs",
           "kani/Intrinsics/Assert/zero_valid_panic.rs",
           "kani/Intrinsics/Assume/assume_fail.rs",
-          "kani/Intrinsics/Assume/assume_ok.rs",
           "kani/Intrinsics/Atomic/Stable/AtomicPtr/main.rs",
           "kani/Intrinsics/Atomic/Stable/CompareExchange/main.rs",
           "kani/Intrinsics/Atomic/Stable/Exchange/main.rs",
@@ -1132,7 +1133,6 @@
           "kani/PointerOffset/offset_from_vec.rs",
           "kani/PointerOffset/offset_sub.rs",
           "kani/Pointers_Basic/fixme_from_raw.rs",
-          "kani/Pointers_Basic/main.rs",
           "kani/Pointers_Functions/main.rs",
           "kani/Pointers_InAssert/main.rs",
           "kani/Pointers_OtherTypes/main.rs",
@@ -1177,11 +1177,9 @@
           "kani/Slice/empty_slice.rs",
           "kani/Slice/empty_slice_fail.rs",
           "kani/Slice/extra_checks_fail.rs",
-          "kani/Slice/fixme_issue_707.rs",
           "kani/Slice/main.rs",
           "kani/Slice/pathbuf.rs",
           "kani/Slice/size_of.rs",
-          "kani/Slice/slice.rs",
           "kani/Slice/slice_from_raw.rs",
           "kani/Static/anon_static.rs",
           "kani/Static/main.rs",
@@ -1843,7 +1841,6 @@
           "ui-run-pass/array-slice-vec/vec-matching-fold.rs",
           "ui-run-pass/array-slice-vec/vec-matching-legal-tail-element-borrow.rs",
           "ui-run-pass/array-slice-vec/vec-matching.rs",
-          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs",
           "ui-run-pass/array-slice-vec/vec-tail-matching.rs",
           "ui-run-pass/array-slice-vec/vector-no-ann-2.rs",
           "ui-run-pass/array-slice-vec/vector-slice-matching-8498.rs",
@@ -2153,7 +2150,6 @@
           "ui-run-pass/binding/mut-in-ident-patterns.rs",
           "ui-run-pass/binding/nested-matchs.rs",
           "ui-run-pass/binding/nested-pattern.rs",
-          "ui-run-pass/binding/nil-pattern.rs",
           "ui-run-pass/binding/nullary-or-pattern.rs",
           "ui-run-pass/binding/optional_comma_in_match_arm.rs",
           "ui-run-pass/binding/or-pattern.rs",
@@ -3397,7 +3393,6 @@
           "ui-run-pass/extern/extern-vectorcall.rs",
           "ui-run-pass/extern/extern_fat_drop.rs",
           "ui-run-pass/extern/issue-10025.rs",
-          "ui-run-pass/extern/issue-10764-rpass.rs",
           "ui-run-pass/extern/issue-13655.rs",
           "ui-run-pass/extern/issue-64655-allow-unwind-when-calling-panic-directly.rs",
           "ui-run-pass/extern/issue-64655-extern-rust-must-allow-unwind.rs",
@@ -3515,7 +3510,6 @@
           "ui-run-pass/functions-closures/closure-inference.rs",
           "ui-run-pass/functions-closures/closure-inference2.rs",
           "ui-run-pass/functions-closures/closure-reform.rs",
-          "ui-run-pass/functions-closures/closure-returning-closure.rs",
           "ui-run-pass/functions-closures/closure-to-fn-coercion.rs",
           "ui-run-pass/functions-closures/closure_to_fn_coercion-expected-types.rs",
           "ui-run-pass/functions-closures/copy-closure.rs",
@@ -4082,7 +4076,6 @@
           "ui-run-pass/issues/issue-46855.rs",
           "ui-run-pass/issues/issue-4735.rs",
           "ui-run-pass/issues/issue-47364.rs",
-          "ui-run-pass/issues/issue-4759-1.rs",
           "ui-run-pass/issues/issue-4759.rs",
           "ui-run-pass/issues/issue-48006.rs",
           "ui-run-pass/issues/issue-48132.rs",
@@ -4890,7 +4883,6 @@
           "ui-run-pass/parser/macro/statement-boundaries.rs",
           "ui-run-pass/parser/multiline-comments-basic.rs",
           "ui-run-pass/parser/nested-block-comments.rs",
-          "ui-run-pass/parser/operator-associativity.rs",
           "ui-run-pass/parser/operator-precedence-braces-exprs.rs",
           "ui-run-pass/parser/parse-panic.rs",
           "ui-run-pass/parser/parser-unicode-whitespace.rs",
@@ -5834,7 +5826,6 @@
           "ui-run-pass/structs-enums/tuple-struct-matching.rs",
           "ui-run-pass/structs-enums/tuple-struct-trivial.rs",
           "ui-run-pass/structs-enums/type-sizes.rs",
-          "ui-run-pass/structs-enums/uninstantiable-struct.rs",
           "ui-run-pass/structs-enums/unit-like-struct-drop-run.rs",
           "ui-run-pass/structs-enums/unit-like-struct.rs",
           "ui-run-pass/structs-enums/variant-structs-trivial.rs",
@@ -6403,6 +6394,16 @@
         "rustlantis": [
           "rustlantis/seed-0.rs",
           "rustlantis/seed-1.rs",
+          "rustlantis/seed-10.rs",
+          "rustlantis/seed-11.rs",
+          "rustlantis/seed-12.rs",
+          "rustlantis/seed-13.rs",
+          "rustlantis/seed-14.rs",
+          "rustlantis/seed-15.rs",
+          "rustlantis/seed-16.rs",
+          "rustlantis/seed-17.rs",
+          "rustlantis/seed-18.rs",
+          "rustlantis/seed-19.rs",
           "rustlantis/seed-2.rs",
           "rustlantis/seed-3.rs",
           "rustlantis/seed-4.rs",
@@ -7052,6 +7053,24 @@
           "miri-fail/validity/wrong-dyn-trait-assoc-type.rs",
           "miri-fail/weak_memory/weak_uninit.rs",
           "miri-fail/zst_local_oob.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs",
+          "ui-run-pass/binding/nil-pattern.rs",
+          "ui-run-pass/extern/issue-10764-rpass.rs",
+          "ui-run-pass/functions-closures/closure-returning-closure.rs",
+          "ui-run-pass/issues/issue-4759-1.rs",
+          "ui-run-pass/parser/operator-associativity.rs",
+          "ui-run-pass/structs-enums/uninstantiable-struct.rs"
+        ],
+        "kani": [
+          "kani/FatPointers/slice1.rs",
+          "kani/FatPointers/slice2.rs",
+          "kani/FatPointers/slice3.rs",
+          "kani/Intrinsics/Assume/assume_ok.rs",
+          "kani/Pointers_Basic/main.rs",
+          "kani/Slice/fixme_issue_707.rs",
+          "kani/Slice/slice.rs"
         ]
       }
     },
@@ -7197,7 +7216,6 @@
           "ui-run-pass/functions-closures/closure-inference.rs",
           "ui-run-pass/functions-closures/closure-inference2.rs",
           "ui-run-pass/functions-closures/closure-reform.rs",
-          "ui-run-pass/functions-closures/closure-returning-closure.rs",
           "ui-run-pass/functions-closures/closure-to-fn-coercion.rs",
           "ui-run-pass/functions-closures/closure_to_fn_coercion-expected-types.rs",
           "ui-run-pass/functions-closures/copy-closure.rs",
@@ -7307,6 +7325,9 @@
         "miri-fail": [
           "miri-fail/match/closures/uninhabited-variant1.rs",
           "miri-fail/match/closures/uninhabited-variant2.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/functions-closures/closure-returning-closure.rs"
         ]
       }
     },
@@ -7605,7 +7626,6 @@
           "ui-run-pass/structs-enums/tuple-struct-matching.rs",
           "ui-run-pass/structs-enums/tuple-struct-trivial.rs",
           "ui-run-pass/structs-enums/type-sizes.rs",
-          "ui-run-pass/structs-enums/uninstantiable-struct.rs",
           "ui-run-pass/structs-enums/unit-like-struct-drop-run.rs",
           "ui-run-pass/structs-enums/unit-like-struct.rs",
           "ui-run-pass/structs-enums/variant-structs-trivial.rs",
@@ -7676,6 +7696,9 @@
           "miri-fail/unaligned_pointers/field_requires_parent_struct_alignment2.rs",
           "miri-fail/uninit/padding-struct-in-union.rs",
           "miri-fail/uninit/padding-struct.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/structs-enums/uninstantiable-struct.rs"
         ]
       }
     },
@@ -8628,7 +8651,6 @@
           "ui-run-pass/structs-enums/tuple-struct-matching.rs",
           "ui-run-pass/structs-enums/tuple-struct-trivial.rs",
           "ui-run-pass/structs-enums/type-sizes.rs",
-          "ui-run-pass/structs-enums/uninstantiable-struct.rs",
           "ui-run-pass/structs-enums/unit-like-struct-drop-run.rs",
           "ui-run-pass/structs-enums/unit-like-struct.rs",
           "ui-run-pass/structs-enums/variant-structs-trivial.rs",
@@ -8707,6 +8729,9 @@
           "miri-fail/validity/invalid_enum_tag.rs",
           "miri-fail/validity/match_binder_checks_validity1.rs",
           "miri-fail/validity/match_binder_checks_validity2.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/structs-enums/uninstantiable-struct.rs"
         ]
       }
     },
@@ -9717,9 +9742,6 @@
           "kani/FatPointers/boxtrait.rs",
           "kani/FatPointers/boxtrait_fail.rs",
           "kani/FatPointers/metadata.rs",
-          "kani/FatPointers/slice1.rs",
-          "kani/FatPointers/slice2.rs",
-          "kani/FatPointers/slice3.rs",
           "kani/FatPointers/structslice.rs",
           "kani/FatPointers/trait1.rs",
           "kani/FatPointers/trait1_fail.rs",
@@ -9748,7 +9770,6 @@
           "kani/PointerOffset/offset_from_vec.rs",
           "kani/PointerOffset/offset_sub.rs",
           "kani/Pointers_Basic/fixme_from_raw.rs",
-          "kani/Pointers_Basic/main.rs",
           "kani/Pointers_Functions/main.rs",
           "kani/Pointers_InAssert/main.rs",
           "kani/Pointers_OtherTypes/main.rs",
@@ -10041,6 +10062,12 @@
           "miri-fail/validity/invalid_wide_raw.rs",
           "miri-fail/validity/transmute_through_ptr.rs",
           "miri-fail/validity/uninit_raw_ptr.rs"
+        ],
+        "kani": [
+          "kani/FatPointers/slice1.rs",
+          "kani/FatPointers/slice2.rs",
+          "kani/FatPointers/slice3.rs",
+          "kani/Pointers_Basic/main.rs"
         ]
       }
     },
@@ -10791,7 +10818,6 @@
         ],
         "ui-run-pass": [
           "ui-run-pass/array-slice-vec/cast-in-array-size.rs",
-          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs",
           "ui-run-pass/cast/cast-does-fallback.rs",
           "ui-run-pass/cast/cast-enum-const.rs",
           "ui-run-pass/cast/cast-region-to-uint.rs",
@@ -10967,6 +10993,9 @@
           "miri-fail/validity/invalid_char_cast.rs",
           "miri-fail/validity/invalid_enum_cast.rs",
           "miri-fail/validity/transmute_through_ptr.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs"
         ]
       }
     },
@@ -11298,7 +11327,6 @@
           "ui-run-pass/array-slice-vec/vec-matching-fold.rs",
           "ui-run-pass/array-slice-vec/vec-matching-legal-tail-element-borrow.rs",
           "ui-run-pass/array-slice-vec/vec-matching.rs",
-          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs",
           "ui-run-pass/array-slice-vec/vec-tail-matching.rs",
           "ui-run-pass/array-slice-vec/vector-no-ann-2.rs",
           "ui-run-pass/array-slice-vec/vector-slice-matching-8498.rs",
@@ -11368,6 +11396,9 @@
         ],
         "miri-fail": [
           "miri-fail/function_pointers/abi_mismatch_array_vs_struct.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs"
         ]
       }
     },
@@ -11551,7 +11582,6 @@
           "ui-run-pass/functions-closures/closure-inference.rs",
           "ui-run-pass/functions-closures/closure-inference2.rs",
           "ui-run-pass/functions-closures/closure-reform.rs",
-          "ui-run-pass/functions-closures/closure-returning-closure.rs",
           "ui-run-pass/functions-closures/closure-to-fn-coercion.rs",
           "ui-run-pass/functions-closures/closure_to_fn_coercion-expected-types.rs",
           "ui-run-pass/functions-closures/copy-closure.rs",
@@ -11662,6 +11692,9 @@
         "miri-fail": [
           "miri-fail/match/closures/uninhabited-variant1.rs",
           "miri-fail/match/closures/uninhabited-variant2.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/functions-closures/closure-returning-closure.rs"
         ]
       }
     },
@@ -11960,7 +11993,6 @@
           "ui-run-pass/structs-enums/tuple-struct-matching.rs",
           "ui-run-pass/structs-enums/tuple-struct-trivial.rs",
           "ui-run-pass/structs-enums/type-sizes.rs",
-          "ui-run-pass/structs-enums/uninstantiable-struct.rs",
           "ui-run-pass/structs-enums/unit-like-struct-drop-run.rs",
           "ui-run-pass/structs-enums/unit-like-struct.rs",
           "ui-run-pass/structs-enums/variant-structs-trivial.rs",
@@ -12009,6 +12041,9 @@
           "miri-fail/validity/invalid_enum_cast.rs",
           "miri-fail/validity/invalid_enum_op.rs",
           "miri-fail/validity/invalid_enum_tag.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/structs-enums/uninstantiable-struct.rs"
         ]
       }
     },
@@ -12284,9 +12319,6 @@
           "kani/FatPointers/boxtrait.rs",
           "kani/FatPointers/boxtrait_fail.rs",
           "kani/FatPointers/metadata.rs",
-          "kani/FatPointers/slice1.rs",
-          "kani/FatPointers/slice2.rs",
-          "kani/FatPointers/slice3.rs",
           "kani/FatPointers/structslice.rs",
           "kani/FatPointers/trait1.rs",
           "kani/FatPointers/trait1_fail.rs",
@@ -12315,7 +12347,6 @@
           "kani/PointerOffset/offset_from_vec.rs",
           "kani/PointerOffset/offset_sub.rs",
           "kani/Pointers_Basic/fixme_from_raw.rs",
-          "kani/Pointers_Basic/main.rs",
           "kani/Pointers_Functions/main.rs",
           "kani/Pointers_InAssert/main.rs",
           "kani/Pointers_OtherTypes/main.rs",
@@ -12616,6 +12647,12 @@
           "miri-fail/validity/invalid_wide_raw.rs",
           "miri-fail/validity/transmute_through_ptr.rs",
           "miri-fail/validity/uninit_raw_ptr.rs"
+        ],
+        "kani": [
+          "kani/FatPointers/slice1.rs",
+          "kani/FatPointers/slice2.rs",
+          "kani/FatPointers/slice3.rs",
+          "kani/Pointers_Basic/main.rs"
         ]
       }
     },
@@ -12881,9 +12918,6 @@
           "kani/Drop/drop_slice.rs",
           "kani/FatPointers/boxslice1.rs",
           "kani/FatPointers/boxslice2.rs",
-          "kani/FatPointers/slice1.rs",
-          "kani/FatPointers/slice2.rs",
-          "kani/FatPointers/slice3.rs",
           "kani/FatPointers/structslice.rs",
           "kani/FunctionContracts/modify_slice_elem.rs",
           "kani/Intrinsics/Transmute/str_to_slice.rs",
@@ -12899,11 +12933,9 @@
           "kani/Slice/empty_slice.rs",
           "kani/Slice/empty_slice_fail.rs",
           "kani/Slice/extra_checks_fail.rs",
-          "kani/Slice/fixme_issue_707.rs",
           "kani/Slice/main.rs",
           "kani/Slice/pathbuf.rs",
           "kani/Slice/size_of.rs",
-          "kani/Slice/slice.rs",
           "kani/Slice/slice_from_raw.rs",
           "kani/Stubbing/StubPrimitives/stub_slice_methods.rs",
           "kani/SubSlice/subslice1.rs",
@@ -12970,7 +13002,6 @@
           "ui-run-pass/array-slice-vec/vec-matching-fold.rs",
           "ui-run-pass/array-slice-vec/vec-matching-legal-tail-element-borrow.rs",
           "ui-run-pass/array-slice-vec/vec-matching.rs",
-          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs",
           "ui-run-pass/array-slice-vec/vec-tail-matching.rs",
           "ui-run-pass/array-slice-vec/vector-no-ann-2.rs",
           "ui-run-pass/array-slice-vec/vector-slice-matching-8498.rs",
@@ -13022,6 +13053,16 @@
           "miri-fail/intrinsics/ptr_metadata_uninit_slice_len.rs",
           "miri-fail/stacked_borrows/zst_slice.rs",
           "miri-fail/validity/too-big-slice.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/array-slice-vec/vec-repeat-with-cast.rs"
+        ],
+        "kani": [
+          "kani/FatPointers/slice1.rs",
+          "kani/FatPointers/slice2.rs",
+          "kani/FatPointers/slice3.rs",
+          "kani/Slice/fixme_issue_707.rs",
+          "kani/Slice/slice.rs"
         ]
       }
     },
@@ -13320,7 +13361,6 @@
           "ui-run-pass/structs-enums/tuple-struct-matching.rs",
           "ui-run-pass/structs-enums/tuple-struct-trivial.rs",
           "ui-run-pass/structs-enums/type-sizes.rs",
-          "ui-run-pass/structs-enums/uninstantiable-struct.rs",
           "ui-run-pass/structs-enums/unit-like-struct-drop-run.rs",
           "ui-run-pass/structs-enums/unit-like-struct.rs",
           "ui-run-pass/structs-enums/variant-structs-trivial.rs",
@@ -13392,6 +13432,9 @@
           "miri-fail/unaligned_pointers/field_requires_parent_struct_alignment2.rs",
           "miri-fail/uninit/padding-struct-in-union.rs",
           "miri-fail/uninit/padding-struct.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/structs-enums/uninstantiable-struct.rs"
         ]
       }
     },
@@ -13801,7 +13844,6 @@
           "ui-run-pass/structs-enums/tuple-struct-matching.rs",
           "ui-run-pass/structs-enums/tuple-struct-trivial.rs",
           "ui-run-pass/structs-enums/type-sizes.rs",
-          "ui-run-pass/structs-enums/uninstantiable-struct.rs",
           "ui-run-pass/structs-enums/unit-like-struct-drop-run.rs",
           "ui-run-pass/structs-enums/unit-like-struct.rs",
           "ui-run-pass/structs-enums/variant-structs-trivial.rs",
@@ -13886,6 +13928,9 @@
           "miri-fail/unaligned_pointers/field_requires_parent_struct_alignment2.rs",
           "miri-fail/uninit/padding-struct-in-union.rs",
           "miri-fail/uninit/padding-struct.rs"
+        ],
+        "ui-run-pass": [
+          "ui-run-pass/structs-enums/uninstantiable-struct.rs"
         ]
       }
     },
