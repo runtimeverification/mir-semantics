@@ -90,7 +90,14 @@
     - [x] Estimate complexity (easy/medium/hard) for each gap area
     - [x] Document prioritized gap list for future tracks
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+    - [x] 2026-02-26 remote no-timeout monitor started: `ui-run-pass --workers 4 --max-depth 300 --case-timeout 0`.
+    - [x] 2026-02-26 progress snapshot: `max_completed=82/4859`, reasons `proof_failed=45`, `compile_failed=20`, `policy_skip=14`, `passed=0` (still running).
+    - [x] 2026-02-26 simple probe (UI): `--suite ui-run-pass --match nil-pattern.rs --max-depth 500 --case-timeout 0` -> `total=1 passed=1`, `status=PASSED`, `linear_chain=true`.
+    - [x] 2026-02-26 simple probe (Miri): `--suite miri-pass --match bools.rs --max-depth 1000 --case-timeout 0` -> `total=1 passed=1`, `status=PASSED`, `linear_chain=true`.
+    - [x] 2026-02-26 installed background sampler `/tmp/monitor-ui-no-timeout.sh` (60s cadence) writing `/tmp/ui-run-pass-no-timeout-w4-monitor.log`.
+    - [x] 2026-02-26 sampler latest snapshot: `completed=90/4859`, reasons `proof_failed=49`, `compile_failed=20`, `policy_skip=14`, `passed=0` (still running).
+    - [x] 2026-02-26 sampler follow-up snapshot: `completed=91/4859`, reasons `proof_failed=50`, `compile_failed=20`, `policy_skip=14`, `passed=0` (still running).
 
 ## Phase 4 — Rustlantis Integration
 
