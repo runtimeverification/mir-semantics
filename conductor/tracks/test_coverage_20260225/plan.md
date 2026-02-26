@@ -98,6 +98,7 @@
     - [x] 2026-02-26 installed background sampler `/tmp/monitor-ui-no-timeout.sh` (60s cadence) writing `/tmp/ui-run-pass-no-timeout-w4-monitor.log`.
     - [x] 2026-02-26 sampler latest snapshot: `completed=90/4859`, reasons `proof_failed=49`, `compile_failed=20`, `policy_skip=14`, `passed=0` (still running).
     - [x] 2026-02-26 sampler follow-up snapshot: `completed=91/4859`, reasons `proof_failed=50`, `compile_failed=20`, `policy_skip=14`, `passed=0` (still running).
+    - [x] 2026-02-26 sampler follow-up snapshot: `completed=96/4859`, reasons `proof_failed=52`, `compile_failed=20`, `policy_skip=14`, `passed=0` (still running).
 
 ## Phase 4 — Rustlantis Integration
 
