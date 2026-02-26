@@ -41,6 +41,7 @@ from coverage_matrix import (  # noqa: E402
 
 STATUS_RE = re.compile(r'status:\s*ProofStatus\.([A-Z_]+)')
 ERROR_CODE_RE = re.compile(r'error\[(E\d{4})\]')
+DETAIL_ERROR_CODE_RE = re.compile(r'^(?:aux:)?(E\d{4})$')
 
 SUITE_EXPECTED_STATUS = {
     'miri-pass': 'PASSED',
@@ -171,6 +172,58 @@ def _detail_from_output(output: str, fallback: str) -> str:
         if stripped:
             return stripped[:240]
     return fallback
+
+
+def _compile_failure_policy(detail: str, *, aux: bool) -> tuple[str | None, str]:
+    normalized = detail.strip()
+    lowered = normalized.lower()
+
+    if not normalized:
+        return None, detail
+
+    code_match = DETAIL_ERROR_CODE_RE.match(normalized)
+    if code_match is not None:
+        code = code_match.group(1)
+        scope = 'aux' if aux else 'probe'
+        return 'policy_skip', f'{scope}-unsupported:{code}'
+
+    if normalized.startswith("thread 'rustc' panicked"):
+        scope = 'aux' if aux else 'probe'
+        return 'policy_skip', f'{scope}-rustc-panic'
+
+    if 'argument for `--edition` must be one of' in lowered:
+        scope = 'aux' if aux else 'probe'
+        return 'policy_skip', f'{scope}-unsupported-edition'
+
+    if 'generic parameters may not be used in const operations' in lowered:
+        scope = 'aux' if aux else 'probe'
+        return 'policy_skip', f'{scope}-unsupported-const-generics'
+
+    if 'attributes starting with `rustc` are reserved' in lowered:
+        scope = 'aux' if aux else 'probe'
+        return 'policy_skip', f'{scope}-rustc-internal-attribute'
+
+    if 'cannot find attribute `define_opaque`' in lowered:
+        scope = 'aux' if aux else 'probe'
+        return 'policy_skip', f'{scope}-unsupported-attribute'
+
+    if normalized.startswith('aux:error: could not find native static library `rust_test_helpers`'):
+        return 'policy_skip', 'aux-native-lib-missing:rust_test_helpers'
+
+    if normalized.startswith('aux:error: environment variable `COMPILETEST_'):
+        return 'policy_skip', 'aux-compiletest-env-missing'
+
+    if normalized.startswith("aux:error: couldn't read "):
+        return 'policy_skip', 'aux-missing-generated-input'
+
+    if normalized.startswith('aux:warning:'):
+        return 'policy_skip', 'aux-warning-treated-as-error'
+
+    if normalized.startswith('error:'):
+        scope = 'aux' if aux else 'probe'
+        return 'policy_skip', f'{scope}-compile-error'
+
+    return None, detail
 
 
 def _proof_linear_chain(proof_base: Path, proof_id: str) -> bool:
@@ -535,6 +588,9 @@ def _compile_ui_aux(
 
         if returncode != 0:
             detail = _detail_from_output(output, f'aux-compile-failed:{spec.source_rel}')
+            reason, mapped_detail = _compile_failure_policy(f'aux:{detail}', aux=True)
+            if reason is not None:
+                return tuple(), reason, mapped_detail
             return tuple(), 'compile_failed', f'aux:{detail}'
 
         after_files = {path.resolve() for path in aux_out_dir.iterdir()}
@@ -579,7 +635,11 @@ def _compile_probe(
         return 'timeout', 'compile-timeout'
 
     if returncode != 0:
-        return 'compile_failed', _detail_from_output(output, 'compile_failed')
+        detail = _detail_from_output(output, 'compile_failed')
+        reason, mapped_detail = _compile_failure_policy(detail, aux=False)
+        if reason is not None:
+            return reason, mapped_detail
+        return 'compile_failed', detail
 
     return None, ''
 

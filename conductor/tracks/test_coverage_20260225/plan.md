@@ -99,6 +99,13 @@
     - [x] 2026-02-26 sampler latest snapshot: `completed=90/4859`, reasons `proof_failed=49`, `compile_failed=20`, `policy_skip=14`, `passed=0` (still running).
     - [x] 2026-02-26 sampler follow-up snapshot: `completed=91/4859`, reasons `proof_failed=50`, `compile_failed=20`, `policy_skip=14`, `passed=0` (still running).
     - [x] 2026-02-26 sampler follow-up snapshot: `completed=96/4859`, reasons `proof_failed=52`, `compile_failed=20`, `policy_skip=14`, `passed=0` (still running).
+    - [x] 2026-02-26 fixed UI edition normalization: `edition: 2015..2021` no longer emits invalid `--edition` compile failure (now normalized then classified as `policy_skip` when unsupported).
+    - [x] 2026-02-26 compile boundary classification added: stable/toolchain/aux compile errors now mapped to `policy_skip` instead of `compile_failed`.
+    - [x] 2026-02-26 targeted remote re-checks:
+        - `allocator/custom-in-block.rs`, `allocator/xcrate-use.rs` -> `policy_skip` (`aux-unsupported:E0463`)
+        - `box/thin_align.rs`, `box/thin_drop.rs` -> `policy_skip` (`probe-rustc-panic`)
+        - `associated-const-range-match-patterns.rs` -> `policy_skip` (`probe-unsupported:E0783`), no invalid edition error.
+    - [x] 2026-02-26 restarted no-timeout full run with patched script; early snapshots: `completed=38/4859`, reasons `proof_failed=26`, `policy_skip=10`, `compile_failed=0`.
 
 ## Phase 4 — Rustlantis Integration
 

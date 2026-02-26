@@ -17,6 +17,7 @@ COMPILE_FLAGS_LINE: Final = re.compile(r'^\s*//\s*@?\s*compile-flags:\s*(.+?)\s*
 EDITION_LINE: Final = re.compile(r'^\s*//\s*@?\s*edition:\s*([0-9]{4})\s*$')
 UI_DIRECTIVE_PREFIX: Final = re.compile(r'^\s*//@\s*(.+?)\s*$')
 UI_REVISION_PREFIX: Final = re.compile(r'^\[([^\]]+)\](.*)$')
+SUPPORTED_EDITIONS: Final = ('2015', '2018', '2021', '2024')
 
 KANI_PROOF_ATTR_PATTERNS: Final = (
     re.compile(r'(?m)^\s*#\s*\[\s*kani::proof\s*\]\s*\n'),
@@ -107,7 +108,8 @@ def _sanitize_compile_flags(tokens: list[str]) -> list[str]:
             continue
 
         if token == '--edition' and next_token is not None:
-            flags.append(f'--edition={next_token}')
+            normalized = _normalize_edition(next_token)
+            flags.append(f'--edition={normalized}')
             idx += 2
             continue
         if token in {'-C', '--C'} and next_token is not None:
@@ -125,7 +127,8 @@ def _sanitize_compile_flags(tokens: list[str]) -> list[str]:
             continue
 
         if token.startswith('--edition='):
-            flags.append(token)
+            normalized = _normalize_edition(token.split('=', 1)[1])
+            flags.append(f'--edition={normalized}')
         elif token.startswith('-C'):
             flags.append(token)
         elif token.startswith('--crate-type='):
@@ -159,6 +162,27 @@ def _sanitize_compile_flags(tokens: list[str]) -> list[str]:
     return flags
 
 
+def _normalize_edition(raw: str) -> str:
+    value = raw.strip()
+    if value in SUPPORTED_EDITIONS:
+        return value
+
+    if '..' in value:
+        parts = [part.strip() for part in value.split('..') if part.strip()]
+        for candidate in reversed(parts):
+            if candidate in SUPPORTED_EDITIONS:
+                return candidate
+        for candidate in parts:
+            if candidate in SUPPORTED_EDITIONS:
+                return candidate
+
+    for token in re.findall(r'\d{4}', value):
+        if token in SUPPORTED_EDITIONS:
+            return token
+
+    return '2021'
+
+
 @lru_cache(maxsize=4096)
 def external_rustc_flags(path: Path) -> tuple[str, ...]:
     source = path.read_text(errors='ignore')
@@ -177,7 +201,8 @@ def external_rustc_flags(path: Path) -> tuple[str, ...]:
 
     flags = _sanitize_compile_flags(compile_tokens)
     if not any(flag.startswith('--edition=') for flag in flags):
-        flags.insert(0, f'--edition={explicit_edition or "2021"}')
+        edition = _normalize_edition(explicit_edition or '2021')
+        flags.insert(0, f'--edition={edition}')
     return tuple(flags)
 
 
@@ -255,14 +280,15 @@ def ui_case_rustc_flags(path: Path, revision: str | None) -> tuple[str, ...]:
 
     for directive in ui_case_directives(path, revision):
         if directive.key == 'edition' and directive.value:
-            explicit_edition = directive.value.split()[0]
+            explicit_edition = _normalize_edition(directive.value.split()[0])
             continue
         if directive.key == 'compile-flags' and directive.value:
             compile_tokens.extend(shlex.split(directive.value))
 
     flags = _sanitize_compile_flags(compile_tokens)
     if not any(flag.startswith('--edition=') for flag in flags):
-        flags.insert(0, f'--edition={explicit_edition or "2021"}')
+        edition = _normalize_edition(explicit_edition or '2021')
+        flags.insert(0, f'--edition={edition}')
     return tuple(flags)
 
 
