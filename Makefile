@@ -22,6 +22,16 @@ fetch-test-suites:
 	./scripts/fetch-ui-run-pass.sh
 	./scripts/fetch-kani-tests.sh
 
+.PHONY: rustlantis-small rustlantis-medium rustlantis-large
+rustlantis-small:
+	./scripts/generate-rustlantis.sh --profile small --count 20 --seed-start 0
+
+rustlantis-medium:
+	./scripts/generate-rustlantis.sh --profile medium --count 20 --seed-start 0
+
+rustlantis-large:
+	./scripts/generate-rustlantis.sh --profile large --count 10 --seed-start 0
+
 ##################################################
 # for integration tests: build stable-mir-json in-tree
 
@@ -83,7 +93,10 @@ test-ui-run-pass: stable-mir-json build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_ui_run_pass.py --maxfail=1 --verbose $(TEST_ARGS)
 
 test-kani: stable-mir-json build
-	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_kani.py --maxfail=1 --verbose $(TEST_ARGS)
+	KMIR_KANI_MODE=deferred $(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_kani.py --maxfail=1 --verbose $(TEST_ARGS)
+
+test-kani-adapted: stable-mir-json build
+	KMIR_KANI_MODE=adapted $(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_kani.py --maxfail=1 --verbose $(TEST_ARGS)
 
 test-rustlantis: stable-mir-json build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_rustlantis.py --maxfail=1 --verbose $(TEST_ARGS)

@@ -225,6 +225,7 @@ def print_summary(matrix: dict) -> None:
 def print_suite_stats(matrix: dict) -> None:
     sections: dict[str, dict] = matrix.get('sections', {})
     suites = matrix.get('suite_order') or [*LOCAL_SUITES, *EXTERNAL_SUITES]
+    suite_policy: dict[str, str] = matrix.get('suite_policy', {})
 
     print('Per-suite stats:')
     for suite in suites:
@@ -235,7 +236,11 @@ def print_suite_stats(matrix: dict) -> None:
             skip.update(entry.get('skip', {}).get(suite, []))
         total = len(tests) + len(skip)
         passing_rate = 0.0 if total == 0 else (len(tests) / total) * 100
-        print(f'  {suite}: tests={len(tests)} skip={len(skip)} total={total} pass_like={passing_rate:.1f}%')
+        policy = suite_policy.get(suite)
+        policy_suffix = f' policy={policy}' if policy else ''
+        print(
+            f'  {suite}: tests={len(tests)} skip={len(skip)} total={total} pass_like={passing_rate:.1f}%{policy_suffix}'
+        )
 
 
 def print_top_gaps(matrix: dict, top_n: int) -> None:
