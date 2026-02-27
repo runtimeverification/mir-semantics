@@ -24,6 +24,7 @@ jobs:
           CACHIX_AUTH_TOKEN: '${{ secrets.CACHIX_PRIVATE_KFB_TOKEN }}'
           GC_DONT_GC: '1'
           OWNER_REPO: '${{ github.repository }}'
+          REV: '${{ inputs.ref }}'
         with:
           packages: jq
           script: bash .github/scripts/check-cachix-pin.sh

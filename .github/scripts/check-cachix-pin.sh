@@ -45,7 +45,6 @@ for i in $(seq 1 "$PIN_VISIBILITY_ATTEMPTS"); do
       echo "$PIN_JSON" \
         | jq -r --arg k "$KEY" 'map(select(.name == $k)) | first | (.lastRevision.storePath // .storePath // .store_path // .path // "")'
     )"
-    echo "STORE_PATH: $STORE_PATH"
     if [ -z "$STORE_PATH" ]; then
       PIN_STATUS="pin-missing"
       PUSH_STATUS="000"
