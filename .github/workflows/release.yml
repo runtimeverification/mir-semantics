@@ -171,8 +171,11 @@ jobs:
           packages: jq
           script: |
             export PATH="$(nix build github:runtimeverification/kup --no-link --json | jq -r '.[].outputs | to_entries[].value')/bin:$PATH"
-            kup publish k-framework-binary .#kmir --keep-days 180
-            kup publish k-framework-binary .#kmir.rust --keep-days 180
+            kup publish k-framework-binary .#kmir --keep-days 180 || true
+            kup publish k-framework-binary .#kmir.rust --keep-days 180 || true
+            
+            # Cachix has not been responding to 'cachix pin' requests made under the hood by kup. So we need to manually verify the push and pin.
+            .github/scripts/check-cachix-pin.sh
 
       - name: 'On failure, delete drafted release'
         if: failure()
