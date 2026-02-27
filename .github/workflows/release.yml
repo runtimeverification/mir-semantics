@@ -167,6 +167,8 @@ jobs:
         env:
           CACHIX_AUTH_TOKEN: '${{ secrets.CACHIX_PRIVATE_KFB_TOKEN }}'
           GC_DONT_GC: '1'
+          OWNER_REPO: '${{ github.repository }}'
+          REV: '${{ github.sha }}'
         with:
           packages: jq
           script: |
