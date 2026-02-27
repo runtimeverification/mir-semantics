@@ -1,0 +1,28 @@
+name: 'Test Cachix Pin'
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref (tag or SHA) of an existing release to verify'
+        required: true
+        type: string
+
+jobs:
+  verify-cachix-pin:
+    name: 'Verify Cachix Pin'
+    runs-on: [self-hosted, linux, normal]
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: 'Verify cachix publish and pin'
+        uses: workflow/nix-shell-action@v3
+        env:
+          CACHIX_AUTH_TOKEN: '${{ secrets.CACHIX_PRIVATE_KFB_TOKEN }}'
+          GC_DONT_GC: '1'
+        with:
+          packages: jq
+          script: bash .github/scripts/check-cachix-pin.sh
