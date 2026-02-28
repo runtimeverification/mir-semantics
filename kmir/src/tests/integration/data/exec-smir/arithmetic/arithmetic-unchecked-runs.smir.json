@@ -3,7 +3,7 @@
   "crate_id": 13794361957699792544,
   "allocs": [
     {
-      "alloc_id": 2,
+      "alloc_id": 0,
       "ty": 37,
       "global_alloc": {
         "Memory": {
@@ -84,7 +84,7 @@
       }
     },
     {
-      "alloc_id": 3,
+      "alloc_id": 1,
       "ty": 37,
       "global_alloc": {
         "Memory": {

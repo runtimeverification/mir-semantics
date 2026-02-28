@@ -57,34 +57,7 @@
       }
     },
     {
-      "alloc_id": 4,
-      "ty": 106,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            100,
-            0,
-            200,
-            0,
-            44,
-            1,
-            100,
-            0,
-            200,
-            0,
-            44,
-            1
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 2,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 5,
+      "alloc_id": 2,
       "ty": 114,
       "global_alloc": {
         "Memory": {
@@ -145,7 +118,7 @@
       }
     },
     {
-      "alloc_id": 6,
+      "alloc_id": 3,
       "ty": 114,
       "global_alloc": {
         "Memory": {
@@ -201,6 +174,33 @@
             "ptrs": []
           },
           "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 4,
+      "ty": 106,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            100,
+            0,
+            200,
+            0,
+            44,
+            1,
+            100,
+            0,
+            200,
+            0,
+            44,
+            1
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 2,
           "mutability": "Not"
         }
       }
@@ -394,13 +394,13 @@
       }
     ],
     [
-      142,
+      140,
       {
         "NoOpSym": ""
       }
     ],
     [
-      143,
+      141,
       {
         "NoOpSym": ""
       }
@@ -12321,7 +12321,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 137,
+          "pointee_type": 142,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -12386,7 +12386,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 138,
+          "pointee_type": 143,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -12518,7 +12518,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 80,
+          "adt_def": 92,
           "fields": [
             9
           ],
@@ -12574,7 +12574,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 78,
+          "adt_def": 90,
           "fields": [
             15
           ],
@@ -13203,9 +13203,9 @@
       {
         "StructType": {
           "name": "std::fmt::DebugList<'_, '_>",
-          "adt_def": 83,
+          "adt_def": 76,
           "fields": [
-            140
+            138
           ],
           "layout": {
             "fields": {
@@ -13958,7 +13958,7 @@
       60,
       {
         "RefType": {
-          "pointee_type": 141,
+          "pointee_type": 137,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -14604,7 +14604,7 @@
       {
         "StructType": {
           "name": "std::ops::RangeFull",
-          "adt_def": 90,
+          "adt_def": 66,
           "fields": [],
           "layout": {
             "fields": {
@@ -17082,42 +17082,9 @@
     [
       138,
       {
-        "PtrType": {
-          "pointee_type": 9,
-          "layout": {
-            "fields": "Primitive",
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 0,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
-            }
-          }
-        }
-      }
-    ],
-    [
-      140,
-      {
         "StructType": {
           "name": "core::fmt::builders::DebugInner<'_, '_>",
-          "adt_def": 85,
+          "adt_def": 78,
           "fields": [
             24,
             22,
@@ -17152,6 +17119,39 @@
             "abi_align": 8,
             "size": {
               "num_bits": 128
+            }
+          }
+        }
+      }
+    ],
+    [
+      143,
+      {
+        "PtrType": {
+          "pointee_type": 9,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
             }
           }
         }

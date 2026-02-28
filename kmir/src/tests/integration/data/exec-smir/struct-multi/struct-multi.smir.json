@@ -51,7 +51,7 @@
       }
     },
     {
-      "alloc_id": 4,
+      "alloc_id": 3,
       "ty": 44,
       "global_alloc": {
         "Memory": {
@@ -172,7 +172,7 @@
       }
     ],
     [
-      40,
+      42,
       {
         "NoOpSym": ""
       }
@@ -4923,7 +4923,7 @@
       10,
       {
         "RefType": {
-          "pointee_type": 41,
+          "pointee_type": 40,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -4988,7 +4988,7 @@
       13,
       {
         "PtrType": {
-          "pointee_type": 42,
+          "pointee_type": 41,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -5022,7 +5022,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 28,
+          "adt_def": 19,
           "discriminants": [
             0,
             1
@@ -5112,7 +5112,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 20,
+          "adt_def": 25,
           "fields": [
             0
           ],
@@ -5168,7 +5168,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 18,
+          "adt_def": 23,
           "fields": [
             19
           ],
@@ -5348,7 +5348,7 @@
       {
         "StructType": {
           "name": "std::ops::RangeInclusive<u8>",
-          "adt_def": 14,
+          "adt_def": 29,
           "fields": [
             0,
             0,
@@ -5453,7 +5453,7 @@
       "VoidType"
     ],
     [
-      42,
+      41,
       {
         "PtrType": {
           "pointee_type": 0,

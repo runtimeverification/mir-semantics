@@ -48,7 +48,4 @@
   <stack>
     .List
   </stack>
-  <breakOnFunctions>
-    .Set
-  </breakOnFunctions>
 </kmir>

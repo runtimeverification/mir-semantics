@@ -3,94 +3,8 @@
   "crate_id": 3837115795013657871,
   "allocs": [
     {
-      "alloc_id": 3,
-      "ty": 42,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            97,
-            115,
-            115,
-            101,
-            114,
-            116,
-            105,
-            111,
-            110,
-            32,
-            102,
-            97,
-            105,
-            108,
-            101,
-            100,
-            58,
-            32,
-            109,
-            105,
-            100,
-            32,
-            61,
-            61,
-            32,
-            50,
-            50
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 4,
-      "ty": 42,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            97,
-            115,
-            115,
-            101,
-            114,
-            116,
-            105,
-            111,
-            110,
-            32,
-            102,
-            97,
-            105,
-            108,
-            101,
-            100,
-            58,
-            32,
-            42,
-            108,
-            97,
-            115,
-            116,
-            32,
-            61,
-            61,
-            32,
-            51,
-            51
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 5,
-      "ty": 42,
+      "alloc_id": 0,
+      "ty": 44,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -191,6 +105,92 @@
             105,
             99,
             101
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 1,
+      "ty": 44,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            97,
+            115,
+            115,
+            101,
+            114,
+            116,
+            105,
+            111,
+            110,
+            32,
+            102,
+            97,
+            105,
+            108,
+            101,
+            100,
+            58,
+            32,
+            109,
+            105,
+            100,
+            32,
+            61,
+            61,
+            32,
+            50,
+            50
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 2,
+      "ty": 44,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            97,
+            115,
+            115,
+            101,
+            114,
+            116,
+            105,
+            111,
+            110,
+            32,
+            102,
+            97,
+            105,
+            108,
+            101,
+            100,
+            58,
+            32,
+            42,
+            108,
+            97,
+            115,
+            116,
+            32,
+            61,
+            61,
+            32,
+            51,
+            51
           ],
           "provenance": {
             "ptrs": []
@@ -3279,7 +3279,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 45,
+          "pointee_type": 41,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -3344,7 +3344,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 46,
+          "pointee_type": 42,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -3386,7 +3386,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 21,
+          "adt_def": 20,
           "discriminants": [
             0,
             1
@@ -3476,7 +3476,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 27,
+          "adt_def": 12,
           "fields": [
             9
           ],
@@ -3532,7 +3532,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 25,
+          "adt_def": 10,
           "fields": [
             15
           ],
@@ -3878,7 +3878,7 @@
       34,
       {
         "RefType": {
-          "pointee_type": 42,
+          "pointee_type": 44,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -4062,10 +4062,43 @@
       }
     ],
     [
-      41,
+      42,
+      {
+        "PtrType": {
+          "pointee_type": 9,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
+      }
+    ],
+    [
+      43,
       {
         "RefType": {
-          "pointee_type": 43,
+          "pointee_type": 45,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -4095,21 +4128,21 @@
       }
     ],
     [
-      42,
+      44,
       {
         "PrimitiveType": "Str"
       }
     ],
     [
-      43,
+      45,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 11,
+          "adt_def": 24,
           "fields": [
             34,
-            44,
-            44
+            46,
+            46
           ],
           "layout": {
             "fields": {
@@ -4146,43 +4179,10 @@
       }
     ],
     [
-      44,
+      46,
       {
         "PrimitiveType": {
           "Uint": "U32"
-        }
-      }
-    ],
-    [
-      46,
-      {
-        "PtrType": {
-          "pointee_type": 9,
-          "layout": {
-            "fields": "Primitive",
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 0,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
-            }
-          }
         }
       }
     ]

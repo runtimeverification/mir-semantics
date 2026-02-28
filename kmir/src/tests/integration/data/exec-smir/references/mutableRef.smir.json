@@ -3,7 +3,7 @@
   "crate_id": 4352655527695101489,
   "allocs": [
     {
-      "alloc_id": 2,
+      "alloc_id": 0,
       "ty": 31,
       "global_alloc": {
         "Memory": {
@@ -43,7 +43,7 @@
       }
     },
     {
-      "alloc_id": 3,
+      "alloc_id": 1,
       "ty": 31,
       "global_alloc": {
         "Memory": {
@@ -2311,7 +2311,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 16,
+          "adt_def": 11,
           "fields": [
             9
           ],
@@ -2367,7 +2367,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 14,
+          "adt_def": 9,
           "fields": [
             15
           ],
@@ -2650,7 +2650,7 @@
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 9,
+          "adt_def": 14,
           "fields": [
             27,
             33,

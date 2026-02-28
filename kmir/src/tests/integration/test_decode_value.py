@@ -84,8 +84,7 @@ KORE_TEMPLATE: Final = Template(dedent(r"""
                 Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}()),
                 Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
             ),
-            Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
-            Lbl'-LT-'breakOnFunctions'-GT-'{}(Lbl'Stop'Set{}())
+            Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}())
         ),
         Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
     )

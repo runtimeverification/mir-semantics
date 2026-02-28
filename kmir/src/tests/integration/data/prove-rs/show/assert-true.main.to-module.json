@@ -843,32 +843,9 @@
                 ],
                 "arity": 1,
                 "variable": false
-              },
-              {
-                "node": "KApply",
-                "label": {
-                  "node": "KLabel",
-                  "name": "<breakOnFunctions>",
-                  "params": []
-                },
-                "args": [
-                  {
-                    "node": "KApply",
-                    "label": {
-                      "node": "KLabel",
-                      "name": ".Set",
-                      "params": []
-                    },
-                    "args": [],
-                    "arity": 0,
-                    "variable": false
-                  }
-                ],
-                "arity": 1,
-                "variable": false
               }
             ],
-            "arity": 6,
+            "arity": 5,
             "variable": false
           },
           {
