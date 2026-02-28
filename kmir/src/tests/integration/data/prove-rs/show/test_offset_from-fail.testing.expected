@@ -114,7 +114,7 @@
             ┃  │
             ┃  │  (70 steps)
             ┃  └─ 22 (stuck, leaf)
-            ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
+            ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h3
             ┃      span: 32
             ┃
             ┗━━┓ subst: .Subst
