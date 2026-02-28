@@ -41,6 +41,7 @@ PROVE_RS_START_SYMBOLS = {
     'closure-no-capture': ['repro'],
     'iter-copied-take-next-thunk': ['repro'],
     'iter-map-eq-copied-take-thunk-fail': ['repro'],
+    'iter-eq-copied-take-dereftruncate-fail': ['repro'],
 }
 PROVE_RS_OPTS = {
     # These are red reproducers: fail fast on the first thunk frontier to keep CI runtime bounded.

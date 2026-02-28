@@ -309,30 +309,30 @@ The call stack is not necessarily empty at this point so it is left untouched.
 where the returned result should go.
 
 ```k
-  syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+  syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction)
 
-  rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), _SPAN))
+        => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND)
         ...
        </k>
 
-  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), .ProjectionElems)), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall(tyOfLocal(getLocal(LOCALS, I)), lookupFunction(tyOfLocal(getLocal(LOCALS, I))), ARGS, DEST, TARGET, UNWIND, SPAN)
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), .ProjectionElems)), ARGS, DEST, TARGET, UNWIND), _SPAN))
+        => #execTerminatorCall(tyOfLocal(getLocal(LOCALS, I)), lookupFunction(tyOfLocal(getLocal(LOCALS, I))), ARGS, DEST, TARGET, UNWIND)
         ...
        </k>
       <locals> LOCALS </locals>
 
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
-        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
-         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST) ~> #continueAt(TARGET)
         </k>
     requires isIntrinsicFunction(FUNC)
 
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
-       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
-        => #setUpCalleeData(FUNC, ARGS, SPAN)
+       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND) ~> _
+        => #setUpCalleeData(FUNC, ARGS)
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
        <currentFrame>
@@ -360,13 +360,12 @@ The local data has to be set up for the call, which requires information about t
 An operand may be a `Reference` (the only way a function could access another function call's `local` variables). For this case, the stack height in the `Reference` must be incremented because a stack frame is added.
 
 ```k
-  syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
+  syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands)
 
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule [setupCalleeData]: <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
-              ARGS,
-              _SPAN
+              ARGS
               )
          =>
            #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
@@ -395,7 +394,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
-                 | #execIntrinsic ( MonoItemKind, Operands, Place, Span )
+                 | #execIntrinsic ( MonoItemKind, Operands, Place )
 
   // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
@@ -457,11 +456,12 @@ Therefore a heuristics is used here:
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
                 operandMove(place(local(CLOSURE:Int), .ProjectionElems))
                 operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands,
-                _SPAN
+                .Operands
               )
          =>
-           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
+           ~> #setTupleArgs(2, getValue(LOCALS, TUPLE))
+           ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
@@ -478,7 +478,7 @@ Therefore a heuristics is used here:
      andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
      andBool isTypedValue(LOCALS[TUPLE])
      andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
-     andBool isTypedLocal(LOCALS[CLOSURE])
+     andBool isTypedValue(LOCALS[CLOSURE])
      andBool typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
               // either the closure ref type is missing from type table
     [priority(40), preserves-definedness]
@@ -487,11 +487,12 @@ Therefore a heuristics is used here:
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
                 operandMove(place(local(CLOSURE:Int), .ProjectionElems))
                 operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands,
-                _SPAN
+                .Operands
               )
          =>
-           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
+           ~> #setTupleArgs(2, getValue(LOCALS, TUPLE))
+           ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
@@ -508,7 +509,7 @@ Therefore a heuristics is used here:
      andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
      andBool isTypedValue(LOCALS[TUPLE])
      andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
-     andBool isTypedLocal(LOCALS[CLOSURE])
+     andBool isTypedValue(LOCALS[CLOSURE])
                // or the closure ref type pointee is missing from the type table
      andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
      andBool isTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
@@ -550,6 +551,37 @@ Therefore a heuristics is used here:
      andBool isFunType(#lookupMaybeTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))))
     [priority(46), preserves-definedness]
 
+  // Stable MIR may expose closures as direct `typeInfoFunType` values instead of references.
+  // In that case we still need to unpack the tuple argument payload into `_2 .. _n`.
+  rule [setupCalleeClosure4]: <k> #setUpCalleeData(
+              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
+                operandMove(place(local(CLOSURE:Int), .ProjectionElems))
+                operandMove(place(local(TUPLE), .ProjectionElems))
+                .Operands,
+                _SPAN
+              )
+         =>
+           #setLocalValue(place(local(1), .ProjectionElems), getValue(LOCALS, CLOSURE))
+           ~> #setTupleArgs(2, getValue(LOCALS, TUPLE))
+           ~> #execBlock(FIRST)
+         ...
+       </k>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
+         <stack>
+              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
+              _:List
+          </stack>
+         ...
+       </currentFrame>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[TUPLE])
+     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTypedValue(LOCALS[CLOSURE])
+     andBool isFunType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+    [priority(47), preserves-definedness]
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
                 | isRefType ( TypeInfo ) [function, total]
                 | isFunType ( TypeInfo ) [function, total]
