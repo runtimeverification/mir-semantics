@@ -50,7 +50,9 @@ jobs:
           git checkout "${VERSION}"
           cd ../..
           sed -i 's!__smir_version__: Final = '"'[0-9a-f]*'"'!__smir_version__: Final = '"'${VERSION}'"'!' kmir/src/kmir/__init__.py
-          git add deps/stable-mir-json kmir/src/kmir/__init__.py
+          CHANNEL=$(grep '^channel' deps/stable-mir-json/rust-toolchain.toml | sed 's!channel = "\(.*\)"!\1!')
+          sed -i 's!^channel = ".*"!channel = "'"${CHANNEL}"'"!' rust-toolchain.toml
+          git add deps/stable-mir-json kmir/src/kmir/__init__.py rust-toolchain.toml
           git commit -m "deps/stable-mir-json: sync submodule ${VERSION}" || true
       - name: 'Update Nix flake inputs'
         run: |
