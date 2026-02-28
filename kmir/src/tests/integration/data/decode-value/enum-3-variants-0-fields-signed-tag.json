@@ -1,0 +1,138 @@
+{
+  "bytes": [
+    0
+  ],
+  "types": [],
+  "typeInfo": {
+    "EnumType": {
+      "name": "OrderingLike",
+      "adt_def": 72,
+      "discriminants": [
+        255,
+        0,
+        1
+      ],
+      "fields": [
+        [],
+        [],
+        []
+      ],
+      "layout": {
+        "fields": {
+          "Arbitrary": {
+            "offsets": [
+              {
+                "num_bits": 0
+              }
+            ]
+          }
+        },
+        "variants": {
+          "Multiple": {
+            "tag": {
+              "Initialized": {
+                "value": {
+                  "Int": {
+                    "length": "I8",
+                    "signed": true
+                  }
+                },
+                "valid_range": {
+                  "start": 255,
+                  "end": 1
+                }
+              }
+            },
+            "tag_encoding": "Direct",
+            "tag_field": 0,
+            "variants": [
+              {
+                "fields": {
+                  "Arbitrary": {
+                    "offsets": []
+                  }
+                },
+                "variants": {
+                  "Single": {
+                    "index": 0
+                  }
+                },
+                "abi": {
+                  "Aggregate": {
+                    "sized": true
+                  }
+                },
+                "abi_align": 1,
+                "size": {
+                  "num_bits": 8
+                }
+              },
+              {
+                "fields": {
+                  "Arbitrary": {
+                    "offsets": []
+                  }
+                },
+                "variants": {
+                  "Single": {
+                    "index": 1
+                  }
+                },
+                "abi": {
+                  "Aggregate": {
+                    "sized": true
+                  }
+                },
+                "abi_align": 1,
+                "size": {
+                  "num_bits": 8
+                }
+              },
+              {
+                "fields": {
+                  "Arbitrary": {
+                    "offsets": []
+                  }
+                },
+                "variants": {
+                  "Single": {
+                    "index": 2
+                  }
+                },
+                "abi": {
+                  "Aggregate": {
+                    "sized": true
+                  }
+                },
+                "abi_align": 1,
+                "size": {
+                  "num_bits": 8
+                }
+              }
+            ]
+          }
+        },
+        "abi": {
+          "Scalar": {
+            "Initialized": {
+              "value": {
+                "Int": {
+                  "length": "I8",
+                  "signed": true
+                }
+              },
+              "valid_range": {
+                "start": 255,
+                "end": 1
+              }
+            }
+          }
+        },
+        "abi_align": 1,
+        "size": {
+          "num_bits": 8
+        }
+      }
+    }
+  }
+}
