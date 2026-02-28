@@ -2,7 +2,7 @@
 ┌─ 1 (root, init)
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │
-│  (217 steps)
+│  (216 steps)
 ├─ 3 (terminal)
 │   #EndProgram ~> .K
 │

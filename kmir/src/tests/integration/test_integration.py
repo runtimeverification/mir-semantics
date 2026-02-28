@@ -56,11 +56,13 @@ PROVE_RS_SHOW_SPECS = [
     'transmute-u8-to-enum-fail',
     'transmute-u8-to-enum-changed-discriminant-signed-fail',
     'assert-inhabited-fail',
-    'iterator-simple-fail',
+    'iterator-simple',
     'unions-fail',
     'transmute-maybe-uninit-fail',
-    'iter_next_2-fail',
+    'ptr-through-wrapper-fail',
     'test_offset_from-fail',
+    'ref-ptr-cast-elem-fail',
+    'ref-ptr-cast-elem-offset-fail',
 ]
 
 
@@ -246,7 +248,7 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
         None,
     ),
-    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 139),
+    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 136),
     (
         'Array-indexing',
         EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',

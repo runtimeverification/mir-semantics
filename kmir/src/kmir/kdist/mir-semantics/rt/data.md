@@ -327,6 +327,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | CtxIndex( List , Int ) // array index constant or has been read before
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
+                   | "CtxWrapStruct" // special context adding a singleton Aggregate(0, _) around a value
 
   syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
 
@@ -361,6 +362,11 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     requires size(INNER) ==Int END -Int START // ensures updateList is defined
      [preserves-definedness] // START,END indexes checked before, length check for update here
 
+  // removing a struct wrapper added by a WrapStruct projection
+  rule #buildUpdate(Aggregate(variantIdx(0), ListItem(VALUE) .List), CtxWrapStruct CTXS)
+    => #buildUpdate(VALUE, CTXS)
+
+
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
 
   rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
@@ -371,8 +377,25 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     [preserves-definedness] // valid list indexing and sort checked
 
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+                           | consP ( ProjectionElem , ProjectionElems ) [function, total]
+  // ----------------------------------------------------------------------------------------
   rule appendP(.ProjectionElems, TAIL) => TAIL
-  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
+  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => consP(X, appendP(REST, TAIL))
+  // default
+  rule consP(      PROJ      ,           .ProjectionElems           ) => PROJ .ProjectionElems
+  rule consP(      PROJ      ,   P:ProjectionElem PS:ProjectionElems) => PROJ (P PS)
+  // high-priority rules to cancel out projection pairs at the head
+  rule consP(projectionElemSingletonArray, projectionElemConstantIndex(0, 0, false) PS:ProjectionElems) => PS [priority(40)]
+  rule consP(projectionElemConstantIndex(0, 0, false), projectionElemSingletonArray PS:ProjectionElems) => PS [priority(40)]
+  rule consP(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) PS:ProjectionElems) => PS [priority(40)]
+  // this rule is not valid if the original pointee has more than one field
+  // rule consP(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct PS:ProjectionElems) => PS [priority(40)]
+  // HACK: special rule which munges together constant-indexing and offset projections 
+  rule consP( projectionElemConstantIndex(I, 0, false), PointerOffset(OFF, _SIZE) PS) => projectionElemConstantIndex(I +Int OFF, 0, false) PS [priority(40)]
+    // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
+  rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
+  rule consP(projectionElemFromZST, projectionElemToZST PS:ProjectionElems) => PS [priority(40)]
 
   syntax Value ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
@@ -462,21 +485,19 @@ This is done without consideration of the validity of the Downcast[^downcast].
 ```
 
 In context with pointer casts, the semantics handles the special case of a _transparent wrapper struct_:
-A pointer to a struct containing a single element can be cast to a pointer to the single element itself.
-While the pointer cast tries to insert and remove field projections to the singleton field,
-it is still possible that a field projection occurs on a value which is not an Aggregate (nor a union).
-This necessitates a special rule which allows the semantics to perform a field projection to field 0 as a Noop.
-The situation typically arises when the stored value is a pointer (`NonNull`), therefore the rule is restricted to this case.
-The context is populated with the correct field access data, so that write-backs will correct the stored value to an Aggregate.
+A pointer to a struct containing a single element can be cast to a pointer to the single element itself, and back.
+The special projection used to enable this is `projectionElemWrapStruct`, inserted by the pointer `#cast` operation.
+
+The situation typically arises when the stored value is a pointer (`NonNull`) but the rule is not restricted to this.
 
 ```k
   rule <k> #traverseProjection(
              DEST,
-             PtrLocal(_, _, _, _) #as VALUE,
-             projectionElemField(fieldIdx(0), TY) PROJS,
+             VALUE,
+             projectionElemWrapStruct PROJS,
              CTXTS
            )
-        => #traverseProjection(DEST, VALUE, PROJS, CtxField(variantIdx(0), ListItem(VALUE), 0, TY) CTXTS) ... </k>
+        => #traverseProjection(DEST, Aggregate(variantIdx(0), ListItem(VALUE)), PROJS, CtxWrapStruct CTXTS) ... </k>
     [preserves-definedness, priority(100)]
 ```
 
@@ -1083,16 +1104,41 @@ for _fat_ pointers it is a `usize` value indicating the data length.
 
 [^rawPtrAgg]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.AggregateKind.html#variant.RawPtr
 
+The data pointer is assumed to point to a single element of an array that was originally present, 
+and an array of the indeicated size gets reconstructed if the provided metadata is a `usize` value
+(potentially removing an indexing operation to get the element).
+
 ```k
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
+  rule <k> ListItem(PtrLocal(OFFSET, place(LOCAL, PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) 
+           ListItem(Integer(LENGTH, 64, false))
+           ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(OFFSET, place(LOCAL, removeIndexTail(PROJS)), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
+    // requires LENGTH +Int PTR_OFFSET <=Int ORIGIN_SIZE // refuse to create an invalid fat pointer
+    //  andBool dynamicSize(1) ==K #metadataSize(lookupTy(_TY)) // expect a slice type
+    //  andBool hasIndexTail(PROJS) ???
 
   rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
         => PtrLocal(OFFSET, PLACE, MUT, metadata(noMetadataSize, PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
+
+  syntax Bool ::= hasIndexTail ( ProjectionElems ) [function, total]
+  // ---------------------------------------------------------------
+  rule hasIndexTail(           .ProjectionElems                          ) => false
+  rule hasIndexTail(projectionElemConstantIndex(0, _, _) .ProjectionElems) => true
+  rule hasIndexTail(     _OTHER:ProjectionElem           .ProjectionElems) => false [owise]
+  rule hasIndexTail(_:ProjectionElem ((_:ProjectionElem _:ProjectionElems) #as MORE)) => hasIndexTail(MORE)
+
+  // remove ConstantIndex(0, _, _) at the end if present, otherwise identity
+  syntax ProjectionElems ::= removeIndexTail ( ProjectionElems ) [function, total]
+  // ---------------------------------------------------------------
+  rule removeIndexTail(           .ProjectionElems                          ) => .ProjectionElems
+  rule removeIndexTail(projectionElemConstantIndex(0, _, _) .ProjectionElems) => .ProjectionElems
+  rule removeIndexTail(      OTHER:ProjectionElem           .ProjectionElems) => OTHER .ProjectionElems [owise]
+  rule removeIndexTail(FIRST:ProjectionElem ((_:ProjectionElem _:ProjectionElems) #as MORE)) => FIRST removeIndexTail(MORE)
+
 ```
 
 The `Aggregate` type carries a `VariantIdx` to distinguish the different variants for an `enum`.
@@ -1111,31 +1157,37 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
     [preserves-definedness] // valid indexing and sort coercion
 
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
-                      | #discriminantFor ( VariantIdx , TypeInfo )
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => #discriminantFor(IDX, lookupTy(TY))
-        ...
-        </k>
-
-  rule <k> #discriminantFor(variantIdx(I) #as IDX, typeInfoEnumType(_, _, DISCRIMINANTS:Discriminants, _, _))
-        => Integer(#lookupDiscrAux(DISCRIMINANTS, IDX), 0, false) // HACK: bit width 0 means "flexible"
+        => Integer(#lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX), 0, false) // HACK: bit width 0 means "flexible"
         ...
        </k>
-    requires I <=Int size(DISCRIMINANTS)
+    requires asInt(IDX) <Int size(discriminantsOf(lookupTy(TY)))
+     andBool 0 <=Int asInt(IDX) // must not be `err(_)`
+     andBool 0 <Int size(discriminantsOf(lookupTy(TY))) // must be an enum
     [preserves-definedness]
+
+  // // default 0 for non-enum types. May be undefined behaviour, though.
+  // rule #discriminant(_, _) => Integer(0, 0, false) [priority(100)]
+
+  syntax Int ::= asInt( VariantIdx ) [function, total]
+  // -------------------------------------------------
+  rule asInt(variantIdx(I)) => I
+  rule asInt(err(_)) => -1 // HAAAAAAACK
 
   syntax Int ::= size(Discriminants) [function, total]
   rule size(.Discriminants) => 0
   rule size(discriminant(_) REST) => 1 +Int size(REST)
 
-  // default 0 for non-enum types. May be undefined behaviour, though.
-  // rule #discriminant(_, _) => 0 [owise]
+  syntax Discriminants ::= discriminantsOf( TypeInfo ) [function, total]
+  // -------------------------------------------------------------------
+  rule discriminantsOf(typeInfoEnumType(_, _, DISCRIMINANTS, _, _)) => DISCRIMINANTS
+  rule discriminantsOf(            _OTHER_                        ) => .Discriminants [owise]
 
   syntax Int ::= #lookupDiscrAux ( Discriminants , VariantIdx ) [function]
   // --------------------------------------------------------------------
   rule #lookupDiscrAux( discriminant(RESULT)         _        , variantIdx(I)) => RESULT requires I ==Int 0
-  rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, variantIdx(I)) => #lookupDiscrAux(MORE, variantIdx(I -Int 1)) requires 0 <Int I [owise]
+  rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, variantIdx(I)) => #lookupDiscrAux(MORE, variantIdx(I -Int 1)) requires 0 <Int I
 ```
 
 ```k
@@ -1174,6 +1226,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
   rule #projectionsFor(CtxFieldUnion(F_IDX, _, TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(F_IDX, TY) PROJS)
+  rule #projectionsFor(  CtxWrapStruct       CTXS, PROJS) => #projectionsFor(CTXS,                 projectionElemWrapStruct PROJS)
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
@@ -1370,86 +1423,34 @@ Casts involving `Float` values are currently not implemented.
 | PtrToPtr | Convert between references when representations compatible |
 
 Pointers can be converted from one type to another (`PtrToPtr`) when the representations are compatible.
-The compatibility of types (defined in `rt/types.md`) considers their representations (recursively) in
-the `Value` sort.
+For compatible types, an additional projection is added to the pointer's place projections,
+which transforms the previous pointee type to the new one (computation defined in `rt/types.md`).
+If types are not compatible, no such projection exists and the cast is invalid.
 
 Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
 which have the same representation `Value::Range`.
-
-When the cast crosses transparent wrappers (newtypes that just forward field `0` e.g. `struct Wrapper<T>(T)`), the pointer's
-`Place` must be realigned. `#alignTransparentPlace` rewrites the projection list until the source and target
-expose the same inner value:
-- if the source unwraps more than the target, append an explicit `field(0)` so the target still sees that field;
-- if the target unwraps more, strip any redundant tail projections with `#popTransparentTailTo`, leaving the
-  canonical prefix shared by both sides.
+Also, casts to and from _transparent wrappers_ (newtypes that just forward field `0`, i.e. `struct Wrapper<T>(T)`)
+are allowed, and supported by a special projection `WrapStruct`.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #cast(PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
             PtrLocal(
               OFFSET,
-              #alignTransparentPlace(
-                PLACE,
-                #lookupMaybeTy(pointeeTy(lookupTy(TY_SOURCE))),
-                #lookupMaybeTy(pointeeTy(lookupTy(TY_TARGET)))
-              ),
+              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
               MUT,
               #convertMetadata(META, lookupTy(TY_TARGET))
             )
           ...
         </k>
-      requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+      requires NoProjectionElems =/=K #typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
       [preserves-definedness] // valid map lookups checked
+```
 
-  syntax Place ::= #alignTransparentPlace ( Place , TypeInfo , TypeInfo ) [function, total]
-  syntax ProjectionElems ::= #popTransparentTailTo ( ProjectionElems , TypeInfo ) [function, total]
+The pointer's metadata needs to be adapted to the new type.
 
-  rule #alignTransparentPlace(place(LOCAL, PROJS), typeInfoStructType(_, _, FIELD_TY .Tys, LAYOUT) #as SOURCE, TARGET)
-    => #alignTransparentPlace(
-         place(
-           LOCAL,
-           appendP(PROJS, projectionElemField(fieldIdx(0), FIELD_TY) .ProjectionElems)
-         ),
-         lookupTy(FIELD_TY),
-         TARGET
-       )
-    requires #transparentDepth(SOURCE) >Int #transparentDepth(TARGET)
-     andBool #zeroFieldOffset(LAYOUT)
-
-  rule #alignTransparentPlace(
-         place(LOCAL, PROJS),
-         SOURCE,
-         typeInfoStructType(_, _, FIELD_TY .Tys, LAYOUT) #as TARGET
-       )
-    => #alignTransparentPlace(
-         place(LOCAL, #popTransparentTailTo(PROJS, lookupTy(FIELD_TY))),
-         SOURCE,
-         lookupTy(FIELD_TY)
-       )
-    requires #transparentDepth(SOURCE) <Int #transparentDepth(TARGET)
-     andBool #zeroFieldOffset(LAYOUT)
-     andBool PROJS =/=K #popTransparentTailTo(PROJS, lookupTy(FIELD_TY))
-
-  rule #alignTransparentPlace(PLACE, _, _) => PLACE [owise]
-
-  rule #popTransparentTailTo(
-         projectionElemField(fieldIdx(0), FIELD_TY) .ProjectionElems,
-         TARGET
-       )
-    => .ProjectionElems
-    requires lookupTy(FIELD_TY) ==K TARGET
-
-  rule #popTransparentTailTo(
-         X:ProjectionElem REST:ProjectionElems,
-         TARGET
-       )
-    => X #popTransparentTailTo(REST, TARGET)
-    requires REST =/=K .ProjectionElems
-
-  rule #popTransparentTailTo(PROJS, _) => PROJS [owise]
-
+```k
   syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
-  // -------------------------------------------------------------------------------------
 ```
 
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
@@ -1468,7 +1469,7 @@ the original allocation size must be checked to be sufficient.
 ```k
   // no metadata to begin with, fill it in from target type (NB dynamicSize(1) if dynamic)
   rule #convertMetadata(   metadata(noMetadataSize, OFFSET, _)    , typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, noMetadataSize)
-  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, _)    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, noMetadataSize)
+  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, ORIGIN_SIZE )    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, ORIGIN_SIZE)
 ```
 
 Conversion from an array to a slice pointer requires adding metadata (`dynamicSize`) with the previously-static length.
@@ -1529,17 +1530,17 @@ Specifically, pointers to arrays of statically-known length are cast to pointers
 The original metadata is therefore already stored as `staticSize` to avoid having to look it up here.
 
 ```k
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+          =>
+            PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
+          ...
+        </k>
+
   rule <k> #cast(Reference(OFFSET, PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
             Reference(OFFSET, PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
           ...
         </k>
-      //   <types> TYPEMAP </types>
-      // could look up the static size here instead of caching it:
-      // requires TY_SOURCE in_keys(TYPEMAP)
-      //  andBool isTypeInfo(TYPEMAP[TY_SOURCE])
-      // andBool notBool hasMetadata(_TY_TARGET, TYPEMAP)
-      // [preserves-definedness] // valid type map indexing and sort coercion
 
   rule <k> #cast(AllocRef(ID, PROJS, metadata(staticSize(SIZE), OFF, ORIG)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
@@ -2359,7 +2360,7 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
   rule #applyBinOp(
           binOpOffset,
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, dynamicSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
+          Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, dynamicSize(ORIGIN_SIZE)) )
@@ -2371,7 +2372,7 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
   rule #applyBinOp(
           binOpOffset,
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, staticSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
+          Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)) )

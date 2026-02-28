@@ -180,7 +180,7 @@ def _kmir_show(opts: ShowOpts) -> None:
     if opts.leaves:
         if lines and lines[-1] != '':
             lines.append('')
-        lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show))
+        lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show, smir_info=node_printer.smir_info))
 
     # Handle --to-module output
     if opts.to_module:
