@@ -512,13 +512,51 @@ Therefore a heuristics is used here:
      andBool lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
     [priority(45), preserves-definedness]
 
+  // Closure-call setup for typed closure environments.
+  // When the closure pointee type is known (`typeInfoFunType`), we still need to unpack
+  // the second tuple argument into `_2 .. _n` locals.
+  rule [setupCalleeClosure3]: <k> #setUpCalleeData(
+              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
+                operandMove(place(local(CLOSURE:Int), .ProjectionElems))
+                operandMove(place(local(TUPLE), .ProjectionElems))
+                .Operands,
+                _SPAN
+              )
+         =>
+           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
+           ~> #setTupleArgs(2, getValue(LOCALS, TUPLE))
+           ~> #execBlock(FIRST)
+          // arguments are tuple components, stored as _2 .. _n
+         ...
+       </k>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
+         <stack>
+              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
+              _:List
+          </stack>
+         ...
+       </currentFrame>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[TUPLE])
+     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTypedValue(LOCALS[CLOSURE])
+     andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+     andBool isFunType(#lookupMaybeTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))))
+    [priority(46), preserves-definedness]
+
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
                 | isRefType ( TypeInfo ) [function, total]
+                | isFunType ( TypeInfo ) [function, total]
   // -------------------------------------------------------
   rule isTupleType(typeInfoTupleType(_, _)) => true
   rule isTupleType(    _                  ) => false [owise]
   rule isRefType(typeInfoRefType(_)) => true
   rule isRefType(    _             ) => false [owise]
+  rule isFunType(typeInfoFunType(_)) => true
+  rule isFunType(    _             ) => false [owise]
 
   syntax KItem ::= #setTupleArgs ( Int , Value )
                  | #setTupleArgs ( Int , List )
