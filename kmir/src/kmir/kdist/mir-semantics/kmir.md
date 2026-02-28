@@ -547,6 +547,37 @@ Therefore a heuristics is used here:
      andBool isFunType(#lookupMaybeTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))))
     [priority(46), preserves-definedness]
 
+  // Stable MIR may expose closures as direct `typeInfoFunType` values instead of references.
+  // In that case we still need to unpack the tuple argument payload into `_2 .. _n`.
+  rule [setupCalleeClosure4]: <k> #setUpCalleeData(
+              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
+                operandMove(place(local(CLOSURE:Int), .ProjectionElems))
+                operandMove(place(local(TUPLE), .ProjectionElems))
+                .Operands
+              )
+         =>
+           #setLocalValue(place(local(1), .ProjectionElems), getValue(LOCALS, CLOSURE))
+           ~> #setTupleArgs(2, getValue(LOCALS, TUPLE))
+           ~> #execBlock(FIRST)
+         ...
+       </k>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
+         <stack>
+              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
+              _:List
+          </stack>
+         ...
+       </currentFrame>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[TUPLE])
+     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTypedValue(LOCALS[CLOSURE])
+     andBool isFunType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+    [priority(47), preserves-definedness]
+
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
                 | isRefType ( TypeInfo ) [function, total]
                 | isFunType ( TypeInfo ) [function, total]
