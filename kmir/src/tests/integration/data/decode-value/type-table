@@ -3,5 +3,31 @@
     [1, { "PrimitiveType": "Bool"}],
     [2, { "PrimitiveType": { "Int": "I16"}}],
     [3, { "PrimitiveType": { "Int": "I32"}}],
-    [4, { "PrimitiveType": { "Uint": "U32"}}]
+    [4, { "PrimitiveType": { "Uint": "U32"}}],
+    [5, {
+      "TupleType": {
+        "types": [],
+        "layout": {
+          "fields": {
+            "Arbitrary": {
+              "offsets": []
+            }
+          },
+          "variants": {
+            "Single": {
+              "index": 0
+            }
+          },
+          "abi": {
+            "Aggregate": {
+              "sized": true
+            }
+          },
+          "abi_align": 1,
+          "size": {
+            "num_bits": 0
+          }
+        }
+      }
+    }]
 ]
