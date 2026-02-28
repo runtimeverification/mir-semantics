@@ -19,7 +19,6 @@ requires "./value.md"
 module KMIR-CONFIGURATION
   imports INT-SYNTAX
   imports BOOL-SYNTAX
-  imports SET
   imports RT-VALUE-SYNTAX
 
   syntax RetVal ::= return( Value )
@@ -46,8 +45,6 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
-                  // set of function names to break on when called
-                  <breakOnFunctions> .Set </breakOnFunctions>
                 </kmir>
 ```
 

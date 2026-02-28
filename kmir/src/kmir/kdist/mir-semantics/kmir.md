@@ -31,7 +31,6 @@ module KMIR-CONTROL-FLOW
   imports COLLECTIONS
   imports LIST
   imports MAP
-  imports SET
   imports STRING
   imports K-EQUAL
 
@@ -327,18 +326,16 @@ where the returned result should go.
         <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
          => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
         </k>
-        <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
     requires isIntrinsicFunction(FUNC)
-     andBool notBool #functionNameMatchesAny(getFunctionName(FUNC), BREAKFUNCS)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Intrinsic function call to a function in the break-on set - same as termCallIntrinsic but separate rule id for cut-point
   rule [termCallIntrinsicFilter]:
         <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
          => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
         </k>
-        <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
     requires isIntrinsicFunction(FUNC)
-     andBool #functionNameMatchesAny(getFunctionName(FUNC), BREAKFUNCS)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
@@ -355,9 +352,8 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
     requires notBool isIntrinsicFunction(FUNC)
-     andBool notBool #functionNameMatchesAny(getFunctionName(FUNC), BREAKFUNCS)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
   rule [termCallFunctionFilter]:
@@ -374,9 +370,8 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <breakOnFunctions> BREAKFUNCS </breakOnFunctions>
     requires notBool isIntrinsicFunction(FUNC)
-     andBool #functionNameMatchesAny(getFunctionName(FUNC), BREAKFUNCS)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
@@ -389,16 +384,11 @@ where the returned result should go.
   rule getFunctionName(monoItemGlobalAsm(_)) => ""
   rule getFunctionName(IntrinsicFunction(symbol(NAME))) => NAME
 
-  syntax Bool ::= #functionNameMatchesAny(String, Set) [function, total]
-  //---------------------------------------------------------------------
-  rule #functionNameMatchesAny(NAME, FILTERS) => #functionNameMatchesAnyList(NAME, Set2List(FILTERS))
-
-  syntax Bool ::= #functionNameMatchesAnyList(String, List) [function, total]
-  //-------------------------------------------------------------------------
-  rule #functionNameMatchesAnyList(_, .List) => false
-  rule #functionNameMatchesAnyList(NAME, ListItem(FILTER:String) REST) =>
-      0 <=Int findString(NAME, FILTER, 0) orBool #functionNameMatchesAnyList(NAME, REST)
-  rule #functionNameMatchesAnyList(_, _) => false [owise]
+  // Check whether a function name matches any filter in the break-on-functions list.
+  // FIXME: Just stubbed for now
+  syntax Bool ::= #functionNameMatchesEnv(String) [function, total]
+  //----------------------------------------------------------------
+  rule #functionNameMatchesEnv(_) => false
 
   syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
   rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>

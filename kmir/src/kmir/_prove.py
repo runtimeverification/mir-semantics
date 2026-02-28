@@ -100,7 +100,6 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             smir_info,
             start_symbol=opts.start_symbol,
             proof_dir=opts.proof_dir,
-            break_on_function=opts.break_on_function,
         )
         if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
             smir_info.dump(proof.proof_dir / proof.id / 'smir.json')
@@ -216,14 +215,12 @@ def apr_proof_from_smir(
     *,
     start_symbol: str = 'main',
     proof_dir: Path | None = None,
-    break_on_function: list[str] | None = None,
 ) -> APRProof:
     lhs_config, constraints = make_call_config(
         kmir.definition,
         smir_info=smir_info,
         start_symbol=start_symbol,
         mode=SymbolicMode(),
-        break_on_function=break_on_function,
     )
     lhs = CTerm(lhs_config, constraints)
 
