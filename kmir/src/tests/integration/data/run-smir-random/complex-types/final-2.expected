@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #traverseProjection ( toStack ( 1 , local ( 30 ) ) , Integer ( 46 , 8 , false ) , PointerOffset ( 1 , 8 )  .ProjectionElems , CtxField ( variantIdx ( 0 ) , ListItem ( Integer ( 46 , 8 , false ) ) , 0 , ty ( 23 ) )  CtxFieldUnion ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 46 , 8 , false ) ) ) , ty ( 75 ) )  CtxIndex ( ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 46 , 8 , false ) ) ) ) )
+    #traverseProjection ( toStack ( 1 , local ( 30 ) ) , Integer ( 46 , 8 , false ) , PointerOffset ( 1 , 8 )  .ProjectionElems , CtxField ( variantIdx ( 0 ) , ListItem ( Integer ( 46 , 8 , false ) ) , 0 , ty ( 23 ) )  CtxFieldUnion ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 46 , 8 , false ) ) ) , ty ( 74 ) )  CtxIndex ( ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 46 , 8 , false ) ) ) ) )
     ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 43 , 8 , false ) ) ) ) )
     ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 184 , 8 , false ) ) ) ) )
     ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 86 , 8 , false ) ) ) ) )
@@ -73,7 +73,7 @@
       ListItem ( typedValue ( Moved , ty ( 4 ) , mutabilityMut ) )
       ListItem ( typedValue ( PtrLocal ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  projectionElemConstantIndex (... offset: 0 , minLength: 0 , fromEnd: false )  .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , dynamicSize ( 8 ) ) ) , ty ( 53 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedValue ( PtrLocal ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  projectionElemConstantIndex (... offset: 0 , minLength: 0 , fromEnd: false )  projectionElemField ( fieldIdx ( 1 ) , ty ( 75 ) )  projectionElemField ( fieldIdx ( 0 ) , ty ( 23 ) )  .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 1 , dynamicSize ( 8 ) ) ) , ty ( 54 ) , mutabilityMut ) )
+      ListItem ( typedValue ( PtrLocal ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  projectionElemConstantIndex (... offset: 0 , minLength: 0 , fromEnd: false )  projectionElemField ( fieldIdx ( 1 ) , ty ( 74 ) )  projectionElemField ( fieldIdx ( 0 ) , ty ( 23 ) )  .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 1 , dynamicSize ( 8 ) ) ) , ty ( 54 ) , mutabilityMut ) )
       ListItem ( typedValue ( Reference ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  .ProjectionElems ) , mutabilityNot , metadata ( staticSize ( 8 ) , 0 , noMetadataSize ) ) , ty ( 57 ) , mutabilityMut ) )
       ListItem ( typedValue ( Reference ( 1 , place (... local: local ( 30 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 11 ) )  .ProjectionElems ) , mutabilityNot , metadata ( staticSize ( 8 ) , 0 , noMetadataSize ) ) , ty ( 57 ) , mutabilityMut ) )
     </locals>

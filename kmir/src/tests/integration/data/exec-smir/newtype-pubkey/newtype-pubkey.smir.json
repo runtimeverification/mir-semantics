@@ -2607,7 +2607,7 @@
       {
         "StructType": {
           "name": "Pubkey",
-          "adt_def": 16,
+          "adt_def": 14,
           "fields": [
             31
           ],

@@ -3,120 +3,6 @@
   "crate_id": 17715661129170758705,
   "allocs": [
     {
-      "alloc_id": 0,
-      "ty": 129,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            83,
-            111,
-            109,
-            101
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 1,
-      "ty": 129,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            78,
-            111,
-            110,
-            101
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 2,
-      "ty": 129,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            83,
-            111,
-            109,
-            101
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 3,
-      "ty": 129,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            78,
-            111,
-            110,
-            101
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 4,
-      "ty": 129,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            83,
-            111,
-            109,
-            101
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 5,
-      "ty": 129,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            78,
-            111,
-            110,
-            101
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
       "alloc_id": 6,
       "ty": 112,
       "global_alloc": {
@@ -194,8 +80,69 @@
       }
     },
     {
-      "alloc_id": 9,
-      "ty": 129,
+      "alloc_id": 10,
+      "ty": 119,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 8,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 11,
+      "ty": 132,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            83,
+            111,
+            109,
+            101
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 12,
+      "ty": 132,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            78,
+            111,
+            110,
+            101
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 13,
+      "ty": 132,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -247,24 +194,77 @@
       }
     },
     {
-      "alloc_id": 10,
-      "ty": 119,
+      "alloc_id": 14,
+      "ty": 132,
       "global_alloc": {
         "Memory": {
           "bytes": [
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
+            83,
+            111,
+            109,
+            101
           ],
           "provenance": {
             "ptrs": []
           },
-          "align": 8,
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 15,
+      "ty": 132,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            78,
+            111,
+            110,
+            101
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 16,
+      "ty": 132,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            83,
+            111,
+            109,
+            101
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 17,
+      "ty": 132,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            78,
+            111,
+            110,
+            101
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
           "mutability": "Not"
         }
       }
@@ -524,19 +524,19 @@
       }
     ],
     [
+      130,
+      {
+        "NoOpSym": ""
+      }
+    ],
+    [
+      131,
+      {
+        "NoOpSym": ""
+      }
+    ],
+    [
       152,
-      {
-        "NoOpSym": ""
-      }
-    ],
-    [
-      153,
-      {
-        "NoOpSym": ""
-      }
-    ],
-    [
-      154,
       {
         "NoOpSym": ""
       }
@@ -15602,7 +15602,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 130,
+          "pointee_type": 153,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -15667,7 +15667,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 131,
+          "pointee_type": 154,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -15709,7 +15709,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 40,
+          "adt_def": 41,
           "discriminants": [
             0,
             1
@@ -15799,7 +15799,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 92,
+          "adt_def": 91,
           "fields": [
             9
           ],
@@ -15855,7 +15855,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 90,
+          "adt_def": 89,
           "fields": [
             15
           ],
@@ -15936,7 +15936,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<(), std::fmt::Error>",
-          "adt_def": 40,
+          "adt_def": 41,
           "discriminants": [
             0,
             1
@@ -16591,7 +16591,7 @@
       {
         "StructType": {
           "name": "std::marker::PhantomData<&u32>",
-          "adt_def": 60,
+          "adt_def": 50,
           "fields": [],
           "layout": {
             "fields": {
@@ -16715,9 +16715,9 @@
       {
         "StructType": {
           "name": "std::fmt::DebugList<'_, '_>",
-          "adt_def": 98,
+          "adt_def": 54,
           "fields": [
-            151
+            129
           ],
           "layout": {
             "fields": {
@@ -17549,7 +17549,7 @@
       {
         "StructType": {
           "name": "std::ops::RangeFull",
-          "adt_def": 104,
+          "adt_def": 98,
           "fields": [],
           "layout": {
             "fields": {
@@ -17831,7 +17831,7 @@
       88,
       {
         "RefType": {
-          "pointee_type": 129,
+          "pointee_type": 132,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -18123,11 +18123,11 @@
       {
         "StructType": {
           "name": "std::fmt::Arguments<'_>",
-          "adt_def": 63,
+          "adt_def": 64,
           "fields": [
-            133,
             134,
-            135
+            135,
+            136
           ],
           "layout": {
             "fields": {
@@ -18972,7 +18972,7 @@
       {
         "StructType": {
           "name": "std::fmt::Formatter<'_>",
-          "adt_def": 30,
+          "adt_def": 32,
           "fields": [
             44,
             122,
@@ -19035,7 +19035,7 @@
       {
         "EnumType": {
           "name": "core::fmt::rt::Alignment",
-          "adt_def": 37,
+          "adt_def": 39,
           "discriminants": [
             0,
             1,
@@ -19403,7 +19403,7 @@
       {
         "StructType": {
           "name": "std::fmt::Error",
-          "adt_def": 43,
+          "adt_def": 44,
           "fields": [],
           "layout": {
             "fields": {
@@ -19432,37 +19432,43 @@
     [
       129,
       {
-        "PrimitiveType": "Str"
-      }
-    ],
-    [
-      131,
-      {
-        "PtrType": {
-          "pointee_type": 9,
+        "StructType": {
+          "name": "core::fmt::builders::DebugInner<'_, '_>",
+          "adt_def": 56,
+          "fields": [
+            24,
+            22,
+            41
+          ],
           "layout": {
-            "fields": "Primitive",
+            "fields": {
+              "Arbitrary": {
+                "offsets": [
+                  {
+                    "num_bits": 0
+                  },
+                  {
+                    "num_bits": 64
+                  },
+                  {
+                    "num_bits": 72
+                  }
+                ]
+              }
+            },
             "variants": {
               "Single": {
                 "index": 0
               }
             },
             "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 0,
-                    "end": 18446744073709551615
-                  }
-                }
+              "Aggregate": {
+                "sized": true
               }
             },
             "abi_align": 8,
             "size": {
-              "num_bits": 64
+              "num_bits": 128
             }
           }
         }
@@ -19471,8 +19477,14 @@
     [
       132,
       {
+        "PrimitiveType": "Str"
+      }
+    ],
+    [
+      133,
+      {
         "RefType": {
-          "pointee_type": 150,
+          "pointee_type": 151,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -19502,10 +19514,10 @@
       }
     ],
     [
-      133,
+      134,
       {
         "RefType": {
-          "pointee_type": 136,
+          "pointee_type": 137,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -19562,7 +19574,7 @@
       }
     ],
     [
-      134,
+      135,
       {
         "EnumType": {
           "name": "std::option::Option<&[core::fmt::rt::Placeholder]>",
@@ -19574,7 +19586,7 @@
           "fields": [
             [],
             [
-              137
+              138
             ]
           ],
           "layout": {
@@ -19719,10 +19731,10 @@
       }
     ],
     [
-      135,
+      136,
       {
         "RefType": {
-          "pointee_type": 141,
+          "pointee_type": 142,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -19779,7 +19791,7 @@
       }
     ],
     [
-      136,
+      137,
       {
         "ArrayType": {
           "elem_type": 88,
@@ -19812,10 +19824,10 @@
       }
     ],
     [
-      137,
+      138,
       {
         "RefType": {
-          "pointee_type": 138,
+          "pointee_type": 139,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -19872,10 +19884,10 @@
       }
     ],
     [
-      138,
+      139,
       {
         "ArrayType": {
-          "elem_type": 139,
+          "elem_type": 140,
           "size": null,
           "layout": {
             "fields": {
@@ -19905,18 +19917,18 @@
       }
     ],
     [
-      139,
+      140,
       {
         "StructType": {
           "name": "core::fmt::rt::Placeholder",
-          "adt_def": 67,
+          "adt_def": 68,
           "fields": [
             53,
             122,
             123,
             44,
-            140,
-            140
+            141,
+            141
           ],
           "layout": {
             "fields": {
@@ -19962,11 +19974,11 @@
       }
     ],
     [
-      140,
+      141,
       {
         "EnumType": {
           "name": "core::fmt::rt::Count",
-          "adt_def": 74,
+          "adt_def": 75,
           "discriminants": [
             0,
             1,
@@ -20167,10 +20179,10 @@
       }
     ],
     [
-      141,
+      142,
       {
         "ArrayType": {
-          "elem_type": 142,
+          "elem_type": 143,
           "size": null,
           "layout": {
             "fields": {
@@ -20200,13 +20212,13 @@
       }
     ],
     [
-      142,
+      143,
       {
         "StructType": {
           "name": "core::fmt::rt::Argument<'_>",
-          "adt_def": 77,
+          "adt_def": 78,
           "fields": [
-            143
+            144
           ],
           "layout": {
             "fields": {
@@ -20237,20 +20249,20 @@
       }
     ],
     [
-      143,
+      144,
       {
         "EnumType": {
           "name": "core::fmt::rt::ArgumentType<'_>",
-          "adt_def": 79,
+          "adt_def": 80,
           "discriminants": [
             0,
             1
           ],
           "fields": [
             [
-              144,
               145,
-              146
+              146,
+              147
             ],
             [
               53
@@ -20385,13 +20397,13 @@
       }
     ],
     [
-      144,
+      145,
       {
         "StructType": {
           "name": "std::ptr::NonNull<()>",
           "adt_def": 5,
           "fields": [
-            147
+            148
           ],
           "layout": {
             "fields": {
@@ -20430,11 +20442,11 @@
       }
     ],
     [
-      146,
+      147,
       {
         "StructType": {
           "name": "std::marker::PhantomData<&()>",
-          "adt_def": 60,
+          "adt_def": 50,
           "fields": [],
           "layout": {
             "fields": {
@@ -20461,7 +20473,7 @@
       }
     ],
     [
-      147,
+      148,
       {
         "PtrType": {
           "pointee_type": 1,
@@ -20494,7 +20506,7 @@
       }
     ],
     [
-      149,
+      150,
       {
         "RefType": {
           "pointee_type": 1,
@@ -20527,11 +20539,11 @@
       }
     ],
     [
-      150,
+      151,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 84,
+          "adt_def": 85,
           "fields": [
             88,
             44,
@@ -20572,45 +20584,33 @@
       }
     ],
     [
-      151,
+      154,
       {
-        "StructType": {
-          "name": "core::fmt::builders::DebugInner<'_, '_>",
-          "adt_def": 100,
-          "fields": [
-            24,
-            22,
-            41
-          ],
+        "PtrType": {
+          "pointee_type": 9,
           "layout": {
-            "fields": {
-              "Arbitrary": {
-                "offsets": [
-                  {
-                    "num_bits": 0
-                  },
-                  {
-                    "num_bits": 64
-                  },
-                  {
-                    "num_bits": 72
-                  }
-                ]
-              }
-            },
+            "fields": "Primitive",
             "variants": {
               "Single": {
                 "index": 0
               }
             },
             "abi": {
-              "Aggregate": {
-                "sized": true
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
               }
             },
             "abi_align": 8,
             "size": {
-              "num_bits": 128
+              "num_bits": 64
             }
           }
         }
