@@ -20,7 +20,12 @@ def pytest_configure(config) -> None:
     sys.setrecursionlimit(1000000)
 
 
-def assert_or_update_show_output(actual_text: str, expected_file: Path, *, update: bool) -> None:
+def assert_or_update_show_output(
+    actual_text: str, expected_file: Path, *, update: bool, path_replacements: dict[str, str] | None = None
+) -> None:
+    if path_replacements:
+        for old, new in path_replacements.items():
+            actual_text = actual_text.replace(old, new)
     if update:
         expected_file.write_text(actual_text)
     else:

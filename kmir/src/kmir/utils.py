@@ -4,10 +4,15 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
 
+from pyk.kast.inner import KApply, KLabel, KSequence, KToken
+
 if TYPE_CHECKING:
     from pyk.cterm.show import CTermShow
+    from pyk.kast.inner import KInner
     from pyk.kcfg.kcfg import KCFG
     from pyk.proof.reachability import APRProof
+
+    from .smir import SMIRInfo
 
 
 def _rule_to_markdown_link(rule: object) -> str:
@@ -231,7 +236,123 @@ def render_statistics(proof: APRProof) -> list[str]:
     return lines
 
 
-def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow) -> list[str]:
+def _drill(term: KInner, *path: tuple[str, int]) -> KInner | None:
+    """Navigate a nested KApply by a sequence of (label_name, arg_index) steps.
+
+    Returns the nested KInner at the end of the path, or None if any step
+    doesn't match (wrong label, insufficient args, or not a KApply).
+    """
+
+    current: KInner = term
+    for label, index in path:
+        match current:
+            case KApply(label=KLabel(name=name), args=args) if name == label and index < len(args):
+                current = args[index]
+            case _:
+                return None
+    return current
+
+
+def _extract_alloc_id(operands: KInner) -> int | None:
+    """Extract allocId from the first constant operand's provenance, if present."""
+
+    const_operand = 'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst'
+    mir_const = 'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId'
+
+    ptrs = _drill(
+        operands,
+        ('Operands::append', 0),  # first operand
+        ('Operand::Constant', 0),  # constOperand
+        (const_operand, 2),  # mirConst  (3rd arg)
+        (mir_const, 0),  # ConstantKind::Allocated
+        ('ConstantKind::Allocated', 0),  # allocation
+        ('allocation', 1),  # provenanceMap  (2nd arg)
+        ('provenanceMap', 0),  # provenance entries
+    )
+    if ptrs is None:
+        return None
+
+    match ptrs:
+        case KApply(
+            label=KLabel(name='ProvenanceMapEntries::append'),
+            args=[
+                KApply(
+                    label=KLabel(name='provenanceMapEntry'),
+                    args=[_, KApply(label=KLabel(name='allocId'), args=[KToken(token=n)])],
+                ),
+                *_,
+            ],
+        ):
+            return int(n)
+        case _:
+            return None
+
+
+def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
+    """If the k cell is `#setUpCalleeData` for `** UNKNOWN FUNCTION **`, return annotation lines with decoded info."""
+
+    from .alloc import Allocation, AllocId, AllocInfo, Memory
+    from .linker import _demangle
+
+    setup_call_label = '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span'
+
+    annotations: list[str] = []
+
+    match k_cell:
+        case KSequence(items=(KApply(label=KLabel(name=label_name), args=args), *_)) | KApply(
+            label=KLabel(name=label_name), args=args
+        ) if (label_name == setup_call_label):
+            match args:
+                case [
+                    KApply(
+                        label=KLabel(name='MonoItemKind::MonoItemFn'),
+                        args=[
+                            KApply(args=[KToken(token=symbol_name)]),
+                            KApply(label=KLabel(name='defId(_)_BODY_DefId_Int'), args=[KToken(token=def_id_str)]),
+                            _,
+                        ],
+                    ),
+                    operands,
+                    KApply(label=KLabel(name='span'), args=[KToken(token=span_str)]),
+                ] if (
+                    symbol_name == '\"** UNKNOWN FUNCTION **\"'
+                ):
+                    def_id = int(def_id_str)
+                    span = int(span_str)
+                case _:
+                    return []
+        case _:
+            return []
+
+    # Use extracted DefId for function name
+    func_sym = smir_info.function_symbols.get(def_id, {})
+    if name := func_sym.get('NormalSym') or func_sym.get('IntrinsicSym'):
+        try:
+            name = _demangle(name)
+        except Exception:
+            pass
+        annotations.append(f'  >> function: {name}')
+
+    # Use extracted Span for call site
+    if span in smir_info.spans:
+        path, start_row, start_col, _, _ = smir_info.spans[span]
+        annotations.append(f'  >> call span: {path}:{start_row}:{start_col}')
+
+    # Extract allocId from provenance and try to decode the referenced string
+    alloc_id = _extract_alloc_id(operands)
+    if alloc_id is not None:
+        match smir_info.allocs.get(AllocId(alloc_id)):
+            case AllocInfo(global_alloc=Memory(allocation=Allocation(bytez=bytez))):
+                try:
+                    message = bytes(b for b in bytez if b is not None).decode('utf-8')
+                    annotations.append(f'  >> message: {message!r}')
+                except ValueError:
+                    pass
+
+    return annotations
+
+
+def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow, smir_info: SMIRInfo | None = None) -> list[str]:
     """Render the <k> cell for every leaf node in the proof."""
 
     leaves = sorted(
@@ -249,12 +370,17 @@ def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow) -> list[str]:
             k_cell = leaf.cterm.cell('K_CELL')
             k_lines = cterm_show.print_lines(k_cell)
         except KeyError:
+            k_cell = None
             k_lines = ['<K_CELL unavailable>']
 
         if not k_lines:
             lines.append('  (empty)')
         else:
             lines.extend(f'  {k_line}' for k_line in k_lines)
+
+        if smir_info is not None and k_cell is not None:
+            annotations = _annotate_unknown_function(k_cell, smir_info)
+            lines.extend(annotations)
 
         if idx != len(leaves) - 1:
             lines.append('')
