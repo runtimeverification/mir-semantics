@@ -317,7 +317,7 @@ In both cases we expect the tag to be in the single shared field, and the discri
          , fields: (.Tys : (FIELD_TYPE .Tys) : .Tyss)
          , layout:
             someLayoutShape(layoutShape(...
-                fields: fieldsShapeArbitrary(mk(... offsets: machineSize(0) .MachineSizes))
+                fields: fieldsShapeArbitrary(mk(... offsets: TOP_LEVEL_OFFSETS))
               , variants:
                   variantsShapeMultiple(
                     mk(...
@@ -339,6 +339,8 @@ In both cases we expect the tag to be in the single shared field, and the discri
          ) #as ENUM_TYPE
        )
     => #decodeOptionTag01(BYTES, TAG_WIDTH, FIELD_TYPE, ENUM_TYPE)
+    requires      TOP_LEVEL_OFFSETS ==K machineSize(mirInt(0)) .MachineSizes
+             orBool TOP_LEVEL_OFFSETS ==K machineSize(0) .MachineSizes
 
   syntax Evaluation ::= #decodeOptionTag01 ( Bytes , IntegerLength , Ty , TypeInfo ) [function, total]
   // --------------------------------------------------------------------------------------
@@ -366,7 +368,7 @@ In both cases we expect the tag to be in the single shared field, and the discri
          , fields: ((FIELD0 .Tys) : (FIELD1 .Tys) : .Tyss)
          , layout:
             someLayoutShape(layoutShape(...
-                fields: fieldsShapeArbitrary(mk(... offsets: machineSize(0) .MachineSizes))
+                fields: fieldsShapeArbitrary(mk(... offsets: TOP_LEVEL_OFFSETS))
               , variants:
                   variantsShapeMultiple(
                     mk(...
@@ -388,6 +390,8 @@ In both cases we expect the tag to be in the single shared field, and the discri
          ) #as ENUM_TYPE
        )
     => #decodeEnumTag01Single(BYTES, TAG_WIDTH, FIELD0, FIELD1, ENUM_TYPE)
+    requires      TOP_LEVEL_OFFSETS ==K machineSize(mirInt(0)) .MachineSizes
+             orBool TOP_LEVEL_OFFSETS ==K machineSize(0) .MachineSizes
 
   syntax Evaluation ::= #decodeEnumTag01Single ( Bytes , IntegerLength , Ty , Ty , TypeInfo ) [function, total]
   // -------------------------------------------------------------------------------------------------
