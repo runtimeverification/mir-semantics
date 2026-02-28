@@ -63,6 +63,7 @@ class KMIR(KProve, KRun, KParse):
         llvm_target: str | None = None,
         llvm_lib_target: str | None = None,
         haskell_target: str | None = None,
+        break_on_function: list[str] | None = None,
     ) -> KMIR:
         from .kompile import kompile_smir
 
@@ -75,6 +76,7 @@ class KMIR(KProve, KRun, KParse):
             llvm_target=llvm_target,
             llvm_lib_target=llvm_lib_target,
             haskell_target=haskell_target,
+            break_on_function=break_on_function,
         )
         return kompiled_smir.create_kmir(bug_report_file=bug_report)
 

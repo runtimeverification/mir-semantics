@@ -385,10 +385,37 @@ where the returned result should go.
   rule getFunctionName(IntrinsicFunction(symbol(NAME))) => NAME
 
   // Check whether a function name matches any filter in the break-on-functions list.
-  // FIXME: Just stubbed for now
   syntax Bool ::= #functionNameMatchesEnv(String) [function, total]
   //----------------------------------------------------------------
-  rule #functionNameMatchesEnv(_) => false
+  rule #functionNameMatchesEnv(NAME) => #functionNameMatchesEnvStr(NAME, #breakOnFunctionsString())
+
+  syntax String ::= "#breakOnFunctionsString" "(" ")" [function, total, symbol(breakOnFunctionsString)]
+  //---------------------------------------------------------------------------------------------------
+  rule #breakOnFunctionsString() => "" [owise] // This gets overridden by corresponding python function
+
+  syntax Bool ::= #functionNameMatchesEnvStr(String, String) [function, total]
+  //--------------------------------------------------------------------------
+  rule #functionNameMatchesEnvStr(_, "") => false
+  rule #functionNameMatchesEnvStr(NAME, ENV) => #functionNameMatchesAnyList(NAME, #splitSemicolon(ENV))
+    requires ENV =/=String ""
+
+  syntax List ::= #splitSemicolon(String) [function, total]
+  //--------------------------------------------------------
+  rule #splitSemicolon(S) => #splitSemicolonAux(S, findString(S, ";", 0))
+
+  syntax List ::= #splitSemicolonAux(String, Int) [function, total]
+  //-----------------------------------------------------------------
+  rule #splitSemicolonAux(S, -1) => ListItem(S)
+  rule #splitSemicolonAux(S, I) =>
+      ListItem(substrString(S, 0, I)) #splitSemicolon(substrString(S, I +Int 1, lengthString(S)))
+    requires I >=Int 0
+
+  syntax Bool ::= #functionNameMatchesAnyList(String, List) [function, total]
+  //-------------------------------------------------------------------------
+  rule #functionNameMatchesAnyList(_, .List) => false
+  rule #functionNameMatchesAnyList(NAME, ListItem(FILTER:String) REST) =>
+      0 <=Int findString(NAME, FILTER, 0) orBool #functionNameMatchesAnyList(NAME, REST)
+  rule #functionNameMatchesAnyList(_, _) => false [owise]
 
   syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
   rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>

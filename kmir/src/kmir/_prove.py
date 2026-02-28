@@ -63,6 +63,7 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             symbolic=True,
             haskell_target=opts.haskell_target,
             llvm_lib_target=opts.llvm_lib_target,
+            break_on_function=opts.break_on_function or None,
         )
     else:
         _LOGGER.info(f'Constructing initial proof: {label}')
@@ -92,6 +93,7 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             symbolic=True,
             haskell_target=opts.haskell_target,
             llvm_lib_target=opts.llvm_lib_target,
+            break_on_function=opts.break_on_function or None,
         )
 
         proof = apr_proof_from_smir(
