@@ -256,70 +256,8 @@ A `Deref` projection in the projections list changes the target of the write ope
                  | #writeProjection ( Value )
                  | "#writeMoved"
 
-  syntax Bool ::= #isThunkOperandCopy ( Value ) [function, total]
-  // -----------------------------------------------------------------
-  rule #isThunkOperandCopy(thunk(operandCopy(_))) => true
-  rule #isThunkOperandCopy(_OTHER) => false [owise]
-
-  // Resolve symbolic copy-place reads by composing remaining projections and delegating to operandCopy.
-  rule <k> #traverseProjection(
-             _DEST,
-             thunk(operandCopy(place(local(I:Int), PLACEPROJ))),
-             PROJS,
-             _CTXTS
-           )
-        ~> #readProjection(false)
-        => operandCopy(place(local(I), appendP(PLACEPROJ, PROJS)))
-        ...
-       </k>
-
-  // For move-reads, keep the destination move side-effect but resolve the copied value from the composed place.
-  rule <k> #traverseProjection(
-             _DEST,
-             thunk(operandCopy(place(local(I:Int), PLACEPROJ))),
-             PROJS,
-             _CTXTS
-           )
-        ~> (#readProjection(true) => #writeMoved ~> operandCopy(place(local(I), appendP(PLACEPROJ, PROJS))))
-        ...
-       </k>
-
-  // Resolve symbolic write-back on a copy-place by writing directly to the composed source place.
-  rule <k> #traverseProjection(
-             _DEST,
-             thunk(operandCopy(place(local(I:Int), PLACEPROJ))),
-             PROJS,
-             _CTXTS
-           )
-        ~> #writeProjection(NEW)
-        => #setLocalValue(place(local(I), appendP(PLACEPROJ, PROJS)), NEW)
-        ...
-       </k>
-
-  // When borrow creation hits a thunked copy-place, materialize the borrowed place directly.
-  // Re-entering traversal through getValue(LOCALS, I) can reintroduce the same thunk and
-  // repeatedly prepend PLACEPROJ, causing non-terminating projection growth.
-  rule <k> #traverseProjection(
-             toLocal(I:Int),
-             thunk(operandCopy(place(local(I), PLACEPROJ))),
-             PROJS,
-             CTXTS
-           )
-        ~> #forRef(MUT, META)
-        => #mkRef(
-             toLocal(I),
-             appendP(#projectionsFor(CTXTS), appendP(PLACEPROJ, PROJS)),
-             MUT,
-             META
-           )
-        ...
-       </k>
-    [preserves-definedness] // composed place is fully explicit from context + thunk place + remaining projections
-
   rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
-    requires notBool #isThunkOperandCopy(VAL)
   rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
-    requires notBool #isThunkOperandCopy(VAL)
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW)
@@ -1918,6 +1856,9 @@ Zero-sized types can be decoded trivially into their respective representation.
   // zero-sized array
   rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoArrayType(_, _))
         => Range(.List) ... </k>
+  // zero-sized closure/function-like value (opaque fun type in SMIR metadata)
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoFunType(_))
+        => Aggregate(variantIdx(0), .List) ... </k>
 ```
 
 Allocated constants of reference type with a single provenance map entry are decoded as references
