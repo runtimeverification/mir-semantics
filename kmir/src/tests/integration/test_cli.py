@@ -299,3 +299,40 @@ def test_cli_prove_rs_add_module(kmir: KMIR, tmp_path: Path) -> None:
 
     # With depth=1, we should have 3 nodes: init, one step, target
     assert len(list(proof_with_module.kcfg.nodes)) == 3
+
+
+def test_cli_break_on_function(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], update_expected_output: bool
+) -> None:
+    """Test --break-on-function produces cut points at matching function and intrinsic calls."""
+    from kmir.kmir import KMIR
+
+    rs_file = PROVE_RS_DIR / 'break-on-function.rs'
+    start_symbol = 'main'
+
+    opts = ProveRSOpts(
+        rs_file,
+        proof_dir=tmp_path,
+        smir=False,
+        start_symbol=start_symbol,
+        break_on_function=['foo', 'black_box'],
+    )
+    apr_proof = KMIR.prove_rs(opts)
+    apr_proof.write_proof_data()
+
+    show_opts = ShowOpts(
+        proof_dir=tmp_path,
+        id=apr_proof.id,
+        full_printer=False,
+        smir_info=None,
+        omit_current_body=False,
+        use_default_printer=False,
+    )
+    _kmir_show(show_opts)
+    out = capsys.readouterr().out.rstrip()
+
+    assert_or_update_show_output(
+        out,
+        PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-break-on-function.expected',
+        update=update_expected_output,
+    )
