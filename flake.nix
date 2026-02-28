@@ -6,7 +6,7 @@
 
     flake-utils.url = "github:numtide/flake-utils";
 
-    stable-mir-json-flake.url = "github:runtimeverification/stable-mir-json/ff1a18f059ae8fa9c958f61bc5c280e9eceaaae9";
+    stable-mir-json-flake.url = "github:runtimeverification/stable-mir-json/e8750665669f19be4bbd21d8e5465c11e009dcaa";
     stable-mir-json-flake = {
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
