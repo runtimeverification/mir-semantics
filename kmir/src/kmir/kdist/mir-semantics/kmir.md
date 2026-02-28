@@ -387,11 +387,13 @@ where the returned result should go.
   // Check whether a function name matches any filter in the break-on-functions list.
   syntax Bool ::= #functionNameMatchesEnv(String) [function, total]
   //----------------------------------------------------------------
-  rule #functionNameMatchesEnv(NAME) => #functionNameMatchesEnvStr(NAME, #breakOnFunctionsString())
+  rule #functionNameMatchesEnv(NAME) => #functionNameMatchesEnvStr(NAME, #breakOnFunctionsString(0))
 
-  syntax String ::= "#breakOnFunctionsString" "(" ")" [function, total, symbol(breakOnFunctionsString)]
-  //---------------------------------------------------------------------------------------------------
-  rule #breakOnFunctionsString() => "" [owise] // This gets overridden by corresponding python function
+  // The Int argument is unused; it exists only so the Haskell backend can
+  // pattern-match on it and not error since zero-argument functions cannot use [owise].
+  syntax String ::= #breakOnFunctionsString(Int) [function, total, symbol(breakOnFunctionsString)]
+  //-----------------------------------------------------------------------------------------------
+  rule #breakOnFunctionsString(_) => "" [owise] // This gets overridden by corresponding python function
 
   syntax Bool ::= #functionNameMatchesEnvStr(String, String) [function, total]
   //--------------------------------------------------------------------------

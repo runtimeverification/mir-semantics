@@ -557,11 +557,12 @@ def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInne
 
 
 def _mk_break_on_functions_rule(kmir: KMIR, break_on_function: list[str]) -> Axiom:
-    """Generate Kore rule for filtering function breaks: `#breakOnFunctionsString() => "filter1;filter2;..."`"""
+    """Generate Kore rule for filtering function breaks: `#breakOnFunctionsString(0) => "filter1;filter2;..."`"""
+    from pyk.kore.prelude import int_dv
     from pyk.kore.rule import FunctionRule
 
     filter_string = ';'.join(break_on_function)
-    fun_app = App('LblbreakOnFunctionsString', (), ())
+    fun_app = App('LblbreakOnFunctionsString', (), (int_dv(0),))
     result_kore = kmir.kast_to_kore(stringToken(filter_string), KSort('String'))
 
     rule = FunctionRule(
@@ -570,7 +571,7 @@ def _mk_break_on_functions_rule(kmir: KMIR, break_on_function: list[str]) -> Axi
         req=None,
         ens=None,
         sort=SortApp('SortString'),
-        arg_sorts=(),
+        arg_sorts=(SortApp('SortInt'),),
         anti_left=None,
         priority=50,
         uid='breakOnFunctionsString-generated',
