@@ -40,6 +40,24 @@ PROVE_RS_START_SYMBOLS = {
     'test_offset_from-fail': ['testing'],
     'iter-eq-copied-take-dereftruncate-fail': ['repro'],
     'spl-multisig-iter-eq-copied-next-fail': ['repro'],
+    'closure-no-capture': ['repro'],
+    'iter-copied-take-next-thunk': ['repro'],
+    'iter-map-eq-copied-take-thunk-fail': ['repro'],
+}
+PROVE_RS_OPTS = {
+    # These are red reproducers: fail fast on the first thunk frontier to keep CI runtime bounded.
+    'iter-copied-take-next-thunk': {
+        'max_depth': 200,
+        'fail_fast': True,
+        'break_on_thunk': True,
+        'terminate_on_thunk': True,
+    },
+    'iter-map-eq-copied-take-thunk-fail': {
+        'max_depth': 200,
+        'fail_fast': True,
+        'break_on_thunk': True,
+        'terminate_on_thunk': True,
+    },
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -91,6 +109,9 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
 
     for start_symbol in start_symbols:
         prove_rs_opts.start_symbol = start_symbol
+        if rs_file.stem in PROVE_RS_OPTS:
+            for opt, val in PROVE_RS_OPTS[rs_file.stem].items():
+                setattr(prove_rs_opts, opt, val)
         apr_proof = kmir.prove_rs(prove_rs_opts)
 
         if should_show:
