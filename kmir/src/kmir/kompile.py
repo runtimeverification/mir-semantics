@@ -529,6 +529,20 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
                 [KApply('symbol(_)_LIB_Symbol_String', [stringToken(sym['IntrinsicSym'])])],
             )
 
+    # Add linked normal symbols that have no local body in `items`.
+    # They must still map to `monoItemFn(..., noBody)` instead of falling back to UNKNOWN FUNCTION.
+    for ty, sym in smir_info.function_symbols.items():
+        normal_sym = sym.get('NormalSym')
+        if isinstance(normal_sym, str) and ty not in functions:
+            functions[ty] = KApply(
+                'MonoItemKind::MonoItemFn',
+                (
+                    KApply('symbol(_)_LIB_Symbol_String', (stringToken(normal_sym),)),
+                    KApply('defId(_)_BODY_DefId_Int', (intToken(ty),)),
+                    KApply('noBody_BODY_MaybeBody', ()),
+                ),
+            )
+
     return functions
 
 
