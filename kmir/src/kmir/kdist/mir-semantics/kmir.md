@@ -519,8 +519,7 @@ Therefore a heuristics is used here:
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
                 operandMove(place(local(CLOSURE:Int), .ProjectionElems))
                 operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands,
-                _SPAN
+                .Operands
               )
          =>
            #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
