@@ -317,7 +317,7 @@ In both cases we expect the tag to be in the single shared field, and the discri
          , fields: (.Tys : (FIELD_TYPE .Tys) : .Tyss)
          , layout:
             someLayoutShape(layoutShape(...
-                fields: fieldsShapeArbitrary(mk(... offsets: machineSize(0) .MachineSizes))
+                fields: fieldsShapeArbitrary(mk(... offsets: TOP_LEVEL_OFFSETS))
               , variants:
                   variantsShapeMultiple(
                     mk(...
@@ -339,6 +339,8 @@ In both cases we expect the tag to be in the single shared field, and the discri
          ) #as ENUM_TYPE
        )
     => #decodeOptionTag01(BYTES, TAG_WIDTH, FIELD_TYPE, ENUM_TYPE)
+    requires      TOP_LEVEL_OFFSETS ==K machineSize(mirInt(0)) .MachineSizes
+             orBool TOP_LEVEL_OFFSETS ==K machineSize(0) .MachineSizes
 
   syntax Evaluation ::= #decodeOptionTag01 ( Bytes , IntegerLength , Ty , TypeInfo ) [function, total]
   // --------------------------------------------------------------------------------------
@@ -351,6 +353,65 @@ In both cases we expect the tag to be in the single shared field, and the discri
     requires 1 ==Int BYTES[0] // expect only 0 or 1 as tags, so higher bytes do not matter
     [preserves-definedness]
   rule #decodeOptionTag01(BYTES, _LEN, _TY,  ENUM_TYPE)
+    => UnableToDecode(BYTES, ENUM_TYPE)
+    [owise]
+
+  // Two-variant enums with one field on each variant and direct 0/1 tags.
+  // This shape appears in `ControlFlow<()>` and similar enums where both variants
+  // carry payload slots.
+  rule #decodeValue(
+         BYTES
+       , typeInfoEnumType(...
+           name: _
+         , adtDef: _
+         , discriminants: discriminant(0) discriminant(1) .Discriminants
+         , fields: ((FIELD0 .Tys) : (FIELD1 .Tys) : .Tyss)
+         , layout:
+            someLayoutShape(layoutShape(...
+                fields: fieldsShapeArbitrary(mk(... offsets: TOP_LEVEL_OFFSETS))
+              , variants:
+                  variantsShapeMultiple(
+                    mk(...
+                        tag: scalarInitialized(
+                          mk(...
+                              value: primitiveInt(mk(... length: TAG_WIDTH, signed: _))
+                            , validRange: _RANGE
+                          )
+                        )
+                      , tagEncoding: tagEncodingDirect
+                      , tagField: 0
+                      , variants: _VARIANTS
+                      )
+                    )
+              , abi: _ABI
+              , abiAlign: _ABI_ALIGN
+              , size: _SIZE
+            ))
+         ) #as ENUM_TYPE
+       )
+    => #decodeEnumTag01Single(BYTES, TAG_WIDTH, FIELD0, FIELD1, ENUM_TYPE)
+    requires      TOP_LEVEL_OFFSETS ==K machineSize(mirInt(0)) .MachineSizes
+             orBool TOP_LEVEL_OFFSETS ==K machineSize(0) .MachineSizes
+
+  syntax Evaluation ::= #decodeEnumTag01Single ( Bytes , IntegerLength , Ty , Ty , TypeInfo ) [function, total]
+  // -------------------------------------------------------------------------------------------------
+  rule #decodeEnumTag01Single(BYTES, LEN, TY0, _TY1, _ENUM_TYPE)
+    => Aggregate(
+         variantIdx(0),
+         ListItem(#decodeValue(substrBytes(BYTES, #byteLength(LEN), lengthBytes(BYTES)), lookupTy(TY0)))
+       )
+    requires 0 ==Int BYTES[0]
+    [preserves-definedness]
+
+  rule #decodeEnumTag01Single(BYTES, LEN, _TY0, TY1, _ENUM_TYPE)
+    => Aggregate(
+         variantIdx(1),
+         ListItem(#decodeValue(substrBytes(BYTES, #byteLength(LEN), lengthBytes(BYTES)), lookupTy(TY1)))
+       )
+    requires 1 ==Int BYTES[0]
+    [preserves-definedness]
+
+  rule #decodeEnumTag01Single(BYTES, _LEN, _TY0, _TY1, ENUM_TYPE)
     => UnableToDecode(BYTES, ENUM_TYPE)
     [owise]
 
