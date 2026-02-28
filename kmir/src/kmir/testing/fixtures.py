@@ -23,26 +23,26 @@ def pytest_configure(config) -> None:
 def assert_or_update_show_output(
     actual_text: str, expected_file: Path, *, update: bool, path_replacements: dict[str, str] | None = None
 ) -> None:
-    def _normalize_panic_symbol_hashes(text: str) -> str:
-        # Full panic symbol in mangled form.
-        text = re.sub(r'_ZN4core9panicking5panic17h[0-9a-f]+E', '_ZN4core9panicking5panic17h<hash>E', text)
-        # Truncated panic symbol shown by `kmir show --statistics --leaves`.
-        text = re.sub(r'_ZN4core9panicking5panic17h[0-9a-f]+', '_ZN4core9panicking5panic17h<hash>', text)
-        # Demangled panic symbol.
-        text = re.sub(r'core::panicking::panic::h[0-9a-f]+', 'core::panicking::panic::h<hash>', text)
+    def _normalize_symbol_hashes(text: str) -> str:
+        # Mangled symbol hash suffixes can drift across rustc versions/builds.
+        text = re.sub(r'(_ZN[0-9A-Za-z_]+17h)[0-9a-f]+E', r'\1<hash>E', text)
+        # Some show outputs truncate mangled symbols before trailing `E`.
+        text = re.sub(r'(_ZN[0-9A-Za-z_]+17h)[0-9a-f]+', r'\1<hash>', text)
+        # Normalize demangled hash suffixes (`...::h<hex>`).
+        text = re.sub(r'(::h)[0-9a-f]{8,}', r'\1<hash>', text)
         return text
 
     if path_replacements:
         for old, new in path_replacements.items():
             actual_text = actual_text.replace(old, new)
-    # Normalize rustc panic symbol hash suffixes that can drift across builds/environments.
-    actual_text = _normalize_panic_symbol_hashes(actual_text)
+    # Normalize rustc symbol hash suffixes that can drift across builds/environments.
+    actual_text = _normalize_symbol_hashes(actual_text)
     if update:
         expected_file.write_text(actual_text)
     else:
         assert expected_file.is_file()
         expected_text = expected_file.read_text()
-        expected_text = _normalize_panic_symbol_hashes(expected_text)
+        expected_text = _normalize_symbol_hashes(expected_text)
         if actual_text != expected_text:
             diff = '\n'.join(
                 unified_diff(
