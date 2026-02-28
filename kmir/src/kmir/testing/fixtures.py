@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+import sys
 from difflib import unified_diff
 from typing import TYPE_CHECKING
 
@@ -13,8 +15,6 @@ if TYPE_CHECKING:
 
     from pytest import FixtureRequest, Parser
 
-import sys
-
 
 def pytest_configure(config) -> None:
     sys.setrecursionlimit(1000000)
@@ -26,11 +26,18 @@ def assert_or_update_show_output(
     if path_replacements:
         for old, new in path_replacements.items():
             actual_text = actual_text.replace(old, new)
+    # Normalize rustc panic symbol hash suffixes that can drift across builds/environments.
+    actual_text = re.sub(r'_ZN4core9panicking5panic17h[0-9a-f]+E', '_ZN4core9panicking5panic17h<hash>E', actual_text)
+    actual_text = re.sub(r'core::panicking::panic::h[0-9a-f]+', 'core::panicking::panic::h<hash>', actual_text)
     if update:
         expected_file.write_text(actual_text)
     else:
         assert expected_file.is_file()
         expected_text = expected_file.read_text()
+        expected_text = re.sub(
+            r'_ZN4core9panicking5panic17h[0-9a-f]+E', '_ZN4core9panicking5panic17h<hash>E', expected_text
+        )
+        expected_text = re.sub(r'core::panicking::panic::h[0-9a-f]+', 'core::panicking::panic::h<hash>', expected_text)
         if actual_text != expected_text:
             diff = '\n'.join(
                 unified_diff(
