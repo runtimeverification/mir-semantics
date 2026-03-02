@@ -12,3 +12,4 @@ kmir/src/tests/integration/data/rustlantis/
 .DS_Store
 proof/
 /result*
+/.tmp/
