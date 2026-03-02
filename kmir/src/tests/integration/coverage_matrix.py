@@ -7,12 +7,18 @@ import shlex
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+    import pytest
 
 
 REPO_ROOT: Final = Path(__file__).resolve().parents[4]
-INTEGRATION_DATA_DIR: Final = (REPO_ROOT / 'kmir/src/tests/integration/data').resolve(strict=True)
-MATRIX_PATH: Final = (REPO_ROOT / 'docs/coverage-matrix.json').resolve(strict=True)
+INTEGRATION_DATA_DIR: Final = (REPO_ROOT / 'kmir/src/tests/integration/data').resolve()
+MATRIX_PATH: Final = (REPO_ROOT / 'docs/coverage-matrix.json').resolve()
+
+LOCAL_SUITES: Final = ('prove-rs', 'exec-smir', 'run-rs', 'ub')
+EXTERNAL_SUITES: Final = ('miri-pass', 'miri-fail', 'ui-run-pass', 'kani', 'rustlantis')
 COMPILE_FLAGS_LINE: Final = re.compile(r'^\s*//\s*@?\s*compile-flags:\s*(.+?)\s*$')
 EDITION_LINE: Final = re.compile(r'^\s*//\s*@?\s*edition:\s*([0-9]{4})\s*$')
 UI_DIRECTIVE_PREFIX: Final = re.compile(r'^\s*//@\s*(.+?)\s*$')
@@ -40,6 +46,7 @@ class UIAuxSpec:
     source_rel: str
 
 
+@lru_cache(maxsize=1)
 def load_coverage_matrix() -> dict:
     return json.loads(MATRIX_PATH.read_text())
 
@@ -57,6 +64,11 @@ def suite_declared_entries(matrix: dict, suite: str) -> tuple[set[str], set[str]
     return tests, skip
 
 
+def suite_all_declared(matrix: dict, suite: str) -> set[str]:
+    tests, skip = suite_declared_entries(matrix, suite)
+    return tests | skip
+
+
 def discover_suite_rs_files(suite: str) -> list[Path]:
     suite_dir = (INTEGRATION_DATA_DIR / suite).resolve()
     if not suite_dir.exists():
@@ -64,6 +76,11 @@ def discover_suite_rs_files(suite: str) -> list[Path]:
     return sorted(path for path in suite_dir.rglob('*.rs') if path.is_file())
 
 
+def discover_suite_rs_rels(suite: str) -> list[str]:
+    return [integration_data_relative(p) for p in discover_suite_rs_files(suite)]
+
+
+@lru_cache(maxsize=8192)
 def integration_data_relative(path: Path) -> str:
     return path.resolve().relative_to(INTEGRATION_DATA_DIR).as_posix()
 
@@ -91,6 +108,25 @@ def external_max_depth(default: int = 500) -> int:
     return depth if depth > 0 else default
 
 
+def setup_external_suite(
+    suite: str,
+    missing_message: str,
+) -> tuple[list[Path], set[str], set[str], int, list[str], list[pytest.MarkDecorator]]:
+    import pytest
+
+    rs_files = discover_suite_rs_files(suite)
+    matrix = load_coverage_matrix()
+    test_set, skip_set = suite_declared_entries(matrix, suite)
+    max_depth = external_max_depth(default=500)
+    undeclared = sorted(
+        rel for path in rs_files if (rel := integration_data_relative(path)) not in test_set | skip_set
+    )
+    marks: list[pytest.MarkDecorator] = [pytest.mark.external_suite]
+    if not rs_files:
+        marks.append(pytest.mark.skip(reason=missing_message))
+    return rs_files, test_set, skip_set, max_depth, undeclared, marks
+
+
 def _sanitize_compile_flags(tokens: list[str]) -> list[str]:
     flags: list[str] = []
     idx = 0
@@ -98,11 +134,7 @@ def _sanitize_compile_flags(tokens: list[str]) -> list[str]:
         token = tokens[idx]
         next_token = tokens[idx + 1] if idx + 1 < len(tokens) else None
 
-        if token in {'--cfg', '--check-cfg', '--extern', '-L', '--emit', '--target', '--crate-name'} and next_token:
-            flags.extend([token, next_token])
-            idx += 2
-            continue
-        if token in {'-A', '-D', '-F', '-W'} and next_token:
+        if token in {'--cfg', '--check-cfg', '--extern', '-L', '--emit', '--target', '--crate-name', '-A', '-D', '-F', '-W'} and next_token:
             flags.extend([token, next_token])
             idx += 2
             continue
@@ -154,7 +186,7 @@ def _sanitize_compile_flags(tokens: list[str]) -> list[str]:
         elif token.startswith('-Z') and not token.startswith('-Zmiri-'):
             flags.append(token)
         elif token.startswith('-Zmiri-'):
-            pass
+            pass  # intentionally drop miri-specific flags
         else:
             flags.append(token)
         idx += 1

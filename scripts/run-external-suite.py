@@ -8,7 +8,6 @@ import json
 import os
 import platform
 import re
-import shlex
 import shutil
 import signal
 import subprocess
@@ -20,18 +19,20 @@ from dataclasses import dataclass
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-INTEGRATION_DATA_DIR = REPO_ROOT / 'kmir/src/tests/integration/data'
-MATRIX_PATH = REPO_ROOT / 'docs/coverage-matrix.json'
 INTEGRATION_HELPERS_DIR = REPO_ROOT / 'kmir/src/tests/integration'
 
 if str(INTEGRATION_HELPERS_DIR) not in sys.path:
     sys.path.insert(0, str(INTEGRATION_HELPERS_DIR))
 
 from coverage_matrix import (  # noqa: E402
+    INTEGRATION_DATA_DIR,
     adapted_kani_source,
+    discover_suite_rs_rels,
     external_kani_mode,
     external_rustc_flags,
     kani_source_requires_runtime,
+    load_coverage_matrix,
+    suite_all_declared,
     ui_active_revisions,
     ui_case_aux_specs,
     ui_case_directives,
@@ -61,6 +62,13 @@ SUITE_REQUIRE_LINEAR_CHAIN = {
 
 
 @dataclass(frozen=True)
+class PreFilteredResult:
+    outcome: str
+    reason: str
+    detail: str
+
+
+@dataclass(frozen=True)
 class PreparedCase:
     rel: str
     case_id: str
@@ -72,12 +80,10 @@ class PreparedCase:
     ui_revision: str | None = None
     ui_aux_specs: tuple = ()
     source_override: str | None = None
-    pre_outcome: str | None = None
-    pre_reason: str | None = None
-    pre_detail: str | None = None
+    pre_filtered: PreFilteredResult | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class CaseResult:
     rel: str
     case_id: str
@@ -138,20 +144,6 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def discover_suite_rs_files(suite: str) -> list[str]:
-    suite_dir = INTEGRATION_DATA_DIR / suite
-    if not suite_dir.exists():
-        return []
-    return sorted(path.relative_to(INTEGRATION_DATA_DIR).as_posix() for path in suite_dir.rglob('*.rs') if path.is_file())
-
-
-def _suite_declared_entries(matrix: dict, suite: str) -> set[str]:
-    declared: set[str] = set()
-    for section in matrix.get('sections', {}).values():
-        declared.update(section.get('tests', {}).get(suite, []))
-        declared.update(section.get('skip', {}).get(suite, []))
-    return declared
-
 
 def _status_from_output(output: str) -> str | None:
     match = STATUS_RE.search(output)
@@ -177,38 +169,32 @@ def _detail_from_output(output: str, fallback: str) -> str:
 def _compile_failure_policy(detail: str, *, aux: bool) -> tuple[str | None, str]:
     normalized = detail.strip()
     lowered = normalized.lower()
+    scope = 'aux' if aux else 'probe'
 
     if not normalized:
         return None, detail
 
     if normalized.startswith('spawn-failed:'):
-        scope = 'aux' if aux else 'probe'
         return 'prep_failed', f'{scope}-spawn-failed'
 
     code_match = DETAIL_ERROR_CODE_RE.match(normalized)
     if code_match is not None:
         code = code_match.group(1)
-        scope = 'aux' if aux else 'probe'
         return 'policy_skip', f'{scope}-unsupported:{code}'
 
     if normalized.startswith("thread 'rustc' panicked"):
-        scope = 'aux' if aux else 'probe'
         return 'policy_skip', f'{scope}-rustc-panic'
 
     if 'argument for `--edition` must be one of' in lowered:
-        scope = 'aux' if aux else 'probe'
         return 'policy_skip', f'{scope}-unsupported-edition'
 
     if 'generic parameters may not be used in const operations' in lowered:
-        scope = 'aux' if aux else 'probe'
         return 'policy_skip', f'{scope}-unsupported-const-generics'
 
     if 'attributes starting with `rustc` are reserved' in lowered:
-        scope = 'aux' if aux else 'probe'
         return 'policy_skip', f'{scope}-rustc-internal-attribute'
 
     if 'cannot find attribute `define_opaque`' in lowered:
-        scope = 'aux' if aux else 'probe'
         return 'policy_skip', f'{scope}-unsupported-attribute'
 
     if normalized.startswith('aux:error: could not find native static library `rust_test_helpers`'):
@@ -224,15 +210,12 @@ def _compile_failure_policy(detail: str, *, aux: bool) -> tuple[str | None, str]
         return 'policy_skip', 'aux-warning-treated-as-error'
 
     if normalized.startswith('warning:'):
-        scope = 'aux' if aux else 'probe'
         return 'policy_skip', f'{scope}-warning-treated-as-error'
 
     if 'internal to the compiler or standard library' in lowered:
-        scope = 'aux' if aux else 'probe'
         return 'policy_skip', f'{scope}-unstable-internal-feature'
 
     if normalized.startswith('error:'):
-        scope = 'aux' if aux else 'probe'
         return 'policy_skip', f'{scope}-compile-error'
 
     return None, detail
@@ -699,9 +682,7 @@ def _prepare_ui_cases(discovered: list[str], host_triple: str) -> tuple[list[Pre
                 require_linear=True,
                 rustc_flags=external_rustc_flags(path),
                 env_overrides={},
-                pre_outcome='skipped',
-                pre_reason='policy_skip',
-                pre_detail='not-run-pass',
+                pre_filtered=PreFilteredResult('skipped', 'policy_skip', 'not-run-pass'),
             )
             prepared.append(case)
             case_ids.append(case.case_id)
@@ -721,9 +702,7 @@ def _prepare_ui_cases(discovered: list[str], host_triple: str) -> tuple[list[Pre
                 env_overrides=ui_case_rustc_env(path, revision),
                 ui_revision=revision,
                 ui_aux_specs=ui_case_aux_specs(path, revision),
-                pre_outcome='skipped' if skip_reason is not None else None,
-                pre_reason=skip_reason,
-                pre_detail=skip_detail,
+                pre_filtered=PreFilteredResult('skipped', skip_reason, skip_detail or 'platform-filtered') if skip_reason is not None else None,
             )
             prepared.append(case)
             case_ids.append(case_id)
@@ -750,9 +729,7 @@ def _prepare_kani_cases(discovered: list[str], mode: str) -> tuple[list[Prepared
                 require_linear=True,
                 rustc_flags=external_rustc_flags(path),
                 env_overrides={},
-                pre_outcome='skipped',
-                pre_reason='policy_skip',
-                pre_detail='kani-deferred-not-in-scope',
+                pre_filtered=PreFilteredResult('skipped', 'policy_skip', 'kani-deferred-not-in-scope'),
             )
             prepared.append(case)
             parent_map[rel] = [case_id]
@@ -768,9 +745,7 @@ def _prepare_kani_cases(discovered: list[str], mode: str) -> tuple[list[Prepared
                 require_linear=True,
                 rustc_flags=external_rustc_flags(path),
                 env_overrides={},
-                pre_outcome='skipped',
-                pre_reason='policy_skip',
-                pre_detail='kani-runtime-required',
+                pre_filtered=PreFilteredResult('skipped', 'policy_skip', 'kani-runtime-required'),
             )
         else:
             case = PreparedCase(
@@ -791,7 +766,7 @@ def _prepare_kani_cases(discovered: list[str], mode: str) -> tuple[list[Prepared
 
 
 def _prepare_cases(args: argparse.Namespace, discovered: list[str]) -> tuple[list[PreparedCase], dict[str, list[str]], dict]:
-    host_triple = _host_triple()
+    host_triple = _host_triple() if args.suite == 'ui-run-pass' else ''
     metadata = {
         'host_triple': host_triple,
         'kani_mode': args.kani_mode if args.suite == 'kani' else None,
@@ -810,17 +785,18 @@ def _prepare_cases(args: argparse.Namespace, discovered: list[str]) -> tuple[lis
 
 
 def _run_prepared_case(case: PreparedCase, args: argparse.Namespace) -> CaseResult:
-    if case.pre_outcome is not None:
+    if case.pre_filtered is not None:
+        pf = case.pre_filtered
         return CaseResult(
             rel=case.rel,
             case_id=case.case_id,
-            outcome=case.pre_outcome,
+            outcome=pf.outcome,
             status=None,
             returncode=0,
             duration_s=0.0,
             linear_chain=False,
-            reason=case.pre_reason or 'policy_skip',
-            detail=case.pre_detail or 'pre-filtered',
+            reason=pf.reason,
+            detail=pf.detail,
         )
 
     case_key = hashlib.sha1(case.case_id.encode()).hexdigest()[:12]
@@ -842,7 +818,7 @@ def _run_prepared_case(case: PreparedCase, args: argparse.Namespace) -> CaseResu
     timeout_s = args.case_timeout if args.case_timeout > 0 else None
     compile_timeout = min(timeout_s, 120) if timeout_s is not None else 120
 
-    if args.suite == 'ui-run-pass' and case.ui_aux_specs:
+    if case.ui_aux_specs:
         extra_flags, prep_reason, prep_detail = _compile_ui_aux(
             case,
             case_root=case_root,
@@ -1055,7 +1031,7 @@ def main() -> int:
     if args.progress_every <= 0:
         raise ValueError('--progress-every must be > 0')
 
-    discovered = discover_suite_rs_files(args.suite)
+    discovered = discover_suite_rs_rels(args.suite)
     if args.match:
         matcher = re.compile(args.match)
         discovered = [rel for rel in discovered if matcher.search(rel)]
@@ -1064,8 +1040,8 @@ def main() -> int:
         print(f'No .rs files discovered for suite {args.suite}', file=sys.stderr)
         return 1
 
-    matrix = json.loads(MATRIX_PATH.read_text())
-    declared = _suite_declared_entries(matrix, args.suite)
+    matrix = load_coverage_matrix()
+    declared = suite_all_declared(matrix, args.suite)
     undeclared = sorted(set(discovered) - declared)
     if undeclared:
         print(

@@ -4,11 +4,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_MATRIX_PATH = REPO_ROOT / 'docs/coverage-matrix.json'
+_INTEGRATION_HELPERS_DIR = str(REPO_ROOT / 'kmir/src/tests/integration')
+if _INTEGRATION_HELPERS_DIR not in sys.path:
+    sys.path.insert(0, _INTEGRATION_HELPERS_DIR)
+
+from coverage_matrix import MATRIX_PATH as DEFAULT_MATRIX_PATH, suite_all_declared  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
@@ -31,14 +35,6 @@ def parse_args() -> argparse.Namespace:
 
 def load_json(path: Path) -> dict:
     return json.loads(path.read_text())
-
-
-def suite_declared_entries(sections: dict[str, dict], suite: str) -> set[str]:
-    declared: set[str] = set()
-    for entry in sections.values():
-        declared.update(entry.get('tests', {}).get(suite, []))
-        declared.update(entry.get('skip', {}).get(suite, []))
-    return declared
 
 
 def update_suite(sections: dict[str, dict], suite: str, statuses: dict[str, str]) -> dict[str, int]:
@@ -101,7 +97,7 @@ def main() -> int:
         payload = load_json(result_path)
         suite = payload['suite']
         statuses: dict[str, str] = payload['results']
-        declared = suite_declared_entries(sections, suite)
+        declared = suite_all_declared(matrix, suite)
         unknown = sorted(set(statuses) - declared)
         if unknown:
             raise ValueError(

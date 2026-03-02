@@ -8,37 +8,26 @@ import pytest
 from kmir.options import ProveRSOpts
 
 from .coverage_matrix import (
-    discover_suite_rs_files,
-    external_max_depth,
     external_rustc_flags,
     integration_data_relative,
-    load_coverage_matrix,
     run_all_external_enabled,
-    suite_declared_entries,
+    setup_external_suite,
 )
 
 if TYPE_CHECKING:
     from kmir.kmir import KMIR
 
-
 SUITE = 'miri-fail'
-RS_FILES = discover_suite_rs_files(SUITE)
-MATRIX = load_coverage_matrix()
-TEST_SET, SKIP_SET = suite_declared_entries(MATRIX, SUITE)
-MAX_DEPTH = external_max_depth(default=500)
-DECLARED = TEST_SET | SKIP_SET
-UNDECLARED = sorted(integration_data_relative(path) for path in RS_FILES if integration_data_relative(path) not in DECLARED)
-
-pytestmark = [pytest.mark.external_suite]
-if not RS_FILES:
-    pytestmark.append(pytest.mark.skip(reason='No imported Miri fail suite found. Run `make fetch-test-suites`.'))
+RS_FILES, TEST_SET, SKIP_SET, MAX_DEPTH, UNDECLARED, pytestmark = setup_external_suite(
+    SUITE, 'No imported Miri fail suite found. Run `make fetch-test-suites`.'
+)
 
 
 def test_miri_fail_suite_matrix_alignment() -> None:
     assert not UNDECLARED, f'Unmapped {SUITE} files in coverage-matrix.json: {UNDECLARED}'
 
 
-@pytest.mark.parametrize('rs_file', RS_FILES, ids=[integration_data_relative(path) for path in RS_FILES])
+@pytest.mark.parametrize('rs_file', RS_FILES, ids=[integration_data_relative(p) for p in RS_FILES])
 def test_miri_fail(rs_file: Path, kmir: KMIR) -> None:
     rel = integration_data_relative(rs_file)
     if rel in SKIP_SET and not run_all_external_enabled():

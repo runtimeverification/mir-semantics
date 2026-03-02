@@ -7,17 +7,25 @@ import json
 import re
 import sys
 from collections import defaultdict
+from functools import lru_cache
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_MATRIX_PATH = REPO_ROOT / 'docs' / 'coverage-matrix.json'
-INTEGRATION_DATA_DIR = REPO_ROOT / 'kmir/src/tests/integration/data'
 BODY_MD_PATH = REPO_ROOT / 'kmir/src/kmir/kdist/mir-semantics/body.md'
 TY_MD_PATH = REPO_ROOT / 'kmir/src/kmir/kdist/mir-semantics/ty.md'
 
-LOCAL_SUITES = ('prove-rs', 'exec-smir', 'run-rs', 'ub')
-EXTERNAL_SUITES = ('miri-pass', 'miri-fail', 'ui-run-pass', 'kani', 'rustlantis')
+_INTEGRATION_HELPERS_DIR = str(REPO_ROOT / 'kmir/src/tests/integration')
+if _INTEGRATION_HELPERS_DIR not in sys.path:
+    sys.path.insert(0, _INTEGRATION_HELPERS_DIR)
+
+from coverage_matrix import (  # noqa: E402
+    EXTERNAL_SUITES,
+    INTEGRATION_DATA_DIR,
+    LOCAL_SUITES,
+    MATRIX_PATH as DEFAULT_MATRIX_PATH,
+    suite_all_declared,
+    suite_entries,
+)
 
 REQUIRED_SECTIONS = (
     'types/boolean',
@@ -120,6 +128,7 @@ def section_status(section_entry: dict) -> str:
     return 'covered'
 
 
+@lru_cache(maxsize=32)
 def discover_suite_files(suite: str) -> set[str]:
     base = INTEGRATION_DATA_DIR / suite
     if not base.exists():
@@ -148,6 +157,7 @@ def discover_suite_files(suite: str) -> set[str]:
     return set()
 
 
+@lru_cache(maxsize=1)
 def parse_expected_smir_elements() -> set[str]:
     patterns = (
         r'symbol\((Rvalue|TerminatorKind|CastKind|BinOp|UnOp|NullOp|TyKind|Operand|ProjectionElem)::([A-Za-z0-9_]+)\)'
@@ -158,16 +168,6 @@ def parse_expected_smir_elements() -> set[str]:
         for kind, variant in re.findall(patterns, text):
             expected.add(f'{kind}::{variant}')
     return expected
-
-
-def collect_declared_files(matrix: dict, suite: str, *, tests_only: bool) -> set[str]:
-    sections: dict[str, dict] = matrix.get('sections', {})
-    declared: set[str] = set()
-    for entry in sections.values():
-        declared.update(entry.get('tests', {}).get(suite, []))
-        if not tests_only:
-            declared.update(entry.get('skip', {}).get(suite, []))
-    return declared
 
 
 def validate_matrix(matrix: dict) -> list[str]:
@@ -188,7 +188,7 @@ def validate_matrix(matrix: dict) -> list[str]:
 
     for suite in LOCAL_SUITES:
         discovered = discover_suite_files(suite)
-        declared_tests = collect_declared_files(matrix, suite, tests_only=True)
+        declared_tests = suite_entries(matrix, suite, 'tests')
         missing = sorted(discovered - declared_tests)
         if missing:
             errors.append(f'Local suite {suite} has unmapped tests (must be in tests): {", ".join(missing)}')
@@ -197,7 +197,7 @@ def validate_matrix(matrix: dict) -> list[str]:
         discovered = discover_suite_files(suite)
         if not discovered:
             continue
-        declared = collect_declared_files(matrix, suite, tests_only=False)
+        declared = suite_all_declared(matrix, suite)
         missing = sorted(discovered - declared)
         if missing:
             errors.append(f'External suite {suite} has unmapped files (must be in tests or skip): {", ".join(missing)}')
@@ -223,17 +223,13 @@ def print_summary(matrix: dict) -> None:
 
 
 def print_suite_stats(matrix: dict) -> None:
-    sections: dict[str, dict] = matrix.get('sections', {})
     suites = matrix.get('suite_order') or [*LOCAL_SUITES, *EXTERNAL_SUITES]
     suite_policy: dict[str, str] = matrix.get('suite_policy', {})
 
     print('Per-suite stats:')
     for suite in suites:
-        tests = set()
-        skip = set()
-        for entry in sections.values():
-            tests.update(entry.get('tests', {}).get(suite, []))
-            skip.update(entry.get('skip', {}).get(suite, []))
+        tests = suite_entries(matrix, suite, 'tests')
+        skip = suite_entries(matrix, suite, 'skip')
         total = len(tests) + len(skip)
         passing_rate = 0.0 if total == 0 else (len(tests) / total) * 100
         policy = suite_policy.get(suite)

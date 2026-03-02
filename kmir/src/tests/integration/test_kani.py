@@ -9,33 +9,22 @@ from kmir.options import ProveRSOpts
 
 from .coverage_matrix import (
     adapted_kani_source,
-    discover_suite_rs_files,
     external_kani_mode,
-    external_max_depth,
     external_rustc_flags,
     integration_data_relative,
     kani_source_requires_runtime,
-    load_coverage_matrix,
     run_all_external_enabled,
-    suite_declared_entries,
+    setup_external_suite,
 )
 
 if TYPE_CHECKING:
     from kmir.kmir import KMIR
 
-
 SUITE = 'kani'
-RS_FILES = discover_suite_rs_files(SUITE)
-MATRIX = load_coverage_matrix()
-TEST_SET, SKIP_SET = suite_declared_entries(MATRIX, SUITE)
-MAX_DEPTH = external_max_depth(default=500)
+RS_FILES, TEST_SET, SKIP_SET, MAX_DEPTH, UNDECLARED, pytestmark = setup_external_suite(
+    SUITE, 'No imported Kani suite found. Run `make fetch-test-suites`.'
+)
 KANI_MODE = external_kani_mode()
-DECLARED = TEST_SET | SKIP_SET
-UNDECLARED = sorted(integration_data_relative(path) for path in RS_FILES if integration_data_relative(path) not in DECLARED)
-
-pytestmark = [pytest.mark.external_suite]
-if not RS_FILES:
-    pytestmark.append(pytest.mark.skip(reason='No imported Kani suite found. Run `make fetch-test-suites`.'))
 
 
 def test_kani_suite_matrix_alignment() -> None:
