@@ -215,7 +215,6 @@ def _make_symbolic_call_config(
     types: Mapping[Ty, TypeMetadata],
 ) -> tuple[KInner, list[KInner]]:
     locals, constraints = _symbolic_locals(fn_data.args, types)
-
     subst = Subst(
         {
             'K_CELL': fn_data.call_terminator,
