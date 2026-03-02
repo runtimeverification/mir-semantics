@@ -177,9 +177,12 @@ In contrast to regular write operations, the value does not have to be _mutable_
 ### Setting Local Variables
 
 The `#setLocalValue` operation writes a `Value` value to a given `Place` within the `List` of local variables currently on top of the stack.
-This may fail because a local may not be accessible or not mutable.
 If we are setting a value at a `Place` which has `Projection`s in it, then we must first traverse the projections before setting the value.
 A variant `#forceSetLocal` is provided for setting the local value without checking the mutability of the location.
+
+**Note on mutability:** The Rust compiler validates assignment legality and may reuse immutable locals in MIR (e.g., loop variables), so `#setLocalValue` does not guard on mutability.
+
+TODO: `#forceSetLocal` is now functionally identical to `#setLocalValue` and may be removed.
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
@@ -187,11 +190,10 @@ A variant `#forceSetLocal` is provided for setting the local value without check
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)]
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
        </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
-     andBool mutabilityOf(getLocal(LOCALS, I)) ==K mutabilityMut
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
