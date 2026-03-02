@@ -181,6 +181,10 @@ def _compile_failure_policy(detail: str, *, aux: bool) -> tuple[str | None, str]
     if not normalized:
         return None, detail
 
+    if normalized.startswith('spawn-failed:'):
+        scope = 'aux' if aux else 'probe'
+        return 'prep_failed', f'{scope}-spawn-failed'
+
     code_match = DETAIL_ERROR_CODE_RE.match(normalized)
     if code_match is not None:
         code = code_match.group(1)
@@ -218,6 +222,14 @@ def _compile_failure_policy(detail: str, *, aux: bool) -> tuple[str | None, str]
 
     if normalized.startswith('aux:warning:'):
         return 'policy_skip', 'aux-warning-treated-as-error'
+
+    if normalized.startswith('warning:'):
+        scope = 'aux' if aux else 'probe'
+        return 'policy_skip', f'{scope}-warning-treated-as-error'
+
+    if 'internal to the compiler or standard library' in lowered:
+        scope = 'aux' if aux else 'probe'
+        return 'policy_skip', f'{scope}-unstable-internal-feature'
 
     if normalized.startswith('error:'):
         scope = 'aux' if aux else 'probe'
@@ -281,15 +293,19 @@ def _run_command(
     timeout_s: int | None,
 ) -> tuple[bool, int | None, str, float]:
     start = time.monotonic()
-    proc = subprocess.Popen(
-        cmd,
-        cwd=cwd,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        start_new_session=True,
-    )
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            cwd=cwd,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            start_new_session=True,
+        )
+    except OSError as err:
+        elapsed = time.monotonic() - start
+        return False, 127, f'spawn-failed: {err}', elapsed
 
     timed_out = False
     try:
@@ -893,6 +909,19 @@ def _run_prepared_case(case: PreparedCase, args: argparse.Namespace) -> CaseResu
         cwd=REPO_ROOT,
         timeout_s=timeout_s,
     )
+
+    if returncode == 127 and output.startswith('spawn-failed:'):
+        return CaseResult(
+            rel=case.rel,
+            case_id=case.case_id,
+            outcome='failed',
+            status=None,
+            returncode=returncode,
+            duration_s=duration_s,
+            linear_chain=False,
+            reason='prep_failed',
+            detail='prove-spawn-failed',
+        )
 
     status = _status_from_output(output)
     proof_id = f'{source_to_prove.stem}.main'
