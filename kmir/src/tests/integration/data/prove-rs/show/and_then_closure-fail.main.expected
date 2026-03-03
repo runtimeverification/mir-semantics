@@ -1,0 +1,15 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (142 steps)
+└─ 3 (stuck, leaf)
+    #traverseProjection ( toLocal ( 2 ) , Aggregate ( variantIdx ( 0 ) , ListItem (
+    span: 157
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
