@@ -319,7 +319,6 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
                     operands,
                     KApply(label=KLabel(name='span'), args=[KToken(token=span_str)]),
                 ]:
-                    def_id = int(def_id_str)
                     span = int(span_str)
                 case [
                     KApply(
@@ -332,12 +331,13 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
                     ),
                     operands,
                 ]:
-                    def_id = int(def_id_str)
-                    span = None
+                    pass
                 case _:
                     return []
         case _:
             return []
+
+    def_id = int(def_id_str)
 
     # Prefer concrete symbol from the term; for unresolved placeholders, fall back to DefId lookup.
     if symbol_name == '\"** UNKNOWN FUNCTION **\"':

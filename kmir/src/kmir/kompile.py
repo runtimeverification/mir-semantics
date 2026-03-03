@@ -521,23 +521,21 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
         for ty in smir_info.function_symbols_reverse[item_name]:
             functions[ty] = parsed_item_kinner.args[1]
 
-    # Add intrinsic functions
+    # Add intrinsic functions and linked normal symbols that have no local body in `items`.
+    # Normal symbols must still map to `monoItemFn(..., noBody)` instead of falling back to UNKNOWN FUNCTION.
     for ty, sym in smir_info.function_symbols.items():
-        if 'IntrinsicSym' in sym and ty not in functions:
+        if ty in functions:
+            continue
+        if 'IntrinsicSym' in sym:
             functions[ty] = KApply(
                 'IntrinsicFunction',
                 [KApply('symbol(_)_LIB_Symbol_String', [stringToken(sym['IntrinsicSym'])])],
             )
-
-    # Add linked normal symbols that have no local body in `items`.
-    # They must still map to `monoItemFn(..., noBody)` instead of falling back to UNKNOWN FUNCTION.
-    for ty, sym in smir_info.function_symbols.items():
-        normal_sym = sym.get('NormalSym')
-        if isinstance(normal_sym, str) and ty not in functions:
+        elif isinstance(sym.get('NormalSym'), str):
             functions[ty] = KApply(
                 'MonoItemKind::MonoItemFn',
                 (
-                    KApply('symbol(_)_LIB_Symbol_String', (stringToken(normal_sym),)),
+                    KApply('symbol(_)_LIB_Symbol_String', (stringToken(sym['NormalSym']),)),
                     KApply('defId(_)_BODY_DefId_Int', (intToken(ty),)),
                     KApply('noBody_BODY_MaybeBody', ()),
                 ),
