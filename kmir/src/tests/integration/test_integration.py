@@ -54,7 +54,6 @@ PROVE_RS_SHOW_SPECS = [
     'assume-cheatcode-conflict-fail',
     'raw-ptr-cast-fail',
     'transmute-u8-to-enum-fail',
-    'transmute-u8-to-enum-changed-discriminant-signed',
     'assert-inhabited-fail',
     'iterator-simple',
     'unions-fail',
