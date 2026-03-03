@@ -294,18 +294,14 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
     from .alloc import Allocation, AllocId, AllocInfo, Memory
     from .linker import _demangle
 
-    setup_call_labels = {
-        '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span',
-        '#setUpCalleeData(_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands',
-    }
+    setup_call_label = '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span'
 
     annotations: list[str] = []
-    span: int | None = None
 
     match k_cell:
         case KSequence(items=(KApply(label=KLabel(name=label_name), args=args), *_)) | KApply(
             label=KLabel(name=label_name), args=args
-        ) if (label_name in setup_call_labels):
+        ) if (label_name == setup_call_label):
             match args:
                 case [
                     KApply(
@@ -319,25 +315,12 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
                     operands,
                     KApply(label=KLabel(name='span'), args=[KToken(token=span_str)]),
                 ]:
+                    def_id = int(def_id_str)
                     span = int(span_str)
-                case [
-                    KApply(
-                        label=KLabel(name='MonoItemKind::MonoItemFn'),
-                        args=[
-                            KApply(args=[KToken()]),
-                            KApply(label=KLabel(name='defId(_)_BODY_DefId_Int'), args=[KToken(token=def_id_str)]),
-                            KApply(label=KLabel(name='noBody_BODY_MaybeBody'), args=[]),
-                        ],
-                    ),
-                    operands,
-                ]:
-                    pass
                 case _:
                     return []
         case _:
             return []
-
-    def_id = int(def_id_str)
 
     # Use extracted DefId for function name
     func_sym = smir_info.function_symbols.get(def_id, {})
@@ -349,7 +332,7 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
         annotations.append(f'  >> function: {name}')
 
     # Use extracted Span for call site
-    if span is not None and span in smir_info.spans:
+    if span in smir_info.spans:
         path, start_row, start_col, _, _ = smir_info.spans[span]
         annotations.append(f'  >> call span: {path}:{start_row}:{start_col}')
 
