@@ -68,8 +68,6 @@ PROVE_RS_SHOW_SPECS = [
     'ref-ptr-cast-elem-offset-fail',
     'and_then_closure-fail',
     'closure_access_struct-fail',
-    'closure-fnonce-single-arg',
-    'iter-copied-take-next-thunk-regression',
     'iter-map-eq-copied-take-thunk-frontier-fail',
 ]
 
