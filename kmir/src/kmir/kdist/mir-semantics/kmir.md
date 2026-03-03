@@ -28,8 +28,10 @@ See [`rt/configuration.md`](./rt/configuration.md) for a detailed description of
 ```k
 module KMIR-CONTROL-FLOW
   imports BOOL
+  imports COLLECTIONS
   imports LIST
   imports MAP
+  imports STRING
   imports K-EQUAL
 
   imports MONO
@@ -325,6 +327,15 @@ where the returned result should go.
          => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
         </k>
     requires isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  // Intrinsic function call to a function in the break-on set - same as termCallIntrinsic but separate rule id for cut-point
+  rule [termCallIntrinsicFilter]:
+        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        </k>
+    requires isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
@@ -342,10 +353,71 @@ where the returned result should go.
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
+  rule [termCallFunctionFilter]:
+       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+        => #setUpCalleeData(FUNC, ARGS, SPAN)
+       </k>
+       <currentFunc> CALLER => FTY </currentFunc>
+       <currentFrame>
+         <currentBody> _ </currentBody>
+         <caller> OLDCALLER => CALLER </caller>
+         <dest> OLDDEST => DEST </dest>
+         <target> OLDTARGET => TARGET </target>
+         <unwind> OLDUNWIND => UNWIND </unwind>
+         <locals> LOCALS </locals>
+       </currentFrame>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+    requires notBool isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
   rule isIntrinsicFunction(_) => false [owise]
+
+  syntax String ::= getFunctionName(MonoItemKind) [function, total]
+  //---------------------------------------------------------------
+  rule getFunctionName(monoItemFn(symbol(NAME), _, _)) => NAME
+  rule getFunctionName(monoItemStatic(symbol(NAME), _, _)) => NAME
+  rule getFunctionName(monoItemGlobalAsm(_)) => ""
+  rule getFunctionName(IntrinsicFunction(symbol(NAME))) => NAME
+
+  // Check whether a function name matches any filter in the break-on-functions list.
+  syntax Bool ::= #functionNameMatchesEnv(String) [function, total]
+  //----------------------------------------------------------------
+  rule #functionNameMatchesEnv(NAME) => #functionNameMatchesEnvStr(NAME, #breakOnFunctionsString(0))
+
+  // The Int argument is unused; it exists only so the Haskell backend can
+  // pattern-match on it and not error since zero-argument functions cannot use [owise].
+  syntax String ::= #breakOnFunctionsString(Int) [function, total, symbol(breakOnFunctionsString)]
+  //-----------------------------------------------------------------------------------------------
+  rule #breakOnFunctionsString(_) => "" [owise] // This gets overridden by corresponding python function
+
+  syntax Bool ::= #functionNameMatchesEnvStr(String, String) [function, total]
+  //--------------------------------------------------------------------------
+  rule #functionNameMatchesEnvStr(_, "") => false
+  rule #functionNameMatchesEnvStr(NAME, ENV) => #functionNameMatchesAnyList(NAME, #splitSemicolon(ENV))
+    requires ENV =/=String ""
+
+  syntax List ::= #splitSemicolon(String) [function, total]
+  //--------------------------------------------------------
+  rule #splitSemicolon(S) => #splitSemicolonAux(S, findString(S, ";", 0))
+
+  syntax List ::= #splitSemicolonAux(String, Int) [function, total]
+  //-----------------------------------------------------------------
+  rule #splitSemicolonAux(S, -1) => ListItem(S)
+  rule #splitSemicolonAux(S, I) =>
+      ListItem(substrString(S, 0, I)) #splitSemicolon(substrString(S, I +Int 1, lengthString(S)))
+    requires I >=Int 0
+
+  syntax Bool ::= #functionNameMatchesAnyList(String, List) [function, total]
+  //-------------------------------------------------------------------------
+  rule #functionNameMatchesAnyList(_, .List) => false
+  rule #functionNameMatchesAnyList(NAME, ListItem(FILTER:String) REST) =>
+      0 <=Int findString(NAME, FILTER, 0) orBool #functionNameMatchesAnyList(NAME, REST)
+  rule #functionNameMatchesAnyList(_, _) => false [owise]
 
   syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
   rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>
