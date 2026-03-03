@@ -410,6 +410,13 @@ def _arg_parser() -> ArgumentParser:
         action='store_true',
         help='Break on every MIR step (statements and terminators)',
     )
+    prove_args.add_argument(
+        '--break-on-function',
+        dest='break_on_function',
+        action='append',
+        default=None,
+        help='Break when calling functions / intrinsics matching this name (repeatable)',
+    )
 
     proof_args = ArgumentParser(add_help=False)
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
@@ -638,6 +645,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 break_every_step=ns.break_every_step,
                 terminate_on_thunk=ns.terminate_on_thunk,
                 add_module=ns.add_module,
+                break_on_function=ns.break_on_function or [],
             )
         case 'link':
             return LinkOpts(
