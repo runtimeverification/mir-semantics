@@ -311,7 +311,7 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
                     KApply(
                         label=KLabel(name='MonoItemKind::MonoItemFn'),
                         args=[
-                            KApply(args=[KToken(token=symbol_name)]),
+                            KApply(args=[KToken()]),
                             KApply(label=KLabel(name='defId(_)_BODY_DefId_Int'), args=[KToken(token=def_id_str)]),
                             KApply(label=KLabel(name='noBody_BODY_MaybeBody'), args=[]),
                         ],
@@ -324,7 +324,7 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
                     KApply(
                         label=KLabel(name='MonoItemKind::MonoItemFn'),
                         args=[
-                            KApply(args=[KToken(token=symbol_name)]),
+                            KApply(args=[KToken()]),
                             KApply(label=KLabel(name='defId(_)_BODY_DefId_Int'), args=[KToken(token=def_id_str)]),
                             KApply(label=KLabel(name='noBody_BODY_MaybeBody'), args=[]),
                         ],
@@ -339,19 +339,14 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
 
     def_id = int(def_id_str)
 
-    # Prefer concrete symbol from the term; for unresolved placeholders, fall back to DefId lookup.
-    if symbol_name == '\"** UNKNOWN FUNCTION **\"':
-        func_sym = smir_info.function_symbols.get(def_id, {})
-        display_name = func_sym.get('NormalSym') or func_sym.get('IntrinsicSym')
-    else:
-        display_name = symbol_name.strip('\"')
-
-    if display_name:
+    # Use extracted DefId for function name
+    func_sym = smir_info.function_symbols.get(def_id, {})
+    if name := func_sym.get('NormalSym') or func_sym.get('IntrinsicSym'):
         try:
-            display_name = _demangle(display_name)
+            name = _demangle(name)
         except Exception:
             pass
-        annotations.append(f'  >> function: {display_name}')
+        annotations.append(f'  >> function: {name}')
 
     # Use extracted Span for call site
     if span is not None and span in smir_info.spans:
