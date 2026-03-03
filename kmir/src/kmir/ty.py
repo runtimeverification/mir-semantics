@@ -676,6 +676,28 @@ class TupleT(TypeMetadata):
 
 
 @dataclass
+class DynT(TypeMetadata):
+    name: str
+    layout: LayoutShape | None
+
+    @staticmethod
+    def from_raw(data: Any) -> DynT:
+        match data:
+            case {
+                'DynType': {
+                    'name': name,
+                    'layout': layout,
+                }
+            }:
+                return DynT(
+                    name=name,
+                    layout=LayoutShape.from_raw(layout) if layout is not None else None,
+                )
+            case _:
+                raise _cannot_parse_as('DynT', data)
+
+
+@dataclass
 class FunT(TypeMetadata):
     type_str: str
 
