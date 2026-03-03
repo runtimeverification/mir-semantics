@@ -288,20 +288,23 @@ def _extract_alloc_id(operands: KInner) -> int | None:
             return None
 
 
-def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
-    """If the k cell is `#setUpCalleeData` for `** UNKNOWN FUNCTION **`, return annotation lines with decoded info."""
+def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
+    """If the k cell is `#setUpCalleeData` for a `noBody` callee, return annotation lines with decoded info."""
 
     from .alloc import Allocation, AllocId, AllocInfo, Memory
     from .linker import _demangle
 
-    setup_call_label = '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span'
+    setup_call_labels = {
+        '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span',
+        '#setUpCalleeData(_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands',
+    }
 
     annotations: list[str] = []
 
     match k_cell:
         case KSequence(items=(KApply(label=KLabel(name=label_name), args=args), *_)) | KApply(
             label=KLabel(name=label_name), args=args
-        ) if (label_name == setup_call_label):
+        ) if (label_name in setup_call_labels):
             match args:
                 case [
                     KApply(
@@ -309,32 +312,48 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
                         args=[
                             KApply(args=[KToken(token=symbol_name)]),
                             KApply(label=KLabel(name='defId(_)_BODY_DefId_Int'), args=[KToken(token=def_id_str)]),
-                            _,
+                            KApply(label=KLabel(name='noBody_BODY_MaybeBody'), args=[]),
                         ],
                     ),
                     operands,
                     KApply(label=KLabel(name='span'), args=[KToken(token=span_str)]),
-                ] if (
-                    symbol_name == '\"** UNKNOWN FUNCTION **\"'
-                ):
+                ]:
                     def_id = int(def_id_str)
                     span = int(span_str)
+                case [
+                    KApply(
+                        label=KLabel(name='MonoItemKind::MonoItemFn'),
+                        args=[
+                            KApply(args=[KToken(token=symbol_name)]),
+                            KApply(label=KLabel(name='defId(_)_BODY_DefId_Int'), args=[KToken(token=def_id_str)]),
+                            KApply(label=KLabel(name='noBody_BODY_MaybeBody'), args=[]),
+                        ],
+                    ),
+                    operands,
+                ]:
+                    def_id = int(def_id_str)
+                    span = None
                 case _:
                     return []
         case _:
             return []
 
-    # Use extracted DefId for function name
-    func_sym = smir_info.function_symbols.get(def_id, {})
-    if name := func_sym.get('NormalSym') or func_sym.get('IntrinsicSym'):
+    # Prefer concrete symbol from the term; for unresolved placeholders, fall back to DefId lookup.
+    if symbol_name == '\"** UNKNOWN FUNCTION **\"':
+        func_sym = smir_info.function_symbols.get(def_id, {})
+        display_name = func_sym.get('NormalSym') or func_sym.get('IntrinsicSym')
+    else:
+        display_name = symbol_name.strip('\"')
+
+    if display_name:
         try:
-            name = _demangle(name)
+            display_name = _demangle(display_name)
         except Exception:
             pass
-        annotations.append(f'  >> function: {name}')
+        annotations.append(f'  >> function: {display_name}')
 
     # Use extracted Span for call site
-    if span in smir_info.spans:
+    if span is not None and span in smir_info.spans:
         path, start_row, start_col, _, _ = smir_info.spans[span]
         annotations.append(f'  >> call span: {path}:{start_row}:{start_col}')
 
@@ -379,7 +398,7 @@ def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow, smir_info: SMIRI
             lines.extend(f'  {k_line}' for k_line in k_lines)
 
         if smir_info is not None and k_cell is not None:
-            annotations = _annotate_unknown_function(k_cell, smir_info)
+            annotations = _annotate_nobody_function(k_cell, smir_info)
             lines.extend(annotations)
 
         if idx != len(leaves) - 1:
