@@ -330,7 +330,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
                         .ProjectionElems
 
   rule [cheatcode-is-spl-account]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -378,7 +378,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
        </k>
 
   rule [cheatcode-is-spl-mint]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -414,7 +414,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-rent]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -438,7 +438,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-multisig]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -491,7 +491,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ```k
   // RefCell::<&mut [u8]>::borrow / borrow_mut - returns Ref/RefMut wrapper with pointer to data
   rule [spl-borrow-data]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #setSPLBorrowData(DEST, operandCopy(place(LOCAL, PROJS)))
          ~> #continueAt(TARGET)
     </k>
@@ -511,7 +511,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ```k
   // Account/Mint::unpack_from_slice, bincode::deserialize (for Rent) - extracts struct from SPLDataBuffer
   rule [spl-account-unpack]:
-    <k> #execTerminatorCall(_, FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #splUnpack(DEST, #withDeref(OP))
          ~> #continueAt(TARGET)
     </k>
@@ -525,7 +525,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 
   // Account/Mint::pack_into_slice - writes struct into SPLDataBuffer
   rule [spl-account-pack]:
-    <k> #execTerminatorCall(_, FUNC, SRC:Operand DST:Operand .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, SRC:Operand DST:Operand .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #splPack(#withDeref(SRC), #withDeref(DST)) ~> #continueAt(TARGET)
     </k>
     requires #isSPLPackFunc(#functionName(FUNC))
@@ -541,7 +541,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ```{.k .symbolic}
   // Rent::get - returns stable value, cached in outermost frame
   rule [spl-rent-get]:
-    <k> #execTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #writeSPLSysRent(DEST)
          ~> #continueAt(TARGET)
     </k>
@@ -594,7 +594,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ## Pubkey comparison shortcut
 ```k
   rule [spl-cmp-pubkeys]:
-    <k> #execTerminatorCall(_, FUNC, ARG1:Operand ARG2:Operand .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, ARG1:Operand ARG2:Operand .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #execSPLCmpPubkeys( DEST, #withDeref(ARG1), #withDeref(ARG2))
          ~> #continueAt(TARGET)
     </k>
@@ -647,7 +647,7 @@ be called prior to capturing initial state and prior to executing the implementa
     <k> #execTerminatorCall(_, FUNC,
           operandCopy(place(LOCAL1, PROJS1))
           operandCopy(place(LOCAL2, PROJS2))
-          .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+          .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #maybeLinkAccounts(
            operandCopy(place(LOCAL1, appendP(PROJS1, KEY_PROJS))),
            operandCopy(place(LOCAL2, appendP(PROJS2, KEY_PROJS))),

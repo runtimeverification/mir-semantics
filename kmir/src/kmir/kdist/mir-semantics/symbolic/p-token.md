@@ -484,25 +484,25 @@ An `AccountInfo` reference is passed to the function.
 ```k
   // special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
   rule [cheatcode-is-account]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #mkPTokenAccount(PLACE) ~> #continueAt(TARGET)
     </k>
     requires #functionName(FUNC) ==String "pinocchio_token_program::entrypoint::cheatcode_is_account"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-mint]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #mkPTokenMint(PLACE) ~> #continueAt(TARGET)
     </k>
     requires #functionName(FUNC) ==String "pinocchio_token_program::entrypoint::cheatcode_is_mint"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-multisig]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #mkPTokenMultisig(PLACE) ~> #continueAt(TARGET)
     </k>
     requires #functionName(FUNC) ==String "pinocchio_token_program::entrypoint::cheatcode_is_multisig"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-rent]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #mkPTokenRent(PLACE) ~> #continueAt(TARGET)
     </k>
     requires #functionName(FUNC) ==String "pinocchio_token_program::entrypoint::cheatcode_is_rent"
@@ -771,7 +771,7 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
 ```k
   // intercept calls to `borrow_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-data]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))), mutabilityNot)
       ~> #continueAt(TARGET)
     </k>
@@ -780,7 +780,7 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
 
   // intercept calls to `borrow_mut_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-mut-data]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))), mutabilityMut)
       ~> #continueAt(TARGET)
     </k>
@@ -848,7 +848,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
 ```k
   // intercept calls to `load_unchecked` and `load_mut_unchecked`
   rule [cheatcode-mk-iface-account-ref]:
-    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccountRef(DEST, OPERAND, PAccountIAcc, true)
       ~> #continueAt(TARGET)
     </k>
@@ -860,7 +860,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     [priority(30), preserves-definedness]
 
   rule [cheatcode-mk-imint-ref]:
-    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccountRef(DEST, OPERAND, PAccountIMint, true)
       ~> #continueAt(TARGET)
     </k>
@@ -872,7 +872,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     [priority(30), preserves-definedness]
 
   rule [cheatcode-mk-imulti-ref]:
-    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccountRef(DEST, OPERAND, PAccountIMulti, true)
       ~> #continueAt(TARGET)
     </k>
@@ -884,7 +884,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     [priority(30), preserves-definedness]
 
   rule [cheatcode-mk-prent-ref]:
-    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccountRef(DEST, OPERAND, PAccountPRent, false)
       ~> #continueAt(TARGET)
     </k>
@@ -930,7 +930,7 @@ Therefore, the value gets created in a dedicated place on first access.
 
 ```k
   rule [cheatcode-get-sys-prent]:
-    <k> #execTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND) ~> _CONT
+    <k> #execTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #writeSysRent(DEST)
       ~> #continueAt(TARGET)
     </k>
