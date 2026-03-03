@@ -65,6 +65,7 @@ class KompileDigest:
     llvm_target: str
     llvm_lib_target: str
     haskell_target: str
+    break_on_function: str
 
     @staticmethod
     def load(target_dir: Path) -> KompileDigest:
@@ -80,6 +81,7 @@ class KompileDigest:
             llvm_target=data['llvm-target'],
             llvm_lib_target=data['llvm-lib-target'],
             haskell_target=data['haskell-target'],
+            break_on_function=data.get('break-on-function', ''),
         )
 
     def write(self, target_dir: Path) -> None:
@@ -91,6 +93,7 @@ class KompileDigest:
                     'llvm-target': self.llvm_target,
                     'llvm-lib-target': self.llvm_lib_target,
                     'haskell-target': self.haskell_target,
+                    'break-on-function': self.break_on_function,
                 },
             ),
         )
@@ -205,6 +208,7 @@ def kompile_smir(
     llvm_target: str | None = None,
     llvm_lib_target: str | None = None,
     haskell_target: str | None = None,
+    break_on_function: list[str] | None = None,
 ) -> KompiledSMIR:
     kompile_digest: KompileDigest | None = None
     try:
@@ -222,6 +226,7 @@ def kompile_smir(
         llvm_target=llvm_target,
         llvm_lib_target=llvm_lib_target,
         haskell_target=haskell_target,
+        break_on_function=';'.join(break_on_function) if break_on_function else '',
     )
 
     target_hs_path = target_dir / 'haskell'
@@ -242,7 +247,7 @@ def kompile_smir(
 
     haskell_def_dir = kdist.which(haskell_target)
     kmir = KMIR(haskell_def_dir)
-    smir_rules: list[Sentence] = list(make_kore_rules(kmir, smir_info))
+    smir_rules: list[Sentence] = list(make_kore_rules(kmir, smir_info, break_on_function=break_on_function))
     _LOGGER.info(f'Generated {len(smir_rules)} function equations to add to `definition.kore')
 
     # Load and convert extra module rules if provided
@@ -437,7 +442,9 @@ def _make_stratified_rules(
     return [*declarations, *dispatch, *defaults, *equations]
 
 
-def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> Sequence[Sentence]:
+def make_kore_rules(
+    kmir: KMIR, smir_info: SMIRInfo, *, break_on_function: list[str] | None = None
+) -> Sequence[Sentence]:
     # kprint tool is too chatty
     kprint_logger = logging.getLogger('pyk.ktool.kprint')
     kprint_logger.setLevel(logging.WARNING)
@@ -489,7 +496,12 @@ def make_kore_rules(kmir: KMIR, smir_info: SMIRInfo) -> Sequence[Sentence]:
         kmir, 'lookupAlloc', 'AllocId', 'Evaluation', 'allocId', allocs, invalid_alloc_n
     )
 
-    return [*equations, *type_equations, *alloc_equations]
+    # Generate break-on-function filter rule if filters are provided
+    break_on_rules: list[Axiom] = []
+    if break_on_function:
+        break_on_rules.append(_mk_break_on_functions_rule(kmir, break_on_function))
+
+    return [*equations, *type_equations, *alloc_equations, *break_on_rules]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
@@ -540,6 +552,30 @@ def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInne
         priority=50,
         uid='fubar',
         label='fubaz',
+    )
+    return rule.to_axiom()
+
+
+def _mk_break_on_functions_rule(kmir: KMIR, break_on_function: list[str]) -> Axiom:
+    """Generate Kore rule for filtering function breaks: `#breakOnFunctionsString(0) => "filter1;filter2;..."`"""
+    from pyk.kore.prelude import int_dv
+    from pyk.kore.rule import FunctionRule
+
+    filter_string = ';'.join(break_on_function)
+    fun_app = App('LblbreakOnFunctionsString', (), (int_dv(0),))
+    result_kore = kmir.kast_to_kore(stringToken(filter_string), KSort('String'))
+
+    rule = FunctionRule(
+        lhs=fun_app,
+        rhs=result_kore,
+        req=None,
+        ens=None,
+        sort=SortApp('SortString'),
+        arg_sorts=(SortApp('SortInt'),),
+        anti_left=None,
+        priority=50,
+        uid='breakOnFunctionsString-generated',
+        label='breakOnFunctionsString-generated',
     )
     return rule.to_axiom()
 

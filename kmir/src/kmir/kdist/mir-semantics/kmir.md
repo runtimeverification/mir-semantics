@@ -31,8 +31,10 @@ See [`rt/configuration.md`](./rt/configuration.md) for a detailed description of
 ```k
 module KMIR-CONTROL-FLOW
   imports BOOL
+  imports COLLECTIONS
   imports LIST
   imports MAP
+  imports STRING
   imports K-EQUAL
 
   imports MONO
@@ -309,30 +311,39 @@ The call stack is not necessarily empty at this point so it is left untouched.
 where the returned result should go.
 
 ```k
-  syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction)
+  syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
 
-  rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), _SPAN))
-        => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND)
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), SPAN))
+        => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
 
-  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), .ProjectionElems)), ARGS, DEST, TARGET, UNWIND), _SPAN))
-        => #execTerminatorCall(tyOfLocal(getLocal(LOCALS, I)), lookupFunction(tyOfLocal(getLocal(LOCALS, I))), ARGS, DEST, TARGET, UNWIND)
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), .ProjectionElems)), ARGS, DEST, TARGET, UNWIND), SPAN))
+        => #execTerminatorCall(tyOfLocal(getLocal(LOCALS, I)), lookupFunction(tyOfLocal(getLocal(LOCALS, I))), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
       <locals> LOCALS </locals>
 
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
-        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND) ~> _
-         => #execIntrinsic(FUNC, ARGS, DEST) ~> #continueAt(TARGET)
+        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
         </k>
     requires isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  // Intrinsic function call to a function in the break-on set - same as termCallIntrinsic but separate rule id for cut-point
+  rule [termCallIntrinsicFilter]:
+        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        </k>
+    requires isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
-       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND) ~> _
-        => #setUpCalleeData(FUNC, ARGS)
+       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+        => #setUpCalleeData(FUNC, ARGS, SPAN)
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
        <currentFrame>
@@ -345,10 +356,71 @@ where the returned result should go.
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
+  rule [termCallFunctionFilter]:
+       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+        => #setUpCalleeData(FUNC, ARGS, SPAN)
+       </k>
+       <currentFunc> CALLER => FTY </currentFunc>
+       <currentFrame>
+         <currentBody> _ </currentBody>
+         <caller> OLDCALLER => CALLER </caller>
+         <dest> OLDDEST => DEST </dest>
+         <target> OLDTARGET => TARGET </target>
+         <unwind> OLDUNWIND => UNWIND </unwind>
+         <locals> LOCALS </locals>
+       </currentFrame>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+    requires notBool isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
   rule isIntrinsicFunction(_) => false [owise]
+
+  syntax String ::= getFunctionName(MonoItemKind) [function, total]
+  //---------------------------------------------------------------
+  rule getFunctionName(monoItemFn(symbol(NAME), _, _)) => NAME
+  rule getFunctionName(monoItemStatic(symbol(NAME), _, _)) => NAME
+  rule getFunctionName(monoItemGlobalAsm(_)) => ""
+  rule getFunctionName(IntrinsicFunction(symbol(NAME))) => NAME
+
+  // Check whether a function name matches any filter in the break-on-functions list.
+  syntax Bool ::= #functionNameMatchesEnv(String) [function, total]
+  //----------------------------------------------------------------
+  rule #functionNameMatchesEnv(NAME) => #functionNameMatchesEnvStr(NAME, #breakOnFunctionsString(0))
+
+  // The Int argument is unused; it exists only so the Haskell backend can
+  // pattern-match on it and not error since zero-argument functions cannot use [owise].
+  syntax String ::= #breakOnFunctionsString(Int) [function, total, symbol(breakOnFunctionsString)]
+  //-----------------------------------------------------------------------------------------------
+  rule #breakOnFunctionsString(_) => "" [owise] // This gets overridden by corresponding python function
+
+  syntax Bool ::= #functionNameMatchesEnvStr(String, String) [function, total]
+  //--------------------------------------------------------------------------
+  rule #functionNameMatchesEnvStr(_, "") => false
+  rule #functionNameMatchesEnvStr(NAME, ENV) => #functionNameMatchesAnyList(NAME, #splitSemicolon(ENV))
+    requires ENV =/=String ""
+
+  syntax List ::= #splitSemicolon(String) [function, total]
+  //--------------------------------------------------------
+  rule #splitSemicolon(S) => #splitSemicolonAux(S, findString(S, ";", 0))
+
+  syntax List ::= #splitSemicolonAux(String, Int) [function, total]
+  //-----------------------------------------------------------------
+  rule #splitSemicolonAux(S, -1) => ListItem(S)
+  rule #splitSemicolonAux(S, I) =>
+      ListItem(substrString(S, 0, I)) #splitSemicolon(substrString(S, I +Int 1, lengthString(S)))
+    requires I >=Int 0
+
+  syntax Bool ::= #functionNameMatchesAnyList(String, List) [function, total]
+  //-------------------------------------------------------------------------
+  rule #functionNameMatchesAnyList(_, .List) => false
+  rule #functionNameMatchesAnyList(NAME, ListItem(FILTER:String) REST) =>
+      0 <=Int findString(NAME, FILTER, 0) orBool #functionNameMatchesAnyList(NAME, REST)
+  rule #functionNameMatchesAnyList(_, _) => false [owise]
 
   syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
   rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>
@@ -360,12 +432,13 @@ The local data has to be set up for the call, which requires information about t
 An operand may be a `Reference` (the only way a function could access another function call's `local` variables). For this case, the stack height in the `Reference` must be incremented because a stack frame is added.
 
 ```k
-  syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands)
+  syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
 
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule [setupCalleeData]: <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
-              ARGS
+              ARGS,
+              _SPAN
               )
          =>
            #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
@@ -394,7 +467,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
-                 | #execIntrinsic ( MonoItemKind, Operands, Place )
+                 | #execIntrinsic ( MonoItemKind, Operands, Place, Span )
 
   // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
@@ -456,7 +529,8 @@ Therefore a heuristics is used here:
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
                 operandMove(place(local(CLOSURE:Int), .ProjectionElems))
                 operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands
+                .Operands,
+                _SPAN
               )
          =>
            #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
@@ -485,7 +559,8 @@ Therefore a heuristics is used here:
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
                 operandMove(place(local(CLOSURE:Int), .ProjectionElems))
                 operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands
+                .Operands,
+                _SPAN
               )
          =>
            #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)

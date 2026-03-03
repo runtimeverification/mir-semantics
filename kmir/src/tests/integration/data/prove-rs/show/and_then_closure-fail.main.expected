@@ -3,10 +3,10 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (35 steps)
+│  (142 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toAlloc ( allocId ( 0 ) ) , StringVal ( "123" ) , .Project
-    span: 48
+    #traverseProjection ( toLocal ( 2 ) , Aggregate ( variantIdx ( 0 ) , ListItem (
+    span: 157
 
 
 ┌─ 2 (root, leaf, target, terminal)
