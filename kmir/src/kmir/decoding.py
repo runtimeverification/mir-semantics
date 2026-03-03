@@ -431,10 +431,19 @@ def _decode_fields(
     types: Mapping[Ty, TypeMetadata],
 ) -> list[Value]:
     res: list[Value] = []
-    for ty, offset in zip(tys, offsets, strict=True):
+    for index, ty in enumerate(tys):
         type_info = types[ty]
         size_in_bytes = type_info.nbytes(types)
-        field_data = data[offset.in_bytes : offset.in_bytes + size_in_bytes]
+
+        if index < len(offsets):
+            offset_in_bytes = offsets[index].in_bytes
+        elif size_in_bytes == 0:
+            # Stable MIR can omit offsets for trailing ZST fields.
+            offset_in_bytes = 0
+        else:
+            raise ValueError(f'Missing offset for non-ZST field at index {index}')
+
+        field_data = data[offset_in_bytes : offset_in_bytes + size_in_bytes]
         value = decode_value(field_data, type_info, types)
         res.append(value)
     return res

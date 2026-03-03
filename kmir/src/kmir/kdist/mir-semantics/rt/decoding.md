@@ -354,6 +354,126 @@ In both cases we expect the tag to be in the single shared field, and the discri
     => UnableToDecode(BYTES, ENUM_TYPE)
     [owise]
 
+  // Two-variant enums with one field on each variant and direct tags.
+  // This covers direct-tag layouts beyond Option-style 0/1 tags.
+  rule #decodeValue(
+         BYTES
+       , typeInfoEnumType(...
+           name: _
+         , adtDef: _
+         , discriminants: DISC0 DISC1 .Discriminants
+         , fields: ((FIELD0 .Tys) : (FIELD1 .Tys) : .Tyss)
+         , layout:
+            someLayoutShape(layoutShape(...
+                fields: fieldsShapeArbitrary(mk(... offsets: TOP_LEVEL_OFFSETS))
+              , variants:
+                  variantsShapeMultiple(
+                    mk(...
+                        tag: scalarInitialized(
+                          mk(...
+                              value: primitiveInt(mk(... length: TAG_WIDTH, signed: TAG_SIGNED))
+                            , validRange: _RANGE
+                          )
+                        )
+                      , tagEncoding: tagEncodingDirect
+                      , tagField: 0
+                      , variants:
+                          layoutShape(...
+                              fields: fieldsShapeArbitrary(mk(... offsets: OFFSETS0))
+                            , variants: variantsShapeSingle(mk(... index: variantIdx(0)))
+                            , abi: _VARIANT_ABI0
+                            , abiAlign: _VARIANT_ABI_ALIGN0
+                            , size: _VARIANT_SIZE0
+                          )
+                          layoutShape(...
+                              fields: fieldsShapeArbitrary(mk(... offsets: OFFSETS1))
+                            , variants: variantsShapeSingle(mk(... index: variantIdx(1)))
+                            , abi: _VARIANT_ABI1
+                            , abiAlign: _VARIANT_ABI_ALIGN1
+                            , size: _VARIANT_SIZE1
+                          )
+                          .LayoutShapes
+                      )
+                    )
+              , abi: _ABI
+              , abiAlign: _ABI_ALIGN
+              , size: _SIZE
+            ))
+         ) #as ENUM_TYPE
+       )
+    => #decodeEnumTagDirectTwoSingle(
+         BYTES,
+         TAG_WIDTH,
+         TAG_SIGNED,
+         DISC0,
+         DISC1,
+         FIELD0,
+         OFFSETS0,
+         FIELD1,
+         OFFSETS1,
+         ENUM_TYPE
+       )
+    requires      TOP_LEVEL_OFFSETS ==K machineSize(mirInt(0)) .MachineSizes
+             orBool TOP_LEVEL_OFFSETS ==K machineSize(0) .MachineSizes
+
+  syntax Evaluation ::= #decodeEnumTagDirectTwoSingle ( Bytes , IntegerLength , MIRBool , Discriminant , Discriminant , Ty , MachineSizes , Ty , MachineSizes , TypeInfo ) [function, total]
+  // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  rule #decodeEnumTagDirectTwoSingle(BYTES, LEN, TAG_SIGNED, DISC0, _DISC1, TY0, OFFSET0 .MachineSizes, _TY1, _OFFSETS1, _ENUM_TYPE)
+    => Aggregate(
+         variantIdx(0),
+         ListItem(#decodeValue(substrBytes(BYTES, #msBytes(OFFSET0), #msBytes(OFFSET0) +Int #elemSize(lookupTy(TY0))), lookupTy(TY0)))
+       )
+    requires #decodeEnumDirectTag(BYTES, LEN, TAG_SIGNED) ==Int #discriminantInt(DISC0)
+     andBool lengthBytes(BYTES) >=Int (#msBytes(OFFSET0) +Int #elemSize(lookupTy(TY0)))
+    [preserves-definedness]
+
+  rule #decodeEnumTagDirectTwoSingle(BYTES, LEN, TAG_SIGNED, DISC0, _DISC1, TY0, .MachineSizes, _TY1, _OFFSETS1, _ENUM_TYPE)
+    => Aggregate(
+         variantIdx(0),
+         ListItem(#decodeValue(substrBytes(BYTES, 0, 0), lookupTy(TY0)))
+       )
+    requires #decodeEnumDirectTag(BYTES, LEN, TAG_SIGNED) ==Int #discriminantInt(DISC0)
+     andBool #elemSize(lookupTy(TY0)) ==Int 0
+    [preserves-definedness]
+
+  rule #decodeEnumTagDirectTwoSingle(BYTES, LEN, TAG_SIGNED, _DISC0, DISC1, _TY0, _OFFSETS0, TY1, OFFSET1 .MachineSizes, _ENUM_TYPE)
+    => Aggregate(
+         variantIdx(1),
+         ListItem(#decodeValue(substrBytes(BYTES, #msBytes(OFFSET1), #msBytes(OFFSET1) +Int #elemSize(lookupTy(TY1))), lookupTy(TY1)))
+       )
+    requires #decodeEnumDirectTag(BYTES, LEN, TAG_SIGNED) ==Int #discriminantInt(DISC1)
+     andBool lengthBytes(BYTES) >=Int (#msBytes(OFFSET1) +Int #elemSize(lookupTy(TY1)))
+    [preserves-definedness]
+
+  rule #decodeEnumTagDirectTwoSingle(BYTES, LEN, TAG_SIGNED, _DISC0, DISC1, _TY0, _OFFSETS0, TY1, .MachineSizes, _ENUM_TYPE)
+    => Aggregate(
+         variantIdx(1),
+         ListItem(#decodeValue(substrBytes(BYTES, 0, 0), lookupTy(TY1)))
+       )
+    requires #decodeEnumDirectTag(BYTES, LEN, TAG_SIGNED) ==Int #discriminantInt(DISC1)
+     andBool #elemSize(lookupTy(TY1)) ==Int 0
+    [preserves-definedness]
+
+  rule #decodeEnumTagDirectTwoSingle(BYTES, _LEN, _TAG_SIGNED, _DISC0, _DISC1, _TY0, _OFFSETS0, _TY1, _OFFSETS1, ENUM_TYPE)
+    => UnableToDecode(BYTES, ENUM_TYPE)
+    [owise]
+
+  syntax Int ::= #discriminantInt ( Discriminant ) [function, total]
+  // -------------------------------------------------------------
+  rule #discriminantInt(discriminant(DISCRIMINANT:Int)) => DISCRIMINANT
+  rule #discriminantInt(discriminant(mirInt(DISCRIMINANT:Int))) => DISCRIMINANT
+
+  syntax Int ::= #decodeEnumDirectTag ( Bytes , IntegerLength , MIRBool ) [function, total]
+  // ------------------------------------------------------------------------------------
+  rule #decodeEnumDirectTag(BYTES, LEN, TAG_SIGNED)
+    => Bytes2Int(substrBytes(BYTES, 0, #byteLength(LEN)), LE, #tagSignedness(TAG_SIGNED))
+
+  syntax Signedness ::= #tagSignedness ( MIRBool ) [function, total]
+  // ------------------------------------------------------------
+  rule #tagSignedness(mirBool(true)) => Signed
+  rule #tagSignedness(mirBool(false)) => Unsigned
+  rule #tagSignedness(_) => Unsigned [owise]
+
   syntax Int ::= #byteLength ( IntegerLength ) [function, total]
   // -----------------------------------------------------------
   rule #byteLength(integerLengthI8  ) => 1
