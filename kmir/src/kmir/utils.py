@@ -300,6 +300,7 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
     }
 
     annotations: list[str] = []
+    span: int | None = None
 
     match k_cell:
         case KSequence(items=(KApply(label=KLabel(name=label_name), args=args), *_)) | KApply(
