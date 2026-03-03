@@ -213,11 +213,11 @@
     },
     "nixpkgs-unstable_2": {
       "locked": {
-        "lastModified": 1771369470,
-        "narHash": "sha256-0NBlEBKkN3lufyvFegY4TYv5mCNHbi5OmBDrzihbBMQ=",
+        "lastModified": 1772433332,
+        "narHash": "sha256-izhTDFKsg6KeVBxJS9EblGeQ8y+O8eCa6RcW874vxEc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "0182a361324364ae3f436a63005877674cf45efb",
+        "rev": "cf59864ef8aa2e178cccedbe2c178185b0365705",
         "type": "github"
       },
       "original": {
@@ -556,17 +556,17 @@
         "rv-nix-tools": "rv-nix-tools_4"
       },
       "locked": {
-        "lastModified": 1771566009,
-        "narHash": "sha256-qQGfpcHC12ltraBMnvlwSuY0bEgsMMPdNEjaLW9W8yQ=",
+        "lastModified": 1772509622,
+        "narHash": "sha256-4xrcFDb+Vy310S9Sli/7/BiCsf0Jfdp/qqEBLHjCOzE=",
         "owner": "runtimeverification",
         "repo": "stable-mir-json",
-        "rev": "9a7810914a338dfc2533b04bdb14b19c1943fdb8",
+        "rev": "047ca6ac01786e1b616e13a216d70268b9785e17",
         "type": "github"
       },
       "original": {
         "owner": "runtimeverification",
         "repo": "stable-mir-json",
-        "rev": "9a7810914a338dfc2533b04bdb14b19c1943fdb8",
+        "rev": "047ca6ac01786e1b616e13a216d70268b9785e17",
         "type": "github"
       }
     },
