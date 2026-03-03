@@ -307,9 +307,9 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
                     KApply(
                         label=KLabel(name='MonoItemKind::MonoItemFn'),
                         args=[
-                            KApply(args=[KToken()]),
+                            KApply(args=[KToken(token=symbol_name)]),
                             KApply(label=KLabel(name='defId(_)_BODY_DefId_Int'), args=[KToken(token=def_id_str)]),
-                            KApply(label=KLabel(name='noBody_BODY_MaybeBody'), args=[]),
+                            _,
                         ],
                     ),
                     operands,
