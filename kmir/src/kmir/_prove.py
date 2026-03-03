@@ -63,6 +63,7 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             symbolic=True,
             haskell_target=opts.haskell_target,
             llvm_lib_target=opts.llvm_lib_target,
+            break_on_function=opts.break_on_function or None,
         )
     else:
         _LOGGER.info(f'Constructing initial proof: {label}')
@@ -92,6 +93,7 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
             symbolic=True,
             haskell_target=opts.haskell_target,
             llvm_lib_target=opts.llvm_lib_target,
+            break_on_function=opts.break_on_function or None,
         )
 
         proof = apr_proof_from_smir(
@@ -122,6 +124,7 @@ def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
         break_on_terminator_unreachable=opts.break_on_terminator_unreachable,
         break_every_terminator=opts.break_every_terminator,
         break_every_step=opts.break_every_step,
+        break_on_function=opts.break_on_function,
     )
 
     if opts.max_workers and opts.max_workers > 1:
@@ -251,6 +254,7 @@ def _cut_point_rules(
     break_on_terminator_unreachable: bool,
     break_every_terminator: bool,
     break_every_step: bool,
+    break_on_function: list[str] | None = None,
 ) -> list[str]:
     cut_point_rules = []
     if break_on_thunk:
@@ -291,6 +295,9 @@ def _cut_point_rules(
         or break_every_step
     ):
         cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunction')
+    if break_on_function:
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunctionFilter')
+        cut_point_rules.append('KMIR-CONTROL-FLOW.termCallIntrinsicFilter')
     if break_on_terminator_assert or break_every_terminator or break_every_step:
         cut_point_rules.append('KMIR-CONTROL-FLOW.termAssert')
     if break_on_terminator_drop or break_every_terminator or break_every_step:
