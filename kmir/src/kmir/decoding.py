@@ -445,10 +445,12 @@ def _extract_tag(*, data: bytes, tag_offset: MachineSize, tag: Scalar) -> tuple[
         case Initialized(
             value=PrimitiveInt(
                 length=length,
-                signed=False,
+                signed=_,
             ),
             valid_range=_,
         ):
+            # Stable MIR enum discriminants are represented against the raw tag bits.
+            # Use unsigned decoding even when the scalar metadata marks the tag as signed.
             tag_data = data[tag_offset.in_bytes : tag_offset.in_bytes + length.value]
             tag_value = int.from_bytes(tag_data, byteorder='little', signed=False)
             return tag_value, length
