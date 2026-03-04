@@ -68,7 +68,7 @@ jobs:
       - name: 'Run integration tests'
         run: |
           docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make test-integration \
-            TEST_ARGS='-k not (test_exec_smir and llvm) and not test_prove_termination'
+            TEST_ARGS='-k not llvm and not test_prove_termination'
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
