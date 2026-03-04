@@ -1,0 +1,69 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (33 steps)
+├─ 3
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+│   function: main
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   #execBlockIdx ( basicBlockIdx ( 2 ) ) ~> .K
+┃  │   function: main
+┃  │
+┃  │  (9 steps)
+┃  └─ 7 (stuck, leaf)
+┃      #traverseProjection ( toLocal ( 2 ) , thunk ( UnableToDecode ( b"\x00\x01" , typ
+┃      function: main
+┃      span: 50
+┃
+┣━━┓
+┃  │
+┃  ├─ 5
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 1 ) )
+┃  │   function: main
+┃  ┃
+┃  ┃ (1 step)
+┃  ┣━━┓
+┃  ┃  │
+┃  ┃  ├─ 8
+┃  ┃  │   #execBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K
+┃  ┃  │   function: main
+┃  ┃  │
+┃  ┃  │  (28 steps)
+┃  ┃  └─ 11 (stuck, leaf)
+┃  ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
+┃  ┃      span: 32
+┃  ┃
+┃  ┣━━┓
+┃  ┃  │
+┃  ┃  ├─ 9
+┃  ┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+┃  ┃  │   function: main
+┃  ┃  │
+┃  ┃  │  (6 steps)
+┃  ┃  └─ 12 (stuck, leaf)
+┃  ┃      #ProgramError ( ReachedUnreachable ) ~> .K
+┃  ┃      function: main
+┃  ┃
+┃  ┗━━┓
+┃     │
+┃     └─ 10 (stuck, leaf)
+┃         #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 1 ) )
+┃         function: main
+┃
+┗━━┓
+   │
+   └─ 6 (stuck, leaf)
+       #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+       function: main
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
