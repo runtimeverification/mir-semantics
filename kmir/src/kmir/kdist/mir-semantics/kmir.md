@@ -548,8 +548,10 @@ Therefore a heuristics is used here:
      andBool isTypedValue(LOCALS[TUPLE])
      andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
      andBool isTypedLocal(LOCALS[CLOSURE])
-     andBool typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
-              // either the closure ref type is missing from type table
+     andBool (
+               typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
+               orBool isFunType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+             )
     [priority(40), preserves-definedness]
 
   rule [setupCalleeClosure2]: <k> #setUpCalleeData(
