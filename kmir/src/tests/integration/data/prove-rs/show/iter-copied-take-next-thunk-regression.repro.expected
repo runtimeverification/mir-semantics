@@ -1,0 +1,72 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (337 steps)
+├─ 3 (split)
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool 1 <=Int ARG_UINT1:Int
+┃  │
+┃  ├─ 4
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
+┃  │
+┃  │  (17 steps)
+┃  ├─ 6 (terminal)
+┃  │   #EndProgram ~> .K
+┃  │
+┃  ┊  constraint: true
+┃  ┊  subst: ...
+┃  └─ 2 (leaf, target, terminal)
+┃      #EndProgram ~> .K
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     1 <=Int ARG_UINT1:Int
+   │
+   ├─ 5
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
+   │
+   │  (27 steps)
+   ├─ 7 (split)
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
+   ┃
+   ┃ (branch)
+   ┣━━┓ subst: .Subst
+   ┃  ┃ constraint:
+   ┃  ┃     notBool ARG_UINT1:Int <=Int 11
+   ┃  │
+   ┃  ├─ 8
+   ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
+   ┃  │
+   ┃  │  (17 steps)
+   ┃  ├─ 10 (terminal)
+   ┃  │   #EndProgram ~> .K
+   ┃  │
+   ┃  ┊  constraint: true
+   ┃  ┊  subst: ...
+   ┃  └─ 2 (leaf, target, terminal)
+   ┃      #EndProgram ~> .K
+   ┃
+   ┗━━┓ subst: .Subst
+      ┃ constraint:
+      ┃     ARG_UINT1:Int <=Int 11
+      │
+      ├─ 9
+      │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
+      │
+      │  (706 steps)
+      ├─ 11 (terminal)
+      │   #EndProgram ~> .K
+      │
+      ┊  constraint: true
+      ┊  subst: ...
+      └─ 2 (leaf, target, terminal)
+          #EndProgram ~> .K
+
+
+

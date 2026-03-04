@@ -38,6 +38,9 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
     'test_offset_from-fail': ['testing'],
+    'closure-fnonce-single-arg': ['repro'],
+    'iter-copied-take-next-thunk-regression': ['repro'],
+    'iter-map-eq-copied-take-thunk-frontier-fail': ['repro'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -65,6 +68,9 @@ PROVE_RS_SHOW_SPECS = [
     'ref-ptr-cast-elem-offset-fail',
     'and_then_closure-fail',
     'closure_access_struct-fail',
+    'closure-fnonce-single-arg',
+    'iter-copied-take-next-thunk-regression',
+    'iter-map-eq-copied-take-thunk-frontier-fail',
 ]
 
 
