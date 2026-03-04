@@ -297,27 +297,24 @@ If there are no fields, the enum can be decoded by using their data as the discr
    requires TAG =/=Int DISCRIMINANT
 ```
 
-#### Enums with two variants
+#### Enums with direct tag encoding and fields
 
-Having two variants with possibly zero or one field each is a very common case,
-it includes a number of standard library types such as `Option` and `Result`.
-
-The following rules are specialised to the case of encoding an `Option`.
-An important distinction here is whether or not the tag is niche-encoded.
-If the option holds data that has all-zero as a possible value, a separate tag is used, usually as the first field.
-In both cases we expect the tag to be in the single shared field, and the discriminant to be just 0 and 1.
+This general decoder handles any enum with `tagEncodingDirect` and a `primitiveInt` tag,
+regardless of the number of variants, discriminant values, or field counts per variant.
+It subsumes the former specialised `#decodeOptionTag01` and `#decodeEnumTag01Single` rules.
 
 ```k
+  // General entry rule: direct-tag enum with at least one field somewhere.
   rule #decodeValue(
          BYTES
        , typeInfoEnumType(...
            name: _
          , adtDef: _
-         , discriminants: discriminant(0) discriminant(1) .Discriminants
-         , fields: (.Tys : (FIELD_TYPE .Tys) : .Tyss)
+         , discriminants: DISCRIMINANTS
+         , fields: FIELD_TYPESS
          , layout:
             someLayoutShape(layoutShape(...
-                fields: fieldsShapeArbitrary(mk(... offsets: machineSize(0) .MachineSizes))
+                fields: _FIELDS
               , variants:
                   variantsShapeMultiple(
                     mk(...
@@ -329,7 +326,7 @@ In both cases we expect the tag to be in the single shared field, and the discri
                         )
                       , tagEncoding: tagEncodingDirect
                       , tagField: 0
-                      , variants: _VARIANTS
+                      , variants: VARIANT_LAYOUTS
                       )
                     )
               , abi: _ABI
@@ -338,21 +335,73 @@ In both cases we expect the tag to be in the single shared field, and the discri
             ))
          ) #as ENUM_TYPE
        )
-    => #decodeOptionTag01(BYTES, TAG_WIDTH, FIELD_TYPE, ENUM_TYPE)
+    => #decodeEnumDirect(BYTES, TAG_WIDTH, DISCRIMINANTS, FIELD_TYPESS, VARIANT_LAYOUTS, ENUM_TYPE)
+    requires notBool #noFields(FIELD_TYPESS)
 
-  syntax Evaluation ::= #decodeOptionTag01 ( Bytes , IntegerLength , Ty , TypeInfo ) [function, total]
-  // --------------------------------------------------------------------------------------
-  rule #decodeOptionTag01(BYTES, _LEN, _TY, _ENUM_TYPE)
-    => Aggregate(variantIdx(0), .List)
-    requires 0 ==Int BYTES[0] // expect only 0 or 1 as tags, so higher bytes do not matter
+  // ---------------------------------------------------------------------------
+  // #decodeEnumDirect: read the tag, find the variant index, dispatch
+  // ---------------------------------------------------------------------------
+  syntax Evaluation ::= #decodeEnumDirect ( Bytes , IntegerLength , Discriminants , Tyss , LayoutShapes , TypeInfo ) [function, total]
+  // --------------------------------------------------------------------------------------------------------------------------
+  rule #decodeEnumDirect(BYTES, TAG_WIDTH, DISCRIMINANTS, FIELD_TYPESS, VARIANT_LAYOUTS, ENUM_TYPE)
+    => #decodeEnumDirectAt(
+         BYTES,
+         #findVariantIdx(#decodeEnumDirectTag(BYTES, TAG_WIDTH), DISCRIMINANTS),
+         TAG_WIDTH,
+         FIELD_TYPESS,
+         VARIANT_LAYOUTS,
+         ENUM_TYPE
+       )
+    requires lengthBytes(BYTES) >=Int #byteLength(TAG_WIDTH)
     [preserves-definedness]
-  rule #decodeOptionTag01(BYTES,  LEN,  TY, _ENUM_TYPE)
-    => Aggregate(variantIdx(1), ListItem(#decodeValue(substrBytes(BYTES, #byteLength(LEN), lengthBytes(BYTES)), lookupTy(TY))))
-    requires 1 ==Int BYTES[0] // expect only 0 or 1 as tags, so higher bytes do not matter
-    [preserves-definedness]
-  rule #decodeOptionTag01(BYTES, _LEN, _TY,  ENUM_TYPE)
+
+  rule #decodeEnumDirect(BYTES, _TAG_WIDTH, _DISCRIMINANTS, _FIELD_TYPESS, _VARIANT_LAYOUTS, ENUM_TYPE)
     => UnableToDecode(BYTES, ENUM_TYPE)
     [owise]
+
+  // ---------------------------------------------------------------------------
+  // #decodeEnumDirectAt: given the variant index, decode its fields
+  // ---------------------------------------------------------------------------
+  syntax Evaluation ::= #decodeEnumDirectAt ( Bytes , VariantIdx , IntegerLength , Tyss , LayoutShapes , TypeInfo ) [function, total]
+  // --------------------------------------------------------------------------------------------------------------------------
+  rule #decodeEnumDirectAt(BYTES, variantIdx(IDX), _TAG_WIDTH, FIELD_TYPESS, VARIANT_LAYOUTS, _ENUM_TYPE)
+    => Aggregate(
+         variantIdx(IDX),
+         #decodeFieldsWithOffsets(BYTES, #nthTys(FIELD_TYPESS, IDX), #nthVariantOffsets(VARIANT_LAYOUTS, IDX))
+       )
+    requires 0 <=Int IDX
+    [preserves-definedness]
+
+  // Error cases: variant not found or other failure
+  rule #decodeEnumDirectAt(BYTES, _, _TAG_WIDTH, _FIELD_TYPESS, _VARIANT_LAYOUTS, ENUM_TYPE)
+    => UnableToDecode(BYTES, ENUM_TYPE)
+    [owise]
+
+  // ---------------------------------------------------------------------------
+  // #decodeEnumDirectTag: read the tag bytes as an unsigned little-endian int
+  // ---------------------------------------------------------------------------
+  syntax Int ::= #decodeEnumDirectTag ( Bytes , IntegerLength ) [function, total]
+  rule #decodeEnumDirectTag(BYTES, TAG_WIDTH)
+    => Bytes2Int(substrBytes(BYTES, 0, #byteLength(TAG_WIDTH)), LE, Unsigned)
+    requires lengthBytes(BYTES) >=Int #byteLength(TAG_WIDTH)
+    [preserves-definedness]
+  rule #decodeEnumDirectTag(_, _) => -1 [owise]
+
+  // ---------------------------------------------------------------------------
+  // List-indexing helpers
+  // ---------------------------------------------------------------------------
+
+  // Index into a Tyss (list of per-variant field type lists)
+  syntax Tys ::= #nthTys ( Tyss , Int ) [function, total]
+  rule #nthTys(TYS : _REST, 0) => TYS
+  rule #nthTys(_TYS : REST, N) => #nthTys(REST, N -Int 1) requires N >Int 0
+  rule #nthTys(_, _) => .Tys [owise]
+
+  // Index into variant layouts and extract field offsets in one step (total)
+  syntax MachineSizes ::= #nthVariantOffsets ( LayoutShapes , Int ) [function, total]
+  rule #nthVariantOffsets(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _) _REST, 0) => OFFSETS
+  rule #nthVariantOffsets(_L REST, N) => #nthVariantOffsets(REST, N -Int 1) requires N >Int 0
+  rule #nthVariantOffsets(_, _) => .MachineSizes [owise]
 
   syntax Int ::= #byteLength ( IntegerLength ) [function, total]
   // -----------------------------------------------------------
