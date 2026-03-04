@@ -64,7 +64,6 @@ PROVE_RS_SHOW_SPECS = [
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
     'and_then_closure-fail',
-    'closure_access_struct-fail',
 ]
 
 

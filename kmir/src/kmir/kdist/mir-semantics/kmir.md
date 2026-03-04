@@ -581,16 +581,22 @@ Therefore a heuristics is used here:
                // or the closure ref type pointee is missing from the type table
      andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
      andBool isTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
-     andBool lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
+     andBool (
+               lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
+               orBool isFunType(lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty))
+             )
     [priority(45), preserves-definedness]
 
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
                 | isRefType ( TypeInfo ) [function, total]
+                | isFunType ( TypeInfo ) [function, total]
   // -------------------------------------------------------
   rule isTupleType(typeInfoTupleType(_, _)) => true
   rule isTupleType(    _                  ) => false [owise]
   rule isRefType(typeInfoRefType(_)) => true
   rule isRefType(    _             ) => false [owise]
+  rule isFunType(typeInfoFunType(_)) => true
+  rule isFunType(    _             ) => false [owise]
 
   syntax KItem ::= #setTupleArgs ( Int , Value )
                  | #setTupleArgs ( Int , List )
