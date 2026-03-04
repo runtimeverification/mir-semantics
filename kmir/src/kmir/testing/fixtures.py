@@ -22,11 +22,12 @@ def pytest_configure(config) -> None:
 
 def _normalize_symbol_hashes(text: str) -> str:
     """Normalize rustc symbol hash suffixes that drift across builds/environments."""
-    text = re.sub(r'(_ZN[0-9A-Za-z_]+17h)[0-9a-f]+E', r'\1<hash>E', text)
-    # Some show outputs truncate mangled symbols before trailing `E`.
-    text = re.sub(r'(_ZN[0-9A-Za-z_]+17h)[0-9a-f]+', r'\1<hash>', text)
+    # Normalize mangled symbol hashes, including generic names with `$` and `.`.
+    # Keep trailing `E` when present; truncated variants may omit it.
+    text = re.sub(r'(_ZN[0-9A-Za-z_$.]+17h)[0-9a-fA-F]+E', r'\1<hash>E', text)
+    text = re.sub(r'(_ZN[0-9A-Za-z_$.]+17h)[0-9a-fA-F]+', r'\1<hash>', text)
     # Normalize demangled hash suffixes (`...::h<hex>`).
-    text = re.sub(r'(::h)[0-9a-f]{8,}', r'\1<hash>', text)
+    text = re.sub(r'(::h)[0-9a-fA-F]{8,}', r'\1<hash>', text)
     return text
 
 
