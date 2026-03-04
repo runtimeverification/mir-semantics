@@ -548,8 +548,10 @@ Therefore a heuristics is used here:
      andBool isTypedValue(LOCALS[TUPLE])
      andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
      andBool isTypedLocal(LOCALS[CLOSURE])
-     andBool typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
-              // either the closure ref type is missing from type table
+     andBool (
+               typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
+               orBool isFunType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+             )
     [priority(40), preserves-definedness]
 
   rule [setupCalleeClosure2]: <k> #setUpCalleeData(
@@ -581,16 +583,22 @@ Therefore a heuristics is used here:
                // or the closure ref type pointee is missing from the type table
      andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
      andBool isTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
-     andBool lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
+     andBool (
+               lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
+               orBool isFunType(lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty))
+             )
     [priority(45), preserves-definedness]
 
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
                 | isRefType ( TypeInfo ) [function, total]
+                | isFunType ( TypeInfo ) [function, total]
   // -------------------------------------------------------
   rule isTupleType(typeInfoTupleType(_, _)) => true
   rule isTupleType(    _                  ) => false [owise]
   rule isRefType(typeInfoRefType(_)) => true
   rule isRefType(    _             ) => false [owise]
+  rule isFunType(typeInfoFunType(_)) => true
+  rule isFunType(    _             ) => false [owise]
 
   syntax KItem ::= #setTupleArgs ( Int , Value )
                  | #setTupleArgs ( Int , List )
