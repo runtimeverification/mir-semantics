@@ -280,6 +280,8 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                     | typeInfoRefType(Ty)                        [symbol(TypeInfo::RefType)      , group(mir-enum---pointee-type)]
                     | typeInfoTupleType(types: Tys, layout: MaybeLayoutShape)
                                                             [symbol(TypeInfo::TupleType)    , group(mir-enum---types--layout)]
+                    | TypeInfoDynType(name: MIRString, layout: MaybeLayoutShape)
+                                                            [symbol(TypeInfo::DynType)      , group(mir-enum---name--layout)]
                     | typeInfoFunType(MIRString)                 [symbol(TypeInfo::FunType)      , group(mir-enum)]
                     | "typeInfoVoidType"                         [symbol(TypeInfo::VoidType)     , group(mir-enum)]
 
