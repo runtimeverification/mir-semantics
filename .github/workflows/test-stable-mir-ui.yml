@@ -1,0 +1,86 @@
+name: 'Stable MIR UI Tests'
+on:
+  workflow_dispatch:
+    inputs:
+      test-filter:
+        description: 'Passed as -k to pytest (empty = all tests)'
+        type: string
+        default: ''
+      update-skip:
+        description: 'Enable --update-skip mode to shrink skip.txt'
+        type: boolean
+        default: false
+      timeout:
+        description: 'Per-test timeout in seconds'
+        type: string
+        default: '300'
+
+jobs:
+  stable-mir-ui-tests:
+    name: 'Stable MIR UI Tests'
+    runs-on: [self-hosted, linux, normal]
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+          submodules: recursive
+
+      - name: 'Check out Rust repo'
+        uses: actions/checkout@v4
+        with:
+          repository: rust-lang/rust
+          ref: a2545fd6fc66b4323f555223a860c451885d1d2b
+          path: rust
+          fetch-depth: 1
+
+      - name: 'Set up Docker'
+        uses: ./.github/actions/with-docker
+        with:
+          container-name: mir-ui-ci-${{ github.sha }}
+
+      - name: 'Copy Rust repo into container'
+        run: docker cp rust mir-ui-ci-${GITHUB_SHA}:/home/github-user/workspace/rust
+
+      - name: 'Build kmir'
+        run: docker exec --user github-user mir-ui-ci-${GITHUB_SHA} make build
+
+      - name: 'Build TEST_ARGS'
+        id: test-args
+        env:
+          INPUT_FILTER: ${{ inputs.test-filter }}
+          INPUT_TIMEOUT: ${{ inputs.timeout }}
+          INPUT_UPDATE_SKIP: ${{ inputs.update-skip }}
+        run: |
+          ARGS="--timeout=${INPUT_TIMEOUT}"
+          if [ -n "${INPUT_FILTER}" ]; then
+            ARGS="${ARGS} -k \"${INPUT_FILTER}\""
+          fi
+          if [ "${INPUT_UPDATE_SKIP}" = "true" ]; then
+            ARGS="${ARGS} --update-skip"
+          fi
+          echo "args=${ARGS}" >> "$GITHUB_OUTPUT"
+
+      - name: 'Run stable-mir-ui tests'
+        run: |
+          docker exec --user github-user mir-ui-ci-${GITHUB_SHA} \
+            bash -c "RUST_DIR_ROOT=rust make test-stable-mir-ui TEST_ARGS='${{ steps.test-args.outputs.args }}'"
+
+      - name: 'Upload proof artifacts on failure'
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: proof-show-output
+          path: /tmp/pytest-*/**/show.txt
+          if-no-files-found: ignore
+
+      - name: 'Upload updated skip.txt'
+        if: inputs.update-skip
+        uses: actions/upload-artifact@v4
+        with:
+          name: updated-skip-txt
+          path: kmir/src/tests/external/data/stable-mir-ui/skip.txt
+
+      - name: 'Tear down Docker'
+        if: always()
+        run: docker stop --time 0 mir-ui-ci-${GITHUB_SHA}
