@@ -13569,6 +13569,69 @@
     "node": "KApply",
     "variable": false
   },
+  "0": {
+    "args": [
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "String",
+              "node": "KSort"
+            },
+            "token": "\"_ZN3std2rt19lang_start_internal17h<hash>E\""
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "symbol(_)_LIB_Symbol_String",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "Int",
+              "node": "KSort"
+            },
+            "token": "0"
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "defId(_)_BODY_DefId_Int",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [],
+        "arity": 0,
+        "label": {
+          "name": "noBody_BODY_MaybeBody",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      }
+    ],
+    "arity": 3,
+    "label": {
+      "name": "MonoItemKind::MonoItemFn",
+      "node": "KLabel",
+      "params": []
+    },
+    "node": "KApply",
+    "variable": false
+  },
   "13": {
     "args": [
       {
@@ -22521,6 +22584,195 @@
     "node": "KApply",
     "variable": false
   },
+  "27": {
+    "args": [
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "String",
+              "node": "KSort"
+            },
+            "token": "\"_ZN4core3fmt3num53_$LT$impl$u20$core..fmt..LowerHex$u20$for$u20$u32$GT$3fmt17h<hash>E\""
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "symbol(_)_LIB_Symbol_String",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "Int",
+              "node": "KSort"
+            },
+            "token": "27"
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "defId(_)_BODY_DefId_Int",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [],
+        "arity": 0,
+        "label": {
+          "name": "noBody_BODY_MaybeBody",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      }
+    ],
+    "arity": 3,
+    "label": {
+      "name": "MonoItemKind::MonoItemFn",
+      "node": "KLabel",
+      "params": []
+    },
+    "node": "KApply",
+    "variable": false
+  },
+  "28": {
+    "args": [
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "String",
+              "node": "KSort"
+            },
+            "token": "\"_ZN4core3fmt3num53_$LT$impl$u20$core..fmt..UpperHex$u20$for$u20$u32$GT$3fmt17h<hash>E\""
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "symbol(_)_LIB_Symbol_String",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "Int",
+              "node": "KSort"
+            },
+            "token": "28"
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "defId(_)_BODY_DefId_Int",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [],
+        "arity": 0,
+        "label": {
+          "name": "noBody_BODY_MaybeBody",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      }
+    ],
+    "arity": 3,
+    "label": {
+      "name": "MonoItemKind::MonoItemFn",
+      "node": "KLabel",
+      "params": []
+    },
+    "node": "KApply",
+    "variable": false
+  },
+  "29": {
+    "args": [
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "String",
+              "node": "KSort"
+            },
+            "token": "\"_ZN4core3fmt3num3imp52_$LT$impl$u20$core..fmt..Display$u20$for$u20$u32$GT$3fmt17h<hash>E\""
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "symbol(_)_LIB_Symbol_String",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "Int",
+              "node": "KSort"
+            },
+            "token": "29"
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "defId(_)_BODY_DefId_Int",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [],
+        "arity": 0,
+        "label": {
+          "name": "noBody_BODY_MaybeBody",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      }
+    ],
+    "arity": 3,
+    "label": {
+      "name": "MonoItemKind::MonoItemFn",
+      "node": "KLabel",
+      "params": []
+    },
+    "node": "KApply",
+    "variable": false
+  },
   "30": {
     "args": [
       {
@@ -27980,6 +28232,69 @@
     "arity": 1,
     "label": {
       "name": "IntrinsicFunction",
+      "node": "KLabel",
+      "params": []
+    },
+    "node": "KApply",
+    "variable": false
+  },
+  "36": {
+    "args": [
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "String",
+              "node": "KSort"
+            },
+            "token": "\"_ZN4core9panicking19assert_failed_inner17h<hash>E\""
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "symbol(_)_LIB_Symbol_String",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "Int",
+              "node": "KSort"
+            },
+            "token": "36"
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "defId(_)_BODY_DefId_Int",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [],
+        "arity": 0,
+        "label": {
+          "name": "noBody_BODY_MaybeBody",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      }
+    ],
+    "arity": 3,
+    "label": {
+      "name": "MonoItemKind::MonoItemFn",
       "node": "KLabel",
       "params": []
     },
