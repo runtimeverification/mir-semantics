@@ -1,0 +1,15 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (1077 steps)
+└─ 3 (stuck, leaf)
+    ListItem ( thunk ( #decodeConstant ( constantKindZeroSized , ty ( 89 ) , typeInf
+    span: 274
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
