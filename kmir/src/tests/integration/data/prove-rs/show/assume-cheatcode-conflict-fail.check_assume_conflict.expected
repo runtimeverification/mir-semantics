@@ -5,7 +5,7 @@
 │
 │  (61 steps)
 └─ 3 (stuck, leaf)
-    #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
+    #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
     span: 32
 
 
