@@ -3,11 +3,11 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (33 steps)
+│  (94 steps)
 └─ 3 (stuck, leaf)
-    ListItem ( Reference ( 0 , place ( ... local: local ( 1 ) , projection: .Project
-    function: main
-    span: 97
+    #setTupleArgs ( 2 , Integer ( 41 , 8 , false ) )
+~> #execBlock ( basicBlock ( ..
+    span: 121
 
 
 ┌─ 2 (root, leaf, target, terminal)
