@@ -57,7 +57,7 @@ test-integration: stable-mir-json build
 			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
 
 .PHONY: test-stable-mir-ui
-test-stable-mir-ui:
+test-stable-mir-ui: stable-mir-json build
 	@test -n "$(RUST_DIR_ROOT)" || (echo "RUST_DIR_ROOT is required. Example: RUST_DIR_ROOT=/path/to/rust make test-stable-mir-ui"; exit 2)
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/external/test_stable_mir_ui_pass.py --maxfail=1 --verbose $(TEST_ARGS)
 
