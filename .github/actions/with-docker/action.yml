@@ -17,6 +17,8 @@ runs:
       TAG=runtimeverificationinc/${CONTAINER_NAME}
       K_COMMIT=$(grep -Po '[0-9.]+' ./deps/k_release)
       UV_VERSION=$(cat deps/uv_release)
+      RUST_TOOLCHAIN=$(sed -nE 's/^channel = "([^"]+)"/\1/p' rust-toolchain.toml)
+      test -n "${RUST_TOOLCHAIN}"
 
       USER=github-user
       GROUP=${USER}
@@ -30,6 +32,7 @@ runs:
         --build-arg GROUP=${GROUP}           \
         --build-arg USER_ID=${USER_ID}       \
         --build-arg GROUP_ID=${GROUP_ID}     \
+        --build-arg RUST_TOOLCHAIN=${RUST_TOOLCHAIN} \
         --build-arg UV_VERSION=${UV_VERSION}
 
       docker run                          \

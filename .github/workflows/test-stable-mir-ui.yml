@@ -19,6 +19,8 @@ jobs:
   stable-mir-ui-tests:
     name: 'Stable MIR UI Tests'
     runs-on: [self-hosted, linux, normal]
+    env:
+      CONTAINER_NAME: mir-ui-ci-${{ github.sha }}
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
@@ -37,50 +39,85 @@ jobs:
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
         with:
-          container-name: mir-ui-ci-${{ github.sha }}
+          container-name: ${{ env.CONTAINER_NAME }}
 
       - name: 'Copy Rust repo into container'
-        run: docker cp rust mir-ui-ci-${GITHUB_SHA}:/home/github-user/workspace/rust
+        run: docker cp rust ${{ env.CONTAINER_NAME }}:/home/github-user/workspace/rust
+
+      - name: 'Build stable-mir-json'
+        run: docker exec --user github-user ${{ env.CONTAINER_NAME }} make stable-mir-json
 
       - name: 'Build kmir'
-        run: docker exec --user github-user mir-ui-ci-${GITHUB_SHA} make build
+        run: docker exec --user github-user ${{ env.CONTAINER_NAME }} make build
 
-      - name: 'Build TEST_ARGS'
-        id: test-args
+      - name: 'Run stable-mir-ui tests'
         env:
           INPUT_FILTER: ${{ inputs.test-filter }}
           INPUT_TIMEOUT: ${{ inputs.timeout }}
           INPUT_UPDATE_SKIP: ${{ inputs.update-skip }}
         run: |
-          ARGS="--timeout=${INPUT_TIMEOUT}"
+          test_args=(--timeout="${INPUT_TIMEOUT}")
           if [ -n "${INPUT_FILTER}" ]; then
-            ARGS="${ARGS} -k \"${INPUT_FILTER}\""
+            test_args+=(-k "${INPUT_FILTER}")
           fi
           if [ "${INPUT_UPDATE_SKIP}" = "true" ]; then
-            ARGS="${ARGS} --update-skip"
+            test_args+=(--update-skip)
           fi
-          echo "args=${ARGS}" >> "$GITHUB_OUTPUT"
+          printf -v test_args_escaped '%q ' "${test_args[@]}"
+          docker exec --user github-user \
+            --env RUST_DIR_ROOT=rust \
+            ${{ env.CONTAINER_NAME }} \
+            make test-stable-mir-ui "TEST_ARGS=${test_args_escaped}"
 
-      - name: 'Run stable-mir-ui tests'
+      - name: 'Copy proof artifacts from container'
+        if: failure()
         run: |
-          docker exec --user github-user mir-ui-ci-${GITHUB_SHA} \
-            bash -c "RUST_DIR_ROOT=rust make test-stable-mir-ui TEST_ARGS='${{ steps.test-args.outputs.args }}'"
+          rm -rf .github-artifacts/proof-artifacts
+          mkdir -p .github-artifacts/proof-artifacts
+          docker exec --user github-user ${{ env.CONTAINER_NAME }} bash -lc '
+            set -euo pipefail
+            artifact_dir=/home/github-user/workspace/.github-artifacts/proof-artifacts
+            rm -rf "$artifact_dir"
+            mkdir -p "$artifact_dir"
+            find /tmp -type f \( -name show.txt -o -path "*/smir.json" \) -print0 | while IFS= read -r -d "" path; do
+              case_dir="$(dirname "$path")"
+              if [ "$(basename "$path")" = "smir.json" ]; then
+                case_dir="$(dirname "$case_dir")"
+              fi
+              rel="${case_dir#/tmp/}"
+              dest="$artifact_dir/$rel"
+              rm -rf "$dest"
+              mkdir -p "$(dirname "$dest")"
+              cp -R "$case_dir" "$dest"
+            done
+          '
+          docker cp ${{ env.CONTAINER_NAME }}:/home/github-user/workspace/.github-artifacts/proof-artifacts/. .github-artifacts/proof-artifacts/ || true
 
       - name: 'Upload proof artifacts on failure'
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: proof-show-output
-          path: /tmp/pytest-*/**/show.txt
+          name: proof-artifacts
+          path: .github-artifacts/proof-artifacts
           if-no-files-found: ignore
+
+      - name: 'Copy updated skip.txt from container'
+        if: ${{ always() && inputs.update-skip }}
+        run: |
+          rm -rf .github-artifacts/update-skip
+          mkdir -p .github-artifacts/update-skip
+          docker cp \
+            ${{ env.CONTAINER_NAME }}:/home/github-user/workspace/kmir/src/tests/external/data/stable-mir-ui/skip.txt \
+            .github-artifacts/update-skip/skip.txt || true
 
       - name: 'Upload updated skip.txt'
         if: inputs.update-skip
         uses: actions/upload-artifact@v4
         with:
           name: updated-skip-txt
-          path: kmir/src/tests/external/data/stable-mir-ui/skip.txt
+          path: .github-artifacts/update-skip/skip.txt
+          if-no-files-found: ignore
 
       - name: 'Tear down Docker'
         if: always()
-        run: docker stop --time 0 mir-ui-ci-${GITHUB_SHA}
+        run: docker stop --time 0 ${{ env.CONTAINER_NAME }}
