@@ -609,7 +609,7 @@ Therefore a heuristics is used here:
   rule <k> #setTupleArgs(IDX, VAL:Value)
         => #setTupleArgs(IDX, ListItem(VAL))
         ...
-       </k>
+       </k> [owise]
 
   rule <k> #setTupleArgs(_, .List ) => .K ... </k>
 
