@@ -94,6 +94,10 @@ For symbolic enum values, the variant index remains unevaluated but the original
     requires isOneOf(DISCR, DISCRS)
     [simplification, symbolic(DISCR)]
 
+  // Normalize enum-discriminant comparisons into the same shape emitted by branch splits.
+  rule #lookupDiscrAux(DISCRS, IDX) ==Int DISCR => DISCR ==Int #lookupDiscrAux(DISCRS, IDX)
+    [simplification]
+
   rule 0 <=Int asInt(#findVariantIdxAux(DISCR, DISCRS, _)) => true
     requires isOneOf(DISCR, DISCRS)
     [simplification, symbolic(DISCR)]

@@ -362,6 +362,9 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
       andBool #isSplPubkey(?SplDelegateKey)
       andBool 0 <=Int ?SplAmount andBool ?SplAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplAccountState andBool ?SplAccountState <=Int 2
+      andBool (0 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) discriminant(2) .Discriminants, variantIdx(?SplAccountState))
+               orBool 1 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) discriminant(2) .Discriminants, variantIdx(?SplAccountState))
+               orBool 2 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) discriminant(2) .Discriminants, variantIdx(?SplAccountState)))
       andBool 0 <=Int ?SplDelegatedAmount andBool ?SplDelegatedAmount <Int (1 <<Int 64)
       andBool 0 <=Int ?SplIsNativeLamportsVariant andBool ?SplIsNativeLamportsVariant <=Int 1
       andBool (0 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplIsNativeLamportsVariant)) orBool 1 ==Int #lookupDiscrAux(discriminant(0) discriminant(1) .Discriminants, variantIdx(?SplIsNativeLamportsVariant)))
