@@ -45,7 +45,7 @@ enum ProgramError {
     InvalidAccountData,
 }
 
-const MAX_SIGNERS: usize = 11;
+const MAX_SIGNERS: usize = 3;
 
 #[derive(Clone, Debug)]
 struct Multisig {
@@ -56,7 +56,7 @@ struct Multisig {
 }
 
 impl Multisig {
-    const LEN: usize = 355;
+    const LEN: usize = 99;
 
     fn unpack_from_slice(data: &[u8]) -> Result<Self, ProgramError> {
         if data.len() < Self::LEN {
