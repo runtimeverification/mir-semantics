@@ -606,6 +606,11 @@ Therefore a heuristics is used here:
   // unpack tuple and set arguments individually
   rule <k> #setTupleArgs(IDX, Aggregate(variantIdx(0), ARGS)) => #setTupleArgs(IDX, ARGS) ... </k>
 
+  rule <k> #setTupleArgs(IDX, VAL:Value)
+        => #setTupleArgs(IDX, ListItem(VAL))
+        ...
+       </k>
+
   rule <k> #setTupleArgs(_, .List ) => .K ... </k>
 
   rule <k> #setTupleArgs(IDX, ListItem(VAL) REST:List)

@@ -3,14 +3,68 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (94 steps)
-└─ 3 (stuck, leaf)
-    #setTupleArgs ( 2 , Integer ( 41 , 8 , false ) )
-~> #execBlock ( basicBlock ( ..
-    span: 121
+│  (72 steps)
+├─ 3
+│   #setTupleArgs ( 2 , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 41 , 8 ,
+│   span: 73
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   #setTupleArgs ( 2 , ListItem ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer
+┃  │   span: 73
+┃  │
+┃  │  (21 steps)
+┃  ├─ 6
+┃  │   #setTupleArgs ( 2 , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 41 , 8 ,
+┃  │   span: 121
+┃  ┃
+┃  ┃ (1 step)
+┃  ┣━━┓
+┃  ┃  │
+┃  ┃  ├─ 8
+┃  ┃  │   #setTupleArgs ( 2 , ListItem ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer
+┃  ┃  │   span: 121
+┃  ┃  │
+┃  ┃  │  (23 steps)
+┃  ┃  └─ 10 (stuck, leaf)
+┃  ┃      #traverseProjection ( toLocal ( 3 ) , thunk ( #applyBinOp ( binOpAdd , Aggregate
+┃  ┃      span: 121
+┃  ┃
+┃  ┗━━┓
+┃     │
+┃     ├─ 9
+┃     │   #setTupleArgs ( 2 , ListItem ( Integer ( 41 , 8 , false ) ) )
+~> #execBlock ( ba
+┃     │   span: 121
+┃     │
+┃     │  (169 steps)
+┃     ├─ 11 (terminal)
+┃     │   #EndProgram ~> .K
+┃     │   function: main
+┃     │
+┃     ┊  constraint: true
+┃     ┊  subst: ...
+┃     └─ 2 (leaf, target, terminal)
+┃         #EndProgram ~> .K
+┃
+┗━━┓
+   │
+   ├─ 5
+   │   #setTupleArgs ( 2 , ListItem ( Integer ( 41 , 8 , false ) ) )
+~> #execBlock ( ba
+   │   span: 73
+   │
+   │  (191 steps)
+   ├─ 7 (terminal)
+   │   #EndProgram ~> .K
+   │   function: main
+   │
+   ┊  constraint: true
+   ┊  subst: ...
+   └─ 2 (leaf, target, terminal)
+       #EndProgram ~> .K
 
-
-┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram ~> .K
 
 
