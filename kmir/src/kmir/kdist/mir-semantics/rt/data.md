@@ -1051,6 +1051,12 @@ Literal arrays are also built using this RValue.
         ...
        </k>
 
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindClosure(_DEF, _TY_ARGS))
+        =>
+            Aggregate(variantIdx(0), ARGS)
+        ...
+       </k>
+
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
   syntax KItem ::= #readOperands ( Operands )
