@@ -1,0 +1,17 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (2028 steps)
+├─ 3 (terminal)
+│   #EndProgram ~> .K
+│   function: main
+│
+┊  constraint: true
+┊  subst: ...
+└─ 2 (leaf, target, terminal)
+    #EndProgram ~> .K
+
+
+
