@@ -284,8 +284,12 @@ def _arg_parser() -> ArgumentParser:
 
     run_parser = command_parser.add_parser('run', help='run stable MIR programs', parents=[kcli_args.logging_args])
     run_target_selection = run_parser.add_mutually_exclusive_group()
-    run_target_selection.add_argument('--bin', metavar='TARGET', help='Cargo binary target name to run (mutually exclusive with --file)')
-    run_target_selection.add_argument('--file', metavar='SMIR', help='SMIR JSON file to execute (mutually exclusive with --bin)')
+    run_target_selection.add_argument(
+        '--bin', metavar='TARGET', help='Cargo binary target name to run (mutually exclusive with --file)'
+    )
+    run_target_selection.add_argument(
+        '--file', metavar='SMIR', help='SMIR JSON file to execute (mutually exclusive with --bin)'
+    )
     run_parser.add_argument('--target-dir', type=Path, metavar='TARGET_DIR', help='SMIR kompilation target directory')
     run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Maximum number of execution steps')
     run_parser.add_argument(
@@ -312,12 +316,17 @@ def _arg_parser() -> ArgumentParser:
     prove_args.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
     prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
     prove_args.add_argument(
-        '--max-depth', metavar='DEPTH', type=int, help='Maximum K rewrite steps to take on a single KCFG edge before creating a new node'
+        '--max-depth',
+        metavar='DEPTH',
+        type=int,
+        help='Maximum K rewrite steps to take on a single KCFG edge before creating a new node',
     )
     prove_args.add_argument(
         '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
-    prove_args.add_argument('--reload', action='store_true', help='Discard any existing proof progress and restart from scratch')
+    prove_args.add_argument(
+        '--reload', action='store_true', help='Discard any existing proof progress and restart from scratch'
+    )
     prove_args.add_argument(
         '--fail-fast',
         dest='fail_fast',
@@ -517,7 +526,9 @@ def _arg_parser() -> ArgumentParser:
     prune_parser = command_parser.add_parser(
         'prune', help='Prune a proof from a given node', parents=[kcli_args.logging_args, proof_args]
     )
-    prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune (removes this node and its entire subtree)')
+    prune_parser.add_argument(
+        'node_id', metavar='NODE', type=int, help='The node to prune (removes this node and its entire subtree)'
+    )
 
     section_edge_parser = command_parser.add_parser(
         'section-edge', help='Break an edge into sections', parents=[kcli_args.logging_args, proof_args]
@@ -559,7 +570,11 @@ def _arg_parser() -> ArgumentParser:
     )
     link_parser.add_argument('smir_files', nargs='+', metavar='SMIR_JSON', help='SMIR JSON files to link')
     link_parser.add_argument(
-        '--output-file', '-o', metavar='FILE', help='Output file (default: linker_output.smir.json)', default='linker_output.smir.json'
+        '--output-file',
+        '-o',
+        metavar='FILE',
+        help='Output file (default: linker_output.smir.json)',
+        default='linker_output.smir.json',
     )
 
     return parser
