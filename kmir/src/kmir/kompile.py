@@ -37,7 +37,7 @@ class KompiledSMIR(ABC):
 @dataclass
 class KompiledSymbolic(KompiledSMIR):
     haskell_dir: Path
-    llvm_lib_dir: Path
+    llvm_lib_dir: Path | None
 
     def create_kmir(self, *, bug_report_file: Path | None = None) -> KMIR:
         return KMIR(
@@ -236,7 +236,7 @@ def kompile_smir(
     if kompile_digest == expected_digest:
         _LOGGER.info(f'Kompiled SMIR up-to-date, no kompilation necessary: {target_dir}')
         if symbolic:
-            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
+            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=None)
         else:
             return KompiledConcrete(llvm_dir=target_llvm_path)
 
@@ -281,7 +281,7 @@ def kompile_smir(
                     shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
 
         kompile_digest.write(target_dir)
-        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=LLVM_LIB_DIR)
+        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=None)
 
     else:
         target_llvmdt_path = target_llvm_path / 'dt'
@@ -411,63 +411,39 @@ def _make_stratified_rules(
 def make_kore_rules(
     kmir: KMIR, smir_info: SMIRInfo, *, break_on_function: list[str] | None = None
 ) -> Sequence[Sentence]:
+    equations: list[Axiom] = []
+
     # kprint tool is too chatty
     kprint_logger = logging.getLogger('pyk.ktool.kprint')
     kprint_logger.setLevel(logging.WARNING)
-
-    unknown_function = KApply(
-        'MonoItemKind::MonoItemFn',
-        (
-            KApply('symbol(_)_LIB_Symbol_String', (KToken('"** UNKNOWN FUNCTION **"', KSort('String')),)),
-            KApply('defId(_)_BODY_DefId_Int', (KVariable('TY', KSort('Int')),)),
-            KApply('noBody_BODY_MaybeBody', ()),
-        ),
-    )
-    default_function = _mk_equation(
-        kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
-    ).let_attrs(((App('owise')),))
-
-    equations: list[Axiom] = [default_function]
 
     for fty, kind in _functions(kmir, smir_info).items():
         equations.append(
             _mk_equation(kmir, 'lookupFunction', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
         )
 
-    # stratify type and alloc lookups
-    def get_int_arg(app: KInner) -> int:
-        match app:
-            case KApply(_, args=(KToken(token=int_arg, sort=KSort('Int')),)):
-                return int(int_arg)
-            case _:
-                raise Exception(f'Cannot extract int arg from {app}')
+    types: set[KInner] = set()
+    for type_json in smir_info._smir['types']:
+        parse_result = kmir.parser.parse_mir_json(type_json, 'TypeMapping')
+        assert parse_result is not None
+        type_mapping, _ = parse_result
+        assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
+        ty, tyinfo = type_mapping.args
+        if ty in types:
+            raise ValueError(f'Key collision in type map: {ty}')
+        types.add(ty)
+        equations.append(_mk_equation(kmir, 'lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
 
-    invalid_type = KApply('TypeInfo::VoidType', ())
-    parsed_types = [kmir.parser.parse_mir_json(type, 'TypeMapping') for type in smir_info._smir['types']]
-    type_mappings = [type_mapping for type_mapping, _ in (result for result in parsed_types if result is not None)]
-
-    type_assocs = [
-        (get_int_arg(ty), info)
-        for ty, info in (type_mapping.args for type_mapping in type_mappings if isinstance(type_mapping, KApply))
-    ]
-
-    type_equations = _make_stratified_rules(kmir, 'lookupTy', 'Ty', 'TypeInfo', 'ty', type_assocs, invalid_type)
-
-    invalid_alloc_n = KApply(
-        'InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KApply('allocId', (KVariable('N'),)),)
-    )
-    decoded_allocs = [_decode_alloc(smir_info=smir_info, raw_alloc=alloc) for alloc in smir_info._smir['allocs']]
-    allocs = [(get_int_arg(alloc_id), value) for (alloc_id, value) in decoded_allocs]
-    alloc_equations = _make_stratified_rules(
-        kmir, 'lookupAlloc', 'AllocId', 'Evaluation', 'allocId', allocs, invalid_alloc_n
-    )
+    for alloc in smir_info._smir['allocs']:
+        alloc_id, value = _decode_alloc(smir_info=smir_info, raw_alloc=alloc)
+        equations.append(_mk_equation(kmir, 'lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
 
     # Generate break-on-function filter rule if filters are provided
     break_on_rules: list[Axiom] = []
     if break_on_function:
         break_on_rules.append(_mk_break_on_functions_rule(kmir, break_on_function))
 
-    return [*equations, *type_equations, *alloc_equations, *break_on_rules]
+    return [*equations, *break_on_rules]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
