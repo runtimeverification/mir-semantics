@@ -284,10 +284,10 @@ def _arg_parser() -> ArgumentParser:
 
     run_parser = command_parser.add_parser('run', help='run stable MIR programs', parents=[kcli_args.logging_args])
     run_target_selection = run_parser.add_mutually_exclusive_group()
-    run_target_selection.add_argument('--bin', metavar='TARGET', help='Target to run')
-    run_target_selection.add_argument('--file', metavar='SMIR', help='SMIR json file to execute')
+    run_target_selection.add_argument('--bin', metavar='TARGET', help='Cargo binary target name to run (mutually exclusive with --file)')
+    run_target_selection.add_argument('--file', metavar='SMIR', help='SMIR JSON file to execute (mutually exclusive with --bin)')
     run_parser.add_argument('--target-dir', type=Path, metavar='TARGET_DIR', help='SMIR kompilation target directory')
-    run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Depth to execute')
+    run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Maximum number of execution steps')
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
@@ -311,11 +311,13 @@ def _arg_parser() -> ArgumentParser:
     prove_args.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
     prove_args.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
     prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
-    prove_args.add_argument('--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg')
+    prove_args.add_argument(
+        '--max-depth', metavar='DEPTH', type=int, help='Maximum K rewrite steps to take on a single KCFG edge before creating a new node'
+    )
     prove_args.add_argument(
         '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
-    prove_args.add_argument('--reload', action='store_true', help='Force restarting proof')
+    prove_args.add_argument('--reload', action='store_true', help='Discard any existing proof progress and restart from scratch')
     prove_args.add_argument(
         '--fail-fast',
         dest='fail_fast',
@@ -419,11 +421,11 @@ def _arg_parser() -> ArgumentParser:
         dest='break_on_function',
         action='append',
         default=None,
-        help='Break when calling functions / intrinsics matching this name (repeatable)',
+        help='Break when calling a function or intrinsic whose name contains this string (repeatable)',
     )
 
     proof_args = ArgumentParser(add_help=False)
-    proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
+    proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to operate on')
     proof_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
 
     display_args = ArgumentParser(add_help=False)
@@ -432,7 +434,7 @@ def _arg_parser() -> ArgumentParser:
         dest='full_printer',
         action='store_true',
         default=False,
-        help='Display the full node in output.',
+        help='Display full K configuration for each node (default: compact view).',
     )
     display_args.add_argument(
         '--smir-info',
@@ -505,7 +507,7 @@ def _arg_parser() -> ArgumentParser:
     show_parser.add_argument(
         '--minimize-proof',
         action='store_true',
-        help='Minimize the proof KCFG before exporting to module',
+        help='Minimize the proof KCFG before exporting to module (only used with --to-module)',
     )
 
     command_parser.add_parser(
@@ -515,13 +517,13 @@ def _arg_parser() -> ArgumentParser:
     prune_parser = command_parser.add_parser(
         'prune', help='Prune a proof from a given node', parents=[kcli_args.logging_args, proof_args]
     )
-    prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
+    prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune (removes this node and its entire subtree)')
 
     section_edge_parser = command_parser.add_parser(
         'section-edge', help='Break an edge into sections', parents=[kcli_args.logging_args, proof_args]
     )
     section_edge_parser.add_argument(
-        'edge', type=lambda s: tuple(s.split(',')), help='Edge to section in CFG (format: `source,target`)'
+        'edge', type=lambda s: tuple(s.split(',')), help='Edge to split in the KCFG (format: "source,target")'
     )
     section_edge_parser.add_argument(
         '--sections', type=int, default=2, help='Number of sections to make from edge (>= 2, default: 2)'
