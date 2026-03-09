@@ -300,7 +300,11 @@ def _arg_parser() -> ArgumentParser:
         'info', help='Show information about a SMIR JSON file', parents=[kcli_args.logging_args]
     )
     info_parser.add_argument('smir_file', metavar='FILE', help='SMIR JSON file to analyze')
-    info_parser.add_argument('--types', metavar='TYPES', help='Comma separated list of type IDs to show details for')
+    info_parser.add_argument(
+        '--types',
+        metavar='TYPES',
+        help='Comma separated list of type IDs to show (e.g. "1,2,3"). Output: one line per type, e.g. "Type Ty(1): Int(...)". Omit to produce no output.',
+    )
 
     prove_args = ArgumentParser(add_help=False)
     prove_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
@@ -455,7 +459,9 @@ def _arg_parser() -> ArgumentParser:
         '--node-deltas', metavar='DELTAS', help='Comma separated list of node deltas in format "source:target"'
     )
     show_parser.add_argument(
-        '--node-deltas-pro', metavar='DELTAS', help='Extra node deltas (printed after main output)'
+        '--node-deltas-pro',
+        metavar='DELTAS',
+        help='Extra node deltas in format "source:target" (printed after main output, also prints rules for these edges)',
     )
     show_parser.add_argument(
         '--omit-cells', metavar='CELLS', help='Comma separated list of cell names to omit from output'
@@ -485,7 +491,11 @@ def _arg_parser() -> ArgumentParser:
         help='Print the <k> cell for each leaf node in the proof graph',
     )
 
-    show_parser.add_argument('--rules', metavar='EDGES', help='Comma separated list of edges in format "source:target"')
+    show_parser.add_argument(
+        '--rules',
+        metavar='EDGES',
+        help='Comma separated list of edges in format "source:target". Prints the K rules applied on each edge as Markdown links.',
+    )
     show_parser.add_argument(
         '--to-module',
         type=Path,
@@ -547,7 +557,7 @@ def _arg_parser() -> ArgumentParser:
     )
     link_parser.add_argument('smir_files', nargs='+', metavar='SMIR_JSON', help='SMIR JSON files to link')
     link_parser.add_argument(
-        '--output-file', '-o', metavar='FILE', help='Output file', default='linker_output.smir.json'
+        '--output-file', '-o', metavar='FILE', help='Output file (default: linker_output.smir.json)', default='linker_output.smir.json'
     )
 
     return parser
