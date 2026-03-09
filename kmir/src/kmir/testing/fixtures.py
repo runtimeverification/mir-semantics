@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+import sys
 from difflib import unified_diff
 from typing import TYPE_CHECKING
 
@@ -13,11 +15,20 @@ if TYPE_CHECKING:
 
     from pytest import FixtureRequest, Parser
 
-import sys
-
 
 def pytest_configure(config) -> None:
     sys.setrecursionlimit(1000000)
+
+
+def _normalize_symbol_hashes(text: str) -> str:
+    """Normalize rustc symbol hash suffixes that drift across builds/environments."""
+    # Normalize mangled symbol hashes, including generic names with `$` and `.`.
+    # Keep trailing `E` when present; truncated variants may omit it.
+    text = re.sub(r'(_ZN[0-9A-Za-z_$.]+17h)[0-9a-fA-F]+E', r'\1<hash>E', text)
+    text = re.sub(r'(_ZN[0-9A-Za-z_$.]+17h)[0-9a-fA-F]+', r'\1<hash>', text)
+    # Normalize demangled hash suffixes (`...::h<hex>`).
+    text = re.sub(r'(::h)[0-9a-fA-F]{8,}', r'\1<hash>', text)
+    return text
 
 
 def assert_or_update_show_output(
@@ -26,11 +37,14 @@ def assert_or_update_show_output(
     if path_replacements:
         for old, new in path_replacements.items():
             actual_text = actual_text.replace(old, new)
+    # Normalize rustc symbol hash suffixes that can drift across builds/environments.
+    actual_text = _normalize_symbol_hashes(actual_text)
     if update:
         expected_file.write_text(actual_text)
     else:
         assert expected_file.is_file()
         expected_text = expected_file.read_text()
+        expected_text = _normalize_symbol_hashes(expected_text)
         if actual_text != expected_text:
             diff = '\n'.join(
                 unified_diff(
