@@ -69,7 +69,7 @@ if ! grep -q '^\[workspace\]' "$SMJ_CARGO_TOML"; then
 fi
 
 # Build mir-semantics and stable-mir-json
-make -C mir-semantics stable-mir-json build CARGO_BUILD_OPTS=--release
+make -C mir-semantics stable-mir-json build
 
 export RUSTC=$PWD/mir-semantics/deps/.stable-mir-json/release.sh
 ${RUSTC} --version
