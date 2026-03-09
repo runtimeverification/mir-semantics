@@ -562,7 +562,8 @@ Therefore a heuristics is used here:
                 _SPAN
               )
          =>
-           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
+        ~> #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
