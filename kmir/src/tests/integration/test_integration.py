@@ -68,6 +68,10 @@ PROVE_RS_SHOW_SPECS = [
     'spl-multisig-iter-eq-copied-next-fail',
 ]
 
+PROVE_RS_SHOULD_FAIL_OVERRIDES = {
+    'spl-multisig-iter-eq-copied-next-fail': False,
+}
+
 
 @pytest.mark.parametrize(
     'rs_file',
@@ -76,6 +80,8 @@ PROVE_RS_SHOW_SPECS = [
 )
 def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
+    if rs_file.stem in PROVE_RS_SHOULD_FAIL_OVERRIDES:
+        should_fail = PROVE_RS_SHOULD_FAIL_OVERRIDES[rs_file.stem]
     should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
     is_smir = rs_file.suffix == '.json'
 

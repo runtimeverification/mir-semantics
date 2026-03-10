@@ -315,11 +315,20 @@ where the returned result should go.
         ...
        </k>
 
-  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), _PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall(tyOfLocal(getLocal(LOCALS, I)), lookupFunction(tyOfLocal(getLocal(LOCALS, I))), ARGS, DEST, TARGET, UNWIND, SPAN)
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
+        => #execTerminatorCall(#callOperandTy(I, PROJS, LOCALS), lookupFunction(#callOperandTy(I, PROJS, LOCALS)), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
       <locals> LOCALS </locals>
+
+  syntax Ty ::= #callOperandTy(Int, ProjectionElems, List) [function, total]
+              | #callOperandTyAux(MaybeTy, Ty) [function, total]
+
+  rule #callOperandTy(I, PROJS, LOCALS)
+    => #callOperandTyAux(getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJS), tyOfLocal(getLocal(LOCALS, I)))
+
+  rule #callOperandTyAux(TY:Ty, _FALLBACK) => TY
+  rule #callOperandTyAux(_, FALLBACK) => FALLBACK [owise]
 
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
