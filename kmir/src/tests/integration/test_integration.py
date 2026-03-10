@@ -39,6 +39,7 @@ PROVE_RS_START_SYMBOLS = {
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
     'test_offset_from-fail': ['testing'],
     'iter-eq-copied-take-dereftruncate': ['repro'],
+    'spl-multisig-iter-eq-copied-next-fail': ['repro'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -64,6 +65,7 @@ PROVE_RS_SHOW_SPECS = [
     'test_offset_from-fail',
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
+    'spl-multisig-iter-eq-copied-next-fail',
 ]
 
 
