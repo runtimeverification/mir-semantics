@@ -8,6 +8,9 @@ license = { workspace = true}
 edition = { workspace = true}
 readme = "./README.md"
 
+[features]
+runtime-verification = []
+
 [lib]
 crate-type = ["rlib"]
 

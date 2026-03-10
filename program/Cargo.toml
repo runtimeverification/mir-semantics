@@ -11,7 +11,7 @@ edition = { workspace = true}
 no-entrypoint = []
 test-sbf = []
 test-against-pinocchio = ["pinocchio-token-interface"]
-runtime-verification = []
+runtime-verification = ["spl-token-interface/runtime-verification"]
 rvo = []
 assumptions = []
 

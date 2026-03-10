@@ -37,9 +37,9 @@ fn test_process_initialize_multisig(
         assert_eq!(result, Err(ProgramError::Custom(6)))
     } else if multisig_init_lamports < minimum_balance {
         assert_eq!(result, Err(ProgramError::Custom(0)))
-    } else if !((1..=11).contains(&(accounts.len() - 2))) {
+    } else if !((1..=MAX_SIGNERS as usize).contains(&(accounts.len() - 2))) {
         assert_eq!(result, Err(ProgramError::Custom(7)))
-    } else if !(1..=11).contains(&instruction_data[0]) {
+    } else if !(1..=MAX_SIGNERS).contains(&instruction_data[0]) {
         assert_eq!(result, Err(ProgramError::Custom(8)))
     } else {
         let multisig_new = get_multisig(&accounts[0]);

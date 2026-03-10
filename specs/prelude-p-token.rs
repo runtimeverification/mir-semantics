@@ -117,6 +117,7 @@ fn get_multisig(account_info: &AccountInfo) -> &Multisig {
 // =============================================================================
 
 use pinocchio_token_interface::program::ID as PROGRAM_ID;
+use pinocchio_token_interface::state::multisig::MAX_SIGNERS;
 use pinocchio::sysvars::rent::Rent;
 use pinocchio::sysvars::rent::RENT_ID;
 use pinocchio_token_interface::native_mint::ID as NATIVE_MINT_ID;

@@ -266,6 +266,7 @@ fn get_multisig(account_info: &AccountInfo) -> MultisigWrapper {
 // =============================================================================
 
 use crate::ID as PROGRAM_ID;
+use spl_token_interface::instruction::MAX_SIGNERS;
 use solana_rent::Rent;
 use solana_sysvar::rent::ID as RENT_ID;
 use spl_token_interface::native_mint::ID as NATIVE_MINT_ID;

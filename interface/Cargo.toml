@@ -9,6 +9,9 @@ repository = { workspace = true }
 license = { workspace = true }
 edition = { workspace = true }
 
+[features]
+runtime-verification = []
+
 [dependencies]
 arrayref = "0.3.9"
 bytemuck = "1.20.0"
