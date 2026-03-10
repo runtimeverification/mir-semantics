@@ -38,6 +38,7 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
     'test_offset_from-fail': ['testing'],
+    'spl-accountstate-discriminant-branch': ['repro'],
     'spl-multisig-iter-eq-copied-next-fail': ['repro'],
     'spl-multisig-signer-index': ['repro'],
 }
