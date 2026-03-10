@@ -315,7 +315,7 @@ where the returned result should go.
         ...
        </k>
 
-  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), .ProjectionElems)), ARGS, DEST, TARGET, UNWIND), SPAN))
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), _PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
         => #execTerminatorCall(tyOfLocal(getLocal(LOCALS, I)), lookupFunction(tyOfLocal(getLocal(LOCALS, I))), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>

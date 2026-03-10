@@ -3,9 +3,9 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (1837 steps)
+│  (1839 steps)
 └─ 3 (stuck, leaf)
-    #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandM
+    #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
     span: 149
 
 
