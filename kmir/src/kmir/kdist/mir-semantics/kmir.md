@@ -565,7 +565,8 @@ Therefore a heuristics is used here:
                 _SPAN
               )
          =>
-           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
+        ~> #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
@@ -608,6 +609,11 @@ Therefore a heuristics is used here:
 
   // unpack tuple and set arguments individually
   rule <k> #setTupleArgs(IDX, Aggregate(variantIdx(0), ARGS)) => #setTupleArgs(IDX, ARGS) ... </k>
+
+  rule <k> #setTupleArgs(IDX, VAL:Value)
+        => #setTupleArgs(IDX, ListItem(VAL))
+        ...
+       </k> [owise]
 
   rule <k> #setTupleArgs(_, .List ) => .K ... </k>
 

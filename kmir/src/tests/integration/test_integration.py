@@ -38,6 +38,7 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
     'test_offset_from-fail': ['testing'],
+    'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next-fail': ['repro'],
     'spl-multisig-signer-index': ['repro'],
 }
@@ -45,6 +46,7 @@ PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
     'interior-mut3-fail',
+    'iter_next_3',
     'assert_eq_exp',
     'bitwise-not-shift',
     'symbolic-args-fail',
