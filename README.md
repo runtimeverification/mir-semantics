@@ -138,7 +138,7 @@ deps/.stable-mir-json/debug.sh -Zno-codegen your_file.rs
 RUSTC=deps/.stable-mir-json/debug.sh cargo build
 
 # Convenience script (also supports png/pdf/dot visualization)
-./scripts/generate-smir-json.sh your_file.rs . png
+./scripts/generate-smir-json.sh <rust-file> <output-dir> [png|pdf|dot]
 ```
 
 ## Troubleshooting
