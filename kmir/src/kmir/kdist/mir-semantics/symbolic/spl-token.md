@@ -443,7 +443,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
              Aggregate(variantIdx(0),
                ListItem(Integer(?SplMultisigM:Int, 8, false))                                             // m: u8
                ListItem(Integer(?SplMultisigN:Int, 8, false))                                             // n: u8
-               ListItem(BoolVal(?SplMultisigInitialised:Bool))                                            // is_initialized: bool
+               ListItem(BoolVal(?_SplMultisigInitialised:Bool))                                           // is_initialized: bool
                ListItem(Range(                                                                            // signers: [Pubkey; 3]
                  ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner0:List))))
                  ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner1:List))))
@@ -462,10 +462,6 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
       orBool #functionName(FUNC) ==String "cheatcode_is_spl_multisig"
     ensures 0 <=Int ?SplMultisigM andBool ?SplMultisigM <=Int 3
       andBool 0 <=Int ?SplMultisigN andBool ?SplMultisigN <=Int 3
-      andBool (notBool ?SplMultisigInitialised
-               orBool (1 <=Int ?SplMultisigM
-                       andBool 1 <=Int ?SplMultisigN
-                       andBool ?SplMultisigM <=Int ?SplMultisigN))
       andBool #isSplPubkey(?SplSigner0)
       andBool #isSplPubkey(?SplSigner1)
       andBool #isSplPubkey(?SplSigner2)
