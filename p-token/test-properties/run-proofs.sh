@@ -25,10 +25,10 @@ ALL_NAMES=$(sed -n -e 's/^| \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 MULTISIG_NAMES=$(sed -n -e 's/^| m | \(test_p[a-zA-Z0-9:_]*\) *|.*/\1/p' proofs.md)
 
 TIMEOUT=7200
-PROVE_OPTS="--max-iterations 10000 --max-depth 10000"
+PROVE_OPTS="--fail-fast"
 RELOAD_OPT="--reload"
 LOG_FILE=""
-MAX_WORKERS=""
+MAX_WORKERS="4"
 
 while getopts ":t:o:l:w:amc" opt; do
     case $opt in
@@ -39,7 +39,7 @@ while getopts ":t:o:l:w:amc" opt; do
             PROVE_OPTS=$OPTARG
             ;;
         w)
-            MAX_WORKERS="--max-workers $OPTARG"
+            MAX_WORKERS=$OPTARG
             ;;
         l)
             LOG_FILE="$OPTARG.$$"
@@ -109,7 +109,7 @@ for name in $TESTS; do
     timeout --preserve-status -v ${TIMEOUT} \
         uv --project mir-semantics/kmir run -- \
         kmir prove-rs --smir "${ARTIFACTS_DIR:-artefacts}/${ARTIFACT_BASENAME}.smir.json" \
-        --proof-dir "${PROOF_DIR}" --verbose --start-symbol $start ${RELOAD_OPT} ${MAX_WORKERS} ${PROVE_OPTS}
+        --proof-dir "${PROOF_DIR}" --verbose --start-symbol $start ${RELOAD_OPT} ${MAX_WORKERS:+--max-workers $MAX_WORKERS} ${PROVE_OPTS}
     prove_rc=$?
 
     end_time=$(date +%s)
