@@ -11,7 +11,7 @@ from pyk.kast.inner import KSequence, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
-from pyk.kore.rpc import BoosterServer, KoreClient, KoreServer
+from pyk.kore.rpc import BoosterServer, KoreClient
 from pyk.proof.proof import parallel_advance_proof
 from pyk.proof.reachability import APRProof, APRProver
 
@@ -143,26 +143,22 @@ def _prove_parallel(
     cut_point_rules: list[str],
 ) -> None:
     assert opts.max_workers
-    server_args = {
+    assert kmir.llvm_library_dir
+
+    booster_server_args = {
         'kompiled_dir': kmir.definition_dir,
+        'llvm_kompiled_dir': kmir.llvm_library_dir,
         'module_name': kmir.definition.main_module_name,
         'bug_report': kmir.bug_report,
+        'simplify_each': 30,
         'haskell_threads': opts.max_workers,
     }
+    command = KMIR.kore_rpc_booster_command_from_env()
+    if command is not None:
+        booster_server_args['command'] = command
+        _LOGGER.info(f'Passing HS-only symbols to kore-rpc-booster: {KMIR.hs_only_symbols_from_env()}')
 
-    if kmir.llvm_library_dir is not None:
-        server_ctx = BoosterServer(
-            {
-                **server_args,
-                'llvm_kompiled_dir': kmir.llvm_library_dir,
-                'simplify_each': 30,
-            }
-        )
-    else:
-        _LOGGER.info('No proof-specific LLVM library available; using KoreServer for parallel proof execution')
-        server_ctx = KoreServer(server_args)
-
-    with server_ctx as server:
+    with BoosterServer(booster_server_args) as server:
 
         def create_prover() -> APRProver:
             client = KoreClient(
