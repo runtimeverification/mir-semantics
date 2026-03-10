@@ -125,12 +125,12 @@ This ensures that branches on the key value are not duplicated.
 
 ```k
 
-  syntax Signers ::= Signers ( List ) // 11 Pubkeys, each List of 32 bytes
+  syntax Signers ::= Signers ( List ) // 3 Pubkeys, each List of 32 bytes
                    | SignersError ( Value )
 
   syntax Signers ::= toSigners ( Value ) [function, total]
   // -----------------------------------------------------
-  rule toSigners(Range(ELEMS)) => Signers( toKeys(ELEMS) ) requires size(ELEMS) ==Int 11 andBool allRangeWrappedKeys(ELEMS)
+  rule toSigners(Range(ELEMS)) => Signers( toKeys(ELEMS) ) requires size(ELEMS) ==Int 3 andBool allRangeWrappedKeys(ELEMS)
   rule toSigners(VAL) => SignersError(VAL) [owise]
 
   syntax Value ::= fromSigners ( Signers ) [function, total]
@@ -341,7 +341,7 @@ This ensures that branches on the key value are not duplicated.
 
 ### SPL Token Interface Multisig
 ```k
-  // Multisig struct: number of required signers, number of valid signers, initialised flag, array of 11 signers
+  // Multisig struct: number of required signers, number of valid signers, initialised flag, array of 3 signers
   syntax IMulti ::= IMulti ( U8 , U8 , U8 , Signers )
                   | IMultiError ( Value )
 
@@ -668,14 +668,6 @@ An `AccountInfo` reference is passed to the function.
                   Signers( ListItem(Key(?Signer0))
                            ListItem(Key(?Signer1))
                            ListItem(Key(?Signer2))
-                           ListItem(Key(?Signer3))
-                           ListItem(Key(?Signer4))
-                           ListItem(Key(?Signer5))
-                           ListItem(Key(?Signer6))
-                           ListItem(Key(?Signer7))
-                           ListItem(Key(?Signer8))
-                           ListItem(Key(?Signer9))
-                           ListItem(Key(?Signer10))
                   )
            )
          )
@@ -685,15 +677,7 @@ An `AccountInfo` reference is passed to the function.
     andBool size(?Signer0)  ==Int 32 andBool allBytes(?Signer0)
     andBool size(?Signer1)  ==Int 32 andBool allBytes(?Signer1)
     andBool size(?Signer2)  ==Int 32 andBool allBytes(?Signer2)
-    andBool size(?Signer3)  ==Int 32 andBool allBytes(?Signer3)
-    andBool size(?Signer4)  ==Int 32 andBool allBytes(?Signer4)
-    andBool size(?Signer5)  ==Int 32 andBool allBytes(?Signer5)
-    andBool size(?Signer6)  ==Int 32 andBool allBytes(?Signer6)
-    andBool size(?Signer7)  ==Int 32 andBool allBytes(?Signer7)
-    andBool size(?Signer8)  ==Int 32 andBool allBytes(?Signer8)
-    andBool size(?Signer9)  ==Int 32 andBool allBytes(?Signer9)
-    andBool size(?Signer10) ==Int 32 andBool allBytes(?Signer10)
-    andBool DATA_LEN ==Int 355 // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
+    andBool DATA_LEN ==Int 99 // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
 ```
 
 ```{.k .concrete}
@@ -701,7 +685,7 @@ An `AccountInfo` reference is passed to the function.
   // Signers and n. It needs work to create sensible cases.
   rule #addMultisig(Aggregate(variantIdx(0), _) #as P_ACC)
       => PAccountMultisig(
-           #toPAccWithDataLen(P_ACC, 355), // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
+           #toPAccWithDataLen(P_ACC, 99), // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
            IMulti(U8(#randU8()),           // m (number of signers required)
                   U8(#randU8()),           // n (number of valid signers)
                   U8(#randU8()),           // initialized (0 - false, 1 - true, error state owise)
@@ -825,10 +809,10 @@ this field is expected to be constrained accordingly in the path condition.
        </k>
     requires DATA_LEN ==Int 82 // IMint length
   rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountMultisig(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
-        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 355))
+        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 99))
         ...
        </k>
-    requires DATA_LEN ==Int 355 // IMulti length
+    requires DATA_LEN ==Int 99 // IMulti length
   rule <k> #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, PAccountRent(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
       => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, 17))
       ...
@@ -1186,14 +1170,6 @@ NB The projection rule must have higher priority than the one which auto-project
 
   syntax Signers ::= #randSigners() [function, total, impure, symbol(randSigners)]
   rule #randSigners() => Signers(ListItem(#randKey())
-                                 ListItem(#randKey())
-                                 ListItem(#randKey())
-                                 ListItem(#randKey())
-                                 ListItem(#randKey())
-                                 ListItem(#randKey())
-                                 ListItem(#randKey())
-                                 ListItem(#randKey())
-                                 ListItem(#randKey())
                                  ListItem(#randKey())
                                  ListItem(#randKey()))
 ```
