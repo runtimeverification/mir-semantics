@@ -39,7 +39,7 @@ PROVE_RS_START_SYMBOLS = {
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
     'test_offset_from-fail': ['testing'],
     'iter-eq-copied-take-dereftruncate': ['repro'],
-    'spl-multisig-iter-eq-copied-next-fail': ['repro'],
+    'spl-multisig-iter-eq-copied-next': ['repro'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
@@ -65,12 +65,7 @@ PROVE_RS_SHOW_SPECS = [
     'test_offset_from-fail',
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
-    'spl-multisig-iter-eq-copied-next-fail',
 ]
-
-PROVE_RS_SHOULD_FAIL_OVERRIDES = {
-    'spl-multisig-iter-eq-copied-next-fail': False,
-}
 
 
 @pytest.mark.parametrize(
@@ -80,8 +75,6 @@ PROVE_RS_SHOULD_FAIL_OVERRIDES = {
 )
 def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
-    if rs_file.stem in PROVE_RS_SHOULD_FAIL_OVERRIDES:
-        should_fail = PROVE_RS_SHOULD_FAIL_OVERRIDES[rs_file.stem]
     should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
     is_smir = rs_file.suffix == '.json'
 
