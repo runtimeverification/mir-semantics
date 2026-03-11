@@ -56,6 +56,10 @@ test-integration: stable-mir-json build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
 			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
 
+test-verify-rust-std: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration -k test_verify_rust_std --maxfail=1 --verbose \
+			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
+
 # Checks and formatting
 
 format: autoflake isort black nix-fmt

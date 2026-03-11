@@ -109,6 +109,48 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
             assert apr_proof.failed
 
 
+VERIFY_RUST_STD_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std').resolve(strict=True)
+VERIFY_RUST_STD_FILES = list(VERIFY_RUST_STD_DIR.glob('**/*.rs'))
+VERIFY_RUST_STD_START_SYMBOLS = {
+    'unchecked_add': [
+        'unchecked_add_u8',
+        'unchecked_add_u16',
+        'unchecked_add_u32',
+        'unchecked_add_u64',
+        'unchecked_add_u128',
+        'unchecked_add_i8',
+        'unchecked_add_i16',
+        'unchecked_add_i32',
+        'unchecked_add_i64',
+        'unchecked_add_i128',
+    ],
+}
+
+
+@pytest.mark.parametrize(
+    'rs_file',
+    VERIFY_RUST_STD_FILES,
+    ids=[spec.stem for spec in VERIFY_RUST_STD_FILES],
+)
+def test_verify_rust_std(rs_file: Path, kmir: KMIR) -> None:
+    should_fail = rs_file.stem.endswith('fail')
+
+    prove_rs_opts = ProveRSOpts(rs_file)
+
+    start_symbols = ['main']
+    if rs_file.stem in VERIFY_RUST_STD_START_SYMBOLS:
+        start_symbols = VERIFY_RUST_STD_START_SYMBOLS[rs_file.stem]
+
+    for start_symbol in start_symbols:
+        prove_rs_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_rs(prove_rs_opts)
+
+        if not should_fail:
+            assert apr_proof.passed
+        else:
+            assert apr_proof.failed
+
+
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)
 MULTI_CRATE_TESTS = list(MULTI_CRATE_DIR.glob('*/main-crate'))
 
