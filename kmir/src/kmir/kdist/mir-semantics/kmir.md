@@ -320,13 +320,21 @@ where the returned result should go.
         ...
        </k>
       <locals> LOCALS </locals>
-    requires isTy(getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJS))
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+     andBool isTy(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS))
+    [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
 
-  syntax Ty ::= #projectedCallTy(Int, ProjectionElems, List) [function]
+  syntax Ty ::= #projectedCallTy(Int, ProjectionElems, List) [function, total]
 
   rule #projectedCallTy(I, PROJS, LOCALS)
-    => {getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJS)}:>Ty
-    requires isTy(getTyOf(tyOfLocal(getLocal(LOCALS, I)), PROJS))
+    => {getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)}:>Ty
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+     andBool isTy(getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS))
+    [preserves-definedness]
+
+  rule #projectedCallTy(_, _, _) => ty(-1) [owise]
 
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
