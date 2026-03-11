@@ -160,6 +160,18 @@ VERIFY_RUST_STD_START_SYMBOLS = {
         'unchecked_shl_i64',
         'unchecked_shl_i128',
     ],
+    'unchecked_shr': [
+        'unchecked_shr_u8',
+        'unchecked_shr_u16',
+        'unchecked_shr_u32',
+        'unchecked_shr_u64',
+        'unchecked_shr_u128',
+        'unchecked_shr_i8',
+        'unchecked_shr_i16',
+        'unchecked_shr_i32',
+        'unchecked_shr_i64',
+        'unchecked_shr_i128',
+    ],
 }
 
 

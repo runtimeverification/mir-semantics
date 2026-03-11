@@ -10,7 +10,7 @@ All types: i8, i16, i32, i64, i128, u8, u16, u32, u64, u128
 - [x] `unchecked_sub`
 - [x] `unchecked_mul`
 - [x] `unchecked_shl`
-- [ ] `unchecked_shr`
+- [x] `unchecked_shr`
 
 Signed only: i8, i16, i32, i64, i128
 
