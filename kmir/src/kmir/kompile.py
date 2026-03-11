@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from pyk.kast.inner import KApply, KSort, KToken, KVariable
+from pyk.kast.inner import KApply, KSort
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.string import stringToken
 from pyk.kdist import kdist
@@ -230,7 +230,6 @@ def kompile_smir(
     )
 
     target_hs_path = target_dir / 'haskell'
-    target_llvm_lib_path = target_dir / 'llvm-library'
     target_llvm_path = target_dir / 'llvm'
 
     if kompile_digest == expected_digest:
