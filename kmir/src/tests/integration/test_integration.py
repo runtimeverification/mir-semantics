@@ -136,6 +136,18 @@ VERIFY_RUST_STD_START_SYMBOLS = {
         'unchecked_sub_i64',
         'unchecked_sub_i128',
     ],
+    'unchecked_mul': [
+        'unchecked_mul_u8',
+        'unchecked_mul_u16',
+        'unchecked_mul_u32',
+        'unchecked_mul_u64',
+        'unchecked_mul_u128',
+        'unchecked_mul_i8',
+        'unchecked_mul_i16',
+        'unchecked_mul_i32',
+        'unchecked_mul_i64',
+        'unchecked_mul_i128',
+    ],
 }
 
 
