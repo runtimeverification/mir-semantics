@@ -163,6 +163,17 @@ power of two but the semantics will always operate with these particular ones.
   rule VAL &Int bitmask128 => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask128 [simplification, preserves-definedness, smt-lemma]
 ```
 
+Shift operations like `wrapping_shl` mask the shift amount with `BITS - 1` (e.g., `rhs & 7` for `u8`).
+When the shift amount is already known to be less than `BITS`, the mask is a no-op.
+
+```k
+  rule VAL &Int 7   => VAL requires 0 <=Int VAL andBool VAL <Int 8   [simplification, preserves-definedness, smt-lemma]
+  rule VAL &Int 15  => VAL requires 0 <=Int VAL andBool VAL <Int 16  [simplification, preserves-definedness, smt-lemma]
+  rule VAL &Int 31  => VAL requires 0 <=Int VAL andBool VAL <Int 32  [simplification, preserves-definedness, smt-lemma]
+  rule VAL &Int 63  => VAL requires 0 <=Int VAL andBool VAL <Int 64  [simplification, preserves-definedness, smt-lemma]
+  rule VAL &Int 127 => VAL requires 0 <=Int VAL andBool VAL <Int 128 [simplification, preserves-definedness, smt-lemma]
+```
+
 Repeated bit-masking can be simplified in an even more general way:
 
 ```k
