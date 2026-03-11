@@ -191,6 +191,18 @@ VERIFY_RUST_STD_START_SYMBOLS = {
         'wrapping_shl_i64',
         'wrapping_shl_i128',
     ],
+    'wrapping_shr': [
+        'wrapping_shr_u8',
+        'wrapping_shr_u16',
+        'wrapping_shr_u32',
+        'wrapping_shr_u64',
+        'wrapping_shr_u128',
+        'wrapping_shr_i8',
+        'wrapping_shr_i16',
+        'wrapping_shr_i32',
+        'wrapping_shr_i64',
+        'wrapping_shr_i128',
+    ],
 }
 
 

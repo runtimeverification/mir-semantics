@@ -21,7 +21,7 @@ Signed only: i8, i16, i32, i64, i128
 All types: i8, i16, i32, i64, i128, u8, u16, u32, u64, u128
 
 - [x] `wrapping_shl`
-- [ ] `wrapping_shr`
+- [x] `wrapping_shr`
 
 Unsigned only: u8, u16, u32, u64
 
