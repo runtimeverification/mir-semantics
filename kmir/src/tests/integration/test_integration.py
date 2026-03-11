@@ -179,6 +179,18 @@ VERIFY_RUST_STD_START_SYMBOLS = {
         'unchecked_neg_i64',
         'unchecked_neg_i128',
     ],
+    'wrapping_shl': [
+        'wrapping_shl_u8',
+        'wrapping_shl_u16',
+        'wrapping_shl_u32',
+        'wrapping_shl_u64',
+        'wrapping_shl_u128',
+        'wrapping_shl_i8',
+        'wrapping_shl_i16',
+        'wrapping_shl_i32',
+        'wrapping_shl_i64',
+        'wrapping_shl_i128',
+    ],
 }
 
 
