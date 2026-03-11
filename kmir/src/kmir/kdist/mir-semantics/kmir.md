@@ -316,14 +316,14 @@ where the returned result should go.
        </k>
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall(#projectedCallTy(I, PROJS, LOCALS), lookupFunction(#projectedCallTy(I, PROJS, LOCALS)), ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall({#projectedCallTy(I, PROJS, LOCALS)}:>Ty, lookupFunction({#projectedCallTy(I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
       <locals> LOCALS </locals>
-    requires #projectedCallTy(I, PROJS, LOCALS) =/=K TyUnknown
+    requires isTy(#projectedCallTy(I, PROJS, LOCALS))
     [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
 
-  syntax Ty ::= #projectedCallTy(Int, ProjectionElems, List) [function, total]
+  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total]
 
   rule #projectedCallTy(I, PROJS, LOCALS)
     => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
