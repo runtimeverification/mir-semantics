@@ -117,13 +117,13 @@ fn get_multisig(account_info: &AccountInfo) -> &Multisig {
 // =============================================================================
 
 use pinocchio_token_interface::program::ID as PROGRAM_ID;
-use pinocchio_token_interface::state::multisig::MAX_SIGNERS;
 use pinocchio::sysvars::rent::Rent;
 use pinocchio::sysvars::rent::RENT_ID;
 use pinocchio_token_interface::native_mint::ID as NATIVE_MINT_ID;
 use pinocchio_token_interface::state::account::INCINERATOR_ID;
 use pinocchio::pubkey::PUBKEY_BYTES;
 use pinocchio_token_interface::state::account_state::AccountState;
+use pinocchio_token_interface::state::multisig::MAX_SIGNERS;
 
 // =============================================================================
 // Process call macros (ordered same as includes)
