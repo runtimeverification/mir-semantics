@@ -14,7 +14,7 @@ All types: i8, i16, i32, i64, i128, u8, u16, u32, u64, u128
 
 Signed only: i8, i16, i32, i64, i128
 
-- [ ] `unchecked_neg`
+- [x] `unchecked_neg`
 
 ## Part 2: Safe API Verification
 
