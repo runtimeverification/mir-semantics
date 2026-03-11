@@ -26,7 +26,7 @@ All types: i8, i16, i32, i64, i128, u8, u16, u32, u64, u128
 Unsigned only: u8, u16, u32, u64
 
 - [x] `widening_mul`
-- [ ] `carrying_mul`
+- [x] `carrying_mul`
 
 ## Part 3: Float to Integer Conversion
 

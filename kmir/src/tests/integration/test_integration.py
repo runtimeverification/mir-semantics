@@ -209,6 +209,12 @@ VERIFY_RUST_STD_START_SYMBOLS = {
         'widening_mul_u32',
         'widening_mul_u64',
     ],
+    'carrying_mul': [
+        'carrying_mul_u8',
+        'carrying_mul_u16',
+        'carrying_mul_u32',
+        'carrying_mul_u64',
+    ],
 }
 
 
