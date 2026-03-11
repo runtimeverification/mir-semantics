@@ -203,6 +203,12 @@ VERIFY_RUST_STD_START_SYMBOLS = {
         'wrapping_shr_i64',
         'wrapping_shr_i128',
     ],
+    'widening_mul': [
+        'widening_mul_u8',
+        'widening_mul_u16',
+        'widening_mul_u32',
+        'widening_mul_u64',
+    ],
 }
 
 
