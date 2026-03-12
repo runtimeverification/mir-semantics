@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
 from pyk.cterm import CTerm
 from pyk.cterm.symbolic import CTermSymbolic
@@ -11,7 +11,7 @@ from pyk.kast.inner import KSequence, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
-from pyk.kore.rpc import BoosterServer, KoreClient
+from pyk.kore.rpc import BoosterServer, KoreClient, KoreServer
 from pyk.proof.proof import parallel_advance_proof
 from pyk.proof.reachability import APRProof, APRProver
 
@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from typing import Final
 
     from pyk.kast.inner import KInner
+    from pyk.kore.rpc import BoosterServerArgs, KoreServerArgs
 
     from .options import ProveRSOpts
 
@@ -143,18 +144,30 @@ def _prove_parallel(
     cut_point_rules: list[str],
 ) -> None:
     assert opts.max_workers
-    assert kmir.llvm_library_dir
+    server_args: dict[str, Any] = {
+        'kompiled_dir': kmir.definition_dir,
+        'module_name': kmir.definition.main_module_name,
+        'bug_report': kmir.bug_report,
+        'haskell_threads': opts.max_workers,
+    }
+    server_ctx: BoosterServer | KoreServer
 
-    with BoosterServer(
-        {
-            'kompiled_dir': kmir.definition_dir,
+    if kmir.llvm_library_dir is not None:
+        booster_server_args = {
+            **server_args,
             'llvm_kompiled_dir': kmir.llvm_library_dir,
-            'module_name': kmir.definition.main_module_name,
-            'bug_report': kmir.bug_report,
             'simplify_each': 30,
-            'haskell_threads': opts.max_workers,
         }
-    ) as server:
+        command = KMIR.kore_rpc_booster_command_from_env()
+        if command is not None:
+            booster_server_args['command'] = command
+            _LOGGER.info(f'Passing HS-only symbols to kore-rpc-booster: {KMIR.hs_only_symbols_from_env()}')
+        server_ctx = BoosterServer(cast('BoosterServerArgs', booster_server_args))
+    else:
+        _LOGGER.info('No proof-specific LLVM library available; using KoreServer for parallel proof execution')
+        server_ctx = KoreServer(cast('KoreServerArgs', server_args))
+
+    with server_ctx as server:
 
         def create_prover() -> APRProver:
             client = KoreClient(

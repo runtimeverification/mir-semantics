@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from contextlib import contextmanager
 from functools import cached_property
 from typing import TYPE_CHECKING
@@ -84,15 +85,54 @@ class KMIR(KProve, KRun, KParse):
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
         THUNK: Final = KLabel('thunk(_)_RT-DATA_Value_Evaluation')
 
+    @staticmethod
+    def hs_only_symbols_from_env() -> list[str]:
+        raw_value = os.environ.get('KMIR_HS_ONLY_SYMBOLS', '')
+        if not raw_value:
+            return []
+        symbols: list[str] = []
+        seen: set[str] = set()
+        for token in raw_value.split(','):
+            symbol = token.strip()
+            if symbol and symbol not in seen:
+                seen.add(symbol)
+                symbols.append(symbol)
+        return symbols
+
+    @staticmethod
+    def kore_rpc_booster_command_from_env() -> list[str] | None:
+        hs_only_symbols = KMIR.hs_only_symbols_from_env()
+        if not hs_only_symbols:
+            return None
+        command = ['kore-rpc-booster']
+        for symbol in hs_only_symbols:
+            command += ['--hs-only-symbol', symbol]
+        return command
+
     @cached_property
     def parser(self) -> Parser:
         return Parser(self.definition)
 
     @contextmanager
     def kcfg_explore(self, label: str | None = None, terminate_on_thunk: bool = False) -> Iterator[KCFGExplore]:
+        kore_rpc_command = KMIR.kore_rpc_booster_command_from_env()
+        if kore_rpc_command is None:
+            with cterm_symbolic(
+                self.definition,
+                self.definition_dir,
+                llvm_definition_dir=self.llvm_library_dir,
+                bug_report=self.bug_report,
+                id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
+                simplify_each=30,
+            ) as cts:
+                yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics(terminate_on_thunk=terminate_on_thunk))
+            return
+
+        _LOGGER.info(f'Passing HS-only symbols to kore-rpc-booster: {KMIR.hs_only_symbols_from_env()}')
         with cterm_symbolic(
             self.definition,
             self.definition_dir,
+            kore_rpc_command=kore_rpc_command,
             llvm_definition_dir=self.llvm_library_dir,
             bug_report=self.bug_report,
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent

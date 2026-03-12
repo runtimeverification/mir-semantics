@@ -219,6 +219,8 @@ def kompile_smir(
     llvm_target = llvm_target or 'mir-semantics.llvm'
     llvm_lib_target = llvm_lib_target or 'mir-semantics.llvm-library'
     haskell_target = haskell_target or 'mir-semantics.haskell'
+    base_llvm_lib_path = kdist.which(llvm_lib_target)
+    use_hs_only_symbols = symbolic and bool(KMIR.hs_only_symbols_from_env())
 
     expected_digest = KompileDigest(
         digest=smir_info.digest,
@@ -236,6 +238,8 @@ def kompile_smir(
     if kompile_digest == expected_digest:
         _LOGGER.info(f'Kompiled SMIR up-to-date, no kompilation necessary: {target_dir}')
         if symbolic:
+            if use_hs_only_symbols:
+                return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=base_llvm_lib_path)
             return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
         else:
             return KompiledConcrete(llvm_dir=target_llvm_path)
@@ -261,6 +265,26 @@ def kompile_smir(
     all_rules = smir_rules + extra_rules
 
     if symbolic:
+        if use_hs_only_symbols:
+            _LOGGER.info(f'Creating directory {target_hs_path}')
+            target_hs_path.mkdir(parents=True, exist_ok=True)
+
+            _LOGGER.info('Writing Haskell definition file')
+            hs_def_file = haskell_def_dir / 'definition.kore'
+            _insert_rules_and_write(hs_def_file, all_rules, target_hs_path / 'definition.kore')
+
+            _LOGGER.info('Copying other artefacts into HS output directory')
+            for file_path in haskell_def_dir.iterdir():
+                if file_path.name != 'definition.kore' and file_path.name != 'haskellDefinition.bin':
+                    if file_path.is_file():
+                        shutil.copy2(file_path, target_hs_path / file_path.name)
+                    elif file_path.is_dir():
+                        shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
+
+            _LOGGER.info('Using HS-only symbol mode: skip proof-specific llvm-kompile and reuse base llvm-library')
+            kompile_digest.write(target_dir)
+            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=base_llvm_lib_path)
+
         # Create output directories
         target_llvmdt_path = target_llvm_lib_path / 'dt'
 
