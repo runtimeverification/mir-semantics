@@ -116,8 +116,19 @@ class KMIR(KProve, KRun, KParse):
     @contextmanager
     def kcfg_explore(self, label: str | None = None, terminate_on_thunk: bool = False) -> Iterator[KCFGExplore]:
         kore_rpc_command = KMIR.kore_rpc_booster_command_from_env()
-        if kore_rpc_command is not None:
-            _LOGGER.info(f'Passing HS-only symbols to kore-rpc-booster: {KMIR.hs_only_symbols_from_env()}')
+        if kore_rpc_command is None:
+            with cterm_symbolic(
+                self.definition,
+                self.definition_dir,
+                llvm_definition_dir=self.llvm_library_dir,
+                bug_report=self.bug_report,
+                id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
+                simplify_each=30,
+            ) as cts:
+                yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics(terminate_on_thunk=terminate_on_thunk))
+            return
+
+        _LOGGER.info(f'Passing HS-only symbols to kore-rpc-booster: {KMIR.hs_only_symbols_from_env()}')
         with cterm_symbolic(
             self.definition,
             self.definition_dir,

@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from pyk.kast.inner import KApply, KSort
+from pyk.kast.inner import KApply, KSort, KToken, KVariable
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.string import stringToken
 from pyk.kdist import kdist
@@ -37,7 +37,7 @@ class KompiledSMIR(ABC):
 @dataclass
 class KompiledSymbolic(KompiledSMIR):
     haskell_dir: Path
-    llvm_lib_dir: Path | None
+    llvm_lib_dir: Path
 
     def create_kmir(self, *, bug_report_file: Path | None = None) -> KMIR:
         return KMIR(
@@ -219,6 +219,8 @@ def kompile_smir(
     llvm_target = llvm_target or 'mir-semantics.llvm'
     llvm_lib_target = llvm_lib_target or 'mir-semantics.llvm-library'
     haskell_target = haskell_target or 'mir-semantics.haskell'
+    base_llvm_lib_path = kdist.which(llvm_lib_target)
+    use_hs_only_symbols = symbolic and bool(KMIR.hs_only_symbols_from_env())
 
     expected_digest = KompileDigest(
         digest=smir_info.digest,
@@ -230,12 +232,15 @@ def kompile_smir(
     )
 
     target_hs_path = target_dir / 'haskell'
+    target_llvm_lib_path = target_dir / 'llvm-library'
     target_llvm_path = target_dir / 'llvm'
 
     if kompile_digest == expected_digest:
         _LOGGER.info(f'Kompiled SMIR up-to-date, no kompilation necessary: {target_dir}')
         if symbolic:
-            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=None)
+            if use_hs_only_symbols:
+                return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=base_llvm_lib_path)
+            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
         else:
             return KompiledConcrete(llvm_dir=target_llvm_path)
 
@@ -260,12 +265,66 @@ def kompile_smir(
     all_rules = smir_rules + extra_rules
 
     if symbolic:
-        # no llvm-kompile required, HS backend will evaluate the static data lookups
-        # Create output directory
-        _LOGGER.info(f'Creating directory {target_hs_path}')
+        if use_hs_only_symbols:
+            _LOGGER.info(f'Creating directory {target_hs_path}')
+            target_hs_path.mkdir(parents=True, exist_ok=True)
+
+            _LOGGER.info('Writing Haskell definition file')
+            hs_def_file = haskell_def_dir / 'definition.kore'
+            _insert_rules_and_write(hs_def_file, all_rules, target_hs_path / 'definition.kore')
+
+            _LOGGER.info('Copying other artefacts into HS output directory')
+            for file_path in haskell_def_dir.iterdir():
+                if file_path.name != 'definition.kore' and file_path.name != 'haskellDefinition.bin':
+                    if file_path.is_file():
+                        shutil.copy2(file_path, target_hs_path / file_path.name)
+                    elif file_path.is_dir():
+                        shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
+
+            _LOGGER.info('Using HS-only symbol mode: skip proof-specific llvm-kompile and reuse base llvm-library')
+            kompile_digest.write(target_dir)
+            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=base_llvm_lib_path)
+
+        # Create output directories
+        target_llvmdt_path = target_llvm_lib_path / 'dt'
+
+        _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
+        target_llvmdt_path.mkdir(parents=True, exist_ok=True)
         target_hs_path.mkdir(parents=True, exist_ok=True)
 
-        # Process Haskell definition
+        # Process LLVM definition (only SMIR rules, not extra module rules)
+        # Extra module rules are configuration rewrites that LLVM backend doesn't support
+        _LOGGER.info('Writing LLVM definition file')
+        llvm_lib_dir = kdist.which(llvm_lib_target)
+        llvm_def_file = llvm_lib_dir / 'definition.kore'
+        llvm_def_output = target_llvm_lib_path / 'definition.kore'
+        _insert_rules_and_write(llvm_def_file, smir_rules, llvm_def_output)
+
+        # Run llvm-kompile-matching and llvm-kompile for LLVM
+        # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
+        # TODO align compilation options to what we use in plugin.py
+        import subprocess
+
+        _LOGGER.info('Running llvm-kompile-matching')
+        subprocess.run(
+            ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
+        )
+        _LOGGER.info('Running llvm-kompile')
+        subprocess.run(
+            [
+                'llvm-kompile',
+                str(llvm_def_output),
+                str(target_llvmdt_path),
+                'c',
+                '-O2',
+                '--',
+                '-o',
+                target_llvm_lib_path / 'interpreter',
+            ],
+            check=True,
+        )
+
+        # Process Haskell definition (includes both SMIR rules and extra module rules)
         _LOGGER.info('Writing Haskell definition file')
         hs_def_file = haskell_def_dir / 'definition.kore'
         _insert_rules_and_write(hs_def_file, all_rules, target_hs_path / 'definition.kore')
@@ -280,7 +339,7 @@ def kompile_smir(
                     shutil.copytree(file_path, target_hs_path / file_path.name, dirs_exist_ok=True)
 
         kompile_digest.write(target_dir)
-        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=None)
+        return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
 
     else:
         target_llvmdt_path = target_llvm_path / 'dt'
@@ -410,39 +469,63 @@ def _make_stratified_rules(
 def make_kore_rules(
     kmir: KMIR, smir_info: SMIRInfo, *, break_on_function: list[str] | None = None
 ) -> Sequence[Sentence]:
-    equations: list[Axiom] = []
-
     # kprint tool is too chatty
     kprint_logger = logging.getLogger('pyk.ktool.kprint')
     kprint_logger.setLevel(logging.WARNING)
+
+    unknown_function = KApply(
+        'MonoItemKind::MonoItemFn',
+        (
+            KApply('symbol(_)_LIB_Symbol_String', (KToken('"** UNKNOWN FUNCTION **"', KSort('String')),)),
+            KApply('defId(_)_BODY_DefId_Int', (KVariable('TY', KSort('Int')),)),
+            KApply('noBody_BODY_MaybeBody', ()),
+        ),
+    )
+    default_function = _mk_equation(
+        kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
+    ).let_attrs(((App('owise')),))
+
+    equations: list[Axiom] = [default_function]
 
     for fty, kind in _functions(kmir, smir_info).items():
         equations.append(
             _mk_equation(kmir, 'lookupFunction', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
         )
 
-    types: set[KInner] = set()
-    for type_json in smir_info._smir['types']:
-        parse_result = kmir.parser.parse_mir_json(type_json, 'TypeMapping')
-        assert parse_result is not None
-        type_mapping, _ = parse_result
-        assert isinstance(type_mapping, KApply) and len(type_mapping.args) == 2
-        ty, tyinfo = type_mapping.args
-        if ty in types:
-            raise ValueError(f'Key collision in type map: {ty}')
-        types.add(ty)
-        equations.append(_mk_equation(kmir, 'lookupTy', ty, 'Ty', tyinfo, 'TypeInfo'))
+    # stratify type and alloc lookups
+    def get_int_arg(app: KInner) -> int:
+        match app:
+            case KApply(_, args=(KToken(token=int_arg, sort=KSort('Int')),)):
+                return int(int_arg)
+            case _:
+                raise Exception(f'Cannot extract int arg from {app}')
 
-    for alloc in smir_info._smir['allocs']:
-        alloc_id, value = _decode_alloc(smir_info=smir_info, raw_alloc=alloc)
-        equations.append(_mk_equation(kmir, 'lookupAlloc', alloc_id, 'AllocId', value, 'Evaluation'))
+    invalid_type = KApply('TypeInfo::VoidType', ())
+    parsed_types = [kmir.parser.parse_mir_json(type, 'TypeMapping') for type in smir_info._smir['types']]
+    type_mappings = [type_mapping for type_mapping, _ in (result for result in parsed_types if result is not None)]
+
+    type_assocs = [
+        (get_int_arg(ty), info)
+        for ty, info in (type_mapping.args for type_mapping in type_mappings if isinstance(type_mapping, KApply))
+    ]
+
+    type_equations = _make_stratified_rules(kmir, 'lookupTy', 'Ty', 'TypeInfo', 'ty', type_assocs, invalid_type)
+
+    invalid_alloc_n = KApply(
+        'InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KApply('allocId', (KVariable('N'),)),)
+    )
+    decoded_allocs = [_decode_alloc(smir_info=smir_info, raw_alloc=alloc) for alloc in smir_info._smir['allocs']]
+    allocs = [(get_int_arg(alloc_id), value) for (alloc_id, value) in decoded_allocs]
+    alloc_equations = _make_stratified_rules(
+        kmir, 'lookupAlloc', 'AllocId', 'Evaluation', 'allocId', allocs, invalid_alloc_n
+    )
 
     # Generate break-on-function filter rule if filters are provided
     break_on_rules: list[Axiom] = []
     if break_on_function:
         break_on_rules.append(_mk_break_on_functions_rule(kmir, break_on_function))
 
-    return [*equations, *break_on_rules]
+    return [*equations, *type_equations, *alloc_equations, *break_on_rules]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
