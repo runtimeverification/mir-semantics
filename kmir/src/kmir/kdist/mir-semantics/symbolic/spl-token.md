@@ -460,8 +460,8 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
     </k>
     requires #functionName(FUNC) ==String "spl_token::entrypoint::cheatcode_is_spl_multisig"
       orBool #functionName(FUNC) ==String "cheatcode_is_spl_multisig"
-    ensures 0 <=Int ?SplMultisigM andBool ?SplMultisigM <=Int 3
-      andBool 0 <=Int ?SplMultisigN andBool ?SplMultisigN <=Int 3
+    ensures 0 <=Int ?SplMultisigM andBool ?SplMultisigM <Int 256
+      andBool 0 <=Int ?SplMultisigN andBool ?SplMultisigN <Int 256
       andBool #isSplPubkey(?SplSigner0)
       andBool #isSplPubkey(?SplSigner1)
       andBool #isSplPubkey(?SplSigner2)
