@@ -3,6 +3,8 @@ Proofs to run with `run-proofs.sh -a`:
 | Start symbol name                              |
 |------------------------------------------------|
 | test_ptoken_domain_data                        |
+| test_validate_owner                            |
+| test_validate_owner_multisig                   |
 | test_process_approve                           |
 | test_process_approve_checked                   |
 | test_process_withdraw_excess_lamports_account  |
