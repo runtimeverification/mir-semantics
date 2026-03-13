@@ -222,6 +222,9 @@ VERIFY_RUST_STD_START_SYMBOLS = {
         'to_int_unchecked_f128_i128',
     ],
 }
+VERIFY_RUST_STD_SHOW_SPECS = [
+    'to_int_unchecked-fail',
+]
 
 
 @pytest.mark.parametrize(
@@ -229,10 +232,16 @@ VERIFY_RUST_STD_START_SYMBOLS = {
     VERIFY_RUST_STD_FILES,
     ids=[spec.stem for spec in VERIFY_RUST_STD_FILES],
 )
-def test_verify_rust_std(rs_file: Path, kmir: KMIR) -> None:
+def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
+    should_show = rs_file.stem in VERIFY_RUST_STD_SHOW_SPECS
+
+    if update_expected_output and not should_show:
+        pytest.skip()
 
     prove_rs_opts = ProveRSOpts(rs_file)
+    printer = PrettyPrinter(kmir.definition)
+    cterm_show = CTermShow(printer.print)
 
     start_symbols = ['main']
     if rs_file.stem in VERIFY_RUST_STD_START_SYMBOLS:
@@ -241,6 +250,18 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR) -> None:
     for start_symbol in start_symbols:
         prove_rs_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_rs(prove_rs_opts)
+
+        if should_show:
+            display_opts = ShowOpts(
+                rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
+            )
+            shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
+            show_res = '\n'.join(shower.show(apr_proof))
+            show_dir = rs_file.parent / 'show'
+            show_dir.mkdir(exist_ok=True)
+            assert_or_update_show_output(
+                show_res, show_dir / f'{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
+            )
 
         if not should_fail:
             assert apr_proof.passed
