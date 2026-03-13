@@ -124,7 +124,7 @@ These intercept the call to `expected_validate_owner_result` and directly
 produce the return value, bypassing the function body.
 
 ```k
-module EXPECTED-VALIDATE-OWNER-RESULT-LEMMA
+module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
   imports VALIDATE-OWNER-COMMON
 
   // =========================================================================
@@ -493,7 +493,7 @@ matches the expected outcome at each error branch. The success path returns
 `Ok(())` without asserting.
 
 ```k
-module INNER-TEST-VALIDATE-OWNER-LEMMA
+module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
   imports VALIDATE-OWNER-COMMON
 
   // =========================================================================
