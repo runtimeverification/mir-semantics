@@ -205,7 +205,7 @@ module KMIR-SPL-TOKEN
        => dynamicSize(17)
        [priority(30)]
 
-  // Multisig data buffer length (Multisig::LEN = 355)
+  // Multisig data buffer length (runtime-verification Multisig::LEN = 99)
   rule #maybeDynamicSize(
          dynamicSize(_),
          SPLDataBuffer(
@@ -213,15 +213,13 @@ module KMIR-SPL-TOKEN
              ListItem(Integer(_, 8, false))     // m
              ListItem(Integer(_, 8, false))     // n
              ListItem(BoolVal(_))               // is_initialized
-             ListItem(Range(                    // signers: [Pubkey; 11]
-               ListItem(_) ListItem(_) ListItem(_) ListItem(_) ListItem(_)
-               ListItem(_) ListItem(_) ListItem(_) ListItem(_) ListItem(_)
-               ListItem(_)
+             ListItem(Range(                    // signers: [Pubkey; 3]
+               ListItem(_) ListItem(_) ListItem(_)
              ))
            )
          )
        )
-       => dynamicSize(355)
+       => dynamicSize(99)
        [priority(30)]
 ```
 
@@ -446,25 +444,17 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
                ListItem(Integer(?SplMultisigM:Int, 8, false))                                             // m: u8
                ListItem(Integer(?SplMultisigN:Int, 8, false))                                             // n: u8
                ListItem(BoolVal(?_SplMultisigInitialised:Bool))                                           // is_initialized: bool
-               ListItem(Range(                                                                            // signers: [Pubkey; 11]
+               ListItem(Range(                                                                            // signers: [Pubkey; 3]
                  ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner0:List))))
                  ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner1:List))))
                  ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner2:List))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner3:List))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner4:List))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner5:List))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner6:List))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner7:List))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner8:List))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner9:List))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner10:List))))
                ))
              )
            )
          )
       ~> #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, REFCELL_PROJS)),      // navigate to RefCell for borrow init
-           #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, REFCELL_PROJS))), 355)
+           #initBorrow(operandCopy(place(LOCAL, appendP(PROJS, REFCELL_PROJS))), 99)
          )
       ~> #continueAt(TARGET)
     </k>
@@ -475,14 +465,6 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
       andBool #isSplPubkey(?SplSigner0)
       andBool #isSplPubkey(?SplSigner1)
       andBool #isSplPubkey(?SplSigner2)
-      andBool #isSplPubkey(?SplSigner3)
-      andBool #isSplPubkey(?SplSigner4)
-      andBool #isSplPubkey(?SplSigner5)
-      andBool #isSplPubkey(?SplSigner6)
-      andBool #isSplPubkey(?SplSigner7)
-      andBool #isSplPubkey(?SplSigner8)
-      andBool #isSplPubkey(?SplSigner9)
-      andBool #isSplPubkey(?SplSigner10)
     [priority(30), preserves-definedness]
 ```
 
