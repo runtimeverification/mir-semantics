@@ -215,6 +215,12 @@ VERIFY_RUST_STD_START_SYMBOLS = {
         'carrying_mul_u32',
         'carrying_mul_u64',
     ],
+    'to_int_unchecked-fail': [
+        'to_int_unchecked_f16_i8',
+        'to_int_unchecked_f32_i32',
+        'to_int_unchecked_f64_i64',
+        'to_int_unchecked_f128_i128',
+    ],
 }
 
 

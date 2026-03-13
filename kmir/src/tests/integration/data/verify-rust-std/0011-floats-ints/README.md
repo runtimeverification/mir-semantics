@@ -30,6 +30,10 @@ Unsigned only: u8, u16, u32, u64
 
 ## Part 3: Float to Integer Conversion
 
+TODO: Currently floats are unsupported. However there the required harnesses are
+added to `to_int_unchecked-fail.txt` which should be changed to `.rs` when floats
+will not cause thunks and branching
+
 Types: f16, f32, f64, f128
 
 - [ ] `to_int_unchecked`
