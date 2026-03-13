@@ -65,7 +65,18 @@ It also implements cancellation of inverse projections (such as casting from one
   // special cancellation rules with higher priority
   rule maybeConcatProj(projectionElemSingletonArray, projectionElemConstantIndex(0, 0, false) REST:ProjectionElems) => REST [priority(40)]
   rule maybeConcatProj(projectionElemConstantIndex(0, 0, false), projectionElemSingletonArray REST:ProjectionElems) => REST [priority(40)]
-
+  rule maybeConcatProj(
+         projectionElemSingletonArray,
+         projectionElemField(fieldIdx(0), TY) projectionElemConstantIndex(0, 0, false) REST:ProjectionElems
+       )
+    => projectionElemField(fieldIdx(0), TY) REST
+    [priority(40)]
+  rule maybeConcatProj(
+         projectionElemConstantIndex(0, 0, false),
+         projectionElemField(fieldIdx(0), TY) projectionElemSingletonArray REST:ProjectionElems
+       )
+    => projectionElemField(fieldIdx(0), TY) REST
+    [priority(40)]
   rule maybeConcatProj(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) REST:ProjectionElems) => REST [priority(40)]
   // this rule would not be valid if the original pointee had more than one field. In the calling context, this won't occur, though.
   rule maybeConcatProj(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct REST:ProjectionElems) => REST [priority(40)]
