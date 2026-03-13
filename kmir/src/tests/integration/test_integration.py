@@ -239,7 +239,7 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
     if update_expected_output and not should_show:
         pytest.skip()
 
-    prove_rs_opts = ProveRSOpts(rs_file)
+    prove_rs_opts = ProveRSOpts(rs_file, terminate_on_thunk=True)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
