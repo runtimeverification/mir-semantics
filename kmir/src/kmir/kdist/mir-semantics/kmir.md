@@ -708,7 +708,7 @@ module KMIR
 
   imports KMIR-P-TOKEN // cheat codes
   imports KMIR-SPL-TOKEN // SPL-specific cheat codes
-  imports EXPECTED-VALIDATE-OWNER-RESULT-LEMMA
-  imports INNER-TEST-VALIDATE-OWNER-LEMMA
+  imports EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
+  imports INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
 endmodule
 ```
