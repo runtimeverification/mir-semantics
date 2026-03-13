@@ -330,6 +330,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
                    | "CtxWrapStruct" // special context adding a singleton Aggregate(0, _) around a value
+                   | "CtxWrapSingletonArray" // special context adding a singleton Range(ListItem(_)) around a value
 
   syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
 
@@ -366,6 +367,10 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   // removing a struct wrapper added by a WrapStruct projection
   rule #buildUpdate(Aggregate(variantIdx(0), ListItem(VALUE) .List), CtxWrapStruct CTXS)
+    => #buildUpdate(VALUE, CTXS)
+
+  // removing a singleton-array wrapper added by a SingletonArray projection
+  rule #buildUpdate(Range(ListItem(VALUE) .List), CtxWrapSingletonArray CTXS)
     => #buildUpdate(VALUE, CTXS)
 
 
@@ -500,6 +505,15 @@ The situation typically arises when the stored value is a pointer (`NonNull`) bu
              CTXTS
            )
         => #traverseProjection(DEST, Aggregate(variantIdx(0), ListItem(VALUE)), PROJS, CtxWrapStruct CTXTS) ... </k>
+    [preserves-definedness, priority(100)]
+
+  rule <k> #traverseProjection(
+             DEST,
+             VALUE,
+             projectionElemSingletonArray PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, Range(ListItem(VALUE)), PROJS, CtxWrapSingletonArray CTXTS) ... </k>
     [preserves-definedness, priority(100)]
 ```
 
@@ -1235,6 +1249,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
   rule #projectionsFor(CtxFieldUnion(F_IDX, _, TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(F_IDX, TY) PROJS)
   rule #projectionsFor(  CtxWrapStruct       CTXS, PROJS) => #projectionsFor(CTXS,                 projectionElemWrapStruct PROJS)
+  rule #projectionsFor(CtxWrapSingletonArray CTXS, PROJS) => #projectionsFor(CTXS,              projectionElemSingletonArray PROJS)
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
