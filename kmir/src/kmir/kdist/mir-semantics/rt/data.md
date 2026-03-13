@@ -329,6 +329,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | CtxIndex( List , Int ) // array index constant or has been read before
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
+                   | "CtxSingletonArray" // special context dropping a synthetic singleton-array wrapper on writeback
                    | "CtxWrapStruct" // special context adding a singleton Aggregate(0, _) around a value
 
   syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
@@ -364,6 +365,14 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     requires size(INNER) ==Int END -Int START // ensures updateList is defined
      [preserves-definedness] // START,END indexes checked before, length check for update here
 
+  // removing an artificial singleton-array wrapper added by a SingletonArray projection
+  rule #buildUpdate(Range(ListItem(VALUE) .List), CtxSingletonArray CTXS)
+    => #buildUpdate(VALUE, CTXS)
+
+  // nested updates may already have reconstructed the original element shape
+  rule #buildUpdate(VALUE, CtxSingletonArray CTXS)
+    => #buildUpdate(VALUE, CTXS)
+
   // removing a struct wrapper added by a WrapStruct projection
   rule #buildUpdate(Aggregate(variantIdx(0), ListItem(VALUE) .List), CtxWrapStruct CTXS)
     => #buildUpdate(VALUE, CTXS)
@@ -390,6 +399,18 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   // high-priority rules to cancel out projection pairs at the head
   rule consP(projectionElemSingletonArray, projectionElemConstantIndex(0, 0, false) PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemConstantIndex(0, 0, false), projectionElemSingletonArray PS:ProjectionElems) => PS [priority(40)]
+  rule consP(
+         projectionElemSingletonArray,
+         projectionElemField(fieldIdx(0), TY) projectionElemConstantIndex(0, 0, false) PS:ProjectionElems
+       )
+    => projectionElemField(fieldIdx(0), TY) PS
+    [priority(40)]
+  rule consP(
+         projectionElemConstantIndex(0, 0, false),
+         projectionElemField(fieldIdx(0), TY) projectionElemSingletonArray PS:ProjectionElems
+       )
+    => projectionElemField(fieldIdx(0), TY) PS
+    [priority(40)]
   rule consP(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) PS:ProjectionElems) => PS [priority(40)]
   // this rule is not valid if the original pointee has more than one field
   // rule consP(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct PS:ProjectionElems) => PS [priority(40)]
@@ -455,6 +476,16 @@ This is done without consideration of the validity of the Downcast[^downcast].
   rule <k> #traverseProjection(
              DEST,
              Aggregate(IDX, ARGS),
+             projectionElemSingletonArray projectionElemField(fieldIdx(0), TY) projectionElemConstantIndex(0, 0, false) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, Aggregate(IDX, ARGS), projectionElemField(fieldIdx(0), TY) PROJS, CTXTS) ... </k>
+    requires size(ARGS) ==Int 1
+    [preserves-definedness, priority(110)]
+
+  rule <k> #traverseProjection(
+             DEST,
+             Aggregate(IDX, ARGS),
              projectionElemField(fieldIdx(I), TY) PROJS,
              CTXTS
            )
@@ -516,6 +547,21 @@ The following rule resolves this situation by using the head element.
              CTXTS
            )
         => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
+    [preserves-definedness, priority(100)]
+```
+
+The dual to `projectionElemWrapStruct` is `projectionElemSingletonArray`, which is introduced by pointer casts from
+an element pointer to an array pointer. When cancellation with `ConstantIndex(0)` does not happen immediately,
+the traversal still needs to materialize a singleton `Range` so that later projections can proceed.
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             VALUE,
+             projectionElemSingletonArray PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, Range(ListItem(VALUE)), PROJS, CtxSingletonArray CTXTS) ... </k>
     [preserves-definedness, priority(100)]
 ```
 
@@ -1234,6 +1280,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
   rule #projectionsFor(CtxFieldUnion(F_IDX, _, TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(F_IDX, TY) PROJS)
+  rule #projectionsFor(CtxSingletonArray      CTXS, PROJS) => #projectionsFor(CTXS,          projectionElemSingletonArray PROJS)
   rule #projectionsFor(  CtxWrapStruct       CTXS, PROJS) => #projectionsFor(CTXS,                 projectionElemWrapStruct PROJS)
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.

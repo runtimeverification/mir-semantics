@@ -41,6 +41,7 @@ PROVE_RS_START_SYMBOLS = {
     'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next-fail': ['repro'],
     'spl-multisig-signer-index': ['repro'],
+    'write_volatile_pubkey_array': ['repro'],
 }
 PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
