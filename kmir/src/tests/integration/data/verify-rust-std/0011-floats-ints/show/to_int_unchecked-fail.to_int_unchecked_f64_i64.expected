@@ -1,0 +1,15 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (22 steps)
+└─ 3 (stuck, leaf)
+    #execIntrinsic ( IntrinsicFunction ( symbol ( "fabsf64" ) ) , operandMove ( plac
+    span: 90
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
