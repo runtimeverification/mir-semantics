@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from kmir.__main__ import _kmir_info, _kmir_link, _kmir_prune, _kmir_show
-from kmir.options import InfoOpts, LinkOpts, ProveRSOpts, PruneOpts, ShowOpts
+from kmir.options import InfoOpts, LinkOpts, ProveOpts, PruneOpts, ShowOpts
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
 
@@ -31,8 +31,8 @@ def _prove_and_store(
     is_smir: bool = False,
     max_depth: int | None = None,
 ) -> APRProof:
-    opts = ProveRSOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbol=start_symbol, max_depth=max_depth)
-    apr_proof = kmir.prove_rs(opts)
+    opts = ProveOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbol=start_symbol, max_depth=max_depth)
+    apr_proof = kmir.prove(opts)
     apr_proof.write_proof_data()
     return apr_proof
 
@@ -275,7 +275,7 @@ def test_cli_show_minimize_proof(kmir: KMIR, tmp_path: Path, capsys: pytest.Capt
     ), f'Minimization should not increase node count: {minimized_node_count} > {initial_node_count}'
 
 
-def test_cli_prove_rs_add_module(kmir: KMIR, tmp_path: Path) -> None:
+def test_cli_prove_add_module(kmir: KMIR, tmp_path: Path) -> None:
     """Test --add-module option for prove-rs using stored module files."""
     from kmir.kmir import KMIR
 
@@ -287,7 +287,7 @@ def test_cli_prove_rs_add_module(kmir: KMIR, tmp_path: Path) -> None:
     assert stored_module_json.exists(), f'Stored JSON module file not found: {stored_module_json}'
 
     # Run prove-rs with --add-module and max_depth=1
-    opts_with_module = ProveRSOpts(
+    opts_with_module = ProveOpts(
         rs_file,
         proof_dir=tmp_path,
         smir=False,
@@ -295,7 +295,7 @@ def test_cli_prove_rs_add_module(kmir: KMIR, tmp_path: Path) -> None:
         max_depth=1,
         add_module=stored_module_json,
     )
-    proof_with_module = KMIR.prove_rs(opts_with_module)
+    proof_with_module = KMIR.prove(opts_with_module)
 
     # With depth=1, we should have 3 nodes: init, one step, target
     assert len(list(proof_with_module.kcfg.nodes)) == 3
@@ -310,14 +310,14 @@ def test_cli_break_on_function(
     rs_file = PROVE_RS_DIR / 'break-on-function.rs'
     start_symbol = 'main'
 
-    opts = ProveRSOpts(
+    opts = ProveOpts(
         rs_file,
         proof_dir=tmp_path,
         smir=False,
         start_symbol=start_symbol,
         break_on_function=['foo', 'black_box'],
     )
-    apr_proof = KMIR.prove_rs(opts)
+    apr_proof = KMIR.prove(opts)
     apr_proof.write_proof_data()
 
     show_opts = ShowOpts(

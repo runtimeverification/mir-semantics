@@ -32,7 +32,7 @@ make test-unit
 make test-integration
 
 # Run a single test
-uv --directory kmir run pytest kmir/src/tests/integration/test_prove.py::test_prove_rs -k "test_name"
+uv --directory kmir run pytest kmir/src/tests/integration/test_prove.py::test_prove -k "test_name"
 
 # Generate and parse SMIR for test files
 make smir-parse-tests

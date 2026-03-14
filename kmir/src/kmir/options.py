@@ -61,15 +61,21 @@ class ProofOpts(KMirOpts):
 
 @dataclass
 class ProveOpts(KMirOpts):
+    rs_file: Path
     proof_dir: Path | None
     haskell_target: str | None
     llvm_lib_target: str | None
     bug_report: Path | None
     max_depth: int | None
     max_iterations: int | None
+    max_workers: int | None
     reload: bool
     fail_fast: bool
     maintenance_rate: int
+    save_smir: bool
+    smir: bool
+    start_symbol: str
+    add_module: Path | None
     break_on_calls: bool
     break_on_function_calls: bool
     break_on_intrinsic_calls: bool
@@ -86,71 +92,6 @@ class ProveOpts(KMirOpts):
     break_every_step: bool
     terminate_on_thunk: bool
     break_on_function: list[str]
-
-    def __init__(
-        self,
-        *,
-        proof_dir: Path | str | None = None,
-        haskell_target: str | None = None,
-        llvm_lib_target: str | None = None,
-        bug_report: Path | None = None,
-        max_depth: int | None = None,
-        max_iterations: int | None = None,
-        reload: bool = False,
-        fail_fast: bool = False,
-        maintenance_rate: int = 1,
-        break_on_calls: bool = False,
-        break_on_function_calls: bool = False,
-        break_on_intrinsic_calls: bool = False,
-        break_on_thunk: bool = False,
-        break_every_statement: bool = False,
-        break_on_terminator_goto: bool = False,
-        break_on_terminator_switch_int: bool = False,
-        break_on_terminator_return: bool = False,
-        break_on_terminator_call: bool = False,
-        break_on_terminator_assert: bool = False,
-        break_on_terminator_drop: bool = False,
-        break_on_terminator_unreachable: bool = False,
-        break_every_terminator: bool = False,
-        break_every_step: bool = False,
-        terminate_on_thunk: bool = False,
-        break_on_function: list[str] | None = None,
-    ) -> None:
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
-        self.haskell_target = haskell_target
-        self.llvm_lib_target = llvm_lib_target
-        self.bug_report = bug_report
-        self.max_depth = max_depth
-        self.max_iterations = max_iterations
-        self.reload = reload
-        self.fail_fast = fail_fast
-        self.maintenance_rate = maintenance_rate
-        self.break_on_calls = break_on_calls
-        self.break_on_function_calls = break_on_function_calls
-        self.break_on_intrinsic_calls = break_on_intrinsic_calls
-        self.break_on_thunk = break_on_thunk
-        self.break_every_statement = break_every_statement
-        self.break_on_terminator_goto = break_on_terminator_goto
-        self.break_on_terminator_switch_int = break_on_terminator_switch_int
-        self.break_on_terminator_return = break_on_terminator_return
-        self.break_on_terminator_call = break_on_terminator_call
-        self.break_on_terminator_assert = break_on_terminator_assert
-        self.break_on_terminator_drop = break_on_terminator_drop
-        self.break_on_terminator_unreachable = break_on_terminator_unreachable
-        self.break_every_terminator = break_every_terminator
-        self.break_every_step = break_every_step
-        self.terminate_on_thunk = terminate_on_thunk
-        self.break_on_function = break_on_function if break_on_function is not None else []
-
-
-@dataclass
-class ProveRSOpts(ProveOpts):
-    rs_file: Path
-    save_smir: bool
-    smir: bool
-    start_symbol: str
-    add_module: Path | None
-    max_workers: int | None
 
     def __init__(
         self,

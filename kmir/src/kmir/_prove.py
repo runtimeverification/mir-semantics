@@ -25,13 +25,13 @@ if TYPE_CHECKING:
 
     from pyk.kast.inner import KInner
 
-    from .options import ProveRSOpts
+    from .options import ProveOpts
 
 
 _LOGGER: Final = logging.getLogger(__name__)
 
 
-def prove_rs(opts: ProveRSOpts) -> APRProof:
+def prove(opts: ProveOpts) -> APRProof:
     if not opts.rs_file.is_file():
         raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
@@ -42,14 +42,14 @@ def prove_rs(opts: ProveRSOpts) -> APRProof:
 
     if opts.proof_dir is not None:
         target_path = opts.proof_dir / label
-        return _prove_rs(opts, target_path, label)
+        return _prove(opts, target_path, label)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         target_path = Path(tmp_dir)
-        return _prove_rs(opts, target_path, label)
+        return _prove(opts, target_path, label)
 
 
-def _prove_rs(opts: ProveRSOpts, target_path: Path, label: str) -> APRProof:
+def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
     if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
         _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
         proof = APRProof.read_proof_data(opts.proof_dir, label)
@@ -138,7 +138,7 @@ def _prove_parallel(
     kmir: KMIR,
     proof: APRProof,
     *,
-    opts: ProveRSOpts,
+    opts: ProveOpts,
     label: str,
     cut_point_rules: list[str],
 ) -> None:
@@ -192,7 +192,7 @@ def _prove_sequential(
     kmir: KMIR,
     proof: APRProof,
     *,
-    opts: ProveRSOpts,
+    opts: ProveOpts,
     label: str,
     cut_point_rules: list[str],
 ) -> None:

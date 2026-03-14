@@ -14,7 +14,7 @@ from pyk.proof.show import APRProofShow
 
 from kmir.cargo import CargoProject
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
-from kmir.options import ProveRSOpts, ShowOpts
+from kmir.options import ProveOpts, ShowOpts
 from kmir.parse.parser import Parser
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
@@ -73,7 +73,7 @@ PROVE_RS_SHOW_SPECS = [
     PROVE_RS_FILES,
     ids=[spec.stem for spec in PROVE_RS_FILES],
 )
-def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
     should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
     is_smir = rs_file.suffix == '.json'
@@ -81,7 +81,7 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
     if update_expected_output and not should_show:
         pytest.skip()
 
-    prove_rs_opts = ProveRSOpts(rs_file, smir=is_smir)
+    prove_opts = ProveOpts(rs_file, smir=is_smir)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
@@ -90,8 +90,8 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
         start_symbols = PROVE_RS_START_SYMBOLS[rs_file.stem]
 
     for start_symbol in start_symbols:
-        prove_rs_opts.start_symbol = start_symbol
-        apr_proof = kmir.prove_rs(prove_rs_opts)
+        prove_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove(prove_opts)
 
         if should_show:
             display_opts = ShowOpts(
@@ -130,8 +130,8 @@ def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bo
 
     # run proofs for all '<start-symbol>.expected' files (failing or not)
     for file in main_crate.parent.glob('*.expected'):
-        opts = ProveRSOpts(linked_file, smir=True, start_symbol=file.stem)
-        proof = kmir.prove_rs(opts)
+        opts = ProveOpts(linked_file, smir=True, start_symbol=file.stem)
+        proof = kmir.prove(opts)
 
         printer = PrettyPrinter(kmir.definition)
         cterm_show = CTermShow(printer.print)
@@ -408,9 +408,9 @@ def test_exec_smir(
 def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
     testname, smir_json = test_data
 
-    prove_rs_opts = ProveRSOpts(rs_file=smir_json, smir=True)
+    prove_opts = ProveOpts(rs_file=smir_json, smir=True)
 
-    proof = KMIR.prove_rs(prove_rs_opts)
+    proof = KMIR.prove(prove_opts)
     assert proof.passed
 
 
