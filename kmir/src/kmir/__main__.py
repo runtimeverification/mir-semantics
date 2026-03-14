@@ -21,7 +21,7 @@ from .linker import link
 from .options import (
     InfoOpts,
     LinkOpts,
-    ProveRSOpts,
+    ProveOpts,
     PruneOpts,
     RunOpts,
     SectionEdgeOpts,
@@ -72,8 +72,8 @@ def _kmir_run(opts: RunOpts) -> None:
             run(target_dir=Path(target_dir))
 
 
-def _kmir_prove_rs(opts: ProveRSOpts) -> None:
-    proof = KMIR.prove_rs(opts)
+def _kmir_prove(opts: ProveOpts) -> None:
+    proof = KMIR.prove_program(opts)
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
@@ -268,8 +268,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_prune(opts)
         case SectionEdgeOpts():
             _kmir_section_edge(opts)
-        case ProveRSOpts():
-            _kmir_prove_rs(opts)
+        case ProveOpts():
+            _kmir_prove(opts)
         case LinkOpts():
             _kmir_link(opts)
         case _:
@@ -542,26 +542,24 @@ def _arg_parser() -> ArgumentParser:
     section_edge_parser.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
     section_edge_parser.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
 
-    prove_rs_parser = command_parser.add_parser(
-        'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
+    prove_parser = command_parser.add_parser(
+        'prove', help='Prove a Rust program', aliases=['prove-rs'], parents=[kcli_args.logging_args, prove_args]
     )
-    prove_rs_parser.add_argument(
-        'rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)'
-    )
-    prove_rs_parser.add_argument(
+    prove_parser.add_argument('rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)')
+    prove_parser.add_argument(
         '--save-smir', action='store_true', help='Do not delete the intermediate generated SMIR JSON file.'
     )
-    prove_rs_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
-    prove_rs_parser.add_argument(
+    prove_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
+    prove_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
-    prove_rs_parser.add_argument(
+    prove_parser.add_argument(
         '--add-module',
         type=Path,
         metavar='FILE',
         help='K module file to include (.json format from --to-module)',
     )
-    prove_rs_parser.add_argument(
+    prove_parser.add_argument(
         '--max-workers', metavar='N', type=int, help='Maximum number of workers for parallel exploration'
     )
 
@@ -640,8 +638,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 haskell_target=ns.haskell_target,
                 llvm_lib_target=ns.llvm_lib_target,
             )
-        case 'prove-rs':
-            return ProveRSOpts(
+        case 'prove' | 'prove-rs':
+            return ProveOpts(
                 rs_file=Path(ns.rs_file),
                 proof_dir=ns.proof_dir,
                 haskell_target=ns.haskell_target,

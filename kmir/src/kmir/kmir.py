@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from pyk.proof.reachability import APRProof
     from pyk.utils import BugReport
 
-    from .options import DisplayOpts, ProveRSOpts
+    from .options import DisplayOpts, ProveOpts
 
 
 _LOGGER: Final = logging.getLogger(__name__)
@@ -121,10 +121,10 @@ class KMIR(KProve, KRun, KParse):
         return result
 
     @staticmethod
-    def prove_rs(opts: ProveRSOpts) -> APRProof:
-        from ._prove import prove_rs
+    def prove_program(opts: ProveOpts) -> APRProof:
+        from ._prove import prove
 
-        return prove_rs(opts)
+        return prove(opts)
 
 
 class KMIRSemantics(DefaultSemantics):
