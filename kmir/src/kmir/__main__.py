@@ -73,7 +73,7 @@ def _kmir_run(opts: RunOpts) -> None:
 
 
 def _kmir_prove(opts: ProveOpts) -> None:
-    proof = KMIR.prove(opts)
+    proof = KMIR.prove_program(opts)
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
@@ -545,9 +545,7 @@ def _arg_parser() -> ArgumentParser:
     prove_parser = command_parser.add_parser(
         'prove', help='Prove a Rust program', aliases=['prove-rs'], parents=[kcli_args.logging_args, prove_args]
     )
-    prove_parser.add_argument(
-        'rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)'
-    )
+    prove_parser.add_argument('rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)')
     prove_parser.add_argument(
         '--save-smir', action='store_true', help='Do not delete the intermediate generated SMIR JSON file.'
     )

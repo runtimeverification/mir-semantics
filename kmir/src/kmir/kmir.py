@@ -121,7 +121,7 @@ class KMIR(KProve, KRun, KParse):
         return result
 
     @staticmethod
-    def prove(opts: ProveOpts) -> APRProof:
+    def prove_program(opts: ProveOpts) -> APRProof:
         from ._prove import prove
 
         return prove(opts)

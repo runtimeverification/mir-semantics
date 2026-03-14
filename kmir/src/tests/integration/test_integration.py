@@ -91,7 +91,7 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
 
     for start_symbol in start_symbols:
         prove_opts.start_symbol = start_symbol
-        apr_proof = kmir.prove(prove_opts)
+        apr_proof = kmir.prove_program(prove_opts)
 
         if should_show:
             display_opts = ShowOpts(
@@ -131,7 +131,7 @@ def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bo
     # run proofs for all '<start-symbol>.expected' files (failing or not)
     for file in main_crate.parent.glob('*.expected'):
         opts = ProveOpts(linked_file, smir=True, start_symbol=file.stem)
-        proof = kmir.prove(opts)
+        proof = kmir.prove_program(opts)
 
         printer = PrettyPrinter(kmir.definition)
         cterm_show = CTermShow(printer.print)
@@ -410,7 +410,7 @@ def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KM
 
     prove_opts = ProveOpts(rs_file=smir_json, smir=True)
 
-    proof = KMIR.prove(prove_opts)
+    proof = KMIR.prove_program(prove_opts)
     assert proof.passed
 
 

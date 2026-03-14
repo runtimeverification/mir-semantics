@@ -32,7 +32,7 @@ def _prove_and_store(
     max_depth: int | None = None,
 ) -> APRProof:
     opts = ProveOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbol=start_symbol, max_depth=max_depth)
-    apr_proof = kmir.prove(opts)
+    apr_proof = kmir.prove_program(opts)
     apr_proof.write_proof_data()
     return apr_proof
 
@@ -295,7 +295,7 @@ def test_cli_prove_add_module(kmir: KMIR, tmp_path: Path) -> None:
         max_depth=1,
         add_module=stored_module_json,
     )
-    proof_with_module = KMIR.prove(opts_with_module)
+    proof_with_module = KMIR.prove_program(opts_with_module)
 
     # With depth=1, we should have 3 nodes: init, one step, target
     assert len(list(proof_with_module.kcfg.nodes)) == 3
@@ -317,7 +317,7 @@ def test_cli_break_on_function(
         start_symbol=start_symbol,
         break_on_function=['foo', 'black_box'],
     )
-    apr_proof = KMIR.prove(opts)
+    apr_proof = KMIR.prove_program(opts)
     apr_proof.write_proof_data()
 
     show_opts = ShowOpts(
