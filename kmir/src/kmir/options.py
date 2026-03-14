@@ -74,6 +74,7 @@ class ProveOpts(KMirOpts):
     maintenance_rate: int
     save_smir: bool
     smir: bool
+    parsed_smir: dict | None
     start_symbol: str
     add_module: Path | None
     break_on_calls: bool
@@ -109,6 +110,7 @@ class ProveOpts(KMirOpts):
         maintenance_rate: int = 1,
         save_smir: bool = False,
         smir: bool = False,
+        parsed_smir: dict | None = None,
         start_symbol: str = 'main',
         break_on_calls: bool = False,
         break_on_function_calls: bool = False,
@@ -141,6 +143,7 @@ class ProveOpts(KMirOpts):
         self.maintenance_rate = maintenance_rate
         self.save_smir = save_smir
         self.smir = smir
+        self.parsed_smir = parsed_smir
         self.start_symbol = start_symbol
         self.break_on_calls = break_on_calls
         self.break_on_function_calls = break_on_function_calls

@@ -67,7 +67,9 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         )
     else:
         _LOGGER.info(f'Constructing initial proof: {label}')
-        if opts.smir:
+        if opts.parsed_smir is not None:
+            smir_info = SMIRInfo(opts.parsed_smir)
+        elif opts.smir:
             smir_info = SMIRInfo.from_file(opts.rs_file)
         else:
             smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
