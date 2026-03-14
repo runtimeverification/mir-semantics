@@ -70,7 +70,7 @@ Every subcommand supports `--help` for the full option list.
 | Command | Purpose |
 | --- | --- |
 | `kmir run` | Execute a Rust program from SMIR JSON |
-| `kmir prove-rs` | Prove properties of a Rust source file (recommended entry point) |
+| `kmir prove` | Prove properties of a Rust source file (recommended entry point) |
 | `kmir show` | Inspect a proof graph — nodes, deltas, rules, statistics |
 | `kmir view` | Interactive proof viewer |
 | `kmir prune` | Remove a node (and its subtree) from a proof |
@@ -82,7 +82,7 @@ Every subcommand supports `--help` for the full option list.
 
 ```bash
 # 1. Run a proof
-uv --project kmir run kmir prove-rs program.rs --proof-dir ./proofs --verbose
+uv --project kmir run kmir prove program.rs --proof-dir ./proofs --verbose
 
 # 2. Overview — see all leaves and statistics
 uv --project kmir run kmir show proof_id --proof-dir ./proofs --leaves --statistics
@@ -104,11 +104,11 @@ When a proof does not close, the typical cycle is **inspect → refine → re-pr
 
 ```bash
 # Narrow down where things go wrong — break on every function call
-uv --project kmir run kmir prove-rs program.rs --proof-dir ./proofs \
+uv --project kmir run kmir prove program.rs --proof-dir ./proofs \
     --break-on-calls --max-depth 200
 
 # Or break only when a specific function is entered
-uv --project kmir run kmir prove-rs program.rs --proof-dir ./proofs \
+uv --project kmir run kmir prove program.rs --proof-dir ./proofs \
     --break-on-function "my_module::suspect_fn"
 
 # Split a large edge to find the exact divergence point
@@ -116,15 +116,15 @@ uv --project kmir run kmir section-edge proof_id "4,5" --proof-dir ./proofs --se
 
 # Prune a bad subtree and re-run
 uv --project kmir run kmir prune proof_id 5 --proof-dir ./proofs
-uv --project kmir run kmir prove-rs program.rs --proof-dir ./proofs
+uv --project kmir run kmir prove program.rs --proof-dir ./proofs
 
 # Export a proof subgraph as a reusable K module
 uv --project kmir run kmir show proof_id --proof-dir ./proofs --to-module lemma.json --minimize-proof
 # then re-prove with the lemma
-uv --project kmir run kmir prove-rs program.rs --proof-dir ./proofs --add-module lemma.json
+uv --project kmir run kmir prove program.rs --proof-dir ./proofs --add-module lemma.json
 ```
 
-Other useful `prove-rs` break flags: `--break-every-step`, `--break-every-terminator`, `--break-on-thunk`, `--terminate-on-thunk`.
+Other useful `prove` break flags: `--break-every-step`, `--break-every-terminator`, `--break-on-thunk`, `--terminate-on-thunk`.
 
 ### Generate Stable MIR JSON manually
 
