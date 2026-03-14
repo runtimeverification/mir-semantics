@@ -22,6 +22,20 @@ module VALIDATE-OWNER-COMMON
   //   Err(UninitializedAccount)     = Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(9), .List)))
   //   Err(InvalidAccountData)       = Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(3), .List)))
 
+  // Convert a Result<(), ProgramError> Value to a human-readable string
+  syntax String ::= Result2String ( Value ) [function, total]
+  rule Result2String(Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List))))
+    => "Ok(())"
+  rule Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Integer(4, 32, false))))))
+    => "Err(Custom(4))"
+  rule Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List))))
+    => "Err(MissingRequiredSignature)"
+  rule Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(9), .List))))
+    => "Err(UninitializedAccount)"
+  rule Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(3), .List))))
+    => "Err(InvalidAccountData)"
+  rule Result2String(_) => "Unknown" [owise]
+
   // SPL Token Program ID as a Key (32 bytes).
   // Hex: 06 dd f6 e1 d7 65 a1 93 d9 cb e1 46 ce eb 79 ac
   //      1c b4 85 ed 5f 5b 37 91 3a 8c f5 85 7e ff 00 a9
@@ -544,7 +558,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
     [priority(30)]
 
   // Custom MIRError for assert_eq failures in inner_test_validate_owner
-  syntax MIRError ::= "#ValidateOwnerAssertFailed"
+  syntax MIRError ::= "#ValidateOwnerAssertFailed" "(" String ")"
 
   // =========================================================================
   // Case 1: expected_owner != key!(owner_account_info) => assert result == Err(Custom(4))
@@ -569,7 +583,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             EXPECTED_OWNER,
             PAccountAccount(PAcc(_,_,_,_,_, OWNER_KEY, _, _, _), _),
             _, _MAYBE_MULTISIG:Value, RESULT:Value, _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Integer(4, 32, false)))))))
     </k>
     requires EXPECTED_OWNER =/=K fromKey(OWNER_KEY)
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Integer(4, 32, false)))))
@@ -595,7 +609,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             EXPECTED_OWNER,
             PAccountMultisig(PAcc(_,_,_,_,_, OWNER_KEY, _, _, _), _),
             _, _MAYBE_MULTISIG:Value, RESULT:Value, _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Integer(4, 32, false)))))))
     </k>
     requires EXPECTED_OWNER =/=K fromKey(OWNER_KEY)
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(0), ListItem(Integer(4, 32, false)))))
@@ -628,7 +642,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             Aggregate(variantIdx(0), .List),   // None
             RESULT:Value,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
     requires EXPECTED_OWNER ==K fromKey(OWNER_KEY)
      andBool IS_SIGNER ==Int 0
@@ -681,7 +695,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             Aggregate(variantIdx(1), _),   // Some(...)
             RESULT:Value,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
     requires EXPECTED_OWNER ==K fromKey(OWNER_KEY)
      andBool OWNER_OF_ACCOUNT =/=K #programIdKey
@@ -739,7 +753,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
                 Aggregate(variantIdx(3), .List))))),   // Some(Err(InvalidAccountData))
             RESULT:Value,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(3), .List)))))
     </k>
     requires EXPECTED_OWNER ==K fromKey(OWNER_KEY)
      andBool OWNER_OF_ACCOUNT ==K #programIdKey
@@ -778,7 +792,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
                 BoolVal(false))))),                    // Some(Ok(false))
             RESULT:Value,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(9), .List)))))
     </k>
     requires EXPECTED_OWNER ==K fromKey(OWNER_KEY)
      andBool OWNER_OF_ACCOUNT ==K #programIdKey
@@ -905,7 +919,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
             RESULT,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
     requires #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
@@ -934,7 +948,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
             RESULT,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
     requires notBool #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
      andBool #signersCount3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2) <Int M
@@ -987,7 +1001,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             RESULT,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
     requires #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
@@ -1014,7 +1028,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             RESULT,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
     requires notBool #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
      andBool #signersCount2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1) <Int M
@@ -1064,7 +1078,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             RESULT,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
     requires #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
@@ -1089,7 +1103,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             RESULT,
             _DEST, _TARGET)
-      => #ValidateOwnerAssertFailed
+      => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
     requires notBool #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
      andBool #signersCount1(SKEY0, SKEY1, SKEY2, KEY0, IS0) <Int M
