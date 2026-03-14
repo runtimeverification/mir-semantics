@@ -61,7 +61,7 @@ source kmir/.venv/bin/activate
 uv --directory kmir run kmir <command>
 
 # Prove Rust code directly (recommended)
-uv --directory kmir run kmir prove-rs path/to/file.rs --verbose
+uv --directory kmir run kmir prove path/to/file.rs --verbose
 
 # Generate SMIR JSON from Rust
 ./scripts/generate-smir-json.sh file.rs output_dir
@@ -79,7 +79,7 @@ uv --directory kmir run kmir show proof_id --proof-dir ./proof_dir
     - `smir.py` - SMIR JSON parsing and info extraction
     - `kdist/mir-semantics/` - K semantics definitions
   - `src/tests/` - Test suites
-    - `integration/data/prove-rs/` - Rust test programs for prove-rs
+    - `integration/data/prove-rs/` - Rust test programs for prove
     - `integration/data/exec-smir/` - Rust programs for execution tests
 
 ### Key K Semantics Files
@@ -105,17 +105,17 @@ Intrinsic functions (like `black_box`, `raw_eq`) don't have regular function bod
 
 ## Testing Patterns
 
-### prove-rs Tests
+### prove Tests
 Tests in `kmir/src/tests/integration/data/prove-rs/` follow this pattern:
 - Simple Rust programs with assertions
 - File naming: `test-name.rs` (passes), `test-name-fail.rs` (expected to fail)
-- Tests run via `kmir prove-rs` command
+- Tests run via `kmir prove` command
 - Generate SMIR automatically during test execution
 
 ### Adding New Tests
 1. Add Rust file to `prove-rs/` directory
 2. Use assertions to verify behavior
-3. Run with: `uv --directory kmir run kmir prove-rs your-test.rs`
+3. Run with: `uv --directory kmir run kmir prove your-test.rs`
 
 ## Development Workflow
 
