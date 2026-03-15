@@ -143,6 +143,26 @@ write the value to that location.
        ... </k>
 ```
 
+#### Volatile Load (`std::intrinsics::volatile_load`, `std::ptr::read_volatile`)
+
+The `volatile_load` intrinsic reads a value from a memory location through a pointer, ensuring the read is not
+optimised away by the compiler. Unlike normal loads, volatile loads are guaranteed to occur exactly once and
+in order with respect to other volatile operations. In the semantics, this is equivalent to a regular load
+through a dereferenced pointer. We extract the place from the pointer operand, add a deref projection, and
+read the value from that location into the destination. Since `#setLocalValue` is strict in its second argument,
+the dereferenced operand is evaluated (i.e., the value is read from memory) before being written to `DEST`.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_load")), operandCopy(place(LOCAL, PROJ)) .Operands, DEST, _SPAN)
+        => #setLocalValue(DEST, operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))))
+       ... </k>
+
+  // for `operandMove` the pointer is moved, but the pointed-to value is copied (read, not consumed)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_load")), operandMove(place(LOCAL, PROJ)) .Operands, DEST, _SPAN)
+        => #setLocalValue(DEST, operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))))
+       ... </k>
+```
+
 #### Ptr Offset Computations (`std::intrinsics::ptr_offset_from`, `std::intrinsics::ptr_offset_from_unsigned`)
 
 The `ptr_offset_from[_unsigned]` calculates the distance between two pointers within the same allocation,
