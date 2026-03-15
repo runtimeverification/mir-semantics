@@ -12,7 +12,7 @@ from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.pretty import PrettyPrinter
 from pyk.proof.show import APRProofShow
 
-from kmir.cargo import CargoProject
+from kmir.cargo import CargoProject, cargo_get_smir_json
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
 from kmir.options import ProveOpts, ShowOpts
 from kmir.parse.parser import Parser
@@ -312,7 +312,8 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
     if update_expected_output and not should_show:
         pytest.skip()
 
-    prove_rs_opts = ProveRSOpts(rs_file, terminate_on_thunk=True)
+    parsed_smir = cargo_get_smir_json(rs_file)
+    prove_opts = ProveOpts(rs_file, terminate_on_thunk=True, parsed_smir=parsed_smir)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
@@ -321,8 +322,8 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
         start_symbols = VERIFY_RUST_STD_START_SYMBOLS[rs_file.stem]
 
     for start_symbol in start_symbols:
-        prove_rs_opts.start_symbol = start_symbol
-        apr_proof = kmir.prove_rs(prove_rs_opts)
+        prove_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_program(prove_opts)
 
         if should_show:
             display_opts = ShowOpts(
