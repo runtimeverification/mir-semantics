@@ -12,7 +12,7 @@ from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.pretty import PrettyPrinter
 from pyk.proof.show import APRProofShow
 
-from kmir.cargo import CargoProject
+from kmir.cargo import CargoProject, cargo_get_smir_json
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
 from kmir.options import ProveOpts, ShowOpts
 from kmir.parse.parser import Parser
@@ -101,6 +101,240 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
             show_res = '\n'.join(shower.show(apr_proof))
             assert_or_update_show_output(
                 show_res, PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
+            )
+
+        if not should_fail:
+            assert apr_proof.passed
+        else:
+            assert apr_proof.failed
+
+
+VERIFY_RUST_STD_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std').resolve(strict=True)
+VERIFY_RUST_STD_FILES = list(VERIFY_RUST_STD_DIR.glob('**/*.rs'))
+VERIFY_RUST_STD_START_SYMBOLS = {
+    'unchecked_add': [
+        'unchecked_add_u8',
+        'unchecked_add_u16',
+        'unchecked_add_u32',
+        'unchecked_add_u64',
+        'unchecked_add_u128',
+        'unchecked_add_i8',
+        'unchecked_add_i16',
+        'unchecked_add_i32',
+        'unchecked_add_i64',
+        'unchecked_add_i128',
+    ],
+    'unchecked_sub': [
+        'unchecked_sub_u8',
+        'unchecked_sub_u16',
+        'unchecked_sub_u32',
+        'unchecked_sub_u64',
+        'unchecked_sub_u128',
+        'unchecked_sub_i8',
+        'unchecked_sub_i16',
+        'unchecked_sub_i32',
+        'unchecked_sub_i64',
+        'unchecked_sub_i128',
+    ],
+    'unchecked_mul': [
+        'unchecked_mul_u8',
+        'unchecked_mul_u16',
+        'unchecked_mul_u32',
+        'unchecked_mul_u64',
+        'unchecked_mul_u128',
+        'unchecked_mul_i8',
+        'unchecked_mul_i16',
+        'unchecked_mul_i32',
+        'unchecked_mul_i64',
+        'unchecked_mul_i128',
+    ],
+    'unchecked_shl': [
+        'unchecked_shl_u8',
+        'unchecked_shl_u16',
+        'unchecked_shl_u32',
+        'unchecked_shl_u64',
+        'unchecked_shl_u128',
+        'unchecked_shl_i8',
+        'unchecked_shl_i16',
+        'unchecked_shl_i32',
+        'unchecked_shl_i64',
+        'unchecked_shl_i128',
+    ],
+    'unchecked_shr': [
+        'unchecked_shr_u8',
+        'unchecked_shr_u16',
+        'unchecked_shr_u32',
+        'unchecked_shr_u64',
+        'unchecked_shr_u128',
+        'unchecked_shr_i8',
+        'unchecked_shr_i16',
+        'unchecked_shr_i32',
+        'unchecked_shr_i64',
+        'unchecked_shr_i128',
+    ],
+    'unchecked_neg': [
+        'unchecked_neg_i8',
+        'unchecked_neg_i16',
+        'unchecked_neg_i32',
+        'unchecked_neg_i64',
+        'unchecked_neg_i128',
+    ],
+    'wrapping_shl': [
+        'wrapping_shl_u8',
+        'wrapping_shl_u16',
+        'wrapping_shl_u32',
+        'wrapping_shl_u64',
+        'wrapping_shl_u128',
+        'wrapping_shl_i8',
+        'wrapping_shl_i16',
+        'wrapping_shl_i32',
+        'wrapping_shl_i64',
+        'wrapping_shl_i128',
+    ],
+    'wrapping_shr': [
+        'wrapping_shr_u8',
+        'wrapping_shr_u16',
+        'wrapping_shr_u32',
+        'wrapping_shr_u64',
+        'wrapping_shr_u128',
+        'wrapping_shr_i8',
+        'wrapping_shr_i16',
+        'wrapping_shr_i32',
+        'wrapping_shr_i64',
+        'wrapping_shr_i128',
+    ],
+    'widening_mul': [
+        'widening_mul_u8',
+        'widening_mul_u16',
+        'widening_mul_u32',
+        'widening_mul_u64',
+    ],
+    'carrying_mul': [
+        'carrying_mul_u8',
+        'carrying_mul_u16',
+        'carrying_mul_u32',
+        'carrying_mul_u64',
+    ],
+    'unchecked_add-fail': [
+        'unchecked_add_u8',
+        'unchecked_add_u16',
+        'unchecked_add_u32',
+        'unchecked_add_u64',
+        'unchecked_add_u128',
+        'unchecked_add_i8',
+        'unchecked_add_i16',
+        'unchecked_add_i32',
+        'unchecked_add_i64',
+        'unchecked_add_i128',
+    ],
+    'unchecked_sub-fail': [
+        'unchecked_sub_u8',
+        'unchecked_sub_u16',
+        'unchecked_sub_u32',
+        'unchecked_sub_u64',
+        'unchecked_sub_u128',
+        'unchecked_sub_i8',
+        'unchecked_sub_i16',
+        'unchecked_sub_i32',
+        'unchecked_sub_i64',
+        'unchecked_sub_i128',
+    ],
+    'unchecked_mul-fail': [
+        'unchecked_mul_u8',
+        'unchecked_mul_u16',
+        'unchecked_mul_u32',
+        'unchecked_mul_u64',
+        'unchecked_mul_u128',
+        'unchecked_mul_i8',
+        'unchecked_mul_i16',
+        'unchecked_mul_i32',
+        'unchecked_mul_i64',
+        'unchecked_mul_i128',
+    ],
+    'unchecked_shl-fail': [
+        'unchecked_shl_u8',
+        'unchecked_shl_u16',
+        'unchecked_shl_u32',
+        'unchecked_shl_u64',
+        'unchecked_shl_u128',
+        'unchecked_shl_i8',
+        'unchecked_shl_i16',
+        'unchecked_shl_i32',
+        'unchecked_shl_i64',
+        'unchecked_shl_i128',
+    ],
+    'unchecked_shr-fail': [
+        'unchecked_shr_u8',
+        'unchecked_shr_u16',
+        'unchecked_shr_u32',
+        'unchecked_shr_u64',
+        'unchecked_shr_u128',
+        'unchecked_shr_i8',
+        'unchecked_shr_i16',
+        'unchecked_shr_i32',
+        'unchecked_shr_i64',
+        'unchecked_shr_i128',
+    ],
+    'unchecked_neg-fail': [
+        'unchecked_neg_i8',
+        'unchecked_neg_i16',
+        'unchecked_neg_i32',
+        'unchecked_neg_i64',
+        'unchecked_neg_i128',
+    ],
+    'to_int_unchecked-fail': [
+        'to_int_unchecked_f16_i8',
+        'to_int_unchecked_f32_i32',
+        'to_int_unchecked_f64_i64',
+        'to_int_unchecked_f128_i128',
+    ],
+}
+VERIFY_RUST_STD_SHOW_SPECS = [
+    'unchecked_add-fail',
+    'unchecked_sub-fail',
+    'unchecked_mul-fail',
+    'unchecked_shl-fail',
+    'unchecked_shr-fail',
+    'unchecked_neg-fail',
+    'to_int_unchecked-fail',
+]
+
+
+@pytest.mark.parametrize(
+    'rs_file',
+    VERIFY_RUST_STD_FILES,
+    ids=[spec.stem for spec in VERIFY_RUST_STD_FILES],
+)
+def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    should_fail = rs_file.stem.endswith('fail')
+    should_show = rs_file.stem in VERIFY_RUST_STD_SHOW_SPECS
+
+    if update_expected_output and not should_show:
+        pytest.skip()
+
+    parsed_smir = cargo_get_smir_json(rs_file)
+    prove_opts = ProveOpts(rs_file, terminate_on_thunk=True, parsed_smir=parsed_smir)
+    printer = PrettyPrinter(kmir.definition)
+    cterm_show = CTermShow(printer.print)
+
+    start_symbols = ['main']
+    if rs_file.stem in VERIFY_RUST_STD_START_SYMBOLS:
+        start_symbols = VERIFY_RUST_STD_START_SYMBOLS[rs_file.stem]
+
+    for start_symbol in start_symbols:
+        prove_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_program(prove_opts)
+
+        if should_show:
+            display_opts = ShowOpts(
+                rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
+            )
+            shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
+            show_res = '\n'.join(shower.show(apr_proof))
+            show_dir = rs_file.parent / 'show'
+            show_dir.mkdir(exist_ok=True)
+            assert_or_update_show_output(
+                show_res, show_dir / f'{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
             )
 
         if not should_fail:
