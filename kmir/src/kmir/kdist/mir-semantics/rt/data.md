@@ -1051,6 +1051,12 @@ Literal arrays are also built using this RValue.
         ...
        </k>
 
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindClosure(_DEF, _TY_ARGS))
+        =>
+            Aggregate(variantIdx(0), ARGS)
+        ...
+       </k>
+
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
   syntax KItem ::= #readOperands ( Operands )
@@ -1433,6 +1439,20 @@ Conversion is especially possible for the case of _Slices_ (of dynamic length) a
 which have the same representation `Value::Range`.
 Also, casts to and from _transparent wrappers_ (newtypes that just forward field `0`, i.e. `struct Wrapper<T>(T)`)
 are allowed, and supported by a special projection `WrapStruct`.
+
+When the source and target types are pointer types with the same pointee type (i.e., differing only in mutability),
+the cast preserves the source pointer and its metadata unchanged.
+
+```k
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+          => PtrLocal(OFFSET, PLACE, MUT, META)
+          ...
+        </k>
+      requires pointeeTy(lookupTy(TY_SOURCE)) ==K pointeeTy(lookupTy(TY_TARGET))
+      [priority(45), preserves-definedness] // valid map lookups checked
+```
+
+Otherwise, compute the type projection and convert metadata accordingly.
 
 ```k
   rule <k> #cast(PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
