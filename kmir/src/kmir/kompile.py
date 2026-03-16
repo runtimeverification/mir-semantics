@@ -5,6 +5,7 @@ import logging
 import shutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.kast.inner import KApply, KSort, KToken, KVariable
@@ -12,12 +13,12 @@ from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.string import stringToken
 from pyk.kdist import kdist
 from pyk.kore.syntax import App, EVar, SortApp, String, Symbol, SymbolDecl
+from pyk.utils import single
 
 from .kmir import KMIR
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from pathlib import Path
     from typing import Any, Final
 
     from pyk.kast.inner import KInner
@@ -162,12 +163,16 @@ def _add_exists_quantifiers(axiom: Axiom) -> Axiom:
     return Axiom(vars=axiom.vars, pattern=new_pattern, attrs=axiom.attrs)
 
 
-def _load_extra_module_rules(kmir: KMIR, module_path: Path) -> list[Sentence]:
-    """Load a K module from JSON and convert rules to Kore axioms.
+def _load_extra_module_rules(kmir: KMIR, module_spec: str) -> list[Sentence]:
+    """Load a K module and convert rules to Kore axioms.
+
+    Supports two formats:
+    - JSON file path: ``path/to/module.json`` (from ``--to-module``)
+    - K source with module name: ``path/to/file.k:MODULE_NAME`` or ``path/to/file.md:MODULE_NAME``
 
     Args:
         kmir: KMIR instance with the definition
-        module_path: Path to JSON module file (from --to-module output.json)
+        module_spec: Module specification string
 
     Returns:
         List of Kore axioms converted from the module rules
@@ -175,14 +180,31 @@ def _load_extra_module_rules(kmir: KMIR, module_path: Path) -> list[Sentence]:
     from pyk.kast.outer import KFlatModule, KRule
     from pyk.konvert import krule_to_kore
 
-    _LOGGER.info(f'Loading extra module rules: {module_path}')
+    _LOGGER.info(f'Loading extra module rules: {module_spec}')
 
-    if module_path.suffix != '.json':
-        _LOGGER.warning(f'Only JSON format is supported for --add-module: {module_path}')
-        return []
+    if ':' in module_spec:
+        # K source format: file.k:MODULE_NAME or file.md:MODULE_NAME
+        file_str, module_name = module_spec.rsplit(':', 1)
+        file_path = Path(file_str)
+        if not file_path.is_file():
+            raise ValueError(f'Supplied module path is not a file: {file_path}')
+        if file_path.suffix not in ('.k', '.md'):
+            raise ValueError(f'K source module must be a .k or .md file, got: {file_path}')
 
-    module_dict = json.loads(module_path.read_text())
-    k_module = KFlatModule.from_dict(module_dict)
+        include_dirs = (kdist.which('mir-semantics.haskell').parent,)
+        module_list = kmir.parse_modules(file_path, module_name=module_name, include_dirs=include_dirs)
+        k_module = single(module for module in module_list.modules if module.name == module_name)
+    else:
+        # JSON format: path/to/module.json
+        file_path = Path(module_spec)
+        if not file_path.is_file():
+            raise ValueError(f'Supplied module path is not a file: {file_path}')
+        if file_path.suffix != '.json':
+            raise ValueError(
+                f'Expected .json file or file.k:MODULE_NAME / file.md:MODULE_NAME format, got: {file_path}'
+            )
+        module_dict = json.loads(file_path.read_text())
+        k_module = KFlatModule.from_dict(module_dict)
 
     axioms: list[Sentence] = []
     for sentence in k_module.sentences:
@@ -203,7 +225,7 @@ def kompile_smir(
     target_dir: Path,
     *,
     bug_report: Path | None = None,
-    extra_module: Path | None = None,
+    extra_module: str | None = None,
     symbolic: bool = True,
     llvm_target: str | None = None,
     llvm_lib_target: str | None = None,

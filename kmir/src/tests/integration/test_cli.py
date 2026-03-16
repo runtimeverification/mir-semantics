@@ -293,7 +293,7 @@ def test_cli_prove_add_module(kmir: KMIR, tmp_path: Path) -> None:
         smir=False,
         start_symbol=start_symbol,
         max_depth=1,
-        add_module=stored_module_json,
+        add_module=str(stored_module_json),
     )
     proof_with_module = KMIR.prove_program(opts_with_module)
 

@@ -76,7 +76,7 @@ class ProveOpts(KMirOpts):
     smir: bool
     parsed_smir: dict | None
     start_symbol: str
-    add_module: Path | None
+    add_module: str | None
     break_on_calls: bool
     break_on_function_calls: bool
     break_on_intrinsic_calls: bool
@@ -127,7 +127,7 @@ class ProveOpts(KMirOpts):
         break_every_terminator: bool = False,
         break_every_step: bool = False,
         terminate_on_thunk: bool = False,
-        add_module: Path | None = None,
+        add_module: str | None = None,
         break_on_function: list[str] | None = None,
     ) -> None:
         self.rs_file = rs_file
