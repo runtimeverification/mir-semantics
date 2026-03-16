@@ -68,6 +68,8 @@ PROVE_SHOW_SPECS = [
     'volatile_store_static-fail',
     'volatile_load_static-fail',
     'box_heap_alloc-fail',
+    'transmute_transparent_wrapper_down-fail',
+    'transmute_transparent_wrapper_up-fail',
 ]
 
 
