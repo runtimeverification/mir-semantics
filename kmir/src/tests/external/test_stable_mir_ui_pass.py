@@ -9,13 +9,11 @@ from pyk.cterm.show import CTermShow
 from pyk.kast.pretty import PrettyPrinter
 from pyk.proof.show import APRProofShow
 
-from kmir.kmir import KMIRAPRNodePrinter
-from kmir.options import ProveRSOpts, ShowOpts
+from kmir.kmir import KMIR, KMIRAPRNodePrinter
+from kmir.options import ProveOpts, ShowOpts
 
 if TYPE_CHECKING:
     from pyk.proof.reachability import APRProof
-
-    from kmir.kmir import KMIR
 
 
 THIS_DIR = Path(__file__).resolve().parent
@@ -63,7 +61,7 @@ def test_stable_mir_ui(
         pytest.skip()
 
     try:
-        proof = kmir.prove_rs(ProveRSOpts(rust_dir_root / test_rel_path, proof_dir=tmp_path))
+        proof = KMIR.prove_program(ProveOpts(rust_dir_root / test_rel_path, proof_dir=tmp_path))
         linear = _is_linear_termination(proof)
     except Exception:
         if update_skip_mode:
