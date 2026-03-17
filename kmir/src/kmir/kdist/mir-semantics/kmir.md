@@ -99,24 +99,31 @@ will effectively be no-ops at this level).
 ```k
 
   // all memory accesses relegated to another module (to be added)
-  rule [execStmt]: <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
+  syntax KItem ::= #resolvedExecStmt( Place , Rvalue , TypeInfo )
+
+  rule <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
+         =>
+            #resolvedExecStmt(PLACE, RVAL, lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+         ...
+       </k>
+       <locals> LOCALS </locals>
+       requires 0 <=Int I andBool I <Int size(LOCALS)
+       [preserves-definedness]
+
+  rule [execStmt]: <k> #resolvedExecStmt(PLACE, RVAL, TYINFO)
          =>
             #setLocalValue(PLACE, RVAL)
          ...
        </k>
-       <locals> LOCALS </locals>
-       requires 0 <=Int I andBool I <Int size(LOCALS)
-        andBool notBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+       requires notBool #isUnionType(TYINFO)
        [preserves-definedness]
 
-  rule [execStmt.union]: <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
+  rule [execStmt.union]: <k> #resolvedExecStmt(PLACE, RVAL, TYINFO)
          =>
             #setLocalValue(PLACE, #evalUnion(RVAL))
          ...
        </k>
-       <locals> LOCALS </locals>
-       requires 0 <=Int I andBool I <Int size(LOCALS)
-        andBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+       requires #isUnionType(TYINFO)
        [preserves-definedness]
 
   // RVAL evaluation is implemented in rt/data.md
@@ -252,7 +259,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
 
-  syntax List ::= #getBlocks( Ty )               [function, total]
+  syntax List ::= #getBlocks( Ty )               [function, total, no-evaluators]
                 | #getBlocksAux( MonoItemKind )  [function, total]
 
   rule #getBlocks(TY) => #getBlocksAux(lookupFunction(TY))
@@ -534,13 +541,32 @@ Therefore a heuristics is used here:
 
 ```k
   // reserve space for local variables and copy/move arguments from a tuple inside the old locals into their place
-  rule [setupCalleeClosure]: <k> #setUpCalleeData(
+  // Step 1: resolve lookupTy for tuple and closure types
+  syntax KItem ::= #resolvedSetupCalleeClosure( BasicBlocks , LocalDecls , Int , Int , BasicBlock , TypeInfo , TypeInfo )
+                 | #resolvedSetupCalleeClosure2( BasicBlocks , LocalDecls , Int , Int , BasicBlock , TypeInfo )
+
+  rule <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
                 operandMove(place(local(CLOSURE:Int), .ProjectionElems))
                 operandMove(place(local(TUPLE), .ProjectionElems))
                 .Operands,
                 _SPAN
               )
+         =>
+           #resolvedSetupCalleeClosure(BLOCKS, NEWLOCALS, CLOSURE, TUPLE, FIRST,
+             lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)),
+             lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+         ...
+       </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[TUPLE])
+     andBool isTypedLocal(LOCALS[CLOSURE])
+    [priority(40), preserves-definedness]
+
+  // Step 2a: closure by value (void or function type)
+  rule [setupCalleeClosure]: <k> #resolvedSetupCalleeClosure(BLOCKS, NEWLOCALS, CLOSURE, TUPLE, FIRST, TUPLE_TYINFO, CLOSURE_TYINFO)
          =>
            #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
@@ -555,24 +581,43 @@ Therefore a heuristics is used here:
           </stack>
          ...
        </currentFrame>
-    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
-     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[TUPLE])
-     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
-     andBool isTypedLocal(LOCALS[CLOSURE])
+    requires isTupleType(TUPLE_TYINFO)
      andBool (
-               typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
-               orBool isFunType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+               typeInfoVoidType ==K CLOSURE_TYINFO
+               orBool isFunType(CLOSURE_TYINFO)
              )
     [priority(40), preserves-definedness]
 
-  rule [setupCalleeClosure2]: <k> #setUpCalleeData(
-              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
-                operandMove(place(local(CLOSURE:Int), .ProjectionElems))
-                operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands,
-                _SPAN
-              )
+  // Step 2b: closure by ref - resolve pointee type
+  rule <k> #resolvedSetupCalleeClosure(BLOCKS, NEWLOCALS, CLOSURE, TUPLE, FIRST, TUPLE_TYINFO, CLOSURE_TYINFO)
+         =>
+           #resolvedSetupCalleeClosure2(BLOCKS, NEWLOCALS, CLOSURE, TUPLE, FIRST,
+             lookupTy({pointeeTy(CLOSURE_TYINFO)}:>Ty))
+         ...
+       </k>
+    requires isTupleType(TUPLE_TYINFO)
+               // or the closure ref type pointee is missing from the type table
+     andBool isRefType(CLOSURE_TYINFO)
+     andBool isTy(pointeeTy(CLOSURE_TYINFO))
+    [priority(45), preserves-definedness]
+
+  // Fallback: not a closure call - delegate to the generic setupCalleeData path
+  rule <k> #resolvedSetupCalleeClosure(BLOCKS, NEWLOCALS, CLOSURE_IDX, TUPLE_IDX, FIRST, _TUPLE_TYINFO, _CLOSURE_TYINFO)
+         =>
+           #setArgsFromStack(1, operandMove(place(local(CLOSURE_IDX), .ProjectionElems))
+                                operandMove(place(local(TUPLE_IDX), .ProjectionElems))
+                                .Operands) ~> #execBlock(FIRST)
+         ...
+       </k>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <locals> _ => #reserveFor(NEWLOCALS) </locals>
+         ...
+       </currentFrame>
+    [owise]
+
+  // Step 3: closure by ref - final check on pointee type
+  rule [setupCalleeClosure2]: <k> #resolvedSetupCalleeClosure2(BLOCKS, NEWLOCALS, CLOSURE, TUPLE, FIRST, POINTEE_TYINFO)
          =>
            #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
         ~> #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
@@ -588,17 +633,9 @@ Therefore a heuristics is used here:
           </stack>
          ...
        </currentFrame>
-    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
-     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[TUPLE])
-     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
-     andBool isTypedLocal(LOCALS[CLOSURE])
-               // or the closure ref type pointee is missing from the type table
-     andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
-     andBool isTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
-     andBool (
-               lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
-               orBool isFunType(lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty))
+    requires (
+               POINTEE_TYINFO ==K typeInfoVoidType
+               orBool isFunType(POINTEE_TYINFO)
              )
     [priority(45), preserves-definedness]
 

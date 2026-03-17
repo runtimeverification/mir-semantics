@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execStmts ( .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 73 ) ) ) ~> .K
+    #setArgsFromStack ( 1 , operandMove ( place (... local: local ( 5 ) , projection: .ProjectionElems ) )  operandMove ( place (... local: local ( 6 ) , projection: .ProjectionElems ) )  operandMove ( place (... local: local ( 7 ) , projection: .ProjectionElems ) )  .Operands ) ~> #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 73 ) ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -26,9 +26,9 @@
     </unwind>
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 10 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
-      ListItem ( typedValue ( BoolVal ( false ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedValue ( thunk ( UnableToDecode ( b"\x00\x00\x00\x00\x00\x00$@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) , ty ( 27 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 16 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 26 ) , mutabilityNot ) )
+      ListItem ( newLocal ( ty ( 27 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>
@@ -41,9 +41,9 @@
     ListItem ( thunk ( UnableToDecode ( b"\x00\x00\x00\x00\x00\x00$@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) ) ) , ty ( 29 ) , mutabilityNot ) )
     ListItem ( typedValue ( Moved , ty ( 27 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
-    ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) )
-    ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
-    ListItem ( typedValue ( Moved , ty ( 27 ) , mutabilityMut ) )
+    ListItem ( typedValue ( Integer ( 10 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
+    ListItem ( typedValue ( BoolVal ( false ) , ty ( 26 ) , mutabilityMut ) )
+    ListItem ( typedValue ( thunk ( UnableToDecode ( b"\x00\x00\x00\x00\x00\x00$@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) , ty ( 27 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
     ListItem ( newLocal ( ty ( 16 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 26 ) , mutabilityMut ) )

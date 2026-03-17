@@ -3,8 +3,14 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (798 steps)
-├─ 3 (terminal)
+│  (586 steps)
+├─ 3
+│   #resolvedExecStmt ( place ( ... local: local ( 6 ) , projection: .ProjectionElem
+│   function: main
+│   span: 250
+│
+│  (271 steps)
+├─ 4 (terminal)
 │   #EndProgram ~> .K
 │   function: main
 │

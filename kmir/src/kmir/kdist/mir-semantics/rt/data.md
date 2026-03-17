@@ -123,22 +123,29 @@ _Read_ access to `Operand`s (which may be local values) may have similar errors 
 Constant operands are simply decoded according to their type.
 
 ```k
-  rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
-        => #decodeConstant(KIND, TY, lookupTy(TY))
+  syntax KItem ::= #resolvedOperandConstant( ConstantKind , Ty , MirConstId , TypeInfo , MonoItemKind )
+
+  rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, MCID)))
+        => #resolvedOperandConstant(KIND, TY, MCID, lookupTy(TY), lookupFunction(TY))
        ...
        </k>
-    requires typeInfoVoidType =/=K lookupTy(TY)
+
+  rule <k> #resolvedOperandConstant(KIND, TY, _, TYINFO, _)
+        => #decodeConstant(KIND, TY, TYINFO)
+       ...
+       </k>
+    requires typeInfoVoidType =/=K TYINFO
 ```
 
 Function pointers are zero-sized constants whose `Ty` is a key in the function table instaed of the type table.
 
 ```k
-  rule <k> operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, ty(ID) #as TY, _)))
+  rule <k> #resolvedOperandConstant(constantKindZeroSized, ty(ID) #as TY, _, TYINFO, FUNCINFO)
         => FunPtr(TY)
        ...
        </k>
-    requires typeInfoVoidType ==K lookupTy(TY) // not a valid type info
-     andBool lookupFunction(TY) =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
+    requires typeInfoVoidType ==K TYINFO // not a valid type info
+     andBool FUNCINFO =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
 ```
 
 ### Copying and Moving
@@ -911,23 +918,31 @@ A reference to a statically allocated constant is typically never written to,
 even though this could be supported.
 
 ```k
+  syntax KItem ::= #resolvedDerefAlloc( AllocId , ProjectionElems , MetadataSize , ProjectionElems , Evaluation )
+
   rule <k> #traverseProjection(
              _DEST,
              AllocRef(ALLOC_ID, ALLOC_PROJS, metadata(METADATA_SIZE, _PTR_OFFSET, _)), // FIXME can this be offset?
              projectionElemDeref PROJS,
              _CTXTS
            )
+        => #resolvedDerefAlloc(ALLOC_ID, ALLOC_PROJS, METADATA_SIZE, PROJS, lookupAlloc(ALLOC_ID))
+        ...
+        </k>
+    [preserves-definedness] // sort projection checked
+
+  rule <k> #resolvedDerefAlloc(ALLOC_ID, ALLOC_PROJS, METADATA_SIZE, PROJS, ALLOC_VAL)
         => #traverseProjection(
              toAlloc(ALLOC_ID),
-             {lookupAlloc(ALLOC_ID)}:>Value,
+             {ALLOC_VAL}:>Value,
              ALLOC_PROJS, // alloc projections
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(METADATA_SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
-    requires isValue(lookupAlloc(ALLOC_ID))
-    [preserves-definedness] // sort projection checked
+    requires isValue(ALLOC_VAL)
+    [preserves-definedness]
 ```
 
 ## Evaluation of R-Values (`Rvalue` sort)
@@ -1166,13 +1181,20 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
 
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
   // ----------------------------------------------------------------
+  syntax KItem ::= #resolvedDiscriminant( VariantIdx , Ty , TypeInfo )
+
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => Integer(#lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX), 0, false) // HACK: bit width 0 means "flexible"
+        => #resolvedDiscriminant(IDX, TY, lookupTy(TY))
         ...
        </k>
-    requires asInt(IDX) <Int size(discriminantsOf(lookupTy(TY)))
+
+  rule <k> #resolvedDiscriminant(IDX, _TY, TYINFO)
+        => Integer(#lookupDiscrAux(discriminantsOf(TYINFO), IDX), 0, false) // HACK: bit width 0 means "flexible"
+        ...
+       </k>
+    requires asInt(IDX) <Int size(discriminantsOf(TYINFO))
      andBool 0 <=Int asInt(IDX) // must not be `err(_)`
-     andBool 0 <Int size(discriminantsOf(lookupTy(TY))) // must be an enum
+     andBool 0 <Int size(discriminantsOf(TYINFO)) // must be an enum
     [preserves-definedness]
 
   // // default 0 for non-enum types. May be undefined behaviour, though.
@@ -1237,23 +1259,31 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   rule #projectionsFor(  CtxWrapStruct       CTXS, PROJS) => #projectionsFor(CTXS,                 projectionElemWrapStruct PROJS)
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
+  syntax KItem ::= #resolvedRvalueRefZS( Region , BorrowKind , Int , ProjectionElems , Ty , TypeInfo )
+
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
-        => #forceSetLocal(
-              local(I),
-              #decodeConstant(
-                constantKindZeroSized,
-                tyOfLocal(getLocal(LOCALS, I)),
-                lookupTy(tyOfLocal(getLocal(LOCALS, I)))
-              )
-            )
-        ~> rvalueRef(REGION, KIND, place(local(I), PROJS))
+        => #resolvedRvalueRefZS(REGION, KIND, I, PROJS, tyOfLocal(getLocal(LOCALS, I)), lookupTy(tyOfLocal(getLocal(LOCALS, I))))
        ...
        </k>
        <locals> LOCALS </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isNewLocal(LOCALS[I])
-     andBool #zeroSizedType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
-    [preserves-definedness] // valid list indexing checked, zero-sized locals materialise trivially
+    [preserves-definedness] // valid list indexing checked
+
+  rule <k> #resolvedRvalueRefZS(REGION, KIND, I, PROJS, LOCAL_TY, TYINFO)
+        => #forceSetLocal(
+              local(I),
+              #decodeConstant(
+                constantKindZeroSized,
+                LOCAL_TY,
+                TYINFO
+              )
+            )
+        ~> rvalueRef(REGION, KIND, place(local(I), PROJS))
+       ...
+       </k>
+    requires #zeroSizedType(TYINFO)
+    [preserves-definedness] // zero-sized locals materialise trivially
 
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
@@ -1389,34 +1419,41 @@ truncating semantics. These casts can only operate on the `Integer` variant of t
 bit width, signedness, and possibly truncating or 2s-complementing the value.
 
 ```k
-  // int casts
-  rule <k> #cast(Integer(VAL, WIDTH, _SIGNEDNESS), castKindIntToInt, _, TY)
-          =>
-            #intAsType(VAL, WIDTH, #numTypeOf(lookupTy(TY)))
+  // int casts - resolve type
+  syntax KItem ::= #resolvedCastIntToInt( Value , Ty , TypeInfo )
+
+  rule <k> #cast(VAL:Value, castKindIntToInt, _, TY)
+          => #resolvedCastIntToInt(VAL, TY, lookupTy(TY))
           ...
         </k>
-      requires #isIntType(lookupTy(TY))
+
+  rule <k> #resolvedCastIntToInt(Integer(VAL, WIDTH, _SIGNEDNESS), _TY, TYINFO)
+          =>
+            #intAsType(VAL, WIDTH, #numTypeOf(TYINFO))
+          ...
+        </k>
+      requires #isIntType(TYINFO)
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
 Boolean values can also be cast to Integers (encoding `true` as `1`).
 
 ```k
-  rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
+  rule <k> #resolvedCastIntToInt(BoolVal(VAL), _TY, TYINFO)
           =>
-            #intAsType(1, 8, #numTypeOf(lookupTy(TY)))
+            #intAsType(1, 8, #numTypeOf(TYINFO))
           ...
         </k>
-      requires #isIntType(lookupTy(TY))
+      requires #isIntType(TYINFO)
        andBool VAL
       [preserves-definedness] // ensures #numTypeOf is defined
 
-  rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
+  rule <k> #resolvedCastIntToInt(BoolVal(VAL), _TY, TYINFO)
           =>
-            #intAsType(0, 8, #numTypeOf(lookupTy(TY)))
+            #intAsType(0, 8, #numTypeOf(TYINFO))
           ...
         </k>
-      requires #isIntType(lookupTy(TY))
+      requires #isIntType(TYINFO)
        andBool notBool VAL
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
@@ -1444,35 +1481,42 @@ When the source and target types are pointer types with the same pointee type (i
 the cast preserves the source pointer and its metadata unchanged.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  syntax KItem ::= #resolvedCastPtrToPtr( Value , Ty , Ty , TypeInfo , TypeInfo )
+
+  rule <k> #cast(VAL:Value, castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+          => #resolvedCastPtrToPtr(VAL, TY_SOURCE, TY_TARGET, lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+          ...
+        </k>
+
+  rule <k> #resolvedCastPtrToPtr(PtrLocal(OFFSET, PLACE, MUT, META), _, _, SRC_TYINFO, TGT_TYINFO)
           => PtrLocal(OFFSET, PLACE, MUT, META)
           ...
         </k>
-      requires pointeeTy(lookupTy(TY_SOURCE)) ==K pointeeTy(lookupTy(TY_TARGET))
+      requires pointeeTy(SRC_TYINFO) ==K pointeeTy(TGT_TYINFO)
       [priority(45), preserves-definedness] // valid map lookups checked
 ```
 
 Otherwise, compute the type projection and convert metadata accordingly.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #resolvedCastPtrToPtr(PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, META), _, _, SRC_TYINFO, TGT_TYINFO)
           =>
             PtrLocal(
               OFFSET,
-              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
+              place(LOCAL, appendP(PROJS, {#typeProjection(SRC_TYINFO, TGT_TYINFO)}:>ProjectionElems)),
               MUT,
-              #convertMetadata(META, lookupTy(TY_TARGET))
+              #convertMetadata(META, TGT_TYINFO)
             )
           ...
         </k>
-      requires NoProjectionElems =/=K #typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+      requires NoProjectionElems =/=K #typeProjection(SRC_TYINFO, TGT_TYINFO)
       [preserves-definedness] // valid map lookups checked
 ```
 
 The pointer's metadata needs to be adapted to the new type.
 
 ```k
-  syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
+  syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total, no-evaluators]
 ```
 
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
@@ -1580,51 +1624,64 @@ Support for `castKindTransmute` in this semantics is very limited because of the
 What can be supported without additional layout consideration is trivial casts between the same underlying type (mutable or not).
 
 ```k
-  rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
-      requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
+  // Round-trip thunk transmute resolver (priority 35 to match before general transmute resolver)
+  syntax KItem ::= #resolvedCastTransmuteRoundTrip( Evaluation , TypeInfo , TypeInfo , TypeInfo , TypeInfo )
 
-  rule <k> #cast(AllocRef(_, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
-      requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
-
-  rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
-      requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
-```
-
-Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
-The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
-
-```k
   rule <k> #cast(
               thunk(#cast(DATA, castKindTransmute, TY_SRC_INNER, TY_DEST_INNER)),
               castKindTransmute,
               TY_SRC_OUTER,
               TY_DEST_OUTER
-            ) => DATA
+            ) => #resolvedCastTransmuteRoundTrip(DATA, lookupTy(TY_SRC_INNER), lookupTy(TY_DEST_INNER), lookupTy(TY_SRC_OUTER), lookupTy(TY_DEST_OUTER))
           ...
        </k>
-    requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
-     andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
+    [priority(35)]
+
+  rule <k> #resolvedCastTransmuteRoundTrip(DATA, SRC_INNER_TI, DEST_INNER_TI, SRC_OUTER_TI, DEST_OUTER_TI)
+          => DATA
+          ...
+       </k>
+    requires SRC_INNER_TI ==K DEST_OUTER_TI // cast is a round-trip
+     andBool DEST_INNER_TI ==K SRC_OUTER_TI // and is well-formed (invariant)
+
+  // General transmute resolver for all non-thunk transmute casts
+  syntax KItem ::= #resolvedCastTransmute( Value , Ty , Ty , TypeInfo , TypeInfo )
+
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          => #resolvedCastTransmute(VAL, TY_SOURCE, TY_TARGET, lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+          ...
+        </k>
+
+  // Same-type transmute for pointer-like values
+  rule <k> #resolvedCastTransmute(Reference(_, _, _, _) #as REF, _, _, SRC_TI, TGT_TI) => REF ... </k>
+      requires SRC_TI ==K TGT_TI
+
+  rule <k> #resolvedCastTransmute(AllocRef(_, _, _) #as REF, _, _, SRC_TI, TGT_TI) => REF ... </k>
+      requires SRC_TI ==K TGT_TI
+
+  rule <k> #resolvedCastTransmute(PtrLocal(_, _, _, _) #as PTR, _, _, SRC_TI, TGT_TI) => PTR ... </k>
+      requires SRC_TI ==K TGT_TI
 ```
+
+Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
+The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`
+(handled by the `#resolvedCastTransmuteRoundTrip` rules above).
 
 Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.
 
 ```k
-  rule <k> #cast(
-              Range(ELEMS),
-              castKindTransmute,
-              _TY_SOURCE,
-              TY_TARGET
-            )
+  // Range -> Int transmute (worker for #resolvedCastTransmute)
+  rule <k> #resolvedCastTransmute(Range(ELEMS), _, _, _SRC_TI, TGT_TI)
           =>
             #intAsType(
               #littleEndianFromBytes(ELEMS),
               size(ELEMS) *Int 8,
-              #numTypeOf(lookupTy(TY_TARGET))
+              #numTypeOf(TGT_TI)
             )
           ...
         </k>
-      requires #isIntType(lookupTy(TY_TARGET))
-       andBool size(ELEMS) *Int 8 ==Int #bitWidth(#numTypeOf(lookupTy(TY_TARGET)))
+      requires #isIntType(TGT_TI)
+       andBool size(ELEMS) *Int 8 ==Int #bitWidth(#numTypeOf(TGT_TI))
        andBool #areLittleEndianBytes(ELEMS)
       [preserves-definedness] // ensures #numTypeOf is defined
 
@@ -1646,18 +1703,14 @@ Casting a byte array/slice to an integer reinterprets the bytes in little-endian
 Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
 
 ```k
-  rule <k> #cast(
-              Integer(VAL, WIDTH, _SIGNEDNESS),
-              castKindTransmute,
-              _TY_SOURCE,
-              TY_TARGET
-            )
+  // Integer -> u8 array transmute (worker for #resolvedCastTransmute)
+  rule <k> #resolvedCastTransmute(Integer(VAL, WIDTH, _SIGNEDNESS), _, _, _SRC_TI, TGT_TI)
           =>
             Range(#littleEndianBytesFromInt(VAL, WIDTH))
           ...
         </k>
-      requires #isStaticU8Array(lookupTy(TY_TARGET))
-       andBool WIDTH ==Int #staticArrayLenBits(lookupTy(TY_TARGET))
+      requires #isStaticU8Array(TGT_TI)
+       andBool WIDTH ==Int #staticArrayLenBits(TGT_TI)
       //  andBool WIDTH >=Int 0  ensured by the above
       //  andBool WIDTH % 8 == 0 ensured by the above
       [preserves-definedness] // ensures element type/length are well-formed
@@ -1681,13 +1734,13 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     requires COUNT >Int 0
     [preserves-definedness]
 
-  syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total]
+  syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total, no-evaluators]
   // -------------------------------------------------------------
   rule #isStaticU8Array(typeInfoArrayType(ELEM_TY, someTyConst(_)))
     => lookupTy(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
   rule #isStaticU8Array(_OTHER) => false [owise]
 
-  syntax Int ::= #staticArrayLenBits ( TypeInfo ) [function, total]
+  syntax Int ::= #staticArrayLenBits ( TypeInfo ) [function, total, no-evaluators]
   // -------------------------------------------------------------
   rule #staticArrayLenBits(typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
     => readTyConstInt(KIND) *Int 8
@@ -1714,22 +1767,23 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
   rule #isEnumWithoutFields(_OTHER) => false [owise]
 
   syntax MIRError ::= "#UBErrorInvalidDiscriminantsInEnumCast"
+  // Integer -> Enum transmute (workers for #resolvedCastTransmute)
   rule <k>
-           #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) ~> _REST
+           #resolvedCastTransmute( Integer ( VAL , WIDTH , _SIGNED ) , _ , _ , _SRC_TI , TGT_TI ) ~> _REST
         =>
            #UBErrorInvalidDiscriminantsInEnumCast
       </k>
-      requires #isEnumWithoutFields(lookupTy(TY_TO))
-        andBool notBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO) )
+      requires #isEnumWithoutFields(TGT_TI)
+        andBool notBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , TGT_TI )
 
   rule <k>
-           #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO )
+           #resolvedCastTransmute( Integer ( VAL , WIDTH , _SIGNED ) , _ , _ , _SRC_TI , TGT_TI )
         =>
-           Aggregate( #findVariantIdxFromTy( truncate(VAL, WIDTH, Unsigned), lookupTy(TY_TO) ) , .List )
+           Aggregate( #findVariantIdxFromTy( truncate(VAL, WIDTH, Unsigned), TGT_TI ) , .List )
        ...
       </k>
-      requires #isEnumWithoutFields(lookupTy(TY_TO))
-        andBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO))
+      requires #isEnumWithoutFields(TGT_TI)
+        andBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , TGT_TI)
 
   syntax VariantIdx ::= #findVariantIdxFromTy ( Int , TypeInfo ) [function, total]
   //------------------------------------------------------------------------------
@@ -1752,12 +1806,19 @@ When transmuting a `Range` (e.g. `[T; N] -> [U; N]`) the list of values of the r
 mapped to the elements.
 ```k
   syntax KItem ::= #transmuteElems( List , Ty , Ty )
+                 | #resolvedTransmuteElems( List , Ty , Ty , TypeInfo , TypeInfo )
                  | #transmuteElemsAux( List , List , Ty , Ty )
                  | #transmuteNext( List , List , Ty , Ty )
 
   rule <k> #transmuteElems(VALS, TY_FROM, TY_TO)
         =>
-           #transmuteElemsAux(.List, VALS, getArrayElemTy(lookupTy(TY_FROM)), getArrayElemTy(lookupTy(TY_TO)))
+           #resolvedTransmuteElems(VALS, TY_FROM, TY_TO, lookupTy(TY_FROM), lookupTy(TY_TO))
+       ...
+      </k>
+
+  rule <k> #resolvedTransmuteElems(VALS, _TY_FROM, _TY_TO, SRC_TI, TGT_TI)
+        =>
+           #transmuteElemsAux(.List, VALS, getArrayElemTy(SRC_TI), getArrayElemTy(TGT_TI))
        ...
       </k>
 
@@ -1788,41 +1849,44 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
 - otherwise we error so that the cast does not `thunk`.
 ```k
   syntax MIRError ::= "#UBInvalidTransmuteMaybeUninit"
+  // Value -> MaybeUninit transmute: type mismatch (worker for #resolvedCastTransmute)
   rule <k>
-           #cast( _VAL:Value , castKindTransmute , TY_FROM , TY_TO )
+           #resolvedCastTransmute( _VAL:Value , TY_FROM , _ , _SRC_TI , TGT_TI )
         =>
            #UBInvalidTransmuteMaybeUninit
        ...
       </k>
-      requires #isUnionType(lookupTy(TY_TO))
-        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+      requires #isUnionType(TGT_TI)
+        andBool #typeNameIs(TGT_TI, "std::mem::MaybeUninit<")
+        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(TGT_TI, 1)), 0)
 
+  // Value -> MaybeUninit transmute: type match (worker for #resolvedCastTransmute)
   rule <k>
-           #cast( VAL:Value , castKindTransmute , TY_FROM , TY_TO )
+           #resolvedCastTransmute( VAL:Value , TY_FROM , _ , _SRC_TI , TGT_TI )
         =>
            Union( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem(VAL) .List ))
        ...
       </k>
-      requires #isUnionType(lookupTy(TY_TO))
-        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+      requires #isUnionType(TGT_TI)
+        andBool #typeNameIs(TGT_TI, "std::mem::MaybeUninit<")
+        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(TGT_TI, 1)), 0)
 
   // Converting static or dynamic sized array of `T` to array of `std::mem::MaybeUninit<T>`.
   // FIXME: Might need to check sizes as this cast could come from transmute_unchecked
+  // (worker for #resolvedCastTransmute)
   rule <k>
-           #cast( Range ( LIST ) , castKindTransmute , TY_FROM , TY_TO )
+           #resolvedCastTransmute( Range ( LIST ) , TY_FROM , TY_TO , SRC_TI , TGT_TI )
         =>
            #transmuteElems(LIST, TY_FROM, TY_TO)
        ...
       </k>
-      requires #isArrayType(lookupTy(TY_FROM)) andBool #isArrayType(lookupTy(TY_TO))
-        andBool #isUnionType(getArrayElemTypeInfo(lookupTy(TY_TO)))
-        andBool #typeNameIs(getArrayElemTypeInfo(lookupTy(TY_TO)), "std::mem::MaybeUninit<")
-        andBool getArrayElemTypeInfo(lookupTy(TY_FROM))
+      requires #isArrayType(SRC_TI) andBool #isArrayType(TGT_TI)
+        andBool #isUnionType(getArrayElemTypeInfo(TGT_TI))
+        andBool #typeNameIs(getArrayElemTypeInfo(TGT_TI), "std::mem::MaybeUninit<")
+        andBool getArrayElemTypeInfo(SRC_TI)
                   ==K #lookupMaybeTy(getFieldTy(   // ManuallyDrop<T> field 0 Ty (T)
                         #lookupMaybeTy(getFieldTy( // MaybeUninit<T> field 1 Ty (ManuallyDrop<T>)
-                            getArrayElemTypeInfo(lookupTy(TY_TO)), // Array Element Ty
+                            getArrayElemTypeInfo(TGT_TI), // Array Element Ty
                             1
                           )),
                         0
@@ -1878,6 +1942,8 @@ Allocated constants of reference type with a single provenance map entry are dec
 into the `<memory>` heap where all allocated constants have been decoded at program start.
 
 ```k
+  syntax KItem ::= #resolvedDecodeConstantRef( Bytes , AllocId , MaybeTy , Evaluation )
+
   rule <k> #decodeConstant(
               constantKindAllocated(
                 allocation(
@@ -1888,28 +1954,24 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
               _TY,
               typeInfoRefType(POINTEE_TY)
             )
+        => #resolvedDecodeConstantRef(BYTES, ALLOC_ID, POINTEE_TY, lookupAlloc(ALLOC_ID))
+        ...
+       </k>
+
+  rule <k> #resolvedDecodeConstantRef(BYTES, ALLOC_ID, POINTEE_TY, ALLOC_VAL)
         => AllocRef(ALLOC_ID, .ProjectionElems, metadata(#metadataSize(POINTEE_TY), 0, #metadataSize(POINTEE_TY)))
         ...
        </k>
-    requires isValue(lookupAlloc(ALLOC_ID))
+    requires isValue(ALLOC_VAL)
      andBool lengthBytes(BYTES) ==Int 8 // no dynamic metadata
 
-  rule <k> #decodeConstant(
-              constantKindAllocated(
-                allocation(
-                  BYTES,
-                  provenanceMap(provenanceMapEntry(0, ALLOC_ID) .ProvenanceMapEntries),
-                  _,
-                  _)),
-              _TY,
-              typeInfoRefType(_)
-            )
+  rule <k> #resolvedDecodeConstantRef(BYTES, ALLOC_ID, _, ALLOC_VAL)
         => AllocRef(ALLOC_ID, .ProjectionElems, metadata(dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)), 0, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)) ))
                                                             // assumes usize == u64
         ...
        </k>
-    requires isValue(lookupAlloc(ALLOC_ID))
-    andBool lengthBytes(BYTES) ==Int 16 // fat pointer (assumes usize == u64)
+    requires isValue(ALLOC_VAL)
+     andBool lengthBytes(BYTES) ==Int 16 // fat pointer (assumes usize == u64)
     [preserves-definedness] // Byte length checked to be sufficient
 ```
 
@@ -2295,18 +2357,24 @@ This information is read from the layout in the `TypeInfo` if available, or a fi
 
 ```k
 // FIXME: 64 is hardcoded since usize not supported
-rule <k> rvalueNullaryOp(nullOpSizeOf, TY)
-      =>
-           Integer(#sizeOf(lookupTy(TY)), 64, false)
-         ...
-     </k>
-    requires lookupTy(TY) =/=K typeInfoVoidType
-rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
-      =>
-           Integer(#alignOf(lookupTy(TY)), 64, false)
-         ...
-     </k>
-    requires lookupTy(TY) =/=K typeInfoVoidType
+  syntax KItem ::= #resolvedNullaryOp( NullOp , Ty , TypeInfo )
+
+  rule <k> rvalueNullaryOp(OP, TY)
+        => #resolvedNullaryOp(OP, TY, lookupTy(TY))
+       ...
+       </k>
+
+  rule <k> #resolvedNullaryOp(nullOpSizeOf, _TY, TYINFO)
+        => Integer(#sizeOf(TYINFO), 64, false)
+       ...
+       </k>
+    requires TYINFO =/=K typeInfoVoidType
+
+  rule <k> #resolvedNullaryOp(nullOpAlignOf, _TY, TYINFO)
+        => Integer(#alignOf(TYINFO), 64, false)
+       ...
+       </k>
+    requires TYINFO =/=K typeInfoVoidType
 ```
 
 `nullOpOffsetOf(VariantAndFieldIndices)`

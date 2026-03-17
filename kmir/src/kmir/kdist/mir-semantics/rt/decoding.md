@@ -36,7 +36,7 @@ and arrays (where layout is trivial).
 ### Decoding `PrimitiveType`s
 
 ```k
-  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo ) [function, total, symbol(decodeValue)]
+  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo ) [function, total, symbol(decodeValue), no-evaluators]
                       | UnableToDecode  ( Bytes , TypeInfo )    [symbol(Evaluation::UnableToDecode)]
                       | UnableToDecodePy ( msg: String )        [symbol(Evaluation::UnableToDecodePy)]
 
@@ -115,7 +115,7 @@ rule #msBytes(machineSize(NBITS)) => NBITS /Int 8 [owise, preserves-definedness]
 // Uses builtin maxInt to compute max(offset + size). The lists of types and
 // offsets must have the same length; if not, this function returns -1 to signal
 // an invalid layout for decoding.
-syntax Int ::= #neededBytesForOffsets ( Tys , MachineSizes ) [function, total]
+syntax Int ::= #neededBytesForOffsets ( Tys , MachineSizes ) [function, total, no-evaluators]
 rule #neededBytesForOffsets(.Tys, .MachineSizes) => 0
 rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
   => maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)), #neededBytesForOffsets(TYS, OFFSETS))
@@ -123,7 +123,7 @@ rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
 rule #neededBytesForOffsets(_, _) => -1 [owise]
 
 // Decode each field at its byte offset and return values in declaration order.
-syntax List ::= #decodeFieldsWithOffsets ( Bytes , Tys , MachineSizes ) [function, total]
+syntax List ::= #decodeFieldsWithOffsets ( Bytes , Tys , MachineSizes ) [function, total, no-evaluators]
 rule #decodeFieldsWithOffsets(_, .Tys, _OFFSETS) => .List
 rule #decodeFieldsWithOffsets(_, _TYS, .MachineSizes) => .List [owise]
 rule #decodeFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
@@ -150,7 +150,7 @@ All unimplemented cases will become thunks by way of this default rule:
 
 ```k
   // TODO: this function should go into the rt/types.md module
-  syntax Int ::= #elemSize ( TypeInfo ) [function, total]
+  syntax Int ::= #elemSize ( TypeInfo ) [function, total, no-evaluators]
 ```
 
 Known element sizes for common types:
