@@ -17,10 +17,10 @@ fn test_process_approve_checked_multisig(
     #[cfg(feature = "assumptions")]
     {
         let multisig = get_multisig(&accounts[3]);
-        if multisig.m < 1 || multisig.m > MAX_SIGNERS as u8 {
+        if multisig.m < 1 || multisig.m > MAX_SIGNERS {
             return Ok(());
         }
-        if multisig.n < 1 || multisig.n > MAX_SIGNERS as u8 {
+        if multisig.n < 1 || multisig.n > MAX_SIGNERS {
             return Ok(());
         }
     }

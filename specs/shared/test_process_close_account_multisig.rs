@@ -11,10 +11,10 @@ fn test_process_close_account_multisig(accounts: &[AccountInfo; 4]) -> ProgramRe
     #[cfg(feature = "assumptions")]
     {
         let multisig = get_multisig(&accounts[2]);
-        if multisig.m < 1 || multisig.m > MAX_SIGNERS as u8 {
+        if multisig.m < 1 || multisig.m > MAX_SIGNERS {
             return Ok(());
         }
-        if multisig.n < 1 || multisig.n > MAX_SIGNERS as u8 {
+        if multisig.n < 1 || multisig.n > MAX_SIGNERS {
             return Ok(());
         }
     }
