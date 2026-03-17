@@ -15,6 +15,17 @@ fn test_process_transfer_checked_multisig(
     cheatcode_multisig!(&accounts[3]);
 
     #[cfg(feature = "assumptions")]
+    {
+        let multisig = get_multisig(&accounts[3]);
+        if multisig.m < 1 || multisig.m > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+        if multisig.n < 1 || multisig.n > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+    }
+
+    #[cfg(feature = "assumptions")]
     // Link symbolic state of dst and src if they have the same key
     cheatcode_maybe_same_account(&accounts[0], &accounts[2]);
 

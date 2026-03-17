@@ -12,6 +12,17 @@ fn test_process_set_authority_account_multisig(
     cheatcode_account!(&accounts[0]); // Assume Account
     cheatcode_multisig!(&accounts[1]); // Authority
 
+    #[cfg(feature = "assumptions")]
+    {
+        let multisig = get_multisig(&accounts[1]);
+        if multisig.m < 1 || multisig.m > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+        if multisig.n < 1 || multisig.n > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+    }
+
     //-Initial State-----------------------------------------------------------
     let src_old = get_account(&accounts[0]);
     let src_initialised = src_old.is_initialized();

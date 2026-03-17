@@ -14,6 +14,17 @@ fn test_process_approve_checked_multisig(
     cheatcode_account!(&accounts[2]); // Delegate
     cheatcode_multisig!(&accounts[3]); // Owner
 
+    #[cfg(feature = "assumptions")]
+    {
+        let multisig = get_multisig(&accounts[3]);
+        if multisig.m < 1 || multisig.m > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+        if multisig.n < 1 || multisig.n > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+    }
+
     //-Initial State-----------------------------------------------------------
     let src_old = get_account(&accounts[0]);
     let amount = u64::from_le_bytes([

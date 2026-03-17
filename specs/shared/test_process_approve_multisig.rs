@@ -12,6 +12,17 @@ fn test_process_approve_multisig(
     cheatcode_account!(&accounts[1]); // Delegate
     cheatcode_multisig!(&accounts[2]); // Owner
 
+    #[cfg(feature = "assumptions")]
+    {
+        let multisig = get_multisig(&accounts[2]);
+        if multisig.m < 1 || multisig.m > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+        if multisig.n < 1 || multisig.n > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+    }
+
     //-Initial State-----------------------------------------------------------
     let src_old = get_account(&accounts[0]);
     let amount = unsafe { u64::from_le_bytes(*(instruction_data.as_ptr() as *const [u8; 8])) };

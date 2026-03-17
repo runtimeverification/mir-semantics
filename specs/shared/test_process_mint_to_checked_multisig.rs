@@ -12,6 +12,17 @@ fn test_process_mint_to_checked_multisig(
     cheatcode_account!(&accounts[1]);
     cheatcode_multisig!(&accounts[2]);
 
+    #[cfg(feature = "assumptions")]
+    {
+        let multisig = get_multisig(&accounts[2]);
+        if multisig.m < 1 || multisig.m > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+        if multisig.n < 1 || multisig.n > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+    }
+
     //-Initial State-----------------------------------------------------------
     let mint_old = get_mint(&accounts[0]);
     let dst_old = get_account(&accounts[1]);

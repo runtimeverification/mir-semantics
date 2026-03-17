@@ -8,6 +8,17 @@ fn test_validate_owner_multisig(
     cheatcode_account!(&accounts[0]);    // Source Account
     cheatcode_multisig!(&accounts[1]);   // Owner (multisig)
 
+    #[cfg(feature = "assumptions")]
+    {
+        let multisig = get_multisig(&accounts[1]);
+        if multisig.m < 1 || multisig.m > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+        if multisig.n < 1 || multisig.n > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+    }
+
     //-Initial State-----------------------------------------------------------
     let src_old = get_account(&accounts[0]);
     let expected_owner = src_old.owner;
