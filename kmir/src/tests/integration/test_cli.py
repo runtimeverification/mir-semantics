@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from kmir.kmir import KMIR
 
 PROVE_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
+MODULES_DIR = (Path(__file__).parent / 'data' / 'modules').resolve(strict=True)
 # Repo root: used to normalise absolute paths in expected-output snapshots so
 # they don't differ between local checkouts and CI (e.g. symbolic-args-fail.main.cli-stats-leaves).
 _REPO_ROOT = str(Path(__file__).resolve().parents[4])
@@ -299,6 +300,78 @@ def test_cli_prove_add_module(kmir: KMIR, tmp_path: Path) -> None:
 
     # With depth=1, we should have 3 nodes: init, one step, target
     assert len(list(proof_with_module.kcfg.nodes)) == 3
+
+
+def test_cli_prove_add_module_k(kmir: KMIR, tmp_path: Path) -> None:
+    """Test --add-module with a .k source file using file:MODULE_NAME format."""
+    from kmir.kmir import KMIR
+
+    rs_file = PROVE_DIR / 'assert-true.rs'
+    start_symbol = 'main'
+
+    module_file = MODULES_DIR / 'test-add-module.k'
+    assert module_file.exists(), f'Test module file not found: {module_file}'
+
+    opts = ProveOpts(
+        rs_file,
+        proof_dir=tmp_path,
+        smir=False,
+        start_symbol=start_symbol,
+        max_depth=1,
+        add_module=f'{module_file}:TEST-ADD-MODULE',
+    )
+    proof = KMIR.prove_program(opts)
+
+    # With depth=1, the summary rule completes the proof in one step: init, one step, target
+    assert len(list(proof.kcfg.nodes)) == 3
+
+
+def test_cli_prove_add_module_md(kmir: KMIR, tmp_path: Path) -> None:
+    """Test --add-module with a .md source file using file:MODULE_NAME format."""
+    from kmir.kmir import KMIR
+
+    rs_file = PROVE_DIR / 'assert-true.rs'
+    start_symbol = 'main'
+
+    module_file = MODULES_DIR / 'test-add-module.md'
+    assert module_file.exists(), f'Test module file not found: {module_file}'
+
+    opts = ProveOpts(
+        rs_file,
+        proof_dir=tmp_path,
+        smir=False,
+        start_symbol=start_symbol,
+        max_depth=1,
+        add_module=f'{module_file}:TEST-ADD-MODULE',
+    )
+    proof = KMIR.prove_program(opts)
+
+    # With depth=1, the summary rule completes the proof in one step: init, one step, target
+    assert len(list(proof.kcfg.nodes)) == 3
+
+
+def test_cli_prove_add_module_select_from_multiple(kmir: KMIR, tmp_path: Path) -> None:
+    """Test --add-module selects only the named module from a file containing multiple modules."""
+    from kmir.kmir import KMIR
+
+    rs_file = PROVE_DIR / 'assert-true.rs'
+    start_symbol = 'main'
+
+    module_file = MODULES_DIR / 'test-add-module-multiple.k'
+    assert module_file.exists(), f'Test module file not found: {module_file}'
+
+    opts = ProveOpts(
+        rs_file,
+        proof_dir=tmp_path,
+        smir=False,
+        start_symbol=start_symbol,
+        max_depth=1,
+        add_module=f'{module_file}:TEST-ADD-MODULE',
+    )
+    proof = KMIR.prove_program(opts)
+
+    # The proof behavior has already been checked. This only checks module selection.
+    assert proof.passed
 
 
 def test_cli_break_on_function(
