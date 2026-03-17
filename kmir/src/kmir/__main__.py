@@ -571,7 +571,7 @@ def _arg_parser() -> ArgumentParser:
         '--add-module',
         type=str,
         metavar='MODULE',
-        help='K module to include: file.k:MODULE_NAME or file.md:MODULE_NAME for K source, or file.json (from --to-module) for pre-exported JSON',
+        help='K module to include. Formats: FILE.k:MODULE or FILE.md:MODULE (K source), FILE.json (from --to-module). See docs/add-module.md for details.',
     )
     prove_parser.add_argument(
         '--max-workers', metavar='N', type=int, help='Maximum number of workers for parallel exploration'
