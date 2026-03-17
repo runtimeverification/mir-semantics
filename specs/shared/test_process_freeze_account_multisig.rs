@@ -8,6 +8,17 @@ fn test_process_freeze_account_multisig(accounts: &[AccountInfo; 4]) -> ProgramR
     cheatcode_mint!(&accounts[1]);
     cheatcode_multisig!(&accounts[2]);
 
+    #[cfg(feature = "assumptions")]
+    {
+        let multisig = get_multisig(&accounts[2]);
+        if multisig.m < 1 || multisig.m > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+        if multisig.n < 1 || multisig.n > MAX_SIGNERS as u8 {
+            return Ok(());
+        }
+    }
+
     //-Initial State-----------------------------------------------------------
     let src_old = get_account(&accounts[0]);
     let mint_old = get_mint(&accounts[1]);

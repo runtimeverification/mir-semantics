@@ -35,7 +35,7 @@ fn expected_validate_owner_result(
             }
 
             // Were enough signatures received?
-            let signers_count = multisig.signers
+            let signers_count = multisig.signers[0..multisig.n as usize]
                 .iter()
                 .filter_map(|registered_key| {
                     tx_signers.iter().find(|potential_signer| {
@@ -103,7 +103,7 @@ fn inner_test_validate_owner(
             }
 
             // Were enough signatures received?
-            let signers_count = multisig.signers
+            let signers_count = multisig.signers[0..multisig.n as usize]
                 .iter()
                 .filter_map(|registered_key| {
                     tx_signers.iter().find(|potential_signer| {
