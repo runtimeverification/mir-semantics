@@ -211,6 +211,109 @@ For example, `Infinityp53x11` is f64 positive infinity, `NaNp24x8` is f32 NaN.
   rule #nanFloat(floatTyF128) => NaNp113x15
 ```
 
+## Decoding Float values from `Bytes` for `OperandConstant`
+
+The `#decodeFloat` function reconstructs a `Float` value from its IEEE 754 byte representation.
+The bytes are first converted to a raw integer, then the sign, biased exponent, and stored significand
+are extracted. The value is reconstructed using K's `Int2Float` and float arithmetic, with a
+high-precision intermediate to avoid overflow when reconstructing subnormals and small normal values.
+
+```k
+  syntax Value ::= #decodeFloat ( Bytes, FloatTy ) [function]
+  // --------------------------------------------------------
+  rule #decodeFloat(BYTES, FLOATTY) => #decodeFloatRaw(Bytes2Int(BYTES, LE, Unsigned), FLOATTY)
+    requires lengthBytes(BYTES) ==Int #bitWidth(FLOATTY) /Int 8
+    [preserves-definedness]
+
+  syntax Value ::= #decodeFloatRaw ( Int, FloatTy ) [function, total]
+  // ----------------------------------------------------------------
+  rule #decodeFloatRaw(RAW, FLOATTY)
+    => #decodeFloatParts(
+         RAW >>Int (#significandBits(FLOATTY) +Int #exponentBits(FLOATTY) -Int 1),
+         (RAW >>Int (#significandBits(FLOATTY) -Int 1)) &Int ((1 <<Int #exponentBits(FLOATTY)) -Int 1),
+         RAW &Int ((1 <<Int (#significandBits(FLOATTY) -Int 1)) -Int 1),
+         FLOATTY
+       )
+
+  syntax Value ::= #decodeFloatParts ( sign: Int, biasedExp: Int, storedSig: Int, FloatTy ) [function]
+  // -------------------------------------------------------------------------------------------------
+
+  // Zero (positive or negative)
+  rule #decodeFloatParts(SIGN, 0, 0, FLOATTY)
+    => Float(#applyFloatSign(Int2Float(0, #significandBits(FLOATTY), #exponentBits(FLOATTY)), SIGN), #bitWidth(FLOATTY))
+    [preserves-definedness]
+
+  // Subnormal: no implicit leading 1, exponent is 1 - bias
+  rule #decodeFloatParts(SIGN, 0, SIG, FLOATTY)
+    => Float(
+         #applyFloatSign(
+           #reconstructFloat(SIG, 2 -Int #bias(FLOATTY) -Int #significandBits(FLOATTY), FLOATTY),
+           SIGN
+         ),
+         #bitWidth(FLOATTY)
+       )
+    requires SIG =/=Int 0
+    [preserves-definedness]
+
+  // Normal: implicit leading 1 in significand
+  rule #decodeFloatParts(SIGN, EXP, SIG, FLOATTY)
+    => Float(
+         #applyFloatSign(
+           #reconstructFloat(
+             SIG |Int (1 <<Int (#significandBits(FLOATTY) -Int 1)),
+             EXP -Int #bias(FLOATTY) -Int #significandBits(FLOATTY) +Int 1,
+             FLOATTY
+           ),
+           SIGN
+         ),
+         #bitWidth(FLOATTY)
+       )
+    requires EXP >Int 0 andBool EXP <Int ((1 <<Int #exponentBits(FLOATTY)) -Int 1)
+    [preserves-definedness]
+
+  // Infinity
+  rule #decodeFloatParts(SIGN, EXP, 0, FLOATTY)
+    => Float(#applyFloatSign(#posInfFloat(FLOATTY), SIGN), #bitWidth(FLOATTY))
+    requires EXP ==Int ((1 <<Int #exponentBits(FLOATTY)) -Int 1)
+    [preserves-definedness]
+
+  // NaN
+  rule #decodeFloatParts(_SIGN, EXP, SIG, FLOATTY)
+    => Float(#nanFloat(FLOATTY), #bitWidth(FLOATTY))
+    requires EXP ==Int ((1 <<Int #exponentBits(FLOATTY)) -Int 1) andBool SIG =/=Int 0
+    [preserves-definedness]
+```
+
+Reconstruct a float from its integer significand and adjusted exponent.
+For positive exponents, shift the significand left and convert.
+For negative exponents, use a high-precision intermediate (256-bit significand, 64-bit exponent)
+to avoid overflow, then round down to the target precision.
+
+```k
+  syntax Float ::= #reconstructFloat ( sig: Int, adjExp: Int, FloatTy ) [function]
+  // -------------------------------------------------------------------------------
+  rule #reconstructFloat(SIG, AEXP, FLOATTY)
+    => Int2Float(SIG <<Int AEXP, #significandBits(FLOATTY), #exponentBits(FLOATTY))
+    requires AEXP >=Int 0
+    [preserves-definedness]
+
+  rule #reconstructFloat(SIG, AEXP, FLOATTY)
+    => roundFloat(
+         Int2Float(SIG, 256, 64) /Float Int2Float(1 <<Int (0 -Int AEXP), 256, 64),
+         #significandBits(FLOATTY),
+         #exponentBits(FLOATTY)
+       )
+    requires AEXP <Int 0
+    [preserves-definedness]
+
+  // Apply the sign bit to a float value
+  syntax Float ::= #applyFloatSign ( Float, Int ) [function, total]
+  // ---------------------------------------------------------------
+  rule #applyFloatSign(F, 0) => F
+  rule #applyFloatSign(F, 1) => --Float F
+  rule #applyFloatSign(F, _) => F [owise]
+```
+
 ## Type Casts Between Different Numeric Types
 
 
