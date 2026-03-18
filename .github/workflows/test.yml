@@ -53,6 +53,16 @@ jobs:
     needs: code-quality-checks
     name: 'Integration Tests'
     runs-on: [self-hosted, linux, normal]
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: 'Concrete'
+            test-args: '-k llvm'
+          - name: 'Haskell Termination'
+            test-args: '-k test_prove_termination'
+          - name: 'Haskell Proofs'
+            test-args: '-k "not llvm and not test_prove_termination"'
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
@@ -68,7 +78,7 @@ jobs:
       - name: 'Run integration tests'
         run: |
           docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make test-integration \
-            TEST_ARGS='-k "not llvm and not test_prove_termination"'
+            TEST_ARGS='${{ matrix.test-args }}'
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
