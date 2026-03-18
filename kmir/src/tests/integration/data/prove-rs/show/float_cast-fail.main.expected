@@ -1,0 +1,132 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (25 steps)
+├─ 3
+│   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 1 ) )
+│   function: main
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   #execBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K
+┃  │   function: main
+┃  │
+┃  │  (22 steps)
+┃  ├─ 7
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 3 ) )
+┃  │   function: main
+┃  ┃
+┃  ┃ (1 step)
+┃  ┣━━┓
+┃  ┃  │
+┃  ┃  ├─ 9
+┃  ┃  │   #execBlockIdx ( basicBlockIdx ( 3 ) ) ~> .K
+┃  ┃  │   function: main
+┃  ┃  │
+┃  ┃  │  (22 steps)
+┃  ┃  ├─ 12
+┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 5 ) )
+┃  ┃  │   function: main
+┃  ┃  ┃
+┃  ┃  ┃ (1 step)
+┃  ┃  ┣━━┓
+┃  ┃  ┃  │
+┃  ┃  ┃  ├─ 14
+┃  ┃  ┃  │   #execBlockIdx ( basicBlockIdx ( 5 ) ) ~> .K
+┃  ┃  ┃  │   function: main
+┃  ┃  ┃  │
+┃  ┃  ┃  │  (22 steps)
+┃  ┃  ┃  ├─ 17
+┃  ┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 7 ) )
+┃  ┃  ┃  │   function: main
+┃  ┃  ┃  ┃
+┃  ┃  ┃  ┃ (1 step)
+┃  ┃  ┃  ┣━━┓
+┃  ┃  ┃  ┃  │
+┃  ┃  ┃  ┃  ├─ 19
+┃  ┃  ┃  ┃  │   #execBlockIdx ( basicBlockIdx ( 7 ) ) ~> .K
+┃  ┃  ┃  ┃  │   function: main
+┃  ┃  ┃  ┃  │
+┃  ┃  ┃  ┃  │  (30 steps)
+┃  ┃  ┃  ┃  └─ 22 (vacuous, leaf)
+┃  ┃  ┃  ┃      #setLocalValue ( place ( ... local: local ( 9 ) , projection: .ProjectionElems )
+┃  ┃  ┃  ┃      function: main
+┃  ┃  ┃  ┃      span: 65
+┃  ┃  ┃  ┃
+┃  ┃  ┃  ┣━━┓
+┃  ┃  ┃  ┃  │
+┃  ┃  ┃  ┃  ├─ 20
+┃  ┃  ┃  ┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+┃  ┃  ┃  ┃  │   function: main
+┃  ┃  ┃  ┃  │
+┃  ┃  ┃  ┃  │  (6 steps)
+┃  ┃  ┃  ┃  └─ 23 (stuck, leaf)
+┃  ┃  ┃  ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+┃  ┃  ┃  ┃      span: 32
+┃  ┃  ┃  ┃
+┃  ┃  ┃  ┗━━┓
+┃  ┃  ┃     │
+┃  ┃  ┃     └─ 21 (stuck, leaf)
+┃  ┃  ┃         #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 7 ) )
+┃  ┃  ┃         function: main
+┃  ┃  ┃
+┃  ┃  ┣━━┓
+┃  ┃  ┃  │
+┃  ┃  ┃  ├─ 15
+┃  ┃  ┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+┃  ┃  ┃  │   function: main
+┃  ┃  ┃  │
+┃  ┃  ┃  │  (6 steps)
+┃  ┃  ┃  └─ 18 (stuck, leaf)
+┃  ┃  ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+┃  ┃  ┃      span: 32
+┃  ┃  ┃
+┃  ┃  ┗━━┓
+┃  ┃     │
+┃  ┃     └─ 16 (stuck, leaf)
+┃  ┃         #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 5 ) )
+┃  ┃         function: main
+┃  ┃
+┃  ┣━━┓
+┃  ┃  │
+┃  ┃  ├─ 10
+┃  ┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+┃  ┃  │   function: main
+┃  ┃  │
+┃  ┃  │  (6 steps)
+┃  ┃  └─ 13 (stuck, leaf)
+┃  ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+┃  ┃      span: 32
+┃  ┃
+┃  ┗━━┓
+┃     │
+┃     └─ 11 (stuck, leaf)
+┃         #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 3 ) )
+┃         function: main
+┃
+┣━━┓
+┃  │
+┃  ├─ 5
+┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+┃  │   function: main
+┃  │
+┃  │  (6 steps)
+┃  └─ 8 (stuck, leaf)
+┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+┃      span: 32
+┃
+┗━━┓
+   │
+   └─ 6 (stuck, leaf)
+       #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 1 ) )
+       function: main
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+

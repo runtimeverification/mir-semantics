@@ -65,6 +65,12 @@ PROVE_RS_SHOW_SPECS = [
     'test_offset_from-fail',
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
+    'float_arith-fail',
+    'float_cast-fail',
+    'float_cmp-fail',
+    'float_eq-fail',
+    'float_neg-fail',
+    'float_special-fail',
 ]
 
 

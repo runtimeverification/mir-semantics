@@ -1,0 +1,45 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (51 steps)
+├─ 3
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+│   function: main
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   #execBlockIdx ( basicBlockIdx ( 2 ) ) ~> .K
+┃  │   function: main
+┃  │
+┃  │  (5 steps)
+┃  └─ 7 (stuck, leaf)
+┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+┃      span: 32
+┃
+┣━━┓
+┃  │
+┃  ├─ 5
+┃  │   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+┃  │   function: main
+┃  │
+┃  │  (30 steps)
+┃  └─ 8 (vacuous, leaf)
+┃      rvalueBinaryOp ( binOpEq , operandMove ( place ( ... local: local ( 6 ) , projec
+┃      function: main
+┃      span: 54
+┃
+┗━━┓
+   │
+   └─ 6 (stuck, leaf)
+       #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+       function: main
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
