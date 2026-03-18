@@ -185,6 +185,32 @@ reserved for zero/subnormals and infinity/NaN respectively.
   rule #bias(FLOATTY) => (1 <<Int (#exponentBits(FLOATTY) -Int 1)) -Int 1
 ```
 
+### IEEE 754 Special Values
+
+When the exponent field is all 1s (`2^EB - 1`), the value is either infinity
+(fraction = 0) or NaN (fraction != 0). K's `FLOAT-SYNTAX` module in
+[domains.md](https://github.com/runtimeverification/k/blob/master/k-distribution/include/kframework/builtin/domains.md#ieee-754-floating-point-numbers)
+defines float literals with a `p<SB>x<EB>` suffix to specify precision and exponent
+bits. See IEEE 754 Binary Format above for values of SB and EB.
+
+For example, `Infinityp53x11` is f64 positive infinity, `NaNp24x8` is f32 NaN.
+
+```k
+  syntax Float ::= #posInfFloat ( FloatTy ) [function, total]
+  // --------------------------------------------------------
+  rule #posInfFloat(floatTyF16)  => Infinityp11x5
+  rule #posInfFloat(floatTyF32)  => Infinityp24x8
+  rule #posInfFloat(floatTyF64)  => Infinityp53x11
+  rule #posInfFloat(floatTyF128) => Infinityp113x15
+
+  syntax Float ::= #nanFloat ( FloatTy ) [function, total]
+  // -----------------------------------------------------
+  rule #nanFloat(floatTyF16)  => NaNp11x5
+  rule #nanFloat(floatTyF32)  => NaNp24x8
+  rule #nanFloat(floatTyF64)  => NaNp53x11
+  rule #nanFloat(floatTyF128) => NaNp113x15
+```
+
 ## Type Casts Between Different Numeric Types
 
 
