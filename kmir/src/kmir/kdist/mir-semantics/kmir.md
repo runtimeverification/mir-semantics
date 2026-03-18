@@ -614,7 +614,7 @@ Therefore a heuristics is used here:
          <locals> _ => #reserveFor(NEWLOCALS) </locals>
          ...
        </currentFrame>
-    [owise]
+    [owise, preserves-definedness]
 
   // Step 3: closure by ref - final check on pointee type
   rule [setupCalleeClosure2]: <k> #resolvedSetupCalleeClosure2(BLOCKS, NEWLOCALS, CLOSURE, TUPLE, FIRST, POINTEE_TYINFO)

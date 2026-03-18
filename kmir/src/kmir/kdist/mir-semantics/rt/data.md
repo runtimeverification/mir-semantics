@@ -129,12 +129,14 @@ Constant operands are simply decoded according to their type.
         => #resolvedOperandConstant(KIND, TY, MCID, lookupTy(TY), lookupFunction(TY))
        ...
        </k>
+    [preserves-definedness]
 
   rule <k> #resolvedOperandConstant(KIND, TY, _, TYINFO, _)
         => #decodeConstant(KIND, TY, TYINFO)
        ...
        </k>
     requires typeInfoVoidType =/=K TYINFO
+    [preserves-definedness]
 ```
 
 Function pointers are zero-sized constants whose `Ty` is a key in the function table instaed of the type table.
@@ -146,6 +148,7 @@ Function pointers are zero-sized constants whose `Ty` is a key in the function t
        </k>
     requires typeInfoVoidType ==K TYINFO // not a valid type info
      andBool FUNCINFO =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
+    [preserves-definedness]
 ```
 
 ### Copying and Moving
@@ -1187,6 +1190,7 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
         => #resolvedDiscriminant(IDX, TY, lookupTy(TY))
         ...
        </k>
+    [preserves-definedness]
 
   rule <k> #resolvedDiscriminant(IDX, _TY, TYINFO)
         => Integer(#lookupDiscrAux(discriminantsOf(TYINFO), IDX), 0, false) // HACK: bit width 0 means "flexible"
@@ -1426,6 +1430,7 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
           => #resolvedCastIntToInt(VAL, TY, lookupTy(TY))
           ...
         </k>
+    [preserves-definedness]
 
   rule <k> #resolvedCastIntToInt(Integer(VAL, WIDTH, _SIGNEDNESS), _TY, TYINFO)
           =>
@@ -1487,6 +1492,7 @@ the cast preserves the source pointer and its metadata unchanged.
           => #resolvedCastPtrToPtr(VAL, TY_SOURCE, TY_TARGET, lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
           ...
         </k>
+    [preserves-definedness]
 
   rule <k> #resolvedCastPtrToPtr(PtrLocal(OFFSET, PLACE, MUT, META), _, _, SRC_TYINFO, TGT_TYINFO)
           => PtrLocal(OFFSET, PLACE, MUT, META)
@@ -1635,7 +1641,7 @@ What can be supported without additional layout consideration is trivial casts b
             ) => #resolvedCastTransmuteRoundTrip(DATA, lookupTy(TY_SRC_INNER), lookupTy(TY_DEST_INNER), lookupTy(TY_SRC_OUTER), lookupTy(TY_DEST_OUTER))
           ...
        </k>
-    [priority(35)]
+    [priority(35), preserves-definedness]
 
   rule <k> #resolvedCastTransmuteRoundTrip(DATA, SRC_INNER_TI, DEST_INNER_TI, SRC_OUTER_TI, DEST_OUTER_TI)
           => DATA
@@ -1643,6 +1649,7 @@ What can be supported without additional layout consideration is trivial casts b
        </k>
     requires SRC_INNER_TI ==K DEST_OUTER_TI // cast is a round-trip
      andBool DEST_INNER_TI ==K SRC_OUTER_TI // and is well-formed (invariant)
+    [preserves-definedness]
 
   // General transmute resolver for all non-thunk transmute casts
   syntax KItem ::= #resolvedCastTransmute( Value , Ty , Ty , TypeInfo , TypeInfo )
@@ -1651,16 +1658,20 @@ What can be supported without additional layout consideration is trivial casts b
           => #resolvedCastTransmute(VAL, TY_SOURCE, TY_TARGET, lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
           ...
         </k>
+    [preserves-definedness]
 
   // Same-type transmute for pointer-like values
   rule <k> #resolvedCastTransmute(Reference(_, _, _, _) #as REF, _, _, SRC_TI, TGT_TI) => REF ... </k>
       requires SRC_TI ==K TGT_TI
+      [preserves-definedness]
 
   rule <k> #resolvedCastTransmute(AllocRef(_, _, _) #as REF, _, _, SRC_TI, TGT_TI) => REF ... </k>
       requires SRC_TI ==K TGT_TI
+      [preserves-definedness]
 
   rule <k> #resolvedCastTransmute(PtrLocal(_, _, _, _) #as PTR, _, _, SRC_TI, TGT_TI) => PTR ... </k>
       requires SRC_TI ==K TGT_TI
+      [preserves-definedness]
 ```
 
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
@@ -1775,6 +1786,7 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
       </k>
       requires #isEnumWithoutFields(TGT_TI)
         andBool notBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , TGT_TI )
+      [preserves-definedness]
 
   rule <k>
            #resolvedCastTransmute( Integer ( VAL , WIDTH , _SIGNED ) , _ , _ , _SRC_TI , TGT_TI )
@@ -1784,6 +1796,7 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
       </k>
       requires #isEnumWithoutFields(TGT_TI)
         andBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , TGT_TI)
+      [preserves-definedness]
 
   syntax VariantIdx ::= #findVariantIdxFromTy ( Int , TypeInfo ) [function, total]
   //------------------------------------------------------------------------------
@@ -1815,12 +1828,14 @@ mapped to the elements.
            #resolvedTransmuteElems(VALS, TY_FROM, TY_TO, lookupTy(TY_FROM), lookupTy(TY_TO))
        ...
       </k>
+    [preserves-definedness]
 
   rule <k> #resolvedTransmuteElems(VALS, _TY_FROM, _TY_TO, SRC_TI, TGT_TI)
         =>
            #transmuteElemsAux(.List, VALS, getArrayElemTy(SRC_TI), getArrayElemTy(TGT_TI))
        ...
       </k>
+    [preserves-definedness]
 
   rule <k> #transmuteElemsAux(ACC, .List, _, _) => Range(ACC) ... </k>
 
@@ -1859,6 +1874,7 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
       requires #isUnionType(TGT_TI)
         andBool #typeNameIs(TGT_TI, "std::mem::MaybeUninit<")
         andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(TGT_TI, 1)), 0)
+      [preserves-definedness]
 
   // Value -> MaybeUninit transmute: type match (worker for #resolvedCastTransmute)
   rule <k>
@@ -1870,6 +1886,7 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
       requires #isUnionType(TGT_TI)
         andBool #typeNameIs(TGT_TI, "std::mem::MaybeUninit<")
         andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(TGT_TI, 1)), 0)
+      [preserves-definedness]
 
   // Converting static or dynamic sized array of `T` to array of `std::mem::MaybeUninit<T>`.
   // FIXME: Might need to check sizes as this cast could come from transmute_unchecked
@@ -1891,6 +1908,7 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
                           )),
                         0
                       ))
+      [preserves-definedness]
 ```
 
 
@@ -1957,6 +1975,7 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
         => #resolvedDecodeConstantRef(BYTES, ALLOC_ID, POINTEE_TY, lookupAlloc(ALLOC_ID))
         ...
        </k>
+    [preserves-definedness]
 
   rule <k> #resolvedDecodeConstantRef(BYTES, ALLOC_ID, POINTEE_TY, ALLOC_VAL)
         => AllocRef(ALLOC_ID, .ProjectionElems, metadata(#metadataSize(POINTEE_TY), 0, #metadataSize(POINTEE_TY)))
@@ -1964,6 +1983,7 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
        </k>
     requires isValue(ALLOC_VAL)
      andBool lengthBytes(BYTES) ==Int 8 // no dynamic metadata
+    [preserves-definedness]
 
   rule <k> #resolvedDecodeConstantRef(BYTES, ALLOC_ID, _, ALLOC_VAL)
         => AllocRef(ALLOC_ID, .ProjectionElems, metadata(dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)), 0, dynamicSize(Bytes2Int(substrBytes(BYTES, 8, 16), LE, Unsigned)) ))
@@ -2363,18 +2383,21 @@ This information is read from the layout in the `TypeInfo` if available, or a fi
         => #resolvedNullaryOp(OP, TY, lookupTy(TY))
        ...
        </k>
+    [preserves-definedness]
 
   rule <k> #resolvedNullaryOp(nullOpSizeOf, _TY, TYINFO)
         => Integer(#sizeOf(TYINFO), 64, false)
        ...
        </k>
     requires TYINFO =/=K typeInfoVoidType
+    [preserves-definedness]
 
   rule <k> #resolvedNullaryOp(nullOpAlignOf, _TY, TYINFO)
         => Integer(#alignOf(TYINFO), 64, false)
        ...
        </k>
     requires TYINFO =/=K typeInfoVoidType
+    [preserves-definedness]
 ```
 
 `nullOpOffsetOf(VariantAndFieldIndices)`
