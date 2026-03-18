@@ -58,20 +58,28 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - name: 'Concrete'
+          - name: 'Decode Values, Schema Parse'
+            test-args: '-k test_decode_value or test_schema_parse or test_schema_kapply_parse'
+            parallel: 12
+            timeout: 10
+          - name: 'LLVM Concrete Tests'
             test-args: '-k llvm'
             parallel: 12
+            timeout: 10
+          - name: 'Haskell Exec SMIR'
+            test-args: '-k test_exec_smir and haskell'
+            parallel: 6
             timeout: 10
           - name: 'Haskell Termination'
             test-args: '-k test_prove_termination'
             parallel: 6
             timeout: 10
-          - name: 'Haskell Exec SMIR'
-            test-args: '-k test_exec_smir or test_run_smir_random'
+          - name: 'Haskell Proofs'
+            test-args: '-k test_prove'
             parallel: 6
             timeout: 10
-          - name: 'Haskell Proofs'
-            test-args: '-k "not llvm and not test_prove_termination and not test_exec_smir and not test_run_smir_random"'
+          - name: 'Remainder'
+            test-args: '-k not test_decode_value and not test_schema_parse and not test_schema_kapply_parse and not llvm and not test_exec_smir and not test_prove_termination and not test_prove'
             parallel: 6
             timeout: 10
     steps:
