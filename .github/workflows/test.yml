@@ -2,6 +2,9 @@ name: 'Test'
 on:
   pull_request:
   workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -49,10 +52,14 @@ jobs:
       - name: 'Run unit tests'
         run: make test-unit
 
-  integration-tests-llvm:
+  build:
     needs: code-quality-checks
-    name: 'Integration Tests (LLVM)'
+    name: 'Build'
     runs-on: [self-hosted, linux, normal]
+    permissions:
+      packages: write
+    outputs:
+      image: ${{ steps.commit-image.outputs.image }}
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
@@ -62,36 +69,88 @@ jobs:
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
         with:
-          container-name: mir-semantics-llvm-${{ github.sha }}
+          container-name: mir-semantics-build-${{ github.sha }}
       - name: 'Build stable-mir-json and kmir'
-        run: docker exec --user github-user mir-semantics-llvm-${GITHUB_SHA} make stable-mir-json build
+        run: docker exec --user github-user mir-semantics-build-${GITHUB_SHA} make stable-mir-json build
+      - name: 'Commit and push built image to GHCR'
+        id: commit-image
+        run: |
+          IMAGE="ghcr.io/runtimeverification/mir-semantics/ci:${GITHUB_SHA}"
+          docker commit mir-semantics-build-${GITHUB_SHA} ${IMAGE}
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ${IMAGE}
+          echo "image=${IMAGE}" >> "${GITHUB_OUTPUT}"
+      - name: 'Tear down Docker'
+        if: always()
+        run: |
+          docker stop --time 0 mir-semantics-build-${GITHUB_SHA} || true
+          docker rmi ${{ steps.commit-image.outputs.image }} || true
+
+  integration-tests-llvm:
+    needs: [code-quality-checks, build]
+    name: 'Integration Tests (LLVM)'
+    runs-on: [self-hosted, linux, normal]
+    permissions:
+      packages: read
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+          submodules: recursive
+      - name: 'Pull pre-built image and start container'
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker pull ${{ needs.build.outputs.image }}
+          docker run                                                          \
+            --name mir-semantics-llvm-${GITHUB_SHA}                          \
+            --rm                                                              \
+            --interactive                                                     \
+            --tty                                                             \
+            --detach                                                          \
+            --workdir /home/github-user/workspace                            \
+            ${{ needs.build.outputs.image }}
+          docker cp . mir-semantics-llvm-${GITHUB_SHA}:/home/github-user/workspace
+          docker exec --user root mir-semantics-llvm-${GITHUB_SHA} \
+            chown -R github-user:github-user /home/github-user/workspace
       - name: 'Run LLVM integration tests'
         run: docker exec --user github-user mir-semantics-llvm-${GITHUB_SHA} make test-integration-llvm
       - name: 'Tear down Docker'
         if: always()
-        run: docker stop --time 0 mir-semantics-llvm-${GITHUB_SHA}
+        run: docker stop --time 0 mir-semantics-llvm-${GITHUB_SHA} || true
 
   integration-tests-haskell:
-    needs: code-quality-checks
+    needs: [code-quality-checks, build]
     name: 'Integration Tests (Haskell)'
     runs-on: [self-hosted, linux, normal]
+    permissions:
+      packages: read
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
           submodules: recursive
-      - name: 'Set up Docker'
-        uses: ./.github/actions/with-docker
-        with:
-          container-name: mir-semantics-haskell-${{ github.sha }}
-      - name: 'Build stable-mir-json and kmir'
-        run: docker exec --user github-user mir-semantics-haskell-${GITHUB_SHA} make stable-mir-json build
+      - name: 'Pull pre-built image and start container'
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker pull ${{ needs.build.outputs.image }}
+          docker run                                                          \
+            --name mir-semantics-haskell-${GITHUB_SHA}                       \
+            --rm                                                              \
+            --interactive                                                     \
+            --tty                                                             \
+            --detach                                                          \
+            --workdir /home/github-user/workspace                            \
+            ${{ needs.build.outputs.image }}
+          docker cp . mir-semantics-haskell-${GITHUB_SHA}:/home/github-user/workspace
+          docker exec --user root mir-semantics-haskell-${GITHUB_SHA} \
+            chown -R github-user:github-user /home/github-user/workspace
       - name: 'Run Haskell integration tests'
         run: docker exec --user github-user mir-semantics-haskell-${GITHUB_SHA} make test-integration-haskell
       - name: 'Tear down Docker'
         if: always()
-        run: docker stop --time 0 mir-semantics-haskell-${GITHUB_SHA}
+        run: docker stop --time 0 mir-semantics-haskell-${GITHUB_SHA} || true
 
   stable-mir-json-integration-tests:
     needs: code-quality-checks
