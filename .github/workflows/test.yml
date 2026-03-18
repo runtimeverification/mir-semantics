@@ -63,7 +63,7 @@ jobs:
             parallel: 12
             timeout: 10
           - name: 'LLVM Concrete Tests'
-            test-args: '-k llvm'
+            test-args: '-k "llvm or test_run_smir_random"'
             parallel: 12
             timeout: 10
           - name: 'Haskell Exec SMIR'
@@ -75,11 +75,11 @@ jobs:
             parallel: 6
             timeout: 10
           - name: 'Haskell Proofs'
-            test-args: '-k test_prove'
+            test-args: '-k "test_prove and not test_prove_termination"'
             parallel: 6
             timeout: 10
           - name: 'Remainder'
-            test-args: '-k "not test_decode_value and not test_schema_parse and not test_schema_kapply_parse and not llvm and not test_exec_smir and not test_prove_termination and not test_prove"'
+            test-args: '-k "not test_decode_value and not test_schema_parse and not test_schema_kapply_parse and not llvm and not test_run_smir_random and not test_exec_smir and not test_prove_termination and not test_prove"'
             parallel: 6
             timeout: 10
     steps:
