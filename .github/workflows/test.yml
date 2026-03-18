@@ -47,12 +47,13 @@ jobs:
         with:
           version: ${{ steps.uv_release.outputs.uv_version }}
       - name: 'Run unit tests'
-        run: make test-unit
+        run: make test-unit PARALLEL=12
 
   integration-tests:
     needs: code-quality-checks
-    name: 'Integration Tests'
+    name: 'Integration Tests ${{ matrix.name }}'
     runs-on: [self-hosted, linux, normal]
+    timeout-minutes: ${{ matrix.timeout }}
     strategy:
       fail-fast: true
       matrix:
@@ -60,12 +61,19 @@ jobs:
           - name: 'Concrete'
             test-args: '-k llvm'
             parallel: 12
+            timeout: 10
           - name: 'Haskell Termination'
             test-args: '-k test_prove_termination'
             parallel: 6
-          - name: 'Haskell Proofs'
-            test-args: '-k "not llvm and not test_prove_termination"'
+            timeout: 10
+          - name: 'Haskell Exec SMIR'
+            test-args: '-k test_exec_smir or test_run_smir_random'
             parallel: 6
+            timeout: 10
+          - name: 'Haskell Proofs'
+            test-args: '-k "not llvm and not test_prove_termination and not test_exec_smir and not test_run_smir_random"'
+            parallel: 6
+            timeout: 10
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
