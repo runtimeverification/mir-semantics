@@ -49,10 +49,12 @@ jobs:
       - name: 'Run unit tests'
         run: make test-unit
 
-  integration-tests:
+  build:
     needs: code-quality-checks
-    name: 'Integration Tests'
+    name: 'Build'
     runs-on: [self-hosted, linux, normal]
+    outputs:
+      image: ${{ steps.commit-image.outputs.image }}
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
@@ -62,14 +64,80 @@ jobs:
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
         with:
-          container-name: mir-semantics-ci-${{ github.sha }}
-      - name: 'Build stable-mir-json and kmir'
-        run: docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make build
-      - name: 'Run integration tests'
-        run: docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make test-integration
+          container-name: mir-semantics-build-${{ github.sha }}
+      - name: 'Build stable-mir-json'
+        run: docker exec --user github-user mir-semantics-build-${GITHUB_SHA} make stable-mir-json
+      - name: 'Build kmir'
+        run: docker exec --user github-user mir-semantics-build-${GITHUB_SHA} make build
+      - name: 'Commit built container as image'
+        id: commit-image
+        run: |
+          IMAGE="mir-semantics-built:${GITHUB_SHA}"
+          docker commit mir-semantics-build-${GITHUB_SHA} ${IMAGE}
+          echo "image=${IMAGE}" >> "${GITHUB_OUTPUT}"
+      - name: 'Tear down build container'
+        if: always()
+        run: docker stop --time 0 mir-semantics-build-${GITHUB_SHA} || true
+
+  integration-tests-llvm:
+    needs: [code-quality-checks, build]
+    name: 'Integration Tests (LLVM)'
+    runs-on: [self-hosted, linux, normal]
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+          submodules: recursive
+      - name: 'Start container from pre-built image'
+        run: |
+          IMAGE="${{ needs.build.outputs.image }}"
+          docker run                                                          \
+            --name mir-semantics-llvm-${GITHUB_SHA}                          \
+            --rm                                                              \
+            --interactive                                                     \
+            --tty                                                             \
+            --detach                                                          \
+            --workdir /home/github-user/workspace                            \
+            ${IMAGE}
+          docker cp . mir-semantics-llvm-${GITHUB_SHA}:/home/github-user/workspace
+          docker exec --user root mir-semantics-llvm-${GITHUB_SHA} \
+            chown -R github-user:github-user /home/github-user/workspace
+      - name: 'Run LLVM integration tests'
+        run: docker exec --user github-user mir-semantics-llvm-${GITHUB_SHA} make test-integration-llvm
       - name: 'Tear down Docker'
         if: always()
-        run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
+        run: docker stop --time 0 mir-semantics-llvm-${GITHUB_SHA} || true
+
+  integration-tests-haskell:
+    needs: [code-quality-checks, build]
+    name: 'Integration Tests (Haskell)'
+    runs-on: [self-hosted, linux, normal]
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.JENKINS_GITHUB_PAT }}
+          submodules: recursive
+      - name: 'Start container from pre-built image'
+        run: |
+          IMAGE="${{ needs.build.outputs.image }}"
+          docker run                                                          \
+            --name mir-semantics-haskell-${GITHUB_SHA}                       \
+            --rm                                                              \
+            --interactive                                                     \
+            --tty                                                             \
+            --detach                                                          \
+            --workdir /home/github-user/workspace                            \
+            ${IMAGE}
+          docker cp . mir-semantics-haskell-${GITHUB_SHA}:/home/github-user/workspace
+          docker exec --user root mir-semantics-haskell-${GITHUB_SHA} \
+            chown -R github-user:github-user /home/github-user/workspace
+      - name: 'Run Haskell integration tests'
+        run: docker exec --user github-user mir-semantics-haskell-${GITHUB_SHA} make test-integration-haskell
+      - name: 'Tear down Docker'
+        if: always()
+        run: docker stop --time 0 mir-semantics-haskell-${GITHUB_SHA} || true
 
   stable-mir-json-integration-tests:
     needs: code-quality-checks
@@ -181,7 +249,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [normal, MacM1]  # MacM1 / normal are self-hosted, 
+        runner: [normal, MacM1]  # MacM1 / normal are self-hosted,
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     steps:
@@ -212,4 +280,3 @@ jobs:
           set -euxo pipefail
           nix --version
           nix flake check # build and run smoke test
-

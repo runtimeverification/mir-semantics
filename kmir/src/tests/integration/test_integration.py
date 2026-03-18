@@ -390,11 +390,15 @@ def test_exec_smir(
     test_case: tuple[str, Path, Path, int],
     symbolic: bool,
     update_expected_output: bool,
-    tmp_path: Path,
+    kompile_cache_dir: Path,
+    exec_smir_kompile_dirs: dict[str, Path],
 ) -> None:
+    from .conftest import get_exec_smir_target_dir
+
     _, input_json, output_kast, depth = test_case
     smir_info = SMIRInfo.from_file(input_json)
-    kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=tmp_path, symbolic=symbolic)
+    target_dir = get_exec_smir_target_dir(input_json, symbolic, kompile_cache_dir, exec_smir_kompile_dirs)
+    kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=target_dir, symbolic=symbolic)
     result = kmir_backend.run_smir(smir_info, depth=depth)
     result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
     assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)
