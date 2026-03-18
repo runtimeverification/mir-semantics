@@ -120,6 +120,71 @@ This truncation function is instrumental in the implementation of Integer arithm
     [preserves-definedness]
 ```
 
+## Helpers and Constants for Float Operations
+
+Rust supports four fixed-width IEEE 754 float types: `f16`, `f32`, `f64`, and `f128`.
+The helpers below extract format parameters for each type. First, an overview of the format.
+
+### IEEE 754 Binary Format
+
+An IEEE 754 binary floating-point word has three fields stored left-to-right:
+
+```
+  MSB                                             LSB
+  +---------+----------------+----------------------+
+  |  sign   |    exponent    |       fraction       |
+  | (1 bit) |   (EB bits)    |   (SB - 1 bits)      |
+  +---------+----------------+----------------------+
+  total bits = 1 + EB + (SB - 1)
+```
+
+The **significand** (also called **precision**) is the total number of significant bits
+in the represented value, including an implicit leading 1 that is not stored in the
+fraction field. For a normal number, the mathematical value is:
+
+    value  =  (-1)^sign  *  2^(exponent - bias)  *  1.fraction
+
+The "1." prefix is the implicit bit, so the significand has `SB` bits of precision
+even though only `SB - 1` fraction bits are stored. For example, f64 stores 52 fraction
+bits but has 53 bits of significand precision.
+
+K's built-in `FLOAT` module uses this convention: `Int2Float(x, precision, exponentBits)`
+takes `precision = SB` (total significand bits including the implicit 1) and `exponentBits = EB`.
+See [IEEE 754 on Wikipedia](https://en.wikipedia.org/wiki/IEEE_754) for full details.
+
+The exponent is stored as an unsigned integer in
+[excess-M encoding](https://en.wikipedia.org/wiki/Offset_binary) with `bias = 2^(EB-1) - 1`,
+so that the actual exponent is `stored - bias`. For f64, bias = 1023: a stored value of 1023
+means exponent 0, 1024 means +1, and 1 means -1022. Stored values 0 and `2^EB - 1` are
+reserved for zero/subnormals and infinity/NaN respectively.
+
+| Type | Total bits | Sign | Exponent (EB) | Fraction (SB-1) | Significand (SB) | Bias       |
+|------|------------|------|---------------|-----------------|------------------|------------|
+| f16  | 16         | 1    | 5             | 10              | 11               | 15         |
+| f32  | 32         | 1    | 8             | 23              | 24               | 127        |
+| f64  | 64         | 1    | 11            | 52              | 53               | 1023       |
+| f128 | 128        | 1    | 15            | 112             | 113              | 16383      |
+
+```k
+  syntax Int ::= #significandBits ( FloatTy ) [function, total]
+  // ----------------------------------------------------------
+  rule #significandBits(floatTyF16)  => 11
+  rule #significandBits(floatTyF32)  => 24
+  rule #significandBits(floatTyF64)  => 53
+  rule #significandBits(floatTyF128) => 113
+
+  syntax Int ::= #exponentBits ( FloatTy ) [function, total]
+  // -------------------------------------------------------
+  rule #exponentBits(floatTyF16)  => 5
+  rule #exponentBits(floatTyF32)  => 8
+  rule #exponentBits(floatTyF64)  => 11
+  rule #exponentBits(floatTyF128) => 15
+
+  syntax Int ::= #bias ( FloatTy ) [function, total]
+  // -----------------------------------------------
+  rule #bias(FLOATTY) => (1 <<Int (#exponentBits(FLOATTY) -Int 1)) -Int 1
+```
+
 ## Type Casts Between Different Numeric Types
 
 
