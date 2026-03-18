@@ -13,6 +13,7 @@ module RT-NUMBERS
   imports BOOL
   imports BYTES
   imports INT
+  imports FLOAT
 ```
 
 ## Helpers and Constants for Integer Operations
@@ -38,6 +39,15 @@ module RT-NUMBERS
   rule #isIntType(typeInfoPrimitiveType(primTypeInt(_)))  => true
   rule #isIntType(typeInfoPrimitiveType(primTypeUint(_))) => true
   rule #isIntType(_)                                 => false [owise]
+
+  syntax Bool ::= #isFloatType ( TypeInfo ) [function, total]
+  // --------------------------------------------------------
+  rule #isFloatType(typeInfoPrimitiveType(primTypeFloat(_))) => true
+  rule #isFloatType(_)                                       => false [owise]
+
+  syntax FloatTy ::= #floatTypeOf ( TypeInfo ) [function]
+  // ----------------------------------------------------
+  rule #floatTypeOf(typeInfoPrimitiveType(primTypeFloat(FLOATTY))) => FLOATTY
 ```
 
 Constants used for overflow-checking and truncation are defined here as macros.
