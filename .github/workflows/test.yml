@@ -59,10 +59,13 @@ jobs:
         include:
           - name: 'Concrete'
             test-args: '-k llvm'
+            parallel: 12
           - name: 'Haskell Termination'
             test-args: '-k test_prove_termination'
+            parallel: 6
           - name: 'Haskell Proofs'
             test-args: '-k "not llvm and not test_prove_termination"'
+            parallel: 6
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
@@ -78,7 +81,7 @@ jobs:
       - name: 'Run integration tests'
         run: |
           docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make test-integration \
-            TEST_ARGS='${{ matrix.test-args }}'
+            TEST_ARGS='${{ matrix.test-args }}' PARALLEL=${{ matrix.parallel }}
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
