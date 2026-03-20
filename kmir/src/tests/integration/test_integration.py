@@ -65,6 +65,7 @@ PROVE_SHOW_SPECS = [
     'test_offset_from-fail',
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
+    'float_modulo-fail',
 ]
 
 
