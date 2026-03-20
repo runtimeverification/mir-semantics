@@ -1606,6 +1606,30 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
      andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
 ```
 
+Transmuting a value `T` into a single-field wrapper struct `G<T>` (or vice versa) is sound when the struct
+has its field at zero offset and `transmute` compiled (guaranteeing equal sizes).
+These are essentially `#[repr(transparent)]` but are `#[repr(rust)]` by default without the annotation and
+thus there are no compiler optimisations to remove the transmute (there would be otherwise for downcast).
+The layout is the same for the wrapped type and so the cast in either direction is sound.
+
+```k
+  // Up: T -> Wrapper(T)
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            Aggregate(variantIdx(0), ListItem(VAL))
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
+
+  // Down: Wrapper(T) -> T
+  rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            VAL
+          ...
+        </k>
+      requires {#transparentFieldTy(lookupTy(TY_SOURCE))}:>Ty ==K TY_TARGET
+```
+
 Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.
 
 ```k
