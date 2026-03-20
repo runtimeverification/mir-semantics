@@ -235,13 +235,12 @@ high-precision intermediate to avoid overflow when reconstructing subnormals and
          FLOATTY
        )
 
-  syntax Value ::= #decodeFloatParts ( sign: Int, biasedExp: Int, storedSig: Int, FloatTy ) [function]
-  // -------------------------------------------------------------------------------------------------
+  syntax Value ::= #decodeFloatParts ( sign: Int, biasedExp: Int, storedSig: Int, FloatTy ) [function, total]
+  // --------------------------------------------------------------------------------------------------------
 
   // Zero (positive or negative)
   rule #decodeFloatParts(SIGN, 0, 0, FLOATTY)
     => Float(#applyFloatSign(Int2Float(0, #significandBits(FLOATTY), #exponentBits(FLOATTY)), SIGN), #bitWidth(FLOATTY))
-    [preserves-definedness]
 
   // Subnormal: no implicit leading 1, exponent is 1 - bias
   rule #decodeFloatParts(SIGN, 0, SIG, FLOATTY)
@@ -253,7 +252,6 @@ high-precision intermediate to avoid overflow when reconstructing subnormals and
          #bitWidth(FLOATTY)
        )
     requires SIG =/=Int 0
-    [preserves-definedness]
 
   // Normal: implicit leading 1 in significand
   rule #decodeFloatParts(SIGN, EXP, SIG, FLOATTY)
@@ -269,19 +267,20 @@ high-precision intermediate to avoid overflow when reconstructing subnormals and
          #bitWidth(FLOATTY)
        )
     requires EXP >Int 0 andBool EXP <Int ((1 <<Int #exponentBits(FLOATTY)) -Int 1)
-    [preserves-definedness]
 
   // Infinity
   rule #decodeFloatParts(SIGN, EXP, 0, FLOATTY)
     => Float(#applyFloatSign(#posInfFloat(FLOATTY), SIGN), #bitWidth(FLOATTY))
     requires EXP ==Int ((1 <<Int #exponentBits(FLOATTY)) -Int 1)
-    [preserves-definedness]
 
   // NaN
   rule #decodeFloatParts(_SIGN, EXP, SIG, FLOATTY)
     => Float(#nanFloat(FLOATTY), #bitWidth(FLOATTY))
     requires EXP ==Int ((1 <<Int #exponentBits(FLOATTY)) -Int 1) andBool SIG =/=Int 0
-    [preserves-definedness]
+
+  // Owise case should not be reachable, returning a string value that should get stuck in the semantics
+  rule #decodeFloatParts(_, _, _, _) => StringVal( "ERRORFailedToDecodeFloat" ) [owise]
+
 ```
 
 Reconstruct a float from its integer significand and adjusted exponent.
