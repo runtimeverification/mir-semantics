@@ -2196,7 +2196,11 @@ The argument types must be the same for all comparison operations, however this 
     [preserves-definedness] // OP known to be a comparison
 ```
 
-The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`), indicating `LE`, `EQ`, or `GT`.
+Types that are equivlance relations can implement [Eq](https://doc.rust-lang.org/std/cmp/trait.Eq.html),
+and then they may implement [Ord](https://doc.rust-lang.org/std/cmp/trait.Ord.html) for a total ordering.
+For types that implement `Ord` the `cmp` method must be implemented which can compare any two elements respective to their total ordering.
+Here we provide the `binOpCmp` for `Bool` and `Int` operation which returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`),
+indicating `LE`, `EQ`, or `GT`.
 
 ```k
   syntax Int ::= cmpInt  ( Int , Int )  [function , total]
@@ -2209,11 +2213,6 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
   rule cmpBool(X, Y) => 0  requires X ==Bool Y
   rule cmpBool(X, Y) => 1  requires X andBool notBool Y
 
-  syntax Int ::= cmpFloat ( Float, Float ) [function]
-  rule cmpFloat(VAL1, VAL2) => -1 requires VAL1 <Float VAL2
-  rule cmpFloat(VAL1, VAL2) => 0  requires VAL1 ==Float VAL2
-  rule cmpFloat(VAL1, VAL2) => 1  requires VAL1 >Float VAL2
-
   rule #applyBinOp(binOpCmp, Integer(VAL1, WIDTH, SIGN), Integer(VAL2, WIDTH, SIGN), _)
       =>
         Integer(cmpInt(VAL1, VAL2), 8, true)
@@ -2221,10 +2220,6 @@ The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `st
   rule #applyBinOp(binOpCmp, BoolVal(VAL1), BoolVal(VAL2), _)
       =>
         Integer(cmpBool(VAL1, VAL2), 8, true)
-
-  rule #applyBinOp(binOpCmp, Float(VAL1, WIDTH), Float(VAL2, WIDTH), _)
-      =>
-        Integer(cmpFloat(VAL1, VAL2), 8, true)
 ```
 
 #### Unary operations on Boolean and integral values
