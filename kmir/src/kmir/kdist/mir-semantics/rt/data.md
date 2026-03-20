@@ -2026,6 +2026,8 @@ are correct.
   // operation undefined otherwise
 
   // performs the given operation on IEEE 754 floats
+  // Note: Rust's float % is truncating remainder: x - trunc(x/y) * y
+  // This differs from K's %Float which is IEEE 754 remainder (round to nearest).
   syntax Float ::= onFloat( BinOp, Float, Float ) [function]
   // -------------------------------------------------------
   rule onFloat(binOpAdd, X, Y)          => X +Float Y [preserves-definedness]
@@ -2035,7 +2037,7 @@ are correct.
   rule onFloat(binOpMul, X, Y)          => X *Float Y [preserves-definedness]
   rule onFloat(binOpMulUnchecked, X, Y) => X *Float Y [preserves-definedness]
   rule onFloat(binOpDiv, X, Y)          => X /Float Y [preserves-definedness]
-  rule onFloat(binOpRem, X, Y)          => X %Float Y [preserves-definedness]
+  rule onFloat(binOpRem, X, Y)          => X -Float (Y *Float truncFloat(X /Float Y)) [preserves-definedness]
 
   // error cases for isArithmetic(BOP):
   // * arguments must be Numbers
