@@ -121,6 +121,7 @@ Pointers to structs with a single zero-offset field are compatible with pointers
           #pointeeProjection(lookupTy(FIELD), OTHER)
         )
     requires #zeroFieldOffset(LAYOUT)
+    [priority(45)]
 
   rule #pointeeProjection(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
     => maybeConcatProj(
@@ -128,6 +129,7 @@ Pointers to structs with a single zero-offset field are compatible with pointers
           #pointeeProjection(OTHER, lookupTy(FIELD))
         )
     requires #zeroFieldOffset(LAYOUT)
+    [priority(45)]
 ```
 
 Pointers to `MaybeUninit<X>` can be cast to pointers to `X`.
