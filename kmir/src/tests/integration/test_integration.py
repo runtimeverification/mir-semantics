@@ -65,6 +65,9 @@ PROVE_SHOW_SPECS = [
     'test_offset_from-fail',
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
+    'volatile_store_static-fail',
+    'volatile_load_static-fail',
+    'box_heap_alloc-fail',
 ]
 
 
