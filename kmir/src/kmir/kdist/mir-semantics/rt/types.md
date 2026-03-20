@@ -102,6 +102,9 @@ Pointers to zero-sized types can be converted from and to. No recursion beyond t
 ```
 
 Source-side: unwrap structs and arrays from the source type first.
+
+When source is an array and target is a transparent wrapper whose inner type equals the source,
+the source should be wrapped rather than unwrapped (e.g., `*const [u8;2] → *const Wrapper([u8;2])`).
 ```k
   rule #pointeeProjection(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
     => maybeConcatProj(
@@ -109,6 +112,16 @@ Source-side: unwrap structs and arrays from the source type first.
           #pointeeProjection(lookupTy(FIELD), OTHER)
         )
     requires #zeroFieldOffset(LAYOUT)
+
+  rule #pointeeProjection(SRC:TypeInfo, typeInfoStructType(_NAME, _ADTDEF, FIELD .Tys, LAYOUT))
+    => maybeConcatProj(
+          projectionElemWrapStruct,
+          #pointeeProjection(SRC, lookupTy(FIELD))
+        )
+    requires #isArrayType(SRC)
+    andBool #zeroFieldOffset(LAYOUT)
+    andBool lookupTy(FIELD) ==K SRC
+    [priority(42)]
 
   rule #pointeeProjection(typeInfoArrayType(TY1, _), TY2)
     => maybeConcatProj(

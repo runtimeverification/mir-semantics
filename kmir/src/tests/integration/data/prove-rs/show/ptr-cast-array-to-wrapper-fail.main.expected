@@ -26,14 +26,15 @@
    │   #execBlockIdx ( basicBlockIdx ( 4 ) ) ~> .K
    │   function: main
    │
-   │  (10 steps)
-   └─ 7 (stuck, leaf)
-       #traverseProjection ( toLocal ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem (
-       function: main
-       span: 282
+   │  (154 steps)
+   ├─ 7 (terminal)
+   │   #EndProgram ~> .K
+   │   function: main
+   │
+   ┊  constraint: true
+   ┊  subst: ...
+   └─ 2 (leaf, target, terminal)
+       #EndProgram ~> .K
 
-
-┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram ~> .K
 
 
