@@ -52,10 +52,13 @@ and arrays (where layout is trivial).
     requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO)
      [preserves-definedness]
 
+  // Float: handled in separate module for numeric operations
+  rule #decodeValue(BYTES, TYPEINFO) => #decodeFloat(BYTES, #floatTypeOf(TYPEINFO))
+    requires #isFloatType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO)
+    [preserves-definedness]
+
   // TODO Char type
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
-
-  // TODO Float decoding: not supported natively in K
 ```
 
 
