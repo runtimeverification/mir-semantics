@@ -65,6 +65,9 @@ PROVE_SHOW_SPECS = [
     'test_offset_from-fail',
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
+    'volatile_store_static-fail',
+    'volatile_load_static-fail',
+    'box_heap_alloc-fail',
 ]
 
 
@@ -614,6 +617,17 @@ EXEC_DATA = [
 ]
 
 
+# Tests containing float values that the pure kore-exec haskell backend cannot handle.
+# The haskell backend has no Float builtins (no Float.hs in kore/src/Kore/Builtin/),
+# so kore-exec crashes with "missing hook FLOAT.int2float" at Evaluator.hs:377.
+# The booster avoids this by delegating Float evaluation to the LLVM shared library
+# via simplifyTerm in booster/library/Booster/LLVM.hs.
+EXEC_SMIR_SKIP_HASKELL = {
+    'structs-tuples',
+    'struct-field-update',
+}
+
+
 @pytest.mark.parametrize('symbolic', [False, True], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
@@ -626,7 +640,9 @@ def test_exec_smir(
     update_expected_output: bool,
     tmp_path: Path,
 ) -> None:
-    _, input_json, output_kast, depth = test_case
+    name, input_json, output_kast, depth = test_case
+    if symbolic and name in EXEC_SMIR_SKIP_HASKELL:
+        pytest.skip('haskell-backend lacks FLOAT hooks')
     smir_info = SMIRInfo.from_file(input_json)
     kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=tmp_path, symbolic=symbolic)
     result = kmir_backend.run_smir(smir_info, depth=depth)
