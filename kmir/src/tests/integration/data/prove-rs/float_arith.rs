@@ -26,6 +26,12 @@ fn main() {
     assert!(2.0_f128 * 3.0_f128 == 6.0_f128);
     assert!(7.0_f128 / 2.0_f128 == 3.5_f128);
 
+    // Modulo (truncating)
+    assert!(7.0_f16 % 4.0_f16 == 3.0_f16);
+    assert!(7.0_f32 % 4.0_f32 == 3.0_f32);
+    assert!(7.0_f64 % 4.0_f64 == 3.0_f64);
+    assert!(7.0_f128 % 4.0_f128 == 3.0_f128);
+
     // Subnormal constant literals
     let sub_16: f16 = 5.96e-8_f16;       // below f16 min normal (6.1e-5)
     assert!(sub_16 + sub_16 == sub_16 * 2.0_f16);
