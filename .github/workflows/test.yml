@@ -73,11 +73,11 @@ jobs:
           - name: 'Haskell Proofs'
             test-args: '-k "test_prove and not test_prove_termination"'
             parallel: 6
-            timeout: 90
+            timeout: 60
           - name: 'Remainder'
             test-args: '-k "not llvm and not test_run_smir_random and not test_exec_smir and not test_prove_termination and not test_prove"'
             parallel: 6
-            timeout: 15
+            timeout: 20
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
