@@ -5,6 +5,7 @@ The code in this file implements functionality for `Integer` and `Float` values 
 ```k
 requires "./value.md"
 requires "../ty.md"
+requires "rat.md"
 
 module RT-NUMBERS
   imports TYPES
@@ -14,6 +15,7 @@ module RT-NUMBERS
   imports BYTES
   imports INT
   imports FLOAT
+  imports RAT
 ```
 
 ## Helpers and Constants for Integer Operations
@@ -284,9 +286,9 @@ high-precision intermediate to avoid overflow when reconstructing subnormals and
 ```
 
 Reconstruct a float from its integer significand and adjusted exponent.
-For positive exponents, shift the significand left and convert.
-For negative exponents, use a high-precision intermediate (256-bit significand, 64-bit exponent)
-to avoid overflow, then round down to the target precision.
+For positive exponents, shift the significand left and convert directly.
+For negative exponents, use `Rat2Float` to convert the exact rational
+`SIG / 2^|AEXP|` to the target float precision.
 
 ```k
   syntax Float ::= #reconstructFloat ( sig: Int, adjExp: Int, FloatTy ) [function]
@@ -297,11 +299,9 @@ to avoid overflow, then round down to the target precision.
     [preserves-definedness]
 
   rule #reconstructFloat(SIG, AEXP, FLOATTY)
-    => roundFloat(
-         Int2Float(SIG, 256, 64) /Float Int2Float(1 <<Int (0 -Int AEXP), 256, 64),
+    => Rat2Float(SIG /Rat (1 <<Int (0 -Int AEXP)),
          #significandBits(FLOATTY),
-         #exponentBits(FLOATTY)
-       )
+         #exponentBits(FLOATTY))
     requires AEXP <Int 0
     [preserves-definedness]
 
