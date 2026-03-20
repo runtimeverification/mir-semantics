@@ -288,8 +288,8 @@ def _extract_alloc_id(operands: KInner) -> int | None:
             return None
 
 
-def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
-    """If the k cell is `#setUpCalleeData` for `** UNKNOWN FUNCTION **`, return annotation lines with decoded info."""
+def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
+    """If the k cell is `#setUpCalleeData` for a `noBody` callee, return annotation lines with decoded info."""
 
     from .alloc import Allocation, AllocId, AllocInfo, Memory
     from .linker import _demangle
@@ -307,16 +307,14 @@ def _annotate_unknown_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]
                     KApply(
                         label=KLabel(name='MonoItemKind::MonoItemFn'),
                         args=[
-                            KApply(args=[KToken(token=symbol_name)]),
+                            KApply(args=[KToken()]),
                             KApply(label=KLabel(name='defId(_)_BODY_DefId_Int'), args=[KToken(token=def_id_str)]),
                             _,
                         ],
                     ),
                     operands,
                     KApply(label=KLabel(name='span'), args=[KToken(token=span_str)]),
-                ] if (
-                    symbol_name == '\"** UNKNOWN FUNCTION **\"'
-                ):
+                ]:
                     def_id = int(def_id_str)
                     span = int(span_str)
                 case _:
@@ -379,7 +377,7 @@ def render_leaf_k_cells(proof: APRProof, cterm_show: CTermShow, smir_info: SMIRI
             lines.extend(f'  {k_line}' for k_line in k_lines)
 
         if smir_info is not None and k_cell is not None:
-            annotations = _annotate_unknown_function(k_cell, smir_info)
+            annotations = _annotate_nobody_function(k_cell, smir_info)
             lines.extend(annotations)
 
         if idx != len(leaves) - 1:

@@ -1051,6 +1051,12 @@ Literal arrays are also built using this RValue.
         ...
        </k>
 
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindClosure(_DEF, _TY_ARGS))
+        =>
+            Aggregate(variantIdx(0), ARGS)
+        ...
+       </k>
+
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
   syntax KItem ::= #readOperands ( Operands )
@@ -1434,6 +1440,20 @@ which have the same representation `Value::Range`.
 Also, casts to and from _transparent wrappers_ (newtypes that just forward field `0`, i.e. `struct Wrapper<T>(T)`)
 are allowed, and supported by a special projection `WrapStruct`.
 
+When the source and target types are pointer types with the same pointee type (i.e., differing only in mutability),
+the cast preserves the source pointer and its metadata unchanged.
+
+```k
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+          => PtrLocal(OFFSET, PLACE, MUT, META)
+          ...
+        </k>
+      requires pointeeTy(lookupTy(TY_SOURCE)) ==K pointeeTy(lookupTy(TY_TARGET))
+      [priority(45), preserves-definedness] // valid map lookups checked
+```
+
+Otherwise, compute the type projection and convert metadata accordingly.
+
 ```k
   rule <k> #cast(PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
@@ -1584,6 +1604,30 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
        </k>
     requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
      andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
+```
+
+Transmuting a value `T` into a single-field wrapper struct `G<T>` (or vice versa) is sound when the struct
+has its field at zero offset and `transmute` compiled (guaranteeing equal sizes).
+These are essentially `#[repr(transparent)]` but are `#[repr(rust)]` by default without the annotation and
+thus there are no compiler optimisations to remove the transmute (there would be otherwise for downcast).
+The layout is the same for the wrapped type and so the cast in either direction is sound.
+
+```k
+  // Up: T -> Wrapper(T)
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            Aggregate(variantIdx(0), ListItem(VAL))
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
+
+  // Down: Wrapper(T) -> T
+  rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            VAL
+          ...
+        </k>
+      requires {#transparentFieldTy(lookupTy(TY_SOURCE))}:>Ty ==K TY_TARGET
 ```
 
 Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.

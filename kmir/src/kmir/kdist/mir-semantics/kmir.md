@@ -315,11 +315,23 @@ where the returned result should go.
         ...
        </k>
 
-  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), .ProjectionElems)), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall(tyOfLocal(getLocal(LOCALS, I)), lookupFunction(tyOfLocal(getLocal(LOCALS, I))), ARGS, DEST, TARGET, UNWIND, SPAN)
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
+        => #execTerminatorCall({#projectedCallTy(I, PROJS, LOCALS)}:>Ty, lookupFunction({#projectedCallTy(I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
       <locals> LOCALS </locals>
+    requires isTy(#projectedCallTy(I, PROJS, LOCALS))
+    [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
+
+  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total]
+
+  rule #projectedCallTy(I, PROJS, LOCALS)
+    => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+
+  rule #projectedCallTy(_, _, _) => TyUnknown [owise]
 
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
@@ -562,7 +574,8 @@ Therefore a heuristics is used here:
                 _SPAN
               )
          =>
-           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
+        ~> #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
@@ -605,6 +618,11 @@ Therefore a heuristics is used here:
 
   // unpack tuple and set arguments individually
   rule <k> #setTupleArgs(IDX, Aggregate(variantIdx(0), ARGS)) => #setTupleArgs(IDX, ARGS) ... </k>
+
+  rule <k> #setTupleArgs(IDX, VAL:Value)
+        => #setTupleArgs(IDX, ListItem(VAL))
+        ...
+       </k> [owise]
 
   rule <k> #setTupleArgs(_, .List ) => .K ... </k>
 
