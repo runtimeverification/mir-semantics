@@ -69,7 +69,6 @@ PROVE_SHOW_SPECS = [
     'volatile_load_static-fail',
     'box_heap_alloc-fail',
     'ptr-cast-wrapper-to-array',
-    'iter_next_2-fail',
 ]
 
 

@@ -76,29 +76,18 @@ It also implements cancellation of inverse projections (such as casting from one
 
 The `#pointeeProjection` function computes, for compatible pointee types, how to project from one pointee to the other.
 
+It uses a **source-first strategy**: always unwrap the source type (struct wrapper or array) before
+attempting to unwrap the target type. This eliminates non-deterministic overlap between source-side
+and target-side rules, because a type cannot be both a struct and an array simultaneously.
+When the source cannot be unwrapped further, target-side unwrapping is handled by `#pointeeProjectionTarget`.
+
 ```k
   syntax MaybeProjectionElems ::= #pointeeProjection ( TypeInfo , TypeInfo ) [function, total]
 ```
 
 A short-cut rule for identical types takes preference.
-As a default, no projection elements are returned for incompatible types.
 ```k
   rule #pointeeProjection(T , T) => .ProjectionElems  [priority(40)]
-  rule #pointeeProjection(_ , _) => NoProjectionElems [owise]
-```
-
-Pointers to arrays/slices are compatible with pointers to the element type
-```k
-  rule #pointeeProjection(typeInfoArrayType(TY1, _), TY2)
-    => maybeConcatProj(
-          projectionElemConstantIndex(0, 0, false),
-          #pointeeProjection(lookupTy(TY1), TY2)
-        )
-  rule #pointeeProjection(TY1, typeInfoArrayType(TY2, _))
-    => maybeConcatProj(
-          projectionElemSingletonArray,
-          #pointeeProjection(TY1, lookupTy(TY2))
-        )
 ```
 
 Pointers to zero-sized types can be converted from and to. No recursion beyond the ZST.
@@ -112,24 +101,20 @@ Pointers to zero-sized types can be converted from and to. No recursion beyond t
     [priority(45)]
 ```
 
-Pointers to structs with a single zero-offset field are compatible with pointers to that field's type
+Source-side: unwrap structs and arrays from the source type first.
 ```k
-
   rule #pointeeProjection(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
     => maybeConcatProj(
           projectionElemField(fieldIdx(0), FIELD),
           #pointeeProjection(lookupTy(FIELD), OTHER)
         )
     requires #zeroFieldOffset(LAYOUT)
-    [priority(45)]
 
-  rule #pointeeProjection(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+  rule #pointeeProjection(typeInfoArrayType(TY1, _), TY2)
     => maybeConcatProj(
-          projectionElemWrapStruct,
-          #pointeeProjection(OTHER, lookupTy(FIELD))
+          projectionElemConstantIndex(0, 0, false),
+          #pointeeProjection(lookupTy(TY1), TY2)
         )
-    requires #zeroFieldOffset(LAYOUT)
-    [priority(45)]
 ```
 
 Pointers to `MaybeUninit<X>` can be cast to pointers to `X`.
@@ -148,6 +133,34 @@ which is a singleton struct (see above).
         )
     requires #typeNameIs(MAYBEUNINIT_TYINFO, "std::mem::MaybeUninit<")
      andBool #lookupMaybeTy(getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
+```
+
+Fallback: source is not unwrappable, delegate to target-side.
+```k
+  rule #pointeeProjection(SRC, TGT) => #pointeeProjectionTarget(SRC, TGT) [owise]
+```
+
+Target-side fallback: only reached when source cannot be unwrapped further.
+After one step of target unwrapping, recurse back to `#pointeeProjection` to maintain
+the source-first strategy.
+
+```k
+  syntax MaybeProjectionElems ::= #pointeeProjectionTarget ( TypeInfo , TypeInfo ) [function, total]
+
+  rule #pointeeProjectionTarget(TY1, typeInfoArrayType(TY2, _))
+    => maybeConcatProj(
+          projectionElemSingletonArray,
+          #pointeeProjection(TY1, lookupTy(TY2))
+        )
+
+  rule #pointeeProjectionTarget(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+    => maybeConcatProj(
+          projectionElemWrapStruct,
+          #pointeeProjection(OTHER, lookupTy(FIELD))
+        )
+    requires #zeroFieldOffset(LAYOUT)
+
+  rule #pointeeProjectionTarget(_, _) => NoProjectionElems [owise]
 ```
 
 ```k
