@@ -42,9 +42,9 @@ PROVE_START_SYMBOLS = {
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
 PROVE_SHOW_SPECS = [
-    'local-raw-fail',
+    'local-raw',
     'interior-mut-fail',
-    'interior-mut3-fail',
+    'interior-mut3',
     'iter_next_3',
     'assert_eq_exp',
     'bitwise-not-shift',
@@ -55,20 +55,20 @@ PROVE_SHOW_SPECS = [
     'pointer-cast-length-test-fail',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
-    'raw-ptr-cast-fail',
+    'raw-ptr-cast',
     'transmute-u8-to-enum-fail',
     'assert-inhabited-fail',
     'iterator-simple',
     'unions-fail',
     'transmute-maybe-uninit-fail',
-    'ptr-through-wrapper-fail',
+    'ptr-through-wrapper',
     'test_offset_from-fail',
-    'ref-ptr-cast-elem-fail',
-    'ref-ptr-cast-elem-offset-fail',
+    'ref-ptr-cast-elem',
+    'ref-ptr-cast-elem-offset',
     'volatile_store_static-fail',
     'volatile_load_static-fail',
     'box_heap_alloc-fail',
-    'alignment-check-fail',
+    'alignment-check',
 ]
 
 

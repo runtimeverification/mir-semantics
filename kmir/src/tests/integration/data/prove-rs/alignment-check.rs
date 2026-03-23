@@ -1,6 +1,6 @@
-// Reproducer for issue #638: alignment check block gets stuck
-// When dereferencing a raw pointer, the compiler inserts an alignment check
-// that transmutes the pointer to usize. This transmute has no matching rule.
+// Test for issue #638: alignment check in raw pointer dereference.
+// The compiler inserts an alignment check that transmutes a pointer to usize.
+// Verifies that the transmute cast evaluates concretely.
 
 struct Thing { payload: i16 }
 

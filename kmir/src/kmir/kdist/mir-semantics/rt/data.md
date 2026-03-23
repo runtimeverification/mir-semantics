@@ -1624,6 +1624,38 @@ What can be supported without additional layout consideration is trivial casts b
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
 
+Transmuting a pointer to `usize` occurs in compiler-generated alignment checks.
+Since KMIR uses an abstract pointer model without real memory addresses, all pointers are
+properly aligned by construction. We return `Integer(0, 64, false)` as a maximally-aligned
+abstract address, which ensures the alignment check evaluates concretely (rather than remaining
+stuck as a `thunk`) and passes as expected.
+
+```k
+  rule <k> #cast(PtrLocal(_, _, _, _), castKindTransmute, _TY_SOURCE, TY_TARGET)
+          =>
+            Integer(0, 64, false)
+          ...
+        </k>
+      requires lookupTy(TY_TARGET) ==K typeInfoPrimitiveType(primTypeUint(uintTyUsize))
+    [priority(45)]
+
+  rule <k> #cast(Reference(_, _, _, _), castKindTransmute, _TY_SOURCE, TY_TARGET)
+          =>
+            Integer(0, 64, false)
+          ...
+        </k>
+      requires lookupTy(TY_TARGET) ==K typeInfoPrimitiveType(primTypeUint(uintTyUsize))
+    [priority(45)]
+
+  rule <k> #cast(AllocRef(_, _, _), castKindTransmute, _TY_SOURCE, TY_TARGET)
+          =>
+            Integer(0, 64, false)
+          ...
+        </k>
+      requires lookupTy(TY_TARGET) ==K typeInfoPrimitiveType(primTypeUint(uintTyUsize))
+    [priority(45)]
+```
+
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
 The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
 
