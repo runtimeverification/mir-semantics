@@ -44,7 +44,7 @@ PROVE_START_SYMBOLS = {
 PROVE_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
-    'interior-mut3-fail',
+    'interior-mut3',
     'iter_next_3',
     'assert_eq_exp',
     'bitwise-not-shift',
