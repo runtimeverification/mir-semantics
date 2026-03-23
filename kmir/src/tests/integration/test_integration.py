@@ -649,3 +649,59 @@ def test_schema_kapply_parse(
     json_data, expected_term, expected_sort = test_case
 
     assert parser.parse_mir_json(json_data, expected_sort.name) == (expected_term, expected_sort)
+
+
+ARITH_SMIR = PROVE_DIR / 'arith.smir.json'
+
+
+def test_cfg_roots_prove_pipeline(caplog: pytest.LogCaptureFixture) -> None:
+    """Test that --cfg-roots expands the retained function set during prove."""
+    import logging
+    import re
+
+    smir_data = json.loads(ARITH_SMIR.read_text())
+
+    def _prove_and_extract_stats(start_symbol: str, cfg_roots_file: Path | None = None) -> tuple[int, int, int]:
+        """Run prove and extract (original_items, reduced_items, root_count) from logs."""
+        opts = ProveOpts(rs_file=ARITH_SMIR, smir=True, parsed_smir=smir_data, start_symbol=start_symbol)
+        if cfg_roots_file is not None:
+            opts.cfg_roots = list(filter(None, [r.strip() for r in cfg_roots_file.read_text().splitlines()]))
+        with caplog.at_level(logging.INFO, logger='kmir'):
+            caplog.clear()
+            KMIR.prove_program(opts)
+
+        original_items = 0
+        reduced_items = 0
+        root_count = 0
+        for record in caplog.records:
+            m = re.search(r'Symbol table reduction: (\d+) -> (\d+) items .* (\d+) root', record.message)
+            if m:
+                original_items = int(m.group(1))
+                reduced_items = int(m.group(2))
+                root_count = int(m.group(3))
+        return original_items, reduced_items, root_count
+
+    # Single root: only 'add'
+    orig_single, items_single, roots_single = _prove_and_extract_stats('add')
+
+    # Multi root: 'add' + 'mul' via cfg_roots
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
+        f.write('mul\n')
+        f.flush()
+        cfg_roots_path = Path(f.name)
+
+    try:
+        orig_multi, items_multi, roots_multi = _prove_and_extract_stats('add', cfg_roots_path)
+    finally:
+        cfg_roots_path.unlink()
+
+    # Both start from the same original item count
+    assert orig_single == orig_multi == 11
+
+    # Single root should use 1 root, multi should use 2
+    assert roots_single == 1
+    assert roots_multi == 2
+
+    # Multi-root should retain strictly more items (add + mul vs just add)
+    assert items_single == 1, f'Expected single-root to retain 1 item, got {items_single}'
+    assert items_multi == 2, f'Expected multi-root to retain 2 items, got {items_multi}'

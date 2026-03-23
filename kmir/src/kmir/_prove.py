@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import tempfile
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -75,7 +76,19 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
             smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
         reduce_roots = opts.cfg_roots + [opts.start_symbol] if opts.cfg_roots else opts.start_symbol
+        original_items = len(smir_info.items)
+        _LOGGER.debug(f'Reduction roots: {reduce_roots}')
+        t0 = time.monotonic()
         smir_info = smir_info.reduce_to(reduce_roots)
+        reduction_ms = (time.monotonic() - t0) * 1000
+        reduced_items = len(smir_info.items)
+        pruned = original_items - reduced_items
+        pct = (pruned / original_items * 100) if original_items > 0 else 0
+        root_count = len(reduce_roots) if isinstance(reduce_roots, list) else 1
+        _LOGGER.info(
+            f'Symbol table reduction: {original_items} -> {reduced_items} items'
+            f' ({pruned} pruned, {pct:.1f}%), {root_count} root(s), {reduction_ms:.1f}ms'
+        )
         # Report whether the reduced call graph includes any functions without MIR bodies
         missing_body_syms = [
             sym
@@ -83,7 +96,6 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
             if 'MonoItemFn' in item['mono_item_kind'] and item['mono_item_kind']['MonoItemFn'].get('body') is None
         ]
         has_missing = len(missing_body_syms) > 0
-        _LOGGER.info(f'Reduced items table size {len(smir_info.items)}')
         if has_missing:
             _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
             _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
