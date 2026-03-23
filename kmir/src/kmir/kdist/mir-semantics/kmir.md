@@ -219,6 +219,20 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
 If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
+  rule [termReturnIgnored]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #execBlockIdx(TARGET)
+       </k>
+       <currentFunc> _ => CALLER </currentFunc>
+       <currentBody> _ => #getBlocks(CALLER) </currentBody>
+       <caller> CALLER => NEWCALLER </caller>
+       <dest> place(local(-1), .ProjectionElems) => NEWDEST </dest>
+       <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
+       <unwind> _ => UNWIND </unwind>
+       <locals> _ => NEWLOCALS </locals>
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+    [priority(40)]
+
   rule [termReturnSome]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
            #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
@@ -474,6 +488,8 @@ An operand may be a `Reference` (the only way a function could access another fu
       =>
        ListItem(newLocal(TY, MUT)) #reserveFor(REST)
 
+  syntax Operand ::= operandValue ( Value )
+
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
                  | #execIntrinsic ( MonoItemKind, Operands, Place, Span )
@@ -490,6 +506,12 @@ An operand may be a `Reference` (the only way a function could access another fu
   rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
         =>
            #setLocalValue(place(local(IDX), .ProjectionElems), CONSTOPERAND)
+        ...
+       </k>
+
+  rule <k> #setArgFromStack(IDX, operandValue(VAL))
+        =>
+           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(VAL))
         ...
        </k>
 
@@ -669,9 +691,49 @@ Other terminators that matter at the MIR level "Runtime" are `Drop` and `Unreach
 Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error.
 
 ```k
-  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), _SPAN))
+  syntax MaybeTy ::= #dropPlaceTy(Place, List) [function, total]
+
+  rule #dropPlaceTy(place(local(I), PROJS), LOCALS)
+    => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+
+  rule #dropPlaceTy(_, _) => TyUnknown [owise]
+
+  syntax KItem ::= #execDropCall ( MaybeTy, Place, BasicBlockIdx, UnwindAction, Span )
+                 | #callDropGlue ( Ty, BasicBlockIdx, UnwindAction, Span )
+
+  rule [termDropGlue]: <k> #execTerminator(terminator(terminatorKindDrop(PLACE, TARGET, UNWIND), SPAN))
+         =>
+           #execDropCall(#lookupDropFunctionTy(#dropPlaceTy(PLACE, LOCALS)), PLACE, TARGET, UNWIND, SPAN)
+        ...
+       </k>
+       <locals> LOCALS </locals>
+
+  rule <k> #execDropCall(TyUnknown, _PLACE, TARGET, _UNWIND, _SPAN)
          =>
            #execBlockIdx(TARGET)
+        ...
+       </k>
+
+  rule <k> #execDropCall(FTY:Ty, PLACE, TARGET, UNWIND, SPAN)
+         =>
+           rvalueAddressOf(mutabilityMut, PLACE) ~> #callDropGlue(FTY, TARGET, UNWIND, SPAN)
+        ...
+       </k>
+
+  rule <k> PTR:Value ~> #callDropGlue(FTY, TARGET, UNWIND, SPAN)
+         =>
+           #execTerminatorCall(
+             FTY,
+             lookupFunction(FTY),
+             operandValue(PTR) .Operands,
+             place(local(-1), .ProjectionElems),
+             someBasicBlockIdx(TARGET),
+             UNWIND,
+             SPAN
+           )
         ...
        </k>
 
