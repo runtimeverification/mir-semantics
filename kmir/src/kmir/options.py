@@ -5,27 +5,52 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pyk.cli.args import LoggingOptions
-
 if TYPE_CHECKING:
     from typing import Final
+
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 @dataclass
-class KMirOpts(LoggingOptions): ...
+class KMirOpts: ...
 
 
 @dataclass
 class RunOpts(KMirOpts):
+    start_symbol: str
+    depth: int
     bin: str | None
     file: str | None
     target_dir: Path | None
-    depth: int
-    start_symbol: str
-    haskell_backend: bool
+    symbolic: bool
+    haskell_target: str | None
+    llvm_lib_target: str | None
+    llvm_target: str | None
+
+    def __init__(
+        self,
+        start_symbol: str,
+        depth: int,
+        *,
+        bin: str | None = None,
+        file: str | None = None,
+        target_dir: str | Path | None = None,
+        symbolic: bool = False,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
+        llvm_target: str | None = None,
+    ):
+        self.start_symbol = start_symbol
+        self.depth = depth
+        self.bin = bin
+        self.file = file
+        self.target_dir = Path(target_dir).resolve() if target_dir is not None else None
+        self.symbolic = symbolic
+        self.haskell_target = haskell_target
+        self.llvm_lib_target = llvm_lib_target
+        self.llvm_target = llvm_target
 
 
 @dataclass
@@ -36,11 +61,22 @@ class ProofOpts(KMirOpts):
 
 @dataclass
 class ProveOpts(KMirOpts):
+    rs_file: Path
     proof_dir: Path | None
+    haskell_target: str | None
+    llvm_lib_target: str | None
     bug_report: Path | None
     max_depth: int | None
     max_iterations: int | None
+    max_workers: int | None
     reload: bool
+    fail_fast: bool
+    maintenance_rate: int
+    save_smir: bool
+    smir: bool
+    parsed_smir: dict | None
+    start_symbol: str
+    add_module: Path | None
     break_on_calls: bool
     break_on_function_calls: bool
     break_on_intrinsic_calls: bool
@@ -56,70 +92,26 @@ class ProveOpts(KMirOpts):
     break_every_terminator: bool
     break_every_step: bool
     terminate_on_thunk: bool
-
-    def __init__(
-        self,
-        proof_dir: Path | str | None,
-        bug_report: Path | None = None,
-        max_depth: int | None = None,
-        max_iterations: int | None = None,
-        reload: bool = False,
-        break_on_calls: bool = False,
-        break_on_function_calls: bool = False,
-        break_on_intrinsic_calls: bool = False,
-        break_on_thunk: bool = False,
-        break_every_statement: bool = False,
-        break_on_terminator_goto: bool = False,
-        break_on_terminator_switch_int: bool = False,
-        break_on_terminator_return: bool = False,
-        break_on_terminator_call: bool = False,
-        break_on_terminator_assert: bool = False,
-        break_on_terminator_drop: bool = False,
-        break_on_terminator_unreachable: bool = False,
-        break_every_terminator: bool = False,
-        break_every_step: bool = False,
-        terminate_on_thunk: bool = False,
-    ) -> None:
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
-        self.bug_report = bug_report
-        self.max_depth = max_depth
-        self.max_iterations = max_iterations
-        self.reload = reload
-        self.break_on_calls = break_on_calls
-        self.break_on_function_calls = break_on_function_calls
-        self.break_on_intrinsic_calls = break_on_intrinsic_calls
-        self.break_on_thunk = break_on_thunk
-        self.break_every_statement = break_every_statement
-        self.break_on_terminator_goto = break_on_terminator_goto
-        self.break_on_terminator_switch_int = break_on_terminator_switch_int
-        self.break_on_terminator_return = break_on_terminator_return
-        self.break_on_terminator_call = break_on_terminator_call
-        self.break_on_terminator_assert = break_on_terminator_assert
-        self.break_on_terminator_drop = break_on_terminator_drop
-        self.break_on_terminator_unreachable = break_on_terminator_unreachable
-        self.break_every_terminator = break_every_terminator
-        self.break_every_step = break_every_step
-        self.terminate_on_thunk = terminate_on_thunk
-
-
-@dataclass
-class ProveRSOpts(ProveOpts):
-    rs_file: Path
-    save_smir: bool
-    smir: bool
-    start_symbol: str
     cfg_roots: list[str]
+    break_on_function: list[str]
 
     def __init__(
         self,
         rs_file: Path,
+        *,
         proof_dir: Path | str | None = None,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
         bug_report: Path | None = None,
         max_depth: int | None = None,
         max_iterations: int | None = None,
+        max_workers: int | None = None,
         reload: bool = False,
+        fail_fast: bool = False,
+        maintenance_rate: int = 1,
         save_smir: bool = False,
         smir: bool = False,
+        parsed_smir: dict | None = None,
         start_symbol: str = 'main',
         cfg_roots: Path | None = None,
         break_on_calls: bool = False,
@@ -137,6 +129,8 @@ class ProveRSOpts(ProveOpts):
         break_every_terminator: bool = False,
         break_every_step: bool = False,
         terminate_on_thunk: bool = False,
+        add_module: Path | None = None,
+        break_on_function: list[str] | None = None,
     ) -> None:
         # store each non-empty line in the cfg roots file + start symbol
         cfg_roots = list(filter(None, [root.strip() for root in cfg_roots.read_text().splitlines()])) if cfg_roots is not None else []
@@ -144,12 +138,18 @@ class ProveRSOpts(ProveOpts):
 
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.haskell_target = haskell_target
+        self.llvm_lib_target = llvm_lib_target
         self.bug_report = bug_report
         self.max_depth = max_depth
         self.max_iterations = max_iterations
+        self.max_workers = max_workers
         self.reload = reload
+        self.fail_fast = fail_fast
+        self.maintenance_rate = maintenance_rate
         self.save_smir = save_smir
         self.smir = smir
+        self.parsed_smir = parsed_smir
         self.start_symbol = start_symbol
         self.cfg_roots = cfg_roots
         self.break_on_calls = break_on_calls
@@ -167,23 +167,32 @@ class ProveRSOpts(ProveOpts):
         self.break_every_terminator = break_every_terminator
         self.break_every_step = break_every_step
         self.terminate_on_thunk = terminate_on_thunk
+        self.add_module = add_module
+        self.break_on_function = break_on_function if break_on_function is not None else []
 
 
 @dataclass
 class DisplayOpts(ProofOpts):
     full_printer: bool
     smir_info: Path | None
+    haskell_target: str | None
+    llvm_lib_target: str | None
     omit_current_body: bool
 
     def __init__(
         self,
         proof_dir: Path | str,
         id: str,
+        *,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
         full_printer: bool = False,
         smir_info: Path | None = None,
         omit_current_body: bool = True,
     ) -> None:
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.proof_dir = Path(proof_dir).resolve()
+        self.haskell_target = haskell_target
+        self.llvm_lib_target = llvm_lib_target
         self.id = id
         self.full_printer = full_printer
         self.smir_info = smir_info
@@ -201,11 +210,16 @@ class ShowOpts(DisplayOpts):
     use_default_printer: bool
     statistics: bool
     leaves: bool
+    to_module: Path | None
+    minimize_proof: bool
 
     def __init__(
         self,
         proof_dir: Path | str,
         id: str,
+        *,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
         full_printer: bool = False,
         smir_info: Path | None = None,
         omit_current_body: bool = True,
@@ -218,12 +232,24 @@ class ShowOpts(DisplayOpts):
         use_default_printer: bool = False,
         statistics: bool = False,
         leaves: bool = False,
+        to_module: Path | None = None,
+        minimize_proof: bool = False,
     ) -> None:
-        super().__init__(proof_dir, id, full_printer, smir_info, omit_current_body)
+        super().__init__(
+            proof_dir,
+            id,
+            haskell_target=haskell_target,
+            llvm_lib_target=llvm_lib_target,
+            full_printer=full_printer,
+            smir_info=smir_info,
+            omit_current_body=omit_current_body,
+        )
         self.omit_static_info = omit_static_info
         self.use_default_printer = use_default_printer
         self.statistics = statistics
         self.leaves = leaves
+        self.to_module = to_module
+        self.minimize_proof = minimize_proof
         self.nodes = tuple(int(n.strip()) for n in nodes.split(',')) if nodes is not None else None
 
         def _parse_pairs(text: str | None) -> tuple[tuple[int, int], ...] | None:
@@ -273,19 +299,26 @@ class InfoOpts(KMirOpts):
 class SectionEdgeOpts(ProofOpts):
     edge: tuple[str, str]
     sections: int
+    haskell_target: str | None
+    llvm_lib_target: str | None
 
     def __init__(
         self,
         proof_dir: Path | str,
         id: str,
         edge: tuple[str, str],
+        *,
         sections: int = 2,
+        haskell_target: str | None = None,
+        llvm_lib_target: str | None = None,
         bug_report: Path | None = None,
     ) -> None:
-        self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
+        self.proof_dir = Path(proof_dir).resolve()
         self.id = id
         self.edge = edge
         self.sections = sections
+        self.haskell_target = haskell_target
+        self.llvm_lib_target = llvm_lib_target
         self.bug_report = bug_report
 
 

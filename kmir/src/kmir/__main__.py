@@ -10,18 +10,18 @@ from typing import TYPE_CHECKING
 from pyk.cli.args import KCLIArgs
 from pyk.cterm.show import CTermShow
 from pyk.kast.pretty import PrettyPrinter
+from pyk.kdist import kdist
 from pyk.proof.reachability import APRProof
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
-from .build import HASKELL_DEF_DIR, LLVM_LIB_DIR
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
 from .options import (
     InfoOpts,
     LinkOpts,
-    ProveRSOpts,
+    ProveOpts,
     PruneOpts,
     RunOpts,
     SectionEdgeOpts,
@@ -54,7 +54,14 @@ def _kmir_run(opts: RunOpts) -> None:
         smir_info = cargo.smir_for_project(clean=False)
 
     def run(target_dir: Path):
-        kmir = KMIR.from_kompiled_kore(smir_info, symbolic=opts.haskell_backend, target_dir=target_dir)
+        kmir = KMIR.from_kompiled_kore(
+            smir_info,
+            target_dir=target_dir,
+            symbolic=opts.symbolic,
+            haskell_target=opts.haskell_target,
+            llvm_lib_target=opts.llvm_lib_target,
+            llvm_target=opts.llvm_target,
+        )
         result = kmir.run_smir(smir_info, start_symbol=opts.start_symbol, depth=opts.depth)
         print(kmir.kore_to_pretty(result))
 
@@ -65,15 +72,18 @@ def _kmir_run(opts: RunOpts) -> None:
             run(target_dir=Path(target_dir))
 
 
-def _kmir_prove_rs(opts: ProveRSOpts) -> None:
-    proof = KMIR.prove_rs(opts)
+def _kmir_prove(opts: ProveOpts) -> None:
+    proof = KMIR.prove_program(opts)
     print(str(proof.summary))
     if not proof.passed:
         sys.exit(1)
 
 
 def _kmir_view(opts: ViewOpts) -> None:
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+    kmir = KMIR(
+        definition_dir=kdist.which(opts.haskell_target or 'mir-semantics.haskell'),
+        llvm_library_dir=kdist.which(opts.llvm_lib_target or 'mir-semantics.llvm-library'),
+    )
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
     printer = PrettyPrinter(kmir.definition)
     omit_labels = ('<currentBody>',) if opts.omit_current_body else ()
@@ -84,13 +94,52 @@ def _kmir_view(opts: ViewOpts) -> None:
     viewer.run()
 
 
+def _write_to_module(kmir: KMIR, proof: APRProof, to_module_path: Path) -> None:
+    """Write proof KCFG as a K module to the specified path."""
+    import json
+
+    from pyk.kast.manip import remove_generated_cells
+    from pyk.kast.outer import KRule
+
+    # Generate K module using KCFG.to_module with defunc_with for proper function inlining
+    module_name = proof.id.upper().replace('.', '-').replace('_', '-') + '-SUMMARY'
+    k_module = proof.kcfg.to_module(module_name=module_name, defunc_with=kmir.definition)
+
+    if to_module_path.suffix == '.json':
+        # JSON format for --add-module: keep <generatedTop> for Kore conversion
+        # Note: We don't use minimize_rule_like here because it creates partial configs
+        # with dots that cannot be converted back to Kore
+        to_module_path.write_text(json.dumps(k_module.to_dict(), indent=2))
+    else:
+        # K text format for human readability: remove <generatedTop> and <generatedCounter>
+        def _process_sentence(sent):  # type: ignore[no-untyped-def]
+            if isinstance(sent, KRule):
+                sent = sent.let(body=remove_generated_cells(sent.body))
+            return sent
+
+        k_module_readable = k_module.let(sentences=[_process_sentence(sent) for sent in k_module.sentences])
+        k_module_text = kmir.pretty_print(k_module_readable)
+        to_module_path.write_text(k_module_text)
+    _LOGGER.info(f'Module written to: {to_module_path}')
+
+
 def _kmir_show(opts: ShowOpts) -> None:
     from pyk.kast.pretty import PrettyPrinter
 
     from .kprint import KMIRPrettyPrinter
 
-    kmir = KMIR(HASKELL_DEF_DIR, LLVM_LIB_DIR)
+    kmir = KMIR(
+        definition_dir=kdist.which(opts.haskell_target or 'mir-semantics.haskell'),
+        llvm_library_dir=kdist.which(opts.llvm_lib_target or 'mir-semantics.llvm-library'),
+    )
     proof = APRProof.read_proof_data(opts.proof_dir, opts.id)
+
+    # Minimize proof KCFG if requested
+    if opts.minimize_proof:
+        _LOGGER.info('Minimizing proof KCFG...')
+        proof.minimize_kcfg()
+        proof.write_proof_data()
+        _LOGGER.info('Proof KCFG minimized and saved')
 
     # Use custom KMIR printer by default, switch to standard printer if requested
     if opts.use_default_printer:
@@ -119,6 +168,7 @@ def _kmir_show(opts: ShowOpts) -> None:
         nodes=opts.nodes or (),
         node_deltas=effective_node_deltas,
         omit_cells=tuple(all_omit_cells),
+        to_module=opts.to_module is not None,
     )
     if opts.statistics:
         if lines and lines[-1] != '':
@@ -130,9 +180,14 @@ def _kmir_show(opts: ShowOpts) -> None:
     if opts.leaves:
         if lines and lines[-1] != '':
             lines.append('')
-        lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show))
+        lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show, smir_info=node_printer.smir_info))
 
-    print('\n'.join(lines))
+    # Handle --to-module output
+    if opts.to_module:
+        _write_to_module(kmir, proof, opts.to_module)
+        print(f'Module written to: {opts.to_module}')
+    else:
+        print('\n'.join(lines))
 
 
 def _kmir_prune(opts: PruneOpts) -> None:
@@ -156,7 +211,14 @@ def _kmir_section_edge(opts: SectionEdgeOpts) -> None:
 
     smir_info = SMIRInfo.from_file(target_path / 'smir.json')
 
-    kmir = KMIR.from_kompiled_kore(smir_info, symbolic=True, bug_report=opts.bug_report, target_dir=target_path)
+    kmir = KMIR.from_kompiled_kore(
+        smir_info,
+        target_dir=target_path,
+        bug_report=opts.bug_report,
+        symbolic=True,
+        haskell_target=opts.haskell_target,
+        llvm_lib_target=opts.llvm_lib_target,
+    )
 
     source_id, target_id = opts.edge
     _LOGGER.info(f'Attempting to add {opts.sections} sections from node {source_id} to node {target_id}')
@@ -206,8 +268,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_prune(opts)
         case SectionEdgeOpts():
             _kmir_section_edge(opts)
-        case ProveRSOpts():
-            _kmir_prove_rs(opts)
+        case ProveOpts():
+            _kmir_prove(opts)
         case LinkOpts():
             _kmir_link(opts)
         case _:
@@ -222,29 +284,63 @@ def _arg_parser() -> ArgumentParser:
 
     run_parser = command_parser.add_parser('run', help='run stable MIR programs', parents=[kcli_args.logging_args])
     run_target_selection = run_parser.add_mutually_exclusive_group()
-    run_target_selection.add_argument('--bin', metavar='TARGET', help='Target to run')
-    run_target_selection.add_argument('--file', metavar='SMIR', help='SMIR json file to execute')
+    run_target_selection.add_argument(
+        '--bin', metavar='TARGET', help='Cargo binary target name to run (mutually exclusive with --file)'
+    )
+    run_target_selection.add_argument(
+        '--file', metavar='SMIR', help='SMIR JSON file to execute (mutually exclusive with --bin)'
+    )
     run_parser.add_argument('--target-dir', type=Path, metavar='TARGET_DIR', help='SMIR kompilation target directory')
-    run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Depth to execute')
+    run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Maximum number of execution steps')
     run_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
-    run_parser.add_argument('--haskell-backend', action='store_true', help='Run with the haskell backend')
+    run_parser.add_argument('--symbolic', action='store_true', help='Run with the symbolic backend')
+    run_parser.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    run_parser.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
+    run_parser.add_argument('--llvm-target', metavar='TARGET', help='LLVM target to use')
 
     info_parser = command_parser.add_parser(
         'info', help='Show information about a SMIR JSON file', parents=[kcli_args.logging_args]
     )
     info_parser.add_argument('smir_file', metavar='FILE', help='SMIR JSON file to analyze')
-    info_parser.add_argument('--types', metavar='TYPES', help='Comma separated list of type IDs to show details for')
+    info_parser.add_argument(
+        '--types',
+        metavar='TYPES',
+        help='Comma separated list of type IDs to show (e.g. "1,2,3"). Output: one line per type, e.g. "Type Ty(1): Int(...)". Omit to produce no output.',
+    )
 
     prove_args = ArgumentParser(add_help=False)
     prove_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
+    prove_args.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    prove_args.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
     prove_args.add_argument('--bug-report', metavar='PATH', help='path to optional bug report')
-    prove_args.add_argument('--max-depth', metavar='DEPTH', type=int, help='max steps to take between nodes in kcfg')
+    prove_args.add_argument(
+        '--max-depth',
+        metavar='DEPTH',
+        type=int,
+        help='Maximum K rewrite steps to take on a single KCFG edge before creating a new node',
+    )
     prove_args.add_argument(
         '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
-    prove_args.add_argument('--reload', action='store_true', help='Force restarting proof')
+    prove_args.add_argument(
+        '--reload', action='store_true', help='Discard any existing proof progress and restart from scratch'
+    )
+    prove_args.add_argument(
+        '--fail-fast',
+        dest='fail_fast',
+        action='store_true',
+        help='Halt execution early if the proof is failing',
+    )
+    prove_args.add_argument(
+        '--maintenance-rate',
+        dest='maintenance_rate',
+        type=int,
+        default=1,
+        metavar='RATE',
+        help='Number of iterations between proof maintenance (writing to disk). Default: 1',
+    )
     prove_args.add_argument(
         '--break-on-calls', dest='break_on_calls', action='store_true', help='Break on all function and intrinsic calls'
     )
@@ -329,9 +425,16 @@ def _arg_parser() -> ArgumentParser:
         action='store_true',
         help='Break on every MIR step (statements and terminators)',
     )
+    prove_args.add_argument(
+        '--break-on-function',
+        dest='break_on_function',
+        action='append',
+        default=None,
+        help='Break when calling a function or intrinsic whose name contains this string (repeatable)',
+    )
 
     proof_args = ArgumentParser(add_help=False)
-    proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to view')
+    proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to operate on')
     proof_args.add_argument('--proof-dir', metavar='DIR', help='Proof directory')
 
     display_args = ArgumentParser(add_help=False)
@@ -340,7 +443,7 @@ def _arg_parser() -> ArgumentParser:
         dest='full_printer',
         action='store_true',
         default=False,
-        help='Display the full node in output.',
+        help='Display full K configuration for each node (default: compact view).',
     )
     display_args.add_argument(
         '--smir-info',
@@ -356,6 +459,8 @@ def _arg_parser() -> ArgumentParser:
         action='store_false',
         help='Display the <currentBody> cell completely.',
     )
+    display_args.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    display_args.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
 
     show_parser = command_parser.add_parser(
         'show', help='Show proof information', parents=[kcli_args.logging_args, proof_args, display_args]
@@ -365,7 +470,9 @@ def _arg_parser() -> ArgumentParser:
         '--node-deltas', metavar='DELTAS', help='Comma separated list of node deltas in format "source:target"'
     )
     show_parser.add_argument(
-        '--node-deltas-pro', metavar='DELTAS', help='Extra node deltas (printed after main output)'
+        '--node-deltas-pro',
+        metavar='DELTAS',
+        help='Extra node deltas in format "source:target" (printed after main output, also prints rules for these edges)',
     )
     show_parser.add_argument(
         '--omit-cells', metavar='CELLS', help='Comma separated list of cell names to omit from output'
@@ -395,7 +502,22 @@ def _arg_parser() -> ArgumentParser:
         help='Print the <k> cell for each leaf node in the proof graph',
     )
 
-    show_parser.add_argument('--rules', metavar='EDGES', help='Comma separated list of edges in format "source:target"')
+    show_parser.add_argument(
+        '--rules',
+        metavar='EDGES',
+        help='Comma separated list of edges in format "source:target". Prints the K rules applied on each edge as Markdown links.',
+    )
+    show_parser.add_argument(
+        '--to-module',
+        type=Path,
+        metavar='FILE',
+        help='Output path for K module file (.k for readable, .json for --add-module)',
+    )
+    show_parser.add_argument(
+        '--minimize-proof',
+        action='store_true',
+        help='Minimize the proof KCFG before exporting to module (only used with --to-module)',
+    )
 
     command_parser.add_parser(
         'view', help='View proof information', parents=[kcli_args.logging_args, proof_args, display_args]
@@ -404,33 +526,44 @@ def _arg_parser() -> ArgumentParser:
     prune_parser = command_parser.add_parser(
         'prune', help='Prune a proof from a given node', parents=[kcli_args.logging_args, proof_args]
     )
-    prune_parser.add_argument('node_id', metavar='NODE', type=int, help='The node to prune')
+    prune_parser.add_argument(
+        'node_id', metavar='NODE', type=int, help='The node to prune (removes this node and its entire subtree)'
+    )
 
     section_edge_parser = command_parser.add_parser(
         'section-edge', help='Break an edge into sections', parents=[kcli_args.logging_args, proof_args]
     )
     section_edge_parser.add_argument(
-        'edge', type=lambda s: tuple(s.split(',')), help='Edge to section in CFG (format: `source,target`)'
+        'edge', type=lambda s: tuple(s.split(',')), help='Edge to split in the KCFG (format: "source,target")'
     )
     section_edge_parser.add_argument(
         '--sections', type=int, default=2, help='Number of sections to make from edge (>= 2, default: 2)'
     )
+    section_edge_parser.add_argument('--haskell-target', metavar='TARGET', help='Haskell target to use')
+    section_edge_parser.add_argument('--llvm-lib-target', metavar='TARGET', help='LLVM lib target to use')
 
-    prove_rs_parser = command_parser.add_parser(
-        'prove-rs', help='Prove a rust program', parents=[kcli_args.logging_args, prove_args]
+    prove_parser = command_parser.add_parser(
+        'prove', help='Prove a Rust program', aliases=['prove-rs'], parents=[kcli_args.logging_args, prove_args]
     )
-    prove_rs_parser.add_argument(
-        'rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)'
-    )
-    prove_rs_parser.add_argument(
+    prove_parser.add_argument('rs_file', type=Path, metavar='FILE', help='Rust file with the spec function (e.g. main)')
+    prove_parser.add_argument(
         '--save-smir', action='store_true', help='Do not delete the intermediate generated SMIR JSON file.'
     )
-    prove_rs_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
-    prove_rs_parser.add_argument(
+    prove_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
+    prove_parser.add_argument(
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
-    prove_rs_parser.add_argument(
+    prove_parser.add_argument(
         '--cfg-roots', type=Path, metavar='CFG_ROOTS', help='Path to file containing newline-separated possible control flow graph roots (used to prune `rustc` generated MIR symbol table)'
+    )
+    prove_parser.add_argument(
+        '--add-module',
+        type=Path,
+        metavar='FILE',
+        help='K module file to include (.json format from --to-module)',
+    )
+    prove_parser.add_argument(
+        '--max-workers', metavar='N', type=int, help='Maximum number of workers for parallel exploration'
     )
 
     link_parser = command_parser.add_parser(
@@ -438,7 +571,11 @@ def _arg_parser() -> ArgumentParser:
     )
     link_parser.add_argument('smir_files', nargs='+', metavar='SMIR_JSON', help='SMIR JSON files to link')
     link_parser.add_argument(
-        '--output-file', '-o', metavar='FILE', help='Output file', default='linker_output.smir.json'
+        '--output-file',
+        '-o',
+        metavar='FILE',
+        help='Output file (default: linker_output.smir.json)',
+        default='linker_output.smir.json',
     )
 
     return parser
@@ -453,7 +590,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 target_dir=ns.target_dir,
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
-                haskell_backend=ns.haskell_backend,
+                symbolic=ns.symbolic,
             )
         case 'info':
             return InfoOpts(smir_file=Path(ns.smir_file), types=ns.types)
@@ -463,6 +600,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 id=ns.id,
                 full_printer=ns.full_printer,
                 smir_info=Path(ns.smir_info) if ns.smir_info else None,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
                 omit_current_body=ns.omit_current_body,
                 nodes=ns.nodes,
                 node_deltas=ns.node_deltas,
@@ -473,6 +612,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 use_default_printer=ns.use_default_printer,
                 statistics=ns.statistics,
                 leaves=ns.leaves,
+                to_module=ns.to_module,
+                minimize_proof=ns.minimize_proof,
             )
         case 'view':
             proof_dir = Path(ns.proof_dir)
@@ -481,6 +622,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 ns.id,
                 full_printer=ns.full_printer,
                 smir_info=ns.smir_info,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
                 omit_current_body=ns.omit_current_body,
             )
         case 'prune':
@@ -490,15 +633,27 @@ def _parse_args(ns: Namespace) -> KMirOpts:
             if ns.proof_dir is None:
                 raise ValueError('Must pass --proof-dir to section-edge command')
             proof_dir = Path(ns.proof_dir)
-            return SectionEdgeOpts(proof_dir, ns.id, ns.edge, ns.sections)
-        case 'prove-rs':
-            return ProveRSOpts(
+            return SectionEdgeOpts(
+                proof_dir,
+                ns.id,
+                ns.edge,
+                sections=ns.sections,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
+            )
+        case 'prove' | 'prove-rs':
+            return ProveOpts(
                 rs_file=Path(ns.rs_file),
                 proof_dir=ns.proof_dir,
+                haskell_target=ns.haskell_target,
+                llvm_lib_target=ns.llvm_lib_target,
                 bug_report=ns.bug_report,
                 max_depth=ns.max_depth,
                 max_iterations=ns.max_iterations,
+                max_workers=ns.max_workers,
                 reload=ns.reload,
+                fail_fast=ns.fail_fast,
+                maintenance_rate=ns.maintenance_rate,
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
@@ -518,6 +673,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 break_every_terminator=ns.break_every_terminator,
                 break_every_step=ns.break_every_step,
                 terminate_on_thunk=ns.terminate_on_thunk,
+                add_module=ns.add_module,
+                break_on_function=ns.break_on_function or [],
             )
         case 'link':
             return LinkOpts(

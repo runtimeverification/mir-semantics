@@ -13,4 +13,4 @@ kmir --help
 #   && kmir run                                                             \
 # )
 
-# kmir prove-rs kmir/src/tests/integration/data/prove-rs/if.rs
+# kmir prove kmir/src/tests/integration/data/prove-rs/if.rs

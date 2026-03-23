@@ -2322,7 +2322,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 18,
+          "adt_def": 19,
           "fields": [
             9
           ],
@@ -2378,7 +2378,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 16,
+          "adt_def": 17,
           "fields": [
             15
           ],

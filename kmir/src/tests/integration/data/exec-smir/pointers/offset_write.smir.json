@@ -31,7 +31,7 @@
     },
     {
       "alloc_id": 3,
-      "ty": 52,
+      "ty": 54,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -83,7 +83,7 @@
     },
     {
       "alloc_id": 4,
-      "ty": 52,
+      "ty": 54,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -4146,7 +4146,7 @@
       1,
       {
         "RefType": {
-          "pointee_type": 52,
+          "pointee_type": 54,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -4548,7 +4548,7 @@
       {
         "StructType": {
           "name": "std::ops::Range<usize>",
-          "adt_def": 24,
+          "adt_def": 39,
           "fields": [
             3,
             3
@@ -4615,7 +4615,7 @@
       19,
       {
         "RefType": {
-          "pointee_type": 53,
+          "pointee_type": 49,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -4680,7 +4680,7 @@
       22,
       {
         "PtrType": {
-          "pointee_type": 54,
+          "pointee_type": 50,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -4722,7 +4722,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 32,
+          "adt_def": 24,
           "discriminants": [
             0,
             1
@@ -4812,7 +4812,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 16,
+          "adt_def": 17,
           "fields": [
             23
           ],
@@ -4868,7 +4868,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 14,
+          "adt_def": 15,
           "fields": [
             29
           ],
@@ -5134,10 +5134,43 @@
       }
     ],
     [
-      49,
+      50,
+      {
+        "PtrType": {
+          "pointee_type": 23,
+          "layout": {
+            "fields": "Primitive",
+            "variants": {
+              "Single": {
+                "index": 0
+              }
+            },
+            "abi": {
+              "Scalar": {
+                "Initialized": {
+                  "value": {
+                    "Pointer": 0
+                  },
+                  "valid_range": {
+                    "start": 0,
+                    "end": 18446744073709551615
+                  }
+                }
+              }
+            },
+            "abi_align": 8,
+            "size": {
+              "num_bits": 64
+            }
+          }
+        }
+      }
+    ],
+    [
+      51,
       {
         "RefType": {
-          "pointee_type": 50,
+          "pointee_type": 52,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -5167,15 +5200,15 @@
       }
     ],
     [
-      50,
+      52,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 19,
+          "adt_def": 29,
           "fields": [
             1,
-            51,
-            51
+            53,
+            53
           ],
           "layout": {
             "fields": {
@@ -5212,7 +5245,7 @@
       }
     ],
     [
-      51,
+      53,
       {
         "PrimitiveType": {
           "Uint": "U32"
@@ -5220,42 +5253,9 @@
       }
     ],
     [
-      52,
-      {
-        "PrimitiveType": "Str"
-      }
-    ],
-    [
       54,
       {
-        "PtrType": {
-          "pointee_type": 23,
-          "layout": {
-            "fields": "Primitive",
-            "variants": {
-              "Single": {
-                "index": 0
-              }
-            },
-            "abi": {
-              "Scalar": {
-                "Initialized": {
-                  "value": {
-                    "Pointer": 0
-                  },
-                  "valid_range": {
-                    "start": 0,
-                    "end": 18446744073709551615
-                  }
-                }
-              }
-            },
-            "abi_align": 8,
-            "size": {
-              "num_bits": 64
-            }
-          }
-        }
+        "PrimitiveType": "Str"
       }
     ]
   ],

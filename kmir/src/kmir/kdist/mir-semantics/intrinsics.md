@@ -23,7 +23,7 @@ its argument to the destination without modification.
 
 ```k
   // Black box intrinsic implementation - identity function
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("black_box")), ARG:Operand .Operands, DEST)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("black_box")), ARG:Operand .Operands, DEST, _SPAN)
         => #setLocalValue(DEST, ARG)
        ... </k>
 ```
@@ -36,7 +36,7 @@ a NO OP for program semantics. `std::intrinsics::likely` and `std::intrinsics::u
 "normal" `MonoItemFn`s that call the `cold_path` intrinsic.
 
 ```k
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("cold_path")), .Operands, _DEST) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("cold_path")), .Operands, _DEST, _SPAN) => .K ... </k>
 ```
 
 #### Prefetch (`std::intrinsics::prefetch_*`)
@@ -46,11 +46,34 @@ intrinsics in Rust are performance hints that request the CPU to load or prepare
 before it's used. They have no effect on program semantics, and are implemented as a NO OP in this semantics.
 
 ```k
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_read_data")),  _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_data")), _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_read_data")),  _ARG1:Operand _ARG2:Operand .Operands, _DEST, _SPAN) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_data")), _ARG1:Operand _ARG2:Operand .Operands, _DEST, _SPAN) => .K ... </k>
 
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_read_instruction")),  _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_instruction")), _ARG1:Operand _ARG2:Operand .Operands, _DEST) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_read_instruction")),  _ARG1:Operand _ARG2:Operand .Operands, _DEST, _SPAN) => .K ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("prefetch_write_instruction")), _ARG1:Operand _ARG2:Operand .Operands, _DEST, _SPAN) => .K ... </k>
+```
+
+#### Assert Inhabited (`std::intrinsics::assert_inhabited`)
+
+The `assert_inhabited` instrinsic asserts that a type is "inhabited" (able to be instantiated). Types such as
+`Never` (`!`) cannot be instantiated and are uninhabited types. The target / codegen decides how to handle this
+intrinsic, it is not required to panic if the type is not inhabited, it could also perform a NO OP. We have witnessed
+in the case that there is an uninhabited type that the following basic block is `noBasicBlockIdx`, and so we
+error with `#AssertInhabitedFailure` if we see that following the intrinsic. Otherwise, we perform a NO OP.
+
+```k
+  syntax MIRError ::= "AssertInhabitedFailure"
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST, _SPAN)
+            ~> #continueAt(noBasicBlockIdx)
+        => AssertInhabitedFailure
+       ...
+      </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST, _SPAN)
+        => .K
+       ...
+      </k>
+      [owise]
 ```
 
 #### Raw Eq (`std::intrinsics::raw_eq`)
@@ -65,7 +88,7 @@ Execution gets stuck (no matching rule) when operands have different types or un
 
 ```k
   // Raw eq: dereference operands, extract types, and delegate to typed comparison
-  rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE, _SPAN)
         => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS),
                                   #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS))
        ... </k>
@@ -100,6 +123,93 @@ Execution gets stuck (no matching rule) when operands have different types or un
     [preserves-definedness]
   rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _) => TY
   rule #extractOperandType(_, _) => TyUnknown [owise]
+```
+
+#### Volatile Store (`std::intrinsics::volatile_store`, `std::ptr::write_volatile`)
+
+The `volatile_store` intrinsic writes a value to a memory location through a pointer, ensuring the write is not
+optimized away by the compiler. Unlike normal stores, volatile stores are guaranteed to occur exactly once and
+in order with respect to other volatile operations. In the semantics, this is equivalent to a regular store
+through a dereferenced pointer. We extract the place from the pointer operand, add a deref projection, and
+write the value to that location.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_store")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, _DEST, _SPAN)
+        => #setLocalValue(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), ARG2)
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_store")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, _DEST, _SPAN)
+        => #setLocalValue(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), ARG2)
+       ... </k>
+```
+
+#### Volatile Load (`std::intrinsics::volatile_load`, `std::ptr::read_volatile`)
+
+The `volatile_load` intrinsic reads a value from a memory location through a pointer, ensuring the read is not
+optimised away by the compiler. Unlike normal loads, volatile loads are guaranteed to occur exactly once and
+in order with respect to other volatile operations. In the semantics, this is equivalent to a regular load
+through a dereferenced pointer. We extract the place from the pointer operand, add a deref projection, and
+read the value from that location into the destination. Since `#setLocalValue` is strict in its second argument,
+the dereferenced operand is evaluated (i.e., the value is read from memory) before being written to `DEST`.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_load")), operandCopy(place(LOCAL, PROJ)) .Operands, DEST, _SPAN)
+        => #setLocalValue(DEST, operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))))
+       ... </k>
+
+  // for `operandMove` the pointer is moved, but the pointed-to value is copied (read, not consumed)
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("volatile_load")), operandMove(place(LOCAL, PROJ)) .Operands, DEST, _SPAN)
+        => #setLocalValue(DEST, operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))))
+       ... </k>
+```
+
+#### Ptr Offset Computations (`std::intrinsics::ptr_offset_from`, `std::intrinsics::ptr_offset_from_unsigned`)
+
+The `ptr_offset_from[_unsigned]` calculates the distance between two pointers within the same allocation,
+i.e., pointers that refer to the same place and only differ in their offset from a given base.
+
+Additionally, for `ptr_offset_from_unsigned`, it is _known_ that the first argument has a greater offset than
+the second argument, so the returned difference is always positive.
+
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
+        => #ptrOffsetDiff(ARG1, ARG2, true, DEST)
+        ...
+       </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ptr_offset_from_unsigned")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
+        => #ptrOffsetDiff(ARG1, ARG2, false, DEST)
+        ...
+       </k>
+
+  syntax KItem ::= #ptrOffsetDiff ( Evaluation , Evaluation , Bool , Place ) [seqstrict(1,2)]
+
+  syntax MIRError ::= UBPtrOffsetDiff
+
+  syntax UBPtrOffsetDiff ::= #UBErrorPtrOffsetDiff( Value , Value , Bool )
+
+  rule <k> 
+        #ptrOffsetDiff(
+          PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF1, _)),
+          PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF2, _)),
+          SIGNED_FLAG,
+          DEST
+       ) => #setLocalValue(DEST, Integer(OFF1 -Int OFF2, 64, SIGNED_FLAG))
+        ...
+       </k>
+    requires (SIGNED_FLAG orBool OFF1 >=Int OFF2)
+
+  rule <k> 
+        #ptrOffsetDiff(
+          PtrLocal(_, _, _, _) #as PTR1,
+          PtrLocal(_, _, _, _) #as PTR2,
+          SIGNED_FLAG,
+          _DEST
+       ) => #UBErrorPtrOffsetDiff(PTR1, PTR2, SIGNED_FLAG)
+        ...
+       </k>
+    [priority(100)]
 ```
 
 ```k

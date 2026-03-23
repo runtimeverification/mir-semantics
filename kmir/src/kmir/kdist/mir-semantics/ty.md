@@ -270,12 +270,18 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                       , adtDef: AdtDef
                       , fields: Tys
                       , layout: MaybeLayoutShape)             [symbol(TypeInfo::StructType)   , group(mir-enum---name--adt-def--fields--layout)]
-                    | typeInfoUnionType(MIRString, AdtDef)       [symbol(TypeInfo::UnionType)    , group(mir-enum---name--adt-def)]
+                    | typeInfoUnionType(
+                        name: MIRString
+                      , adtDef: AdtDef
+                      , fields: Tys
+                      , layout: MaybeLayoutShape)             [symbol(TypeInfo::UnionType)    , group(mir-enum---name--adt-def--fields--layout)]
                     | typeInfoArrayType(Ty, MaybeTyConst)        [symbol(TypeInfo::ArrayType)    , group(mir-enum---elem-type--size)]
                     | typeInfoPtrType(Ty)                        [symbol(TypeInfo::PtrType)      , group(mir-enum---pointee-type)]
                     | typeInfoRefType(Ty)                        [symbol(TypeInfo::RefType)      , group(mir-enum---pointee-type)]
                     | typeInfoTupleType(types: Tys, layout: MaybeLayoutShape)
                                                             [symbol(TypeInfo::TupleType)    , group(mir-enum---types--layout)]
+                    | TypeInfoDynType(name: MIRString, layout: MaybeLayoutShape)
+                                                            [symbol(TypeInfo::DynType)      , group(mir-enum---name--layout)]
                     | typeInfoFunType(MIRString)                 [symbol(TypeInfo::FunType)      , group(mir-enum)]
                     | "typeInfoVoidType"                         [symbol(TypeInfo::VoidType)     , group(mir-enum)]
 
@@ -299,7 +305,7 @@ syntax ExistentialPredicateBinders ::= List {ExistentialPredicateBinder, ""}
                             | "noLayoutShape"              [group(mir-option)]
 
   syntax FieldsShape ::= "fieldsShapePrimitive"                     [group(mir-enum), symbol(FieldsShape::Primitive)]
-                       | fieldsShapeUnion(/* TODO */)               [group(mir-enum), symbol(FieldsShape::Union)]
+                       | fieldsShapeUnion(MIRInt)                   [group(mir-enum), symbol(FieldsShape::Union)]
                        | fieldsShapeArray(/* TODO */)               [group(mir-enum), symbol(FieldsShape::Array)]
                        | fieldsShapeArbitrary(FieldsShapeArbitrary) [group(mir-enum), symbol(FieldsShape::Arbitrary)]
 

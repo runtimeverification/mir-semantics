@@ -130,6 +130,17 @@ Constant operands are simply decoded according to their type.
     requires typeInfoVoidType =/=K lookupTy(TY)
 ```
 
+Function pointers are zero-sized constants whose `Ty` is a key in the function table instaed of the type table.
+
+```k
+  rule <k> operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, ty(ID) #as TY, _)))
+        => FunPtr(TY)
+       ...
+       </k>
+    requires typeInfoVoidType ==K lookupTy(TY) // not a valid type info
+     andBool lookupFunction(TY) =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
+```
+
 ### Copying and Moving
 
 When an operand is `Copied` by a read, the original remains valid (see `false` passed to `#readProjection`).
@@ -166,9 +177,12 @@ In contrast to regular write operations, the value does not have to be _mutable_
 ### Setting Local Variables
 
 The `#setLocalValue` operation writes a `Value` value to a given `Place` within the `List` of local variables currently on top of the stack.
-This may fail because a local may not be accessible or not mutable.
 If we are setting a value at a `Place` which has `Projection`s in it, then we must first traverse the projections before setting the value.
 A variant `#forceSetLocal` is provided for setting the local value without checking the mutability of the location.
+
+**Note on mutability:** The Rust compiler validates assignment legality and may reuse immutable locals in MIR (e.g., loop variables), so `#setLocalValue` does not guard on mutability.
+
+TODO: `#forceSetLocal` is now functionally identical to `#setLocalValue` and may be removed.
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
@@ -176,11 +190,10 @@ A variant `#forceSetLocal` is provided for setting the local value without check
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)]
+          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
        </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
-     andBool mutabilityOf(getLocal(LOCALS, I)) ==K mutabilityMut
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
@@ -312,9 +325,11 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   // retains information about the value that was deconstructed by a projection
   syntax Context ::= CtxField( VariantIdx, List, Int , Ty )
+                   | CtxFieldUnion( FieldIdx, Value, Ty )
                    | CtxIndex( List , Int ) // array index constant or has been read before
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
+                   | "CtxWrapStruct" // special context adding a singleton Aggregate(0, _) around a value
 
   syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
 
@@ -328,6 +343,10 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule #buildUpdate(VAL, CtxField(IDX, ARGS, I, _) CTXS)
       => #buildUpdate(Aggregate(IDX, ARGS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
+
+  rule #buildUpdate(VAL, CtxFieldUnion(FIELD_IDX, _ARG, _TY) CTXS)
+      => #buildUpdate(Union(FIELD_IDX, VAL), CTXS)
+     [preserves-definedness]
 
   rule #buildUpdate(VAL, CtxIndex(ELEMS, I) CTXS)
       => #buildUpdate(Range(ELEMS[I <- VAL]), CTXS)
@@ -345,6 +364,11 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     requires size(INNER) ==Int END -Int START // ensures updateList is defined
      [preserves-definedness] // START,END indexes checked before, length check for update here
 
+  // removing a struct wrapper added by a WrapStruct projection
+  rule #buildUpdate(Aggregate(variantIdx(0), ListItem(VALUE) .List), CtxWrapStruct CTXS)
+    => #buildUpdate(VALUE, CTXS)
+
+
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
 
   rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
@@ -355,8 +379,25 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     [preserves-definedness] // valid list indexing and sort checked
 
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
+                           | consP ( ProjectionElem , ProjectionElems ) [function, total]
+  // ----------------------------------------------------------------------------------------
   rule appendP(.ProjectionElems, TAIL) => TAIL
-  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => X appendP(REST, TAIL)
+  rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => consP(X, appendP(REST, TAIL))
+  // default
+  rule consP(      PROJ      ,           .ProjectionElems           ) => PROJ .ProjectionElems
+  rule consP(      PROJ      ,   P:ProjectionElem PS:ProjectionElems) => PROJ (P PS)
+  // high-priority rules to cancel out projection pairs at the head
+  rule consP(projectionElemSingletonArray, projectionElemConstantIndex(0, 0, false) PS:ProjectionElems) => PS [priority(40)]
+  rule consP(projectionElemConstantIndex(0, 0, false), projectionElemSingletonArray PS:ProjectionElems) => PS [priority(40)]
+  rule consP(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) PS:ProjectionElems) => PS [priority(40)]
+  // this rule is not valid if the original pointee has more than one field
+  // rule consP(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct PS:ProjectionElems) => PS [priority(40)]
+  // HACK: special rule which munges together constant-indexing and offset projections 
+  rule consP( projectionElemConstantIndex(I, 0, false), PointerOffset(OFF, _SIZE) PS) => projectionElemConstantIndex(I +Int OFF, 0, false) PS [priority(40)]
+    // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
+  rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
+  rule consP(projectionElemFromZST, projectionElemToZST PS:ProjectionElems) => PS [priority(40)]
 
   syntax Value ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
@@ -400,7 +441,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule originSize(dynamicSize(SIZE)) => SIZE
 ```
 
-#### Aggregates
+#### Aggregates (not Union)
 
 A `Field` access projection operates on `struct`s and tuples, which are represented as `Aggregate` values.
 The field is numbered from zero (in source order), and the field type is provided (not checked here).
@@ -443,6 +484,61 @@ This is done without consideration of the validity of the Downcast[^downcast].
            )
        ...
        </k>
+```
+
+In context with pointer casts, the semantics handles the special case of a _transparent wrapper struct_:
+A pointer to a struct containing a single element can be cast to a pointer to the single element itself, and back.
+The special projection used to enable this is `projectionElemWrapStruct`, inserted by the pointer `#cast` operation.
+
+The situation typically arises when the stored value is a pointer (`NonNull`) but the rule is not restricted to this.
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             VALUE,
+             projectionElemWrapStruct PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, Aggregate(variantIdx(0), ListItem(VALUE)), PROJS, CtxWrapStruct CTXTS) ... </k>
+    [preserves-definedness, priority(100)]
+```
+
+A somewhat dual case to this rule can occur when a pointer into an array of data elements has been offset and is then dereferenced.
+The dereferenced pointer may either point to a subslice or to a single element (depending on context).
+Therefore, a field projection may be found which has to be applied to the head element of an array.
+The following rule resolves this situation by using the head element.
+
+```k
+  rule <k> #traverseProjection(
+             DEST,
+             Range(ListItem(Aggregate(_, _) #as VALUE) _REST:List),
+             projectionElemField(IDX, TY) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
+    [preserves-definedness, priority(100)]
+```
+
+#### Unions
+```k
+  // Case: Union is in same state as field projection
+  rule <k> #traverseProjection(
+             DEST,
+             Union(FIELD_IDX, ARG),
+             projectionElemField(FIELD_IDX, TY) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             ARG,
+             PROJS,
+             CtxFieldUnion(FIELD_IDX, ARG, TY) CTXTS
+           )
+        ...
+        </k>
+    [preserves-definedness]
+
+  // TODO: Case: Union is in different state as field projection
 ```
 
 #### Ranges
@@ -934,6 +1030,7 @@ Literal arrays are also built using this RValue.
 
   // #mkAggregate produces an aggregate TypedLocal value of given kind from a preceeding list of values
   syntax Value ::= #mkAggregate ( AggregateKind )
+                 | #mkUnion ( FieldIdx )
 
   rule <k> ARGS:List ~> #mkAggregate(aggregateKindAdt(_ADTDEF, VARIDX, _, _, _))
         =>
@@ -949,6 +1046,12 @@ Literal arrays are also built using this RValue.
 
 
   rule <k> ARGS:List ~> #mkAggregate(aggregateKindTuple)
+        =>
+            Aggregate(variantIdx(0), ARGS)
+        ...
+       </k>
+
+  rule <k> ARGS:List ~> #mkAggregate(aggregateKindClosure(_DEF, _TY_ARGS))
         =>
             Aggregate(variantIdx(0), ARGS)
         ...
@@ -977,22 +1080,73 @@ Literal arrays are also built using this RValue.
        </k>
 ```
 
+While Unions are Aggregate in the MIR, we distinguish between them because the semantics
+are different. For example, field accesses to not access different data, but interpret
+that data as a different type.
+```k
+  syntax Rvalue ::= #evalUnion ( Rvalue )
+
+  rule <k> #evalUnion(rvalueAggregate(aggregateKindAdt( _, _, _, _, someFieldIdx ( FIELD )), ARGS))
+        =>
+           #readOperands(ARGS) ~> #mkUnion(FIELD)
+       ...
+      </k>
+
+  rule <k> #evalUnion(rvalueCast(_, _, _) #as CAST)
+        =>
+           CAST
+       ...
+      </k>
+
+  rule <k> ListItem(ARG) .List ~> #mkUnion(FIELD)
+        =>
+            Union(FIELD, ARG)
+        ...
+       </k>
+
+```
+
 The `AggregateKind::RawPtr`, somewhat as a special case of a `struct` aggregate, constructs a raw pointer
 from a given data pointer and metadata[^rawPtrAgg]. In case of a _thin_ pointer, the metadata is a unit value,
 for _fat_ pointers it is a `usize` value indicating the data length.
 
 [^rawPtrAgg]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_middle/mir/enum.AggregateKind.html#variant.RawPtr
 
+The data pointer is assumed to point to a single element of an array that was originally present, 
+and an array of the indeicated size gets reconstructed if the provided metadata is a `usize` value
+(potentially removing an indexing operation to get the element).
+
 ```k
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Integer(LENGTH, 64, false)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
+  rule <k> ListItem(PtrLocal(OFFSET, place(LOCAL, PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) 
+           ListItem(Integer(LENGTH, 64, false))
+           ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(OFFSET, place(LOCAL, removeIndexTail(PROJS)), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
+    // requires LENGTH +Int PTR_OFFSET <=Int ORIGIN_SIZE // refuse to create an invalid fat pointer
+    //  andBool dynamicSize(1) ==K #metadataSize(lookupTy(_TY)) // expect a slice type
+    //  andBool hasIndexTail(PROJS) ???
 
   rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
         => PtrLocal(OFFSET, PLACE, MUT, metadata(noMetadataSize, PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
+
+  syntax Bool ::= hasIndexTail ( ProjectionElems ) [function, total]
+  // ---------------------------------------------------------------
+  rule hasIndexTail(           .ProjectionElems                          ) => false
+  rule hasIndexTail(projectionElemConstantIndex(0, _, _) .ProjectionElems) => true
+  rule hasIndexTail(     _OTHER:ProjectionElem           .ProjectionElems) => false [owise]
+  rule hasIndexTail(_:ProjectionElem ((_:ProjectionElem _:ProjectionElems) #as MORE)) => hasIndexTail(MORE)
+
+  // remove ConstantIndex(0, _, _) at the end if present, otherwise identity
+  syntax ProjectionElems ::= removeIndexTail ( ProjectionElems ) [function, total]
+  // ---------------------------------------------------------------
+  rule removeIndexTail(           .ProjectionElems                          ) => .ProjectionElems
+  rule removeIndexTail(projectionElemConstantIndex(0, _, _) .ProjectionElems) => .ProjectionElems
+  rule removeIndexTail(      OTHER:ProjectionElem           .ProjectionElems) => OTHER .ProjectionElems [owise]
+  rule removeIndexTail(FIRST:ProjectionElem ((_:ProjectionElem _:ProjectionElems) #as MORE)) => FIRST removeIndexTail(MORE)
+
 ```
 
 The `Aggregate` type carries a `VariantIdx` to distinguish the different variants for an `enum`.
@@ -1013,19 +1167,35 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => Integer(#lookupDiscriminant(lookupTy(TY), IDX), 0, false) // HACK: bit width 0 means "flexible"
+        => Integer(#lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX), 0, false) // HACK: bit width 0 means "flexible"
         ...
        </k>
+    requires asInt(IDX) <Int size(discriminantsOf(lookupTy(TY)))
+     andBool 0 <=Int asInt(IDX) // must not be `err(_)`
+     andBool 0 <Int size(discriminantsOf(lookupTy(TY))) // must be an enum
+    [preserves-definedness]
 
-  syntax Int ::= #lookupDiscriminant ( TypeInfo , VariantIdx )  [function, total]
-               | #lookupDiscrAux ( Discriminants , Int ) [function]
+  // // default 0 for non-enum types. May be undefined behaviour, though.
+  // rule #discriminant(_, _) => Integer(0, 0, false) [priority(100)]
+
+  syntax Int ::= asInt( VariantIdx ) [function, total]
+  // -------------------------------------------------
+  rule asInt(variantIdx(I)) => I
+  rule asInt(err(_)) => -1 // HAAAAAAACK
+
+  syntax Int ::= size(Discriminants) [function, total]
+  rule size(.Discriminants) => 0
+  rule size(discriminant(_) REST) => 1 +Int size(REST)
+
+  syntax Discriminants ::= discriminantsOf( TypeInfo ) [function, total]
+  // -------------------------------------------------------------------
+  rule discriminantsOf(typeInfoEnumType(_, _, DISCRIMINANTS, _, _)) => DISCRIMINANTS
+  rule discriminantsOf(            _OTHER_                        ) => .Discriminants [owise]
+
+  syntax Int ::= #lookupDiscrAux ( Discriminants , VariantIdx ) [function]
   // --------------------------------------------------------------------
-  rule #lookupDiscriminant(typeInfoEnumType(_, _, DISCRIMINANTS, _, _), variantIdx(IDX)) => #lookupDiscrAux(DISCRIMINANTS, IDX)
-    requires isInt(#lookupDiscrAux(DISCRIMINANTS, IDX)) [preserves-definedness]
-  rule #lookupDiscriminant(_OTHER, _) => 0 [owise, preserves-definedness] // default 0. May be undefined behaviour, though.
-  // --------------------------------------------------------------------
-  rule #lookupDiscrAux( discriminant(RESULT)         _        , IDX) => RESULT requires IDX ==Int 0
-  rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, IDX) => #lookupDiscrAux(MORE, IDX -Int 1) requires 0 <Int IDX [owise]
+  rule #lookupDiscrAux( discriminant(RESULT)         _        , variantIdx(I)) => RESULT requires I ==Int 0
+  rule #lookupDiscrAux( _:Discriminant      MORE:Discriminants, variantIdx(I)) => #lookupDiscrAux(MORE, variantIdx(I -Int 1)) requires 0 <Int I
 ```
 
 ```k
@@ -1063,6 +1233,8 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   rule #projectionsFor( CtxSubslice(_, I, J) CTXS, PROJS) => #projectionsFor(CTXS,      projectionElemSubslice(I, J, false) PROJS)
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
+  rule #projectionsFor(CtxFieldUnion(F_IDX, _, TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(F_IDX, TY) PROJS)
+  rule #projectionsFor(  CtxWrapStruct       CTXS, PROJS) => #projectionsFor(CTXS,                 projectionElemWrapStruct PROJS)
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
@@ -1249,7 +1421,41 @@ Boolean values can also be cast to Integers (encoding `true` as `1`).
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
-Casts involving `Float` values are currently not implemented.
+Casts involving `Float` values: `IntToFloat`, `FloatToInt`, and `FloatToFloat`.
+
+```k
+  // IntToFloat: convert integer to float with the target float type's precision
+  rule <k> #cast(Integer(VAL, _WIDTH, _SIGNEDNESS), castKindIntToFloat, _, TY)
+          => Float(
+               Int2Float(VAL,
+                 #significandBits(#floatTypeOf(lookupTy(TY))),
+                 #exponentBits(#floatTypeOf(lookupTy(TY)))),
+               #bitWidth(#floatTypeOf(lookupTy(TY)))
+             )
+          ...
+        </k>
+      [preserves-definedness]
+
+  // FloatToInt: truncate float towards zero and convert to integer
+  rule <k> #cast(Float(VAL, _WIDTH), castKindFloatToInt, _, TY)
+          => #intAsType(Float2Int(VAL), 128, #intTypeOf(lookupTy(TY)))
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY))
+      [preserves-definedness]
+
+  // FloatToFloat: round float to the target float type's precision
+  rule <k> #cast(Float(VAL, _WIDTH), castKindFloatToFloat, _, TY)
+          => Float(
+               roundFloat(VAL,
+                 #significandBits(#floatTypeOf(lookupTy(TY))),
+                 #exponentBits(#floatTypeOf(lookupTy(TY)))),
+               #bitWidth(#floatTypeOf(lookupTy(TY)))
+             )
+          ...
+        </k>
+      [preserves-definedness]
+```
 
 ### Casts between pointer types
 
@@ -1259,23 +1465,48 @@ Casts involving `Float` values are currently not implemented.
 | PtrToPtr | Convert between references when representations compatible |
 
 Pointers can be converted from one type to another (`PtrToPtr`) when the representations are compatible.
-The compatibility of types (defined in `rt/types.md`) considers their representations (recursively) in
-the `Value` sort.
+For compatible types, an additional projection is added to the pointer's place projections,
+which transforms the previous pointee type to the new one (computation defined in `rt/types.md`).
+If types are not compatible, no such projection exists and the cast is invalid.
 
 Conversion is especially possible for the case of _Slices_ (of dynamic length) and _Arrays_ (of static length),
 which have the same representation `Value::Range`.
+Also, casts to and from _transparent wrappers_ (newtypes that just forward field `0`, i.e. `struct Wrapper<T>(T)`)
+are allowed, and supported by a special projection `WrapStruct`.
+
+When the source and target types are pointer types with the same pointee type (i.e., differing only in mutability),
+the cast preserves the source pointer and its metadata unchanged.
 
 ```k
   rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
-          =>
-            PtrLocal(OFFSET, PLACE, MUT, #convertMetadata(META, lookupTy(TY_TARGET)))
+          => PtrLocal(OFFSET, PLACE, MUT, META)
           ...
         </k>
-      requires #typesCompatible(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
-      [preserves-definedness] // valid map lookups checked
+      requires pointeeTy(lookupTy(TY_SOURCE)) ==K pointeeTy(lookupTy(TY_TARGET))
+      [priority(45), preserves-definedness] // valid map lookups checked
+```
 
+Otherwise, compute the type projection and convert metadata accordingly.
+
+```k
+  rule <k> #cast(PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+          =>
+            PtrLocal(
+              OFFSET,
+              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
+              MUT,
+              #convertMetadata(META, lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires NoProjectionElems =/=K #typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+      [preserves-definedness] // valid map lookups checked
+```
+
+The pointer's metadata needs to be adapted to the new type.
+
+```k
   syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
-  // -------------------------------------------------------------------------------------
 ```
 
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
@@ -1294,7 +1525,7 @@ the original allocation size must be checked to be sufficient.
 ```k
   // no metadata to begin with, fill it in from target type (NB dynamicSize(1) if dynamic)
   rule #convertMetadata(   metadata(noMetadataSize, OFFSET, _)    , typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, noMetadataSize)
-  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, _)    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, noMetadataSize)
+  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, ORIGIN_SIZE )    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, ORIGIN_SIZE)
 ```
 
 Conversion from an array to a slice pointer requires adding metadata (`dynamicSize`) with the previously-static length.
@@ -1355,17 +1586,17 @@ Specifically, pointers to arrays of statically-known length are cast to pointers
 The original metadata is therefore already stored as `staticSize` to avoid having to look it up here.
 
 ```k
+  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+          =>
+            PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
+          ...
+        </k>
+
   rule <k> #cast(Reference(OFFSET, PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
             Reference(OFFSET, PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
           ...
         </k>
-      //   <types> TYPEMAP </types>
-      // could look up the static size here instead of caching it:
-      // requires TY_SOURCE in_keys(TYPEMAP)
-      //  andBool isTypeInfo(TYPEMAP[TY_SOURCE])
-      // andBool notBool hasMetadata(_TY_TARGET, TYPEMAP)
-      // [preserves-definedness] // valid type map indexing and sort coercion
 
   rule <k> #cast(AllocRef(ID, PROJS, metadata(staticSize(SIZE), OFF, ORIG)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
@@ -1409,6 +1640,30 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
      andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
 ```
 
+Transmuting a value `T` into a single-field wrapper struct `G<T>` (or vice versa) is sound when the struct
+has its field at zero offset and `transmute` compiled (guaranteeing equal sizes).
+These are essentially `#[repr(transparent)]` but are `#[repr(rust)]` by default without the annotation and
+thus there are no compiler optimisations to remove the transmute (there would be otherwise for downcast).
+The layout is the same for the wrapped type and so the cast in either direction is sound.
+
+```k
+  // Up: T -> Wrapper(T)
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            Aggregate(variantIdx(0), ListItem(VAL))
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
+
+  // Down: Wrapper(T) -> T
+  rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            VAL
+          ...
+        </k>
+      requires {#transparentFieldTy(lookupTy(TY_SOURCE))}:>Ty ==K TY_TARGET
+```
+
 Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.
 
 ```k
@@ -1443,6 +1698,7 @@ Casting a byte array/slice to an integer reinterprets the bytes in little-endian
   rule #littleEndianFromBytes(.List) => 0
   rule #littleEndianFromBytes(ListItem(Integer(BYTE, 8, false)) REST)
     => BYTE +Int 256 *Int #littleEndianFromBytes(REST)
+    [preserves-definedness]
 ```
 
 Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
@@ -1497,23 +1753,138 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
   rule #staticArrayLenBits(_OTHER) => 0 [owise]
 ```
 
-Another specialisation is getting the discriminant of `enum`s without fields after converting some integer data to it
-(see `#discriminant` and `rvalueDiscriminant`).
-If none of the `enum` variants has any fields, the `Transmute` of a number to the `enum` data is necessarily just the discriminant itself., and can be returned as the integer value afgter adjusting to the byte length of the discriminant:
+A transmutation from an integer to an enum is wellformed if:
+- The bit width of the incoming integer is the same as the discriminant type of the enum
+    (e.g. `u8 -> i8` fine, `u8 -> u16` not fine) - this is guaranteed by the compiler;
+- The incoming integer has a bit pattern that matches a discriminant of the enum
+    (e.g. `255_u8` and `-1_i8` fine iff `0b1111_1111` is a discriminant of the enum);
+
+Note that discriminants are stored as `u128` in the type data even if they are signed
+or unsigned at the source level. This means that our approach to soundly transmute an
+integer into a enum is to treat the incoming integer as unsigned (converting if signed),
+and check if the value is in the discriminants. If yes, find the corresponding variant
+index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
 
 ```k
-  rule <k> #discriminant(
-              thunk(#cast (Integer(DATA, _, false), castKindTransmute, _, TY)),
-              TY
-            ) => Integer(DATA, 0, false) // HACK: bit width 0 means "flexible"
-          ...
-        </k>
-    requires #isEnumWithoutFields(lookupTy(TY))
-
   syntax Bool ::= #isEnumWithoutFields ( TypeInfo ) [function, total]
   // ----------------------------------------------------------------
   rule #isEnumWithoutFields(typeInfoEnumType(_, _, _, FIELDSS, _)) => #noFields(FIELDSS)
   rule #isEnumWithoutFields(_OTHER) => false [owise]
+
+  syntax MIRError ::= "#UBErrorInvalidDiscriminantsInEnumCast"
+  rule <k>
+           #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO ) ~> _REST
+        =>
+           #UBErrorInvalidDiscriminantsInEnumCast
+      </k>
+      requires #isEnumWithoutFields(lookupTy(TY_TO))
+        andBool notBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO) )
+
+  rule <k>
+           #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO )
+        =>
+           Aggregate( #findVariantIdxFromTy( truncate(VAL, WIDTH, Unsigned), lookupTy(TY_TO) ) , .List )
+       ...
+      </k>
+      requires #isEnumWithoutFields(lookupTy(TY_TO))
+        andBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO))
+
+  syntax VariantIdx ::= #findVariantIdxFromTy ( Int , TypeInfo ) [function, total]
+  //------------------------------------------------------------------------------
+  rule #findVariantIdxFromTy( VAL , typeInfoEnumType(_, _, DISCRIMINANTS, _, _) ) => #findVariantIdx( VAL, DISCRIMINANTS)
+  rule #findVariantIdxFromTy( _ , _ ) => err("NotAnEnum") [owise]
+
+  syntax Bool ::= #validDiscriminant    ( Int , TypeInfo )      [function, total]
+  // ----------------------------------------------------------------------------
+  rule #validDiscriminant( VAL , typeInfoEnumType(_, _, DISCRIMINANTS, _, _) ) => #validDiscriminantAux( VAL , DISCRIMINANTS )
+  rule #validDiscriminant( _ , _ ) => false [owise]
+
+  syntax Bool ::= #validDiscriminantAux ( Int , Discriminants ) [function, total]
+  // ----------------------------------------------------------------------------
+  rule #validDiscriminantAux( VAL, discriminant(mirInt(DISCRIMINANT)) REST ) => VAL ==Int DISCRIMINANT orBool #validDiscriminantAux( VAL, REST )
+  rule #validDiscriminantAux( VAL, discriminant(    DISCRIMINANT    ) REST ) => VAL ==Int DISCRIMINANT orBool #validDiscriminantAux( VAL, REST )
+  rule #validDiscriminantAux( _VAL, .Discriminants ) => false
+```
+
+When transmuting a `Range` (e.g. `[T; N] -> [U; N]`) the list of values of the range need the transmute
+mapped to the elements.
+```k
+  syntax KItem ::= #transmuteElems( List , Ty , Ty )
+                 | #transmuteElemsAux( List , List , Ty , Ty )
+                 | #transmuteNext( List , List , Ty , Ty )
+
+  rule <k> #transmuteElems(VALS, TY_FROM, TY_TO)
+        =>
+           #transmuteElemsAux(.List, VALS, getArrayElemTy(lookupTy(TY_FROM)), getArrayElemTy(lookupTy(TY_TO)))
+       ...
+      </k>
+
+  rule <k> #transmuteElemsAux(ACC, .List, _, _) => Range(ACC) ... </k>
+
+  rule <k> #transmuteElemsAux(ACC, ListItem(VAL) REST, TY_FROM, TY_TO)
+        =>
+           #cast(VAL, castKindTransmute, TY_FROM, TY_TO) ~> #transmuteNext(ACC, REST, TY_FROM, TY_TO)
+        ...
+       </k>
+
+  rule <k> NEWVAL:Value ~> #transmuteNext(ACC, REST, TY_FROM, TY_TO)
+        =>
+           #transmuteElemsAux(ACC ListItem(NEWVAL), REST, TY_FROM, TY_TO)
+        ...
+       </k>
+```
+
+The type `std::mem::MaybeUninit` is a union that represents a potentially uninitialised location in memory.
+This union has two fields, first `()`, and second `std::mem::ManuallyDrop<T>` which represents the initialised data.
+When [converting an array to an iterator](https://github.com/rust-lang/rust/blob/a2545fd6fc66b4323f555223a860c451885d1d2b/library/core/src/array/iter.rs#L57-L70)
+a `Transmute` cast is invoked for the array element type (`T` from `[T; N]`) into `std::mem::MaybeUninit<T>`. Therefore,
+it is required for iterator use that we handle this transmute. There are details in the safety comment linked above for
+the safety of this cast. The logic of the semantics and saftey of this cast for us is:
+- that there is a `Value` to be cast as we cannot construct a `Value` that is not initialised;
+- that the type being cast from `T` is the same as the type of the unions second field `std::mem::ManuallyDrop<T>`;
+- we can then then create a union that is constructed with the second field, instantiating the `Value` in a struct;
+- otherwise we error so that the cast does not `thunk`.
+```k
+  syntax MIRError ::= "#UBInvalidTransmuteMaybeUninit"
+  rule <k>
+           #cast( _VAL:Value , castKindTransmute , TY_FROM , TY_TO )
+        =>
+           #UBInvalidTransmuteMaybeUninit
+       ...
+      </k>
+      requires #isUnionType(lookupTy(TY_TO))
+        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
+        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+
+  rule <k>
+           #cast( VAL:Value , castKindTransmute , TY_FROM , TY_TO )
+        =>
+           Union( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem(VAL) .List ))
+       ...
+      </k>
+      requires #isUnionType(lookupTy(TY_TO))
+        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
+        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+
+  // Converting static or dynamic sized array of `T` to array of `std::mem::MaybeUninit<T>`.
+  // FIXME: Might need to check sizes as this cast could come from transmute_unchecked
+  rule <k>
+           #cast( Range ( LIST ) , castKindTransmute , TY_FROM , TY_TO )
+        =>
+           #transmuteElems(LIST, TY_FROM, TY_TO)
+       ...
+      </k>
+      requires #isArrayType(lookupTy(TY_FROM)) andBool #isArrayType(lookupTy(TY_TO))
+        andBool #isUnionType(getArrayElemTypeInfo(lookupTy(TY_TO)))
+        andBool #typeNameIs(getArrayElemTypeInfo(lookupTy(TY_TO)), "std::mem::MaybeUninit<")
+        andBool getArrayElemTypeInfo(lookupTy(TY_FROM))
+                  ==K #lookupMaybeTy(getFieldTy(   // ManuallyDrop<T> field 0 Ty (T)
+                        #lookupMaybeTy(getFieldTy( // MaybeUninit<T> field 1 Ty (ManuallyDrop<T>)
+                            getArrayElemTypeInfo(lookupTy(TY_TO)), // Array Element Ty
+                            1
+                          )),
+                        0
+                      ))
 ```
 
 
@@ -1678,6 +2049,20 @@ are correct.
   rule onInt(binOpRem, X, Y)          => X %Int Y requires Y =/=Int 0 [preserves-definedness]
   // operation undefined otherwise
 
+  // performs the given operation on IEEE 754 floats
+  // Note: Rust's float % is truncating remainder: x - trunc(x/y) * y
+  // This differs from K's %Float which is IEEE 754 remainder (round to nearest).
+  syntax Float ::= onFloat( BinOp, Float, Float ) [function]
+  // -------------------------------------------------------
+  rule onFloat(binOpAdd, X, Y)          => X +Float Y [preserves-definedness]
+  rule onFloat(binOpAddUnchecked, X, Y) => X +Float Y [preserves-definedness]
+  rule onFloat(binOpSub, X, Y)          => X -Float Y [preserves-definedness]
+  rule onFloat(binOpSubUnchecked, X, Y) => X -Float Y [preserves-definedness]
+  rule onFloat(binOpMul, X, Y)          => X *Float Y [preserves-definedness]
+  rule onFloat(binOpMulUnchecked, X, Y) => X *Float Y [preserves-definedness]
+  rule onFloat(binOpDiv, X, Y)          => X /Float Y [preserves-definedness]
+  rule onFloat(binOpRem, X, Y)          => X -Float (Y *Float truncFloat(X /Float Y)) [preserves-definedness]
+
   // error cases for isArithmetic(BOP):
   // * arguments must be Numbers
 
@@ -1746,6 +2131,18 @@ are correct.
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
     [preserves-definedness]
+
+  // Float arithmetic: Rust never emits CheckedBinaryOp for floats (only BinaryOp),
+  // so the checked flag is always false here. See rustc_const_eval/src/interpret/operator.rs:
+  // binary_float_op returns a plain value, not a (value, overflow) pair.
+  rule #applyBinOp(
+          BOP,
+          Float(ARG1, WIDTH),
+          Float(ARG2, WIDTH),
+          false)
+    => Float(onFloat(BOP, ARG1, ARG2), WIDTH)
+    requires isArithmetic(BOP)
+    [preserves-definedness]
 ```
 
 #### Comparison operations
@@ -1782,6 +2179,14 @@ The argument types must be the same for all comparison operations, however this 
   rule cmpOpBool(binOpGe,  X, Y) => cmpOpBool(binOpLe, Y, X)
   rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
 
+  syntax Bool ::= cmpOpFloat ( BinOp, Float, Float ) [function]
+  rule cmpOpFloat(binOpEq,  X, Y) => X  ==Float Y
+  rule cmpOpFloat(binOpLt,  X, Y) => X   <Float Y
+  rule cmpOpFloat(binOpLe,  X, Y) => X  <=Float Y
+  rule cmpOpFloat(binOpNe,  X, Y) => X =/=Float Y
+  rule cmpOpFloat(binOpGe,  X, Y) => X  >=Float Y
+  rule cmpOpFloat(binOpGt,  X, Y) => X   >Float Y
+
   // error cases for isComparison and binOpCmp:
   // * arguments must be numbers or Bool
 
@@ -1809,9 +2214,19 @@ The argument types must be the same for all comparison operations, however this 
         BoolVal(cmpOpBool(OP, VAL1, VAL2))
     requires isComparison(OP)
     [priority(60), preserves-definedness] // OP known to be a comparison
+
+  rule #applyBinOp(OP, Float(VAL1, WIDTH), Float(VAL2, WIDTH), _)
+      =>
+        BoolVal(cmpOpFloat(OP, VAL1, VAL2))
+    requires isComparison(OP)
+    [preserves-definedness] // OP known to be a comparison
 ```
 
-The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`), indicating `LE`, `EQ`, or `GT`.
+Types that are equivlance relations can implement [Eq](https://doc.rust-lang.org/std/cmp/trait.Eq.html),
+and then they may implement [Ord](https://doc.rust-lang.org/std/cmp/trait.Ord.html) for a total ordering.
+For types that implement `Ord` the `cmp` method must be implemented which can compare any two elements respective to their total ordering.
+Here we provide the `binOpCmp` for `Bool` and `Int` operation which returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`),
+indicating `LE`, `EQ`, or `GT`.
 
 ```k
   syntax Int ::= cmpInt  ( Int , Int )  [function , total]
@@ -1846,7 +2261,11 @@ The semantics of the operation in this case is to wrap around (with the given bi
         ...
         </k>
 
-  // TODO add rule for Floats once they are supported.
+  rule <k> #applyUnOp(unOpNeg, Float(VAL, WIDTH))
+          =>
+            Float(--Float VAL, WIDTH)
+        ...
+        </k>
 ```
 
 The `unOpNot` operation works on boolean and integral values, with the usual semantics for booleans and a bitwise semantics for integral values (overflows cannot occur).
@@ -1976,12 +2395,18 @@ Since our arithmetic operations signal undefined behaviour on overflow independe
 
 #### "Nullary" operations reifying type information
 
-`nullOpSizeOf`
-`nullOpAlignOf`
-`nullOpOffsetOf(VariantAndFieldIndices)`
+Operation `nullOpSizeOf` returns the size in bytes of a data structure or primitive type, as a `usize`.
+Operation `nullOpAlignOf` returns the required alignment of a data structure or primitive type, as a `usize`.
+This information is read from the layout in the `TypeInfo` if available, or a fixed constant for primitive types.
 
 ```k
 // FIXME: 64 is hardcoded since usize not supported
+rule <k> rvalueNullaryOp(nullOpSizeOf, TY)
+      =>
+           Integer(#sizeOf(lookupTy(TY)), 64, false)
+         ...
+     </k>
+    requires lookupTy(TY) =/=K typeInfoVoidType
 rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
       =>
            Integer(#alignOf(lookupTy(TY)), 64, false)
@@ -1989,6 +2414,8 @@ rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
      </k>
     requires lookupTy(TY) =/=K typeInfoVoidType
 ```
+
+`nullOpOffsetOf(VariantAndFieldIndices)`
 
 #### Other operations
 
@@ -2061,7 +2488,7 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
   rule #applyBinOp(
           binOpOffset,
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, dynamicSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
+          Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, dynamicSize(ORIGIN_SIZE)) )
@@ -2073,7 +2500,7 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
   rule #applyBinOp(
           binOpOffset,
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, staticSize(ORIGIN_SIZE)) ),
-          Integer(OFFSET_VAL, _WIDTH, false), // unsigned offset
+          Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)) )

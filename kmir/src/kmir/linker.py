@@ -235,6 +235,7 @@ def apply_offset_type_info(typeinfo: dict, offset: int) -> dict:
         typeinfo['StructType']['fields'] = [x + offset for x in typeinfo['StructType']['fields']]
         typeinfo['StructType']['adt_def'] += offset
     elif 'UnionType' in typeinfo:
+        typeinfo['UnionType']['fields'] = [x + offset for x in typeinfo['UnionType']['fields']]
         typeinfo['UnionType']['adt_def'] += offset
     elif 'ArrayType' in typeinfo:
         typeinfo['ArrayType']['elem_type'] += offset

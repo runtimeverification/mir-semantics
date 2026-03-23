@@ -120,7 +120,7 @@
       }
     ],
     [
-      77,
+      48,
       {
         "NoOpSym": ""
       }
@@ -3537,7 +3537,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 25,
+          "adt_def": 26,
           "discriminants": [
             0,
             1
@@ -3627,7 +3627,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 64,
+          "adt_def": 36,
           "fields": [
             9
           ],
@@ -3683,7 +3683,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 62,
+          "adt_def": 34,
           "fields": [
             15
           ],
@@ -3764,7 +3764,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<(), std::fmt::Error>",
-          "adt_def": 25,
+          "adt_def": 26,
           "discriminants": [
             0,
             1
@@ -3774,7 +3774,7 @@
               1
             ],
             [
-              55
+              56
             ]
           ],
           "layout": {
@@ -3942,7 +3942,7 @@
       24,
       {
         "RefType": {
-          "pointee_type": 48,
+          "pointee_type": 49,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -4497,11 +4497,11 @@
       {
         "StructType": {
           "name": "std::fmt::Arguments<'_>",
-          "adt_def": 32,
+          "adt_def": 39,
           "fields": [
-            57,
             58,
-            59
+            59,
+            60
           ],
           "layout": {
             "fields": {
@@ -4598,18 +4598,18 @@
       }
     ],
     [
-      48,
+      49,
       {
         "StructType": {
           "name": "std::fmt::Formatter<'_>",
-          "adt_def": 15,
+          "adt_def": 16,
           "fields": [
             26,
-            49,
             50,
             51,
-            51,
-            52
+            52,
+            52,
+            53
           ],
           "layout": {
             "fields": {
@@ -4655,17 +4655,17 @@
       }
     ],
     [
-      49,
+      50,
       {
         "PrimitiveType": "Char"
       }
     ],
     [
-      50,
+      51,
       {
         "EnumType": {
           "name": "core::fmt::rt::Alignment",
-          "adt_def": 22,
+          "adt_def": 23,
           "discriminants": [
             0,
             1,
@@ -4819,7 +4819,7 @@
       }
     ],
     [
-      51,
+      52,
       {
         "EnumType": {
           "name": "std::option::Option<usize>",
@@ -4831,7 +4831,7 @@
           "fields": [
             [],
             [
-              53
+              54
             ]
           ],
           "layout": {
@@ -4972,10 +4972,10 @@
       }
     ],
     [
-      52,
+      53,
       {
         "RefType": {
-          "pointee_type": 54,
+          "pointee_type": 55,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -5029,7 +5029,7 @@
       }
     ],
     [
-      53,
+      54,
       {
         "PrimitiveType": {
           "Uint": "Usize"
@@ -5037,11 +5037,11 @@
       }
     ],
     [
-      55,
+      56,
       {
         "StructType": {
           "name": "std::fmt::Error",
-          "adt_def": 28,
+          "adt_def": 29,
           "fields": [],
           "layout": {
             "fields": {
@@ -5068,10 +5068,10 @@
       }
     ],
     [
-      56,
+      57,
       {
         "RefType": {
-          "pointee_type": 76,
+          "pointee_type": 77,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -5101,10 +5101,10 @@
       }
     ],
     [
-      57,
+      58,
       {
         "RefType": {
-          "pointee_type": 60,
+          "pointee_type": 61,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -5161,7 +5161,7 @@
       }
     ],
     [
-      58,
+      59,
       {
         "EnumType": {
           "name": "std::option::Option<&[core::fmt::rt::Placeholder]>",
@@ -5173,7 +5173,7 @@
           "fields": [
             [],
             [
-              63
+              64
             ]
           ],
           "layout": {
@@ -5318,10 +5318,10 @@
       }
     ],
     [
-      59,
+      60,
       {
         "RefType": {
-          "pointee_type": 67,
+          "pointee_type": 68,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -5378,10 +5378,10 @@
       }
     ],
     [
-      60,
+      61,
       {
         "ArrayType": {
-          "elem_type": 61,
+          "elem_type": 62,
           "size": null,
           "layout": {
             "fields": {
@@ -5411,10 +5411,10 @@
       }
     ],
     [
-      61,
+      62,
       {
         "RefType": {
-          "pointee_type": 62,
+          "pointee_type": 63,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -5468,19 +5468,19 @@
             }
           }
         }
-      }
-    ],
-    [
-      62,
-      {
-        "PrimitiveType": "Str"
       }
     ],
     [
       63,
       {
+        "PrimitiveType": "Str"
+      }
+    ],
+    [
+      64,
+      {
         "RefType": {
-          "pointee_type": 64,
+          "pointee_type": 65,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -5537,10 +5537,10 @@
       }
     ],
     [
-      64,
+      65,
       {
         "ArrayType": {
-          "elem_type": 65,
+          "elem_type": 66,
           "size": null,
           "layout": {
             "fields": {
@@ -5570,18 +5570,18 @@
       }
     ],
     [
-      65,
+      66,
       {
         "StructType": {
           "name": "core::fmt::rt::Placeholder",
-          "adt_def": 36,
+          "adt_def": 43,
           "fields": [
-            53,
-            49,
+            54,
             50,
+            51,
             26,
-            66,
-            66
+            67,
+            67
           ],
           "layout": {
             "fields": {
@@ -5627,11 +5627,11 @@
       }
     ],
     [
-      66,
+      67,
       {
         "EnumType": {
           "name": "core::fmt::rt::Count",
-          "adt_def": 43,
+          "adt_def": 50,
           "discriminants": [
             0,
             1,
@@ -5639,10 +5639,10 @@
           ],
           "fields": [
             [
-              53
+              54
             ],
             [
-              53
+              54
             ],
             []
           ],
@@ -5832,10 +5832,10 @@
       }
     ],
     [
-      67,
+      68,
       {
         "ArrayType": {
-          "elem_type": 68,
+          "elem_type": 69,
           "size": null,
           "layout": {
             "fields": {
@@ -5865,13 +5865,13 @@
       }
     ],
     [
-      68,
+      69,
       {
         "StructType": {
           "name": "core::fmt::rt::Argument<'_>",
-          "adt_def": 46,
+          "adt_def": 53,
           "fields": [
-            69
+            70
           ],
           "layout": {
             "fields": {
@@ -5902,23 +5902,23 @@
       }
     ],
     [
-      69,
+      70,
       {
         "EnumType": {
           "name": "core::fmt::rt::ArgumentType<'_>",
-          "adt_def": 48,
+          "adt_def": 55,
           "discriminants": [
             0,
             1
           ],
           "fields": [
             [
-              70,
               71,
-              72
+              72,
+              73
             ],
             [
-              53
+              54
             ]
           ],
           "layout": {
@@ -6050,13 +6050,13 @@
       }
     ],
     [
-      70,
+      71,
       {
         "StructType": {
           "name": "std::ptr::NonNull<()>",
-          "adt_def": 53,
+          "adt_def": 60,
           "fields": [
-            73
+            74
           ],
           "layout": {
             "fields": {
@@ -6095,11 +6095,11 @@
       }
     ],
     [
-      72,
+      73,
       {
         "StructType": {
           "name": "std::marker::PhantomData<&()>",
-          "adt_def": 55,
+          "adt_def": 62,
           "fields": [],
           "layout": {
             "fields": {
@@ -6126,7 +6126,7 @@
       }
     ],
     [
-      73,
+      74,
       {
         "PtrType": {
           "pointee_type": 1,
@@ -6159,7 +6159,7 @@
       }
     ],
     [
-      75,
+      76,
       {
         "RefType": {
           "pointee_type": 1,
@@ -6192,13 +6192,13 @@
       }
     ],
     [
-      76,
+      77,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 56,
+          "adt_def": 63,
           "fields": [
-            61,
+            62,
             26,
             26
           ],

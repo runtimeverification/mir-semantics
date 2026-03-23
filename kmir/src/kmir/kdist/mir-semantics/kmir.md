@@ -28,8 +28,10 @@ See [`rt/configuration.md`](./rt/configuration.md) for a detailed description of
 ```k
 module KMIR-CONTROL-FLOW
   imports BOOL
+  imports COLLECTIONS
   imports LIST
   imports MAP
+  imports STRING
   imports K-EQUAL
 
   imports MONO
@@ -97,11 +99,25 @@ will effectively be no-ops at this level).
 ```k
 
   // all memory accesses relegated to another module (to be added)
-  rule [execStmt]: <k> #execStmt(statement(statementKindAssign(PLACE, RVAL), _SPAN))
+  rule [execStmt]: <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
          =>
             #setLocalValue(PLACE, RVAL)
          ...
        </k>
+       <locals> LOCALS </locals>
+       requires 0 <=Int I andBool I <Int size(LOCALS)
+        andBool notBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+       [preserves-definedness]
+
+  rule [execStmt.union]: <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
+         =>
+            #setLocalValue(PLACE, #evalUnion(RVAL))
+         ...
+       </k>
+       <locals> LOCALS </locals>
+       requires 0 <=Int I andBool I <Int size(LOCALS)
+        andBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+       [preserves-definedness]
 
   // RVAL evaluation is implemented in rt/data.md
 
@@ -291,21 +307,54 @@ The call stack is not necessarily empty at this point so it is left untouched.
 `Call` is calling another function, setting up its stack frame and
 where the returned result should go.
 
-
 ```k
-  // Intrinsic function call - execute directly without state switching
-  rule [termCallIntrinsic]: <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, _UNWIND), _SPAN)) ~> _
-         =>
-           #execIntrinsic(lookupFunction(#tyOfCall(FUNC)), ARGS, DEST) ~> #continueAt(TARGET)
+  syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), SPAN))
+        => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        ...
        </k>
-    requires isIntrinsicFunction(lookupFunction(#tyOfCall(FUNC)))
+
+  rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
+        => #execTerminatorCall({#projectedCallTy(I, PROJS, LOCALS)}:>Ty, lookupFunction({#projectedCallTy(I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        ...
+       </k>
+      <locals> LOCALS </locals>
+    requires isTy(#projectedCallTy(I, PROJS, LOCALS))
+    [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
+
+  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total]
+
+  rule #projectedCallTy(I, PROJS, LOCALS)
+    => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+
+  rule #projectedCallTy(_, _, _) => TyUnknown [owise]
+
+  // Intrinsic function call - execute directly without state switching
+  rule [termCallIntrinsic]:
+        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        </k>
+    requires isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  // Intrinsic function call to a function in the break-on set - same as termCallIntrinsic but separate rule id for cut-point
+  rule [termCallIntrinsicFilter]:
+        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        </k>
+    requires isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Regular function call - full state switching and stack setup
-  rule [termCallFunction]: <k> #execTerminator(terminator(terminatorKindCall(FUNC, ARGS, DEST, TARGET, UNWIND), _SPAN)) ~> _
-         =>
-           #setUpCalleeData(lookupFunction(#tyOfCall(FUNC)), ARGS)
+  rule [termCallFunction]:
+       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+        => #setUpCalleeData(FUNC, ARGS, SPAN)
        </k>
-       <currentFunc> CALLER => #tyOfCall(FUNC) </currentFunc>
+       <currentFunc> CALLER => FTY </currentFunc>
        <currentFrame>
          <currentBody> _ </currentBody>
          <caller> OLDCALLER => CALLER </caller>
@@ -315,20 +364,76 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-    requires notBool isIntrinsicFunction(lookupFunction(#tyOfCall(FUNC)))
+    requires notBool isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
+  rule [termCallFunctionFilter]:
+       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+        => #setUpCalleeData(FUNC, ARGS, SPAN)
+       </k>
+       <currentFunc> CALLER => FTY </currentFunc>
+       <currentFrame>
+         <currentBody> _ </currentBody>
+         <caller> OLDCALLER => CALLER </caller>
+         <dest> OLDDEST => DEST </dest>
+         <target> OLDTARGET => TARGET </target>
+         <unwind> OLDUNWIND => UNWIND </unwind>
+         <locals> LOCALS </locals>
+       </currentFrame>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+    requires notBool isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
   rule isIntrinsicFunction(_) => false [owise]
 
+  syntax String ::= getFunctionName(MonoItemKind) [function, total]
+  //---------------------------------------------------------------
+  rule getFunctionName(monoItemFn(symbol(NAME), _, _)) => NAME
+  rule getFunctionName(monoItemStatic(symbol(NAME), _, _)) => NAME
+  rule getFunctionName(monoItemGlobalAsm(_)) => ""
+  rule getFunctionName(IntrinsicFunction(symbol(NAME))) => NAME
+
+  // Check whether a function name matches any filter in the break-on-functions list.
+  syntax Bool ::= #functionNameMatchesEnv(String) [function, total]
+  //----------------------------------------------------------------
+  rule #functionNameMatchesEnv(NAME) => #functionNameMatchesEnvStr(NAME, #breakOnFunctionsString(0))
+
+  // The Int argument is unused; it exists only so the Haskell backend can
+  // pattern-match on it and not error since zero-argument functions cannot use [owise].
+  syntax String ::= #breakOnFunctionsString(Int) [function, total, symbol(breakOnFunctionsString)]
+  //-----------------------------------------------------------------------------------------------
+  rule #breakOnFunctionsString(_) => "" [owise] // This gets overridden by corresponding python function
+
+  syntax Bool ::= #functionNameMatchesEnvStr(String, String) [function, total]
+  //--------------------------------------------------------------------------
+  rule #functionNameMatchesEnvStr(_, "") => false
+  rule #functionNameMatchesEnvStr(NAME, ENV) => #functionNameMatchesAnyList(NAME, #splitSemicolon(ENV))
+    requires ENV =/=String ""
+
+  syntax List ::= #splitSemicolon(String) [function, total]
+  //--------------------------------------------------------
+  rule #splitSemicolon(S) => #splitSemicolonAux(S, findString(S, ";", 0))
+
+  syntax List ::= #splitSemicolonAux(String, Int) [function, total]
+  //-----------------------------------------------------------------
+  rule #splitSemicolonAux(S, -1) => ListItem(S)
+  rule #splitSemicolonAux(S, I) =>
+      ListItem(substrString(S, 0, I)) #splitSemicolon(substrString(S, I +Int 1, lengthString(S)))
+    requires I >=Int 0
+
+  syntax Bool ::= #functionNameMatchesAnyList(String, List) [function, total]
+  //-------------------------------------------------------------------------
+  rule #functionNameMatchesAnyList(_, .List) => false
+  rule #functionNameMatchesAnyList(NAME, ListItem(FILTER:String) REST) =>
+      0 <=Int findString(NAME, FILTER, 0) orBool #functionNameMatchesAnyList(NAME, REST)
+  rule #functionNameMatchesAnyList(_, _) => false [owise]
+
   syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
   rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>
   rule <k> #continueAt(noBasicBlockIdx) => .K ... </k>
-
-  syntax Ty ::= #tyOfCall( Operand ) [function, total]
-
-  rule #tyOfCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _)))) => Ty
-  rule #tyOfCall(_) => ty(-1) [owise] // copy, move, non-zero size: not supported
 ```
 
 The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the old locals (`OLDLOCALS` below), and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references.
@@ -336,12 +441,13 @@ The local data has to be set up for the call, which requires information about t
 An operand may be a `Reference` (the only way a function could access another function call's `local` variables). For this case, the stack height in the `Reference` must be incremented because a stack frame is added.
 
 ```k
-  syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands)
+  syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
 
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule [setupCalleeData]: <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
-              ARGS
+              ARGS,
+              _SPAN
               )
          =>
            #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
@@ -370,7 +476,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
-                 | #execIntrinsic ( MonoItemKind, Operands, Place )
+                 | #execIntrinsic ( MonoItemKind, Operands, Place, Span )
 
   // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
@@ -398,7 +504,8 @@ An operand may be a `Reference` (the only way a function could access another fu
      andBool isTypedValue(CALLERLOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), .ProjectionElems)))
+  // TODO: This is not safe, need to add more checks to this.
+  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), _)))
         =>
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
@@ -431,7 +538,8 @@ Therefore a heuristics is used here:
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
                 operandMove(place(local(CLOSURE:Int), .ProjectionElems))
                 operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands
+                .Operands,
+                _SPAN
               )
          =>
            #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
@@ -452,18 +560,22 @@ Therefore a heuristics is used here:
      andBool isTypedValue(LOCALS[TUPLE])
      andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
      andBool isTypedLocal(LOCALS[CLOSURE])
-     andBool typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
-              // either the closure ref type is missing from type table
+     andBool (
+               typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
+               orBool isFunType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+             )
     [priority(40), preserves-definedness]
 
   rule [setupCalleeClosure2]: <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
                 operandMove(place(local(CLOSURE:Int), .ProjectionElems))
                 operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands
+                .Operands,
+                _SPAN
               )
          =>
-           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
+        ~> #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
@@ -484,22 +596,33 @@ Therefore a heuristics is used here:
                // or the closure ref type pointee is missing from the type table
      andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
      andBool isTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
-     andBool lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
+     andBool (
+               lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
+               orBool isFunType(lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty))
+             )
     [priority(45), preserves-definedness]
 
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
                 | isRefType ( TypeInfo ) [function, total]
+                | isFunType ( TypeInfo ) [function, total]
   // -------------------------------------------------------
   rule isTupleType(typeInfoTupleType(_, _)) => true
   rule isTupleType(    _                  ) => false [owise]
   rule isRefType(typeInfoRefType(_)) => true
   rule isRefType(    _             ) => false [owise]
+  rule isFunType(typeInfoFunType(_)) => true
+  rule isFunType(    _             ) => false [owise]
 
   syntax KItem ::= #setTupleArgs ( Int , Value )
                  | #setTupleArgs ( Int , List )
 
   // unpack tuple and set arguments individually
   rule <k> #setTupleArgs(IDX, Aggregate(variantIdx(0), ARGS)) => #setTupleArgs(IDX, ARGS) ... </k>
+
+  rule <k> #setTupleArgs(IDX, VAL:Value)
+        => #setTupleArgs(IDX, ListItem(VAL))
+        ...
+       </k> [owise]
 
   rule <k> #setTupleArgs(_, .List ) => .K ... </k>
 

@@ -4,7 +4,7 @@
   "allocs": [
     {
       "alloc_id": 1,
-      "ty": 43,
+      "ty": 42,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -110,7 +110,7 @@
       }
     ],
     [
-      41,
+      44,
       {
         "NoOpSym": ""
       }
@@ -2547,7 +2547,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 16,
+          "adt_def": 20,
           "fields": [
             9
           ],
@@ -2603,7 +2603,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 14,
+          "adt_def": 18,
           "fields": [
             15
           ],
@@ -2935,7 +2935,7 @@
       36,
       {
         "RefType": {
-          "pointee_type": 43,
+          "pointee_type": 42,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -3002,10 +3002,10 @@
       "VoidType"
     ],
     [
-      42,
+      41,
       {
         "RefType": {
-          "pointee_type": 44,
+          "pointee_type": 43,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -3035,17 +3035,17 @@
       }
     ],
     [
-      43,
+      42,
       {
         "PrimitiveType": "Str"
       }
     ],
     [
-      44,
+      43,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 19,
+          "adt_def": 13,
           "fields": [
             36,
             25,
@@ -3123,7 +3123,7 @@
     [
       0,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         194,
         17,
         194,
@@ -3133,7 +3133,7 @@
     [
       1,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         194,
         17,
         199,
@@ -3143,7 +3143,7 @@
     [
       2,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         9,
         195,
@@ -3153,7 +3153,7 @@
     [
       3,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         10,
         195,
@@ -3163,7 +3163,7 @@
     [
       4,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         201,
         2,
         201,
@@ -3173,7 +3173,7 @@
     [
       5,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         199,
         5,
         199,
@@ -3183,7 +3183,7 @@
     [
       6,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         194,
         12,
         194,
@@ -3193,7 +3193,7 @@
     [
       7,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         199,
         6,
         199,
@@ -3203,7 +3203,7 @@
     [
       9,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         189,
         5,
         189,
@@ -3213,7 +3213,7 @@
     [
       10,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         190,
         5,
         190,
@@ -3223,7 +3223,7 @@
     [
       11,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         191,
         5,
         191,
@@ -3233,7 +3233,7 @@
     [
       12,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         192,
         5,
         192,
@@ -3243,7 +3243,7 @@
     [
       13,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         188,
         1,
         201,
@@ -3253,7 +3253,7 @@
     [
       14,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         18,
         195,
@@ -3263,7 +3263,7 @@
     [
       15,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         18,
         195,
@@ -3273,7 +3273,7 @@
     [
       16,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         18,
         195,
@@ -3283,7 +3283,7 @@
     [
       17,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         70,
         195,
@@ -3293,7 +3293,7 @@
     [
       18,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         76,
         195,
@@ -3303,7 +3303,7 @@
     [
       19,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         74,
         195,
@@ -3313,7 +3313,7 @@
     [
       20,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         93,
         195,
@@ -3323,7 +3323,7 @@
     [
       21,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         83,
         195,
@@ -3333,7 +3333,7 @@
     [
       22,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2053,
         9,
         2053,
@@ -3343,7 +3343,7 @@
     [
       23,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         636,
         9,
         636,
@@ -3353,7 +3353,7 @@
     [
       24,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         636,
         9,
         636,
@@ -3363,7 +3363,7 @@
     [
       25,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         636,
         21,
         636,
@@ -3373,7 +3373,7 @@
     [
       26,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2053,
         23,
         2053,
@@ -3383,7 +3383,7 @@
     [
       27,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         92,
         195,
@@ -3393,7 +3393,7 @@
     [
       29,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2052,
         19,
         2052,
@@ -3403,7 +3403,7 @@
     [
       30,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         635,
         19,
         635,
@@ -3413,7 +3413,7 @@
     [
       31,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         154,
         18,
         154,
@@ -3433,7 +3433,7 @@
     [
       33,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         154,
         18,
         154,
@@ -3443,7 +3443,7 @@
     [
       34,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        "rustlib/src/rust/library/core/src/hint.rs",
         389,
         5,
         389,
@@ -3453,7 +3453,7 @@
     [
       35,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        "rustlib/src/rust/library/core/src/hint.rs",
         389,
         5,
         389,
@@ -3463,7 +3463,7 @@
     [
       36,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         160,
         2,
         160,
@@ -3473,7 +3473,7 @@
     [
       38,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         150,
         43,
         150,
@@ -3483,7 +3483,7 @@
     [
       40,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         154,
         9,
         154,
@@ -3493,7 +3493,7 @@
     [
       41,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        "rustlib/src/rust/library/core/src/hint.rs",
         388,
         27,
         388,
@@ -3503,7 +3503,7 @@
     [
       42,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         150,
         1,
         160,
@@ -3513,7 +3513,7 @@
     [
       43,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/ops/function.rs",
+        "rustlib/src/rust/library/core/src/ops/function.rs",
         250,
         5,
         250,
@@ -3523,7 +3523,7 @@
     [
       44,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/ptr/mod.rs",
+        "rustlib/src/rust/library/core/src/ptr/mod.rs",
         521,
         1,
         521,
@@ -3533,7 +3533,7 @@
     [
       45,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2424,
         6,
         2424,
@@ -3543,7 +3543,7 @@
     [
       46,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2423,
         9,
         2423,
@@ -3553,7 +3553,7 @@
     [
       48,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2422,
         15,
         2422,
@@ -3563,7 +3563,7 @@
     [
       49,
       [
-        "/home/jost/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2422,
         5,
         2424,
@@ -3573,7 +3573,7 @@
     [
       50,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         1,
         36,
         1,
@@ -3583,7 +3583,7 @@
     [
       51,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         1,
         31,
         1,
@@ -3593,7 +3593,7 @@
     [
       53,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         1,
         11,
         1,
@@ -3603,7 +3603,7 @@
     [
       54,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         1,
         1,
         1,
@@ -3613,7 +3613,7 @@
     [
       55,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         7,
         5,
         7,
@@ -3623,7 +3623,7 @@
     [
       56,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         7,
         5,
         7,
@@ -3633,7 +3633,7 @@
     [
       57,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         4,
         23,
         4,
@@ -3643,7 +3643,7 @@
     [
       58,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         5,
         25,
         5,
@@ -3653,7 +3653,7 @@
     [
       59,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         11,
         5,
         11,
@@ -3663,7 +3663,7 @@
     [
       60,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         11,
         5,
         11,
@@ -3673,7 +3673,7 @@
     [
       61,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         17,
         5,
         17,
@@ -3683,7 +3683,7 @@
     [
       62,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         17,
         5,
         17,
@@ -3693,7 +3693,7 @@
     [
       63,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         13,
         17,
         13,
@@ -3703,7 +3703,7 @@
     [
       64,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         18,
         2,
         18,
@@ -3713,7 +3713,7 @@
     [
       66,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         4,
         9,
         4,
@@ -3723,7 +3723,7 @@
     [
       67,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         5,
         9,
         5,
@@ -3733,7 +3733,7 @@
     [
       68,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         9,
         9,
         9,
@@ -3743,7 +3743,7 @@
     [
       69,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         13,
         9,
         13,
@@ -3753,7 +3753,7 @@
     [
       70,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         14,
         9,
         14,
@@ -3763,7 +3763,7 @@
     [
       71,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         3,
         1,
         18,
@@ -3773,7 +3773,7 @@
     [
       72,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         9,
         25,
         9,
@@ -3783,7 +3783,7 @@
     [
       73,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         9,
         24,
         9,
@@ -3793,7 +3793,7 @@
     [
       75,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         9,
         20,
         9,
@@ -3803,7 +3803,7 @@
     [
       76,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         9,
         21,
         9,
@@ -3813,7 +3813,7 @@
     [
       77,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         14,
         37,
         14,
@@ -3823,7 +3823,7 @@
     [
       78,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         14,
         47,
         14,
@@ -3833,7 +3833,7 @@
     [
       79,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         14,
         29,
         14,
@@ -3843,7 +3843,7 @@
     [
       81,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         14,
         20,
         14,
@@ -3853,7 +3853,7 @@
     [
       82,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         14,
         21,
         14,
@@ -3863,7 +3863,7 @@
     [
       83,
       [
-        "closure-call.rs",
+        "data/exec-smir/call-with-args/closure-call.rs",
         14,
         24,
         14,

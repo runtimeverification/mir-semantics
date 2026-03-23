@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "crate_id": 10639679865675414000,
+  "crate_id": 10639679865675413851,
   "allocs": [
     {
       "alloc_id": 4,
@@ -2660,7 +2660,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -2693,7 +2693,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -2726,7 +2726,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -2788,7 +2788,7 @@
                   },
                   "valid_range": {
                     "start": 0,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -2849,7 +2849,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -2860,7 +2860,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -3158,7 +3158,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -3172,7 +3172,7 @@
                     },
                     "valid_range": {
                       "start": 0,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -3338,7 +3338,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -3349,7 +3349,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -3383,7 +3383,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -3487,7 +3487,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -3501,7 +3501,7 @@
                     },
                     "valid_range": {
                       "start": 0,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -3611,7 +3611,7 @@
                             },
                             "valid_range": {
                               "start": 1,
-                              "end": 18446744073709552000
+                              "end": 18446744073709551615
                             }
                           }
                         },
@@ -3625,7 +3625,7 @@
                             },
                             "valid_range": {
                               "start": 0,
-                              "end": 18446744073709552000
+                              "end": 18446744073709551615
                             }
                           }
                         }
@@ -3704,7 +3704,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -3718,7 +3718,7 @@
                     },
                     "valid_range": {
                       "start": 0,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -3797,7 +3797,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -3811,7 +3811,7 @@
                     },
                     "valid_range": {
                       "start": 0,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -4447,7 +4447,7 @@
                             },
                             "valid_range": {
                               "start": 1,
-                              "end": 18446744073709552000
+                              "end": 18446744073709551615
                             }
                           }
                         },
@@ -4458,7 +4458,7 @@
                             },
                             "valid_range": {
                               "start": 1,
-                              "end": 18446744073709552000
+                              "end": 18446744073709551615
                             }
                           }
                         }
@@ -4542,7 +4542,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -4606,7 +4606,7 @@
                   },
                   "valid_range": {
                     "start": 0,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -4861,7 +4861,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -4872,7 +4872,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -4937,7 +4937,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -4955,7 +4955,7 @@
     [
       0,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2425,
         9,
         2425,
@@ -4965,7 +4965,7 @@
     [
       1,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2425,
         9,
         2425,
@@ -4975,7 +4975,7 @@
     [
       2,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2426,
         6,
         2426,
@@ -4985,7 +4985,7 @@
     [
       4,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2424,
         12,
         2424,
@@ -4995,7 +4995,7 @@
     [
       5,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2424,
         19,
         2424,
@@ -5005,7 +5005,7 @@
     [
       6,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2424,
         5,
         2426,
@@ -5015,7 +5015,7 @@
     [
       7,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         62,
         2393,
@@ -5025,7 +5025,7 @@
     [
       8,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         62,
         2393,
@@ -5035,7 +5035,7 @@
     [
       9,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         71,
         2393,
@@ -5045,7 +5045,7 @@
     [
       10,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         84,
         2393,
@@ -5055,7 +5055,7 @@
     [
       12,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         20,
         2393,
@@ -5065,7 +5065,7 @@
     [
       13,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         27,
         2393,
@@ -5075,7 +5075,7 @@
     [
       14,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         13,
         2393,
@@ -5085,7 +5085,7 @@
     [
       15,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/ptr/mod.rs",
+        "rustlib/src/rust/library/core/src/ptr/mod.rs",
         521,
         1,
         521,
@@ -5095,7 +5095,7 @@
     [
       16,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/convert/num.rs",
+        "rustlib/src/rust/library/core/src/convert/num.rs",
         79,
         14,
         79,
@@ -5105,7 +5105,7 @@
     [
       17,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/convert/num.rs",
+        "rustlib/src/rust/library/core/src/convert/num.rs",
         78,
         17,
         78,
@@ -5115,7 +5115,7 @@
     [
       19,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/convert/num.rs",
+        "rustlib/src/rust/library/core/src/convert/num.rs",
         77,
         21,
         77,
@@ -5125,7 +5125,7 @@
     [
       20,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/convert/num.rs",
+        "rustlib/src/rust/library/core/src/convert/num.rs",
         77,
         13,
         79,
@@ -5135,7 +5135,7 @@
     [
       21,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         373,
         5,
         373,
@@ -5145,7 +5145,7 @@
     [
       22,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         373,
         5,
         373,
@@ -5155,7 +5155,7 @@
     [
       23,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         373,
         31,
         373,
@@ -5165,7 +5165,7 @@
     [
       24,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         373,
         38,
         373,
@@ -5175,7 +5175,7 @@
     [
       26,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         364,
         5,
         364,
@@ -5185,7 +5185,7 @@
     [
       27,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         365,
         5,
         365,
@@ -5195,7 +5195,7 @@
     [
       28,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         366,
         5,
         366,
@@ -5205,7 +5205,7 @@
     [
       29,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         367,
         5,
         367,
@@ -5215,7 +5215,7 @@
     [
       30,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         363,
         1,
         374,
@@ -5225,7 +5225,7 @@
     [
       31,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         2,
         14,
         2,
@@ -5235,7 +5235,7 @@
     [
       32,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         2,
         14,
         2,
@@ -5245,7 +5245,7 @@
     [
       33,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         3,
         13,
         3,
@@ -5255,7 +5255,7 @@
     [
       34,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         3,
         19,
         3,
@@ -5265,7 +5265,7 @@
     [
       35,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         4,
         8,
         4,
@@ -5275,7 +5275,7 @@
     [
       36,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         3,
         5,
         3,
@@ -5295,7 +5295,7 @@
     [
       38,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         5,
         17,
         5,
@@ -5305,7 +5305,7 @@
     [
       39,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         6,
         15,
         6,
@@ -5315,7 +5315,7 @@
     [
       40,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         6,
         20,
         6,
@@ -5325,7 +5325,7 @@
     [
       41,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         5,
         17,
         5,
@@ -5335,7 +5335,7 @@
     [
       42,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         5,
         27,
         5,
@@ -5345,7 +5345,7 @@
     [
       43,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         5,
         9,
         5,
@@ -5355,7 +5355,7 @@
     [
       44,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         7,
         17,
         7,
@@ -5365,7 +5365,7 @@
     [
       45,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         8,
         15,
         8,
@@ -5375,7 +5375,7 @@
     [
       46,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         7,
         17,
         7,
@@ -5385,7 +5385,7 @@
     [
       47,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         7,
         27,
         7,
@@ -5395,7 +5395,7 @@
     [
       48,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         7,
         9,
         7,
@@ -5405,7 +5405,7 @@
     [
       49,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         9,
         17,
         9,
@@ -5415,7 +5415,7 @@
     [
       50,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         9,
         21,
         9,
@@ -5425,7 +5425,7 @@
     [
       51,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         46,
         21,
         46,
@@ -5435,7 +5435,7 @@
     [
       52,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         16,
         44,
@@ -5445,7 +5445,7 @@
     [
       53,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         11,
         28,
         11,
@@ -5455,7 +5455,7 @@
     [
       54,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         11,
         23,
         11,
@@ -5465,7 +5465,7 @@
     [
       55,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         24,
         44,
@@ -5475,7 +5475,7 @@
     [
       56,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         15,
         44,
@@ -5485,7 +5485,7 @@
     [
       57,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         45,
         14,
         45,
@@ -5495,7 +5495,7 @@
     [
       58,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         45,
         24,
         45,
@@ -5505,7 +5505,7 @@
     [
       59,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         46,
         22,
         46,
@@ -5515,7 +5515,7 @@
     [
       60,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         46,
         35,
         46,
@@ -5525,7 +5525,7 @@
     [
       61,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         9,
         9,
         9,
@@ -5535,7 +5535,7 @@
     [
       62,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         21,
         51,
@@ -5545,7 +5545,7 @@
     [
       63,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         21,
         51,
@@ -5555,7 +5555,7 @@
     [
       64,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         47,
         32,
         47,
@@ -5565,7 +5565,7 @@
     [
       65,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         85,
         51,
@@ -5575,7 +5575,7 @@
     [
       66,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         13,
         2,
         13,
@@ -5585,7 +5585,7 @@
     [
       68,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         1,
         13,
         1,
@@ -5595,7 +5595,7 @@
     [
       69,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         1,
         22,
         1,
@@ -5605,7 +5605,7 @@
     [
       70,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         1,
         29,
         1,
@@ -5615,7 +5615,7 @@
     [
       71,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         2,
         9,
         2,
@@ -5625,7 +5625,7 @@
     [
       72,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         47,
         25,
         47,
@@ -5635,7 +5635,7 @@
     [
       73,
       [
-        "/tmp/pytest-of-ttoth/pytest-2/simple-types0/test.rs",
+        "data/run-smir-random/simple-types/test.rs",
         1,
         1,
         13,

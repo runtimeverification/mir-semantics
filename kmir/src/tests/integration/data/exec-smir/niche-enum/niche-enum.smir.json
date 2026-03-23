@@ -1,6 +1,6 @@
 {
   "name": "niche_enum",
-  "crate_id": 4383339030477113000,
+  "crate_id": 4383339030477112872,
   "allocs": [
     {
       "alloc_id": 2,
@@ -52,43 +52,7 @@
     },
     {
       "alloc_id": 7,
-      "ty": 52,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            84,
-            119,
-            111
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 8,
-      "ty": 52,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            79,
-            110,
-            101
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 9,
-      "ty": 52,
+      "ty": 61,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -106,13 +70,49 @@
       }
     },
     {
-      "alloc_id": 10,
-      "ty": 52,
+      "alloc_id": 8,
+      "ty": 61,
       "global_alloc": {
         "Memory": {
           "bytes": [
             78,
             111,
+            110,
+            101
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 9,
+      "ty": 61,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            84,
+            119,
+            111
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 10,
+      "ty": 61,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            79,
             110,
             101
           ],
@@ -223,7 +223,7 @@
       }
     ],
     [
-      84,
+      82,
       {
         "NoOpSym": ""
       }
@@ -5447,7 +5447,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 82,
+          "pointee_type": 83,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -5475,7 +5475,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -5486,7 +5486,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -5512,7 +5512,7 @@
       8,
       {
         "PtrType": {
-          "pointee_type": 83,
+          "pointee_type": 84,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -5528,7 +5528,7 @@
                   },
                   "valid_range": {
                     "start": 0,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -5554,7 +5554,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 28,
+          "adt_def": 29,
           "discriminants": [
             0,
             1
@@ -5593,7 +5593,7 @@
                   },
                   "valid_range": {
                     "start": 0,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -5626,7 +5626,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -5644,7 +5644,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 73,
+          "adt_def": 37,
           "fields": [
             9
           ],
@@ -5700,7 +5700,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 71,
+          "adt_def": 35,
           "fields": [
             15
           ],
@@ -5763,7 +5763,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -5781,7 +5781,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<(), std::fmt::Error>",
-          "adt_def": 28,
+          "adt_def": 29,
           "discriminants": [
             0,
             1
@@ -5791,7 +5791,7 @@
               1
             ],
             [
-              61
+              62
             ]
           ],
           "layout": {
@@ -5942,7 +5942,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -5975,7 +5975,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -6008,7 +6008,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -6041,7 +6041,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -6074,7 +6074,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -6107,7 +6107,7 @@
                   },
                   "valid_range": {
                     "start": 0,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -6140,7 +6140,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -6173,7 +6173,7 @@
                   },
                   "valid_range": {
                     "start": 0,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -6206,7 +6206,7 @@
                   },
                   "valid_range": {
                     "start": 0,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -6223,7 +6223,7 @@
       36,
       {
         "RefType": {
-          "pointee_type": 62,
+          "pointee_type": 52,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -6251,7 +6251,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -6262,7 +6262,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -6532,7 +6532,7 @@
       41,
       {
         "RefType": {
-          "pointee_type": 52,
+          "pointee_type": 61,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -6560,7 +6560,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -6574,7 +6574,7 @@
                     },
                     "valid_range": {
                       "start": 0,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -6849,7 +6849,7 @@
       {
         "StructType": {
           "name": "std::fmt::Arguments<'_>",
-          "adt_def": 35,
+          "adt_def": 40,
           "fields": [
             64,
             65,
@@ -6924,7 +6924,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -6935,7 +6935,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -6950,17 +6950,11 @@
       }
     ],
     [
-      52,
-      {
-        "PrimitiveType": "Str"
-      }
-    ],
-    [
       53,
       {
         "StructType": {
           "name": "std::fmt::Formatter<'_>",
-          "adt_def": 18,
+          "adt_def": 19,
           "fields": [
             54,
             55,
@@ -7031,7 +7025,7 @@
       {
         "EnumType": {
           "name": "core::fmt::rt::Alignment",
-          "adt_def": 25,
+          "adt_def": 26,
           "discriminants": [
             0,
             1,
@@ -7369,7 +7363,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -7380,7 +7374,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -7405,9 +7399,15 @@
     [
       61,
       {
+        "PrimitiveType": "Str"
+      }
+    ],
+    [
+      62,
+      {
         "StructType": {
           "name": "std::fmt::Error",
-          "adt_def": 31,
+          "adt_def": 32,
           "fields": [],
           "layout": {
             "fields": {
@@ -7453,7 +7453,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -7498,7 +7498,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -7512,7 +7512,7 @@
                     },
                     "valid_range": {
                       "start": 0,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -7622,7 +7622,7 @@
                             },
                             "valid_range": {
                               "start": 1,
-                              "end": 18446744073709552000
+                              "end": 18446744073709551615
                             }
                           }
                         },
@@ -7636,7 +7636,7 @@
                             },
                             "valid_range": {
                               "start": 0,
-                              "end": 18446744073709552000
+                              "end": 18446744073709551615
                             }
                           }
                         }
@@ -7715,7 +7715,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -7729,7 +7729,7 @@
                     },
                     "valid_range": {
                       "start": 0,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -7808,7 +7808,7 @@
                     },
                     "valid_range": {
                       "start": 1,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 },
@@ -7822,7 +7822,7 @@
                     },
                     "valid_range": {
                       "start": 0,
-                      "end": 18446744073709552000
+                      "end": 18446744073709551615
                     }
                   }
                 }
@@ -7874,7 +7874,7 @@
       {
         "StructType": {
           "name": "core::fmt::rt::Placeholder",
-          "adt_def": 39,
+          "adt_def": 44,
           "fields": [
             59,
             55,
@@ -7931,7 +7931,7 @@
       {
         "EnumType": {
           "name": "core::fmt::rt::Count",
-          "adt_def": 46,
+          "adt_def": 51,
           "discriminants": [
             0,
             1,
@@ -8169,7 +8169,7 @@
       {
         "StructType": {
           "name": "core::fmt::rt::Argument<'_>",
-          "adt_def": 49,
+          "adt_def": 54,
           "fields": [
             74
           ],
@@ -8206,7 +8206,7 @@
       {
         "EnumType": {
           "name": "core::fmt::rt::ArgumentType<'_>",
-          "adt_def": 51,
+          "adt_def": 56,
           "discriminants": [
             0,
             1
@@ -8286,7 +8286,7 @@
                             },
                             "valid_range": {
                               "start": 1,
-                              "end": 18446744073709552000
+                              "end": 18446744073709551615
                             }
                           }
                         },
@@ -8297,7 +8297,7 @@
                             },
                             "valid_range": {
                               "start": 1,
-                              "end": 18446744073709552000
+                              "end": 18446744073709551615
                             }
                           }
                         }
@@ -8354,7 +8354,7 @@
       {
         "StructType": {
           "name": "std::ptr::NonNull<()>",
-          "adt_def": 56,
+          "adt_def": 61,
           "fields": [
             78
           ],
@@ -8381,7 +8381,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -8399,7 +8399,7 @@
       {
         "StructType": {
           "name": "std::marker::PhantomData<&()>",
-          "adt_def": 58,
+          "adt_def": 63,
           "fields": [],
           "layout": {
             "fields": {
@@ -8445,7 +8445,7 @@
                   },
                   "valid_range": {
                     "start": 0,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -8478,7 +8478,7 @@
                   },
                   "valid_range": {
                     "start": 1,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -8496,7 +8496,7 @@
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 59,
+          "adt_def": 64,
           "fields": [
             41,
             54,
@@ -8537,7 +8537,7 @@
       }
     ],
     [
-      83,
+      84,
       {
         "PtrType": {
           "pointee_type": 9,
@@ -8556,7 +8556,7 @@
                   },
                   "valid_range": {
                     "start": 0,
-                    "end": 18446744073709552000
+                    "end": 18446744073709551615
                   }
                 }
               }
@@ -8574,7 +8574,7 @@
     [
       0,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         194,
         17,
         194,
@@ -8584,7 +8584,7 @@
     [
       1,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         194,
         17,
         199,
@@ -8594,7 +8594,7 @@
     [
       2,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         9,
         195,
@@ -8604,7 +8604,7 @@
     [
       3,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         10,
         195,
@@ -8614,7 +8614,7 @@
     [
       4,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         201,
         2,
         201,
@@ -8624,7 +8624,7 @@
     [
       5,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         199,
         5,
         199,
@@ -8634,7 +8634,7 @@
     [
       6,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         194,
         12,
         194,
@@ -8644,7 +8644,7 @@
     [
       7,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         199,
         6,
         199,
@@ -8654,7 +8654,7 @@
     [
       9,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         189,
         5,
         189,
@@ -8664,7 +8664,7 @@
     [
       10,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         190,
         5,
         190,
@@ -8674,7 +8674,7 @@
     [
       11,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         191,
         5,
         191,
@@ -8684,7 +8684,7 @@
     [
       12,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         192,
         5,
         192,
@@ -8694,7 +8694,7 @@
     [
       13,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         188,
         1,
         201,
@@ -8704,7 +8704,7 @@
     [
       14,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         18,
         195,
@@ -8714,7 +8714,7 @@
     [
       15,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         18,
         195,
@@ -8724,7 +8724,7 @@
     [
       16,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         18,
         195,
@@ -8734,7 +8734,7 @@
     [
       17,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         70,
         195,
@@ -8744,7 +8744,7 @@
     [
       18,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         76,
         195,
@@ -8754,7 +8754,7 @@
     [
       19,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         74,
         195,
@@ -8764,7 +8764,7 @@
     [
       20,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         93,
         195,
@@ -8774,7 +8774,7 @@
     [
       21,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         83,
         195,
@@ -8784,7 +8784,7 @@
     [
       22,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2053,
         9,
         2053,
@@ -8794,7 +8794,7 @@
     [
       23,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         636,
         9,
         636,
@@ -8804,7 +8804,7 @@
     [
       24,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         636,
         9,
         636,
@@ -8814,7 +8814,7 @@
     [
       25,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         636,
         21,
         636,
@@ -8824,7 +8824,7 @@
     [
       26,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2053,
         23,
         2053,
@@ -8834,7 +8834,7 @@
     [
       27,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/rt.rs",
+        "rustlib/src/rust/library/std/src/rt.rs",
         195,
         92,
         195,
@@ -8844,7 +8844,7 @@
     [
       29,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2052,
         19,
         2052,
@@ -8854,7 +8854,7 @@
     [
       30,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
+        "rustlib/src/rust/library/std/src/sys/pal/unix/process/process_common.rs",
         635,
         19,
         635,
@@ -8864,7 +8864,7 @@
     [
       31,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         154,
         18,
         154,
@@ -8884,7 +8884,7 @@
     [
       33,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         154,
         18,
         154,
@@ -8894,7 +8894,7 @@
     [
       34,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        "rustlib/src/rust/library/core/src/hint.rs",
         389,
         5,
         389,
@@ -8904,7 +8904,7 @@
     [
       35,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        "rustlib/src/rust/library/core/src/hint.rs",
         389,
         5,
         389,
@@ -8914,7 +8914,7 @@
     [
       36,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         160,
         2,
         160,
@@ -8924,7 +8924,7 @@
     [
       38,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         150,
         43,
         150,
@@ -8934,7 +8934,7 @@
     [
       40,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         154,
         9,
         154,
@@ -8944,7 +8944,7 @@
     [
       41,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/hint.rs",
+        "rustlib/src/rust/library/core/src/hint.rs",
         388,
         27,
         388,
@@ -8954,7 +8954,7 @@
     [
       42,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/sys/backtrace.rs",
+        "rustlib/src/rust/library/std/src/sys/backtrace.rs",
         150,
         1,
         160,
@@ -8964,7 +8964,7 @@
     [
       43,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         62,
         2393,
@@ -8974,7 +8974,7 @@
     [
       44,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         62,
         2393,
@@ -8984,7 +8984,7 @@
     [
       45,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         71,
         2393,
@@ -8994,7 +8994,7 @@
     [
       46,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         84,
         2393,
@@ -9004,7 +9004,7 @@
     [
       48,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         20,
         2393,
@@ -9014,7 +9014,7 @@
     [
       49,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         27,
         2393,
@@ -9024,7 +9024,7 @@
     [
       50,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/fmt/mod.rs",
+        "rustlib/src/rust/library/core/src/fmt/mod.rs",
         2393,
         13,
         2393,
@@ -9034,7 +9034,7 @@
     [
       51,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/ops/function.rs",
+        "rustlib/src/rust/library/core/src/ops/function.rs",
         250,
         5,
         250,
@@ -9044,7 +9044,7 @@
     [
       52,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/ptr/mod.rs",
+        "rustlib/src/rust/library/core/src/ptr/mod.rs",
         521,
         1,
         521,
@@ -9054,7 +9054,7 @@
     [
       53,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         373,
         5,
         373,
@@ -9064,7 +9064,7 @@
     [
       54,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         373,
         5,
         373,
@@ -9074,7 +9074,7 @@
     [
       55,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         373,
         31,
         373,
@@ -9084,7 +9084,7 @@
     [
       56,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         373,
         38,
         373,
@@ -9094,7 +9094,7 @@
     [
       58,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         364,
         5,
         364,
@@ -9104,7 +9104,7 @@
     [
       59,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         365,
         5,
         365,
@@ -9114,7 +9114,7 @@
     [
       60,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         366,
         5,
         366,
@@ -9124,7 +9124,7 @@
     [
       61,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         367,
         5,
         367,
@@ -9134,7 +9134,7 @@
     [
       62,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/panicking.rs",
+        "rustlib/src/rust/library/core/src/panicking.rs",
         363,
         1,
         374,
@@ -9144,7 +9144,7 @@
     [
       63,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2424,
         6,
         2424,
@@ -9154,7 +9154,7 @@
     [
       64,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2423,
         9,
         2423,
@@ -9164,7 +9164,7 @@
     [
       66,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2422,
         15,
         2422,
@@ -9174,7 +9174,7 @@
     [
       67,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/process.rs",
+        "rustlib/src/rust/library/std/src/process.rs",
         2422,
         5,
         2424,
@@ -9184,7 +9184,7 @@
     [
       68,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         567,
         20,
         567,
@@ -9194,7 +9194,7 @@
     [
       69,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         580,
         56,
         580,
@@ -9204,7 +9204,7 @@
     [
       70,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         567,
         24,
         567,
@@ -9214,7 +9214,7 @@
     [
       71,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         567,
         25,
         567,
@@ -9224,7 +9224,7 @@
     [
       72,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2183,
         9,
         2183,
@@ -9234,7 +9234,7 @@
     [
       73,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2183,
         15,
         2183,
@@ -9244,7 +9244,7 @@
     [
       74,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2187,
         29,
         2187,
@@ -9254,7 +9254,7 @@
     [
       75,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2186,
         32,
         2186,
@@ -9264,7 +9264,7 @@
     [
       76,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2185,
         32,
         2185,
@@ -9274,7 +9274,7 @@
     [
       77,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2184,
         35,
         2184,
@@ -9284,7 +9284,7 @@
     [
       78,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2184,
         19,
         2184,
@@ -9294,7 +9294,7 @@
     [
       79,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2184,
         28,
         2184,
@@ -9304,7 +9304,7 @@
     [
       80,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2189,
         6,
         2189,
@@ -9314,7 +9314,7 @@
     [
       82,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2180,
         11,
         2180,
@@ -9324,7 +9324,7 @@
     [
       83,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2180,
         18,
         2180,
@@ -9334,7 +9334,7 @@
     [
       87,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/option.rs",
+        "rustlib/src/rust/library/core/src/option.rs",
         2180,
         5,
         2189,
@@ -9344,7 +9344,7 @@
     [
       88,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         8,
         5,
         8,
@@ -9354,7 +9354,7 @@
     [
       89,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         11,
         14,
         11,
@@ -9364,7 +9364,7 @@
     [
       90,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         10,
         32,
         10,
@@ -9374,7 +9374,7 @@
     [
       91,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         10,
         19,
         10,
@@ -9384,7 +9384,7 @@
     [
       92,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         10,
         14,
         10,
@@ -9394,7 +9394,7 @@
     [
       93,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         9,
         32,
         9,
@@ -9404,7 +9404,7 @@
     [
       94,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         9,
         19,
         9,
@@ -9414,7 +9414,7 @@
     [
       95,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         9,
         14,
         9,
@@ -9424,7 +9424,7 @@
     [
       96,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         13,
         2,
         13,
@@ -9434,7 +9434,7 @@
     [
       98,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         7,
         8,
         7,
@@ -9444,7 +9444,7 @@
     [
       99,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         7,
         1,
         13,
@@ -9454,7 +9454,7 @@
     [
       100,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         16,
         16,
         16,
@@ -9464,7 +9464,7 @@
     [
       101,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         16,
         20,
         16,
@@ -9474,7 +9474,7 @@
     [
       102,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         16,
         16,
         16,
@@ -9484,7 +9484,7 @@
     [
       103,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         46,
         21,
         46,
@@ -9494,7 +9494,7 @@
     [
       104,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         16,
         44,
@@ -9504,7 +9504,7 @@
     [
       105,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         24,
         44,
@@ -9514,7 +9514,7 @@
     [
       106,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         15,
         44,
@@ -9524,7 +9524,7 @@
     [
       107,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         45,
         14,
         45,
@@ -9534,7 +9534,7 @@
     [
       108,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         45,
         24,
         45,
@@ -9544,7 +9544,7 @@
     [
       109,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         17,
         16,
         17,
@@ -9554,7 +9554,7 @@
     [
       110,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         17,
         20,
         17,
@@ -9564,7 +9564,7 @@
     [
       111,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         17,
         16,
         17,
@@ -9574,7 +9574,7 @@
     [
       112,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         21,
         51,
@@ -9584,7 +9584,7 @@
     [
       113,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         21,
         51,
@@ -9594,7 +9594,7 @@
     [
       114,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         47,
         32,
         47,
@@ -9604,7 +9604,7 @@
     [
       115,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         85,
         51,
@@ -9614,7 +9614,7 @@
     [
       116,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         46,
         21,
         46,
@@ -9624,7 +9624,7 @@
     [
       117,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         16,
         44,
@@ -9634,7 +9634,7 @@
     [
       118,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         24,
         44,
@@ -9644,7 +9644,7 @@
     [
       119,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         15,
         44,
@@ -9654,7 +9654,7 @@
     [
       120,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         45,
         14,
         45,
@@ -9664,7 +9664,7 @@
     [
       121,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         45,
         24,
         45,
@@ -9674,7 +9674,7 @@
     [
       122,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         18,
         16,
         18,
@@ -9684,7 +9684,7 @@
     [
       123,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         18,
         20,
         18,
@@ -9694,7 +9694,7 @@
     [
       124,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         18,
         16,
         18,
@@ -9704,7 +9704,7 @@
     [
       125,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         21,
         51,
@@ -9714,7 +9714,7 @@
     [
       126,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         21,
         51,
@@ -9724,7 +9724,7 @@
     [
       127,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         47,
         32,
         47,
@@ -9734,7 +9734,7 @@
     [
       128,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         85,
         51,
@@ -9744,7 +9744,7 @@
     [
       129,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         46,
         21,
         46,
@@ -9754,7 +9754,7 @@
     [
       130,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         16,
         44,
@@ -9764,7 +9764,7 @@
     [
       131,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         24,
         44,
@@ -9774,7 +9774,7 @@
     [
       132,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         44,
         15,
         44,
@@ -9784,7 +9784,7 @@
     [
       133,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         45,
         14,
         45,
@@ -9794,7 +9794,7 @@
     [
       134,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         45,
         24,
         45,
@@ -9804,7 +9804,7 @@
     [
       135,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         19,
         2,
         19,
@@ -9814,7 +9814,7 @@
     [
       136,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         21,
         51,
@@ -9824,7 +9824,7 @@
     [
       137,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         21,
         51,
@@ -9834,7 +9834,7 @@
     [
       138,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         47,
         32,
         47,
@@ -9844,7 +9844,7 @@
     [
       139,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         51,
         85,
         51,
@@ -9854,7 +9854,7 @@
     [
       141,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         47,
         25,
         47,
@@ -9864,7 +9864,7 @@
     [
       142,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         47,
         25,
         47,
@@ -9874,7 +9874,7 @@
     [
       143,
       [
-        "/home/ttoth/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/macros/mod.rs",
+        "rustlib/src/rust/library/core/src/macros/mod.rs",
         47,
         25,
         47,
@@ -9884,7 +9884,7 @@
     [
       144,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         15,
         1,
         19,
@@ -9894,7 +9894,7 @@
     [
       145,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         1,
         10,
         1,
@@ -9904,7 +9904,7 @@
     [
       146,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         1,
         14,
         1,
@@ -9914,7 +9914,7 @@
     [
       147,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         1,
         15,
         1,
@@ -9924,7 +9924,7 @@
     [
       148,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         1,
         26,
         1,
@@ -9934,7 +9934,7 @@
     [
       149,
       [
-        "../mir-semantics/kmir/src/tests/integration/data/exec-smir/niche-enum/niche-enum.rs",
+        "data/exec-smir/niche-enum/niche-enum.rs",
         1,
         17,
         1,

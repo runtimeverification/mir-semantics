@@ -4,7 +4,7 @@
   "allocs": [
     {
       "alloc_id": 1,
-      "ty": 57,
+      "ty": 56,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -23,7 +23,60 @@
     },
     {
       "alloc_id": 3,
-      "ty": 58,
+      "ty": 60,
+      "global_alloc": {
+        "Memory": {
+          "bytes": [
+            97,
+            115,
+            115,
+            101,
+            114,
+            116,
+            105,
+            111,
+            110,
+            32,
+            102,
+            97,
+            105,
+            108,
+            101,
+            100,
+            58,
+            32,
+            115,
+            117,
+            98,
+            115,
+            108,
+            105,
+            99,
+            101,
+            32,
+            61,
+            61,
+            32,
+            91,
+            50,
+            50,
+            44,
+            32,
+            51,
+            51,
+            93
+          ],
+          "provenance": {
+            "ptrs": []
+          },
+          "align": 1,
+          "mutability": "Not"
+        }
+      }
+    },
+    {
+      "alloc_id": 4,
+      "ty": 60,
       "global_alloc": {
         "Memory": {
           "bytes": [
@@ -124,59 +177,6 @@
             105,
             99,
             101
-          ],
-          "provenance": {
-            "ptrs": []
-          },
-          "align": 1,
-          "mutability": "Not"
-        }
-      }
-    },
-    {
-      "alloc_id": 4,
-      "ty": 58,
-      "global_alloc": {
-        "Memory": {
-          "bytes": [
-            97,
-            115,
-            115,
-            101,
-            114,
-            116,
-            105,
-            111,
-            110,
-            32,
-            102,
-            97,
-            105,
-            108,
-            101,
-            100,
-            58,
-            32,
-            115,
-            117,
-            98,
-            115,
-            108,
-            105,
-            99,
-            101,
-            32,
-            61,
-            61,
-            32,
-            91,
-            50,
-            50,
-            44,
-            32,
-            51,
-            51,
-            93
           ],
           "provenance": {
             "ptrs": []
@@ -297,7 +297,7 @@
       }
     ],
     [
-      56,
+      63,
       {
         "NoOpSym": ""
       }
@@ -4931,7 +4931,7 @@
       1,
       {
         "RefType": {
-          "pointee_type": 58,
+          "pointee_type": 60,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -5273,7 +5273,7 @@
       {
         "StructType": {
           "name": "std::ops::Range<usize>",
-          "adt_def": 42,
+          "adt_def": 41,
           "fields": [
             3,
             3
@@ -5340,7 +5340,7 @@
       18,
       {
         "RefType": {
-          "pointee_type": 62,
+          "pointee_type": 61,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -5405,7 +5405,7 @@
       21,
       {
         "PtrType": {
-          "pointee_type": 63,
+          "pointee_type": 62,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -5537,7 +5537,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 21,
+          "adt_def": 20,
           "fields": [
             22
           ],
@@ -5593,7 +5593,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 19,
+          "adt_def": 18,
           "fields": [
             28
           ],
@@ -5772,7 +5772,7 @@
       41,
       {
         "PtrType": {
-          "pointee_type": 57,
+          "pointee_type": 56,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -5805,7 +5805,7 @@
       42,
       {
         "RefType": {
-          "pointee_type": 57,
+          "pointee_type": 56,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -5839,7 +5839,7 @@
       {
         "StructType": {
           "name": "std::array::TryFromSliceError",
-          "adt_def": 28,
+          "adt_def": 48,
           "fields": [
             2
           ],
@@ -6271,7 +6271,7 @@
       }
     ],
     [
-      57,
+      56,
       {
         "ArrayType": {
           "elem_type": 51,
@@ -6328,16 +6328,10 @@
       }
     ],
     [
-      58,
-      {
-        "PrimitiveType": "Str"
-      }
-    ],
-    [
-      59,
+      57,
       {
         "RefType": {
-          "pointee_type": 60,
+          "pointee_type": 58,
           "layout": {
             "fields": "Primitive",
             "variants": {
@@ -6367,15 +6361,15 @@
       }
     ],
     [
-      60,
+      58,
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 35,
+          "adt_def": 25,
           "fields": [
             1,
-            61,
-            61
+            59,
+            59
           ],
           "layout": {
             "fields": {
@@ -6412,7 +6406,7 @@
       }
     ],
     [
-      61,
+      59,
       {
         "PrimitiveType": {
           "Uint": "U32"
@@ -6420,7 +6414,13 @@
       }
     ],
     [
-      63,
+      60,
+      {
+        "PrimitiveType": "Str"
+      }
+    ],
+    [
+      62,
       {
         "PtrType": {
           "pointee_type": 22,

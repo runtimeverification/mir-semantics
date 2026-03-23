@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (43 steps)
+│  (44 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
@@ -15,9 +15,9 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
-┃  │  (5 steps)
+┃  │  (6 steps)
 ┃  └─ 6 (stuck, leaf)
-┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "** UNKNOWN FUNCTION **" ) ,
+┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
 ┃      span: 32
 ┃
 ┗━━┓ subst: .Subst
@@ -27,7 +27,7 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
    │
-   │  (209 steps)
+   │  (211 steps)
    ├─ 7
    │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
    │   span: 87
@@ -41,17 +41,17 @@
    ┃  │
    ┃  │  (6 steps)
    ┃  ├─ 10
-   ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( #mapOffset ( #mapOff
+   ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
    ┃  │   span: 87
    ┃  ┃
    ┃  ┃ (1 step)
    ┃  ┣━━┓
    ┃  ┃  │
    ┃  ┃  ├─ 11
-   ┃  ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
+   ┃  ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( range ( #map
    ┃  ┃  │   span: 87
    ┃  ┃  │
-   ┃  ┃  │  (113 steps)
+   ┃  ┃  │  (114 steps)
    ┃  ┃  └─ 13 (stuck, leaf)
    ┃  ┃      #traverseProjection ( toLocal ( 5 ) , Range ( range ( #mapOffset ( ARG_ARRAY1:Li
    ┃  ┃      span: 97
@@ -59,7 +59,7 @@
    ┃  ┗━━┓
    ┃     │
    ┃     └─ 12 (stuck, leaf)
-   ┃         #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( #mapOffset ( #mapOff
+   ┃         #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
    ┃         span: 87
    ┃
    ┗━━┓

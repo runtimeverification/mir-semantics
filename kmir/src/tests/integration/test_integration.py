@@ -14,7 +14,7 @@ from pyk.proof.show import APRProofShow
 
 from kmir.cargo import CargoProject
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
-from kmir.options import ProveRSOpts, ShowOpts
+from kmir.options import ProveOpts, ShowOpts
 from kmir.parse.parser import Parser
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
@@ -25,9 +25,9 @@ if TYPE_CHECKING:
     from kmir.parse.parser import JSON
 
 
-PROVE_RS_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
-PROVE_RS_FILES = list(PROVE_RS_DIR.glob('*.*'))
-PROVE_RS_START_SYMBOLS = {
+PROVE_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
+PROVE_FILES = list(PROVE_DIR.glob('*.*'))
+PROVE_START_SYMBOLS = {
     'symbolic-args-fail': ['main', 'eats_all_args'],
     'symbolic-structs-fail': ['eats_struct_args'],
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
@@ -37,12 +37,15 @@ PROVE_RS_START_SYMBOLS = {
     'assume-cheatcode': ['check_assume'],
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
+    'test_offset_from-fail': ['testing'],
+    'iter-eq-copied-take-dereftruncate': ['repro'],
+    'spl-multisig-iter-eq-copied-next': ['repro'],
 }
-PROVE_RS_SHOW_SPECS = [
+PROVE_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
-    'interior-mut2-fail',
     'interior-mut3-fail',
+    'iter_next_3',
     'assert_eq_exp',
     'bitwise-not-shift',
     'symbolic-args-fail',
@@ -53,33 +56,45 @@ PROVE_RS_SHOW_SPECS = [
     'niche-enum',
     'assume-cheatcode-conflict-fail',
     'raw-ptr-cast-fail',
+    'transmute-u8-to-enum-fail',
+    'assert-inhabited-fail',
+    'iterator-simple',
+    'unions-fail',
+    'transmute-maybe-uninit-fail',
+    'ptr-through-wrapper-fail',
+    'test_offset_from-fail',
+    'ref-ptr-cast-elem-fail',
+    'ref-ptr-cast-elem-offset-fail',
+    'volatile_store_static-fail',
+    'volatile_load_static-fail',
+    'box_heap_alloc-fail',
 ]
 
 
 @pytest.mark.parametrize(
     'rs_file',
-    PROVE_RS_FILES,
-    ids=[spec.stem for spec in PROVE_RS_FILES],
+    PROVE_FILES,
+    ids=[spec.stem for spec in PROVE_FILES],
 )
-def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
-    should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
+    should_show = rs_file.stem in PROVE_SHOW_SPECS
     is_smir = rs_file.suffix == '.json'
 
     if update_expected_output and not should_show:
         pytest.skip()
 
-    prove_rs_opts = ProveRSOpts(rs_file, smir=is_smir)
+    prove_opts = ProveOpts(rs_file, smir=is_smir)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
     start_symbols = ['main']
-    if rs_file.stem in PROVE_RS_START_SYMBOLS:
-        start_symbols = PROVE_RS_START_SYMBOLS[rs_file.stem]
+    if rs_file.stem in PROVE_START_SYMBOLS:
+        start_symbols = PROVE_START_SYMBOLS[rs_file.stem]
 
     for start_symbol in start_symbols:
-        prove_rs_opts.start_symbol = start_symbol
-        apr_proof = kmir.prove_rs(prove_rs_opts)
+        prove_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_program(prove_opts)
 
         if should_show:
             display_opts = ShowOpts(
@@ -88,7 +103,7 @@ def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> No
             shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
             show_res = '\n'.join(shower.show(apr_proof))
             assert_or_update_show_output(
-                show_res, PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
+                show_res, PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
             )
 
         if not should_fail:
@@ -118,8 +133,8 @@ def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bo
 
     # run proofs for all '<start-symbol>.expected' files (failing or not)
     for file in main_crate.parent.glob('*.expected'):
-        opts = ProveRSOpts(linked_file, smir=True, start_symbol=file.stem)
-        proof = kmir.prove_rs(opts)
+        opts = ProveOpts(linked_file, smir=True, start_symbol=file.stem)
+        proof = kmir.prove_program(opts)
 
         printer = PrettyPrinter(kmir.definition)
         cterm_show = CTermShow(printer.print)
@@ -146,13 +161,13 @@ EXEC_DATA = [
         'main-a-b-c --depth 20',
         EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.smir.json',
         EXEC_DATA_DIR / 'main-a-b-c' / 'main-a-b-c.state',
-        20,
+        24,
     ),
     (
         'call-with-args',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.smir.json',
         EXEC_DATA_DIR / 'call-with-args' / 'main-a-b-with-int.state',
-        30,
+        33,
     ),
     (
         'closure-call',
@@ -170,7 +185,7 @@ EXEC_DATA = [
         'structs-tuples',
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.smir.json',
         EXEC_DATA_DIR / 'structs-tuples' / 'structs-tuples.state',
-        99,
+        101,
     ),
     (
         'struct-field-update',
@@ -238,7 +253,7 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'references' / 'weirdRefs.state',
         None,
     ),
-    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 135),
+    ('enum-discriminants', EXEC_DATA_DIR / 'enum' / 'enum.smir.json', EXEC_DATA_DIR / 'enum' / 'enum.state', 136),
     (
         'Array-indexing',
         EXEC_DATA_DIR / 'arrays' / 'array_indexing.smir.json',
@@ -262,6 +277,12 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test-fail.smir.json',
         EXEC_DATA_DIR / 'pointers' / 'pointer-cast-length-test-fail.state',
         1000,
+    ),
+    (
+        'pointer-cast-zst',
+        EXEC_DATA_DIR / 'pointers' / 'pointer-cast-zst.smir.json',
+        EXEC_DATA_DIR / 'pointers' / 'pointer-cast-zst.state',
+        50,
     ),
     (
         'ref-ptr-cases',
@@ -362,6 +383,17 @@ EXEC_DATA = [
 ]
 
 
+# Tests containing float values that the pure kore-exec haskell backend cannot handle.
+# The haskell backend has no Float builtins (no Float.hs in kore/src/Kore/Builtin/),
+# so kore-exec crashes with "missing hook FLOAT.int2float" at Evaluator.hs:377.
+# The booster avoids this by delegating Float evaluation to the LLVM shared library
+# via simplifyTerm in booster/library/Booster/LLVM.hs.
+EXEC_SMIR_SKIP_HASKELL = {
+    'structs-tuples',
+    'struct-field-update',
+}
+
+
 @pytest.mark.parametrize('symbolic', [False, True], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
@@ -374,7 +406,9 @@ def test_exec_smir(
     update_expected_output: bool,
     tmp_path: Path,
 ) -> None:
-    _, input_json, output_kast, depth = test_case
+    name, input_json, output_kast, depth = test_case
+    if symbolic and name in EXEC_SMIR_SKIP_HASKELL:
+        pytest.skip('haskell-backend lacks FLOAT hooks')
     smir_info = SMIRInfo.from_file(input_json)
     kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=tmp_path, symbolic=symbolic)
     result = kmir_backend.run_smir(smir_info, depth=depth)
@@ -390,9 +424,9 @@ def test_exec_smir(
 def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KMIR) -> None:
     testname, smir_json = test_data
 
-    prove_rs_opts = ProveRSOpts(rs_file=smir_json, smir=True)
+    prove_opts = ProveOpts(rs_file=smir_json, smir=True)
 
-    proof = KMIR.prove_rs(prove_rs_opts)
+    proof = KMIR.prove_program(prove_opts)
     assert proof.passed
 
 

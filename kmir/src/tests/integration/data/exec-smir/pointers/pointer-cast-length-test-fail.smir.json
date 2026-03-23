@@ -248,7 +248,7 @@
       }
     ],
     [
-      50,
+      44,
       {
         "NoOpSym": ""
       }
@@ -3351,7 +3351,7 @@
       5,
       {
         "RefType": {
-          "pointee_type": 45,
+          "pointee_type": 50,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -3458,7 +3458,7 @@
       {
         "EnumType": {
           "name": "std::result::Result<isize, !>",
-          "adt_def": 14,
+          "adt_def": 25,
           "discriminants": [
             0,
             1
@@ -3548,7 +3548,7 @@
       {
         "StructType": {
           "name": "std::sys::pal::unix::process::process_common::ExitCode",
-          "adt_def": 20,
+          "adt_def": 12,
           "fields": [
             9
           ],
@@ -3604,7 +3604,7 @@
       {
         "StructType": {
           "name": "std::process::ExitCode",
-          "adt_def": 18,
+          "adt_def": 10,
           "fields": [
             15
           ],
@@ -3783,7 +3783,7 @@
       26,
       {
         "RefType": {
-          "pointee_type": 44,
+          "pointee_type": 45,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -3843,7 +3843,7 @@
       27,
       {
         "PtrType": {
-          "pointee_type": 44,
+          "pointee_type": 45,
           "layout": {
             "fields": {
               "Arbitrary": {
@@ -4347,7 +4347,7 @@
       }
     ],
     [
-      44,
+      45,
       {
         "ArrayType": {
           "elem_type": 9,
@@ -4423,7 +4423,7 @@
       {
         "StructType": {
           "name": "std::panic::Location<'_>",
-          "adt_def": 24,
+          "adt_def": 16,
           "fields": [
             34,
             49,

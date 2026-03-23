@@ -36,7 +36,10 @@ The special `Moved` value represents values that have been used and should not b
                  | StringVal( String )                    [symbol(Value::StringVal)]
                    // UTF-8 encoded Unicode string
                  | Aggregate( VariantIdx , List )         [symbol(Value::Aggregate)]
-                   // heterogenous value list        for tuples and structs (standard, tuple, or anonymous)
+                   // heterogenous value list        for tuples, enum, and structs (standard, tuple, or anonymous)
+                 | Union( FieldIdx, Value )               [symbol(Value::Union)]
+                   // A union is an Aggregate, but we differentiate it from the other Aggregates.
+                   // The Value is the data, and FieldIdx determines the type from the union's fields
                  | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
                  | Reference( Int , Place , Mutability , Metadata )
@@ -48,6 +51,8 @@ The special `Moved` value represents values that have been used and should not b
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
                    // fields are the same as in Reference
+                 | FunPtr ( Ty )
+                   // function pointer, created by operandConstant only. Ty is a key in the function table
                  | AllocRef ( AllocId , ProjectionElems , Metadata )
                                                           [symbol(Value::AllocRef)]
                    // reference to static allocation, by AllocId, possibly projected, carrying metadata if applicable
@@ -133,26 +138,22 @@ The basic operations of reading and writing those values can use K's "heating" a
 
 These functions are global static data  accessed from many places, and will be extended for the particular program.
 
-**TODO find a better home for these definitions.**
 
 ```k
   // // function store, Ty -> MonoItemFn
   syntax MonoItemKind ::= lookupFunction ( Ty ) [function, total, symbol(lookupFunction)]
-  // ------------------------------------------------------------
-  rule lookupFunction(ty(TY)) => monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(TY), noBody) [owise] // HACK
-  // cannot be total without a default "error" element. `Ty` is key for both functions and data.
 
   // // static allocations: AllocId -> AllocData (Value or error)
   syntax Evaluation ::= lookupAlloc ( AllocId ) [function, total, symbol(lookupAlloc)]
-  // -----------------------------------------------------------
-  rule lookupAlloc(ID) => InvalidAlloc(ID) [owise]
-
-  syntax Evaluation ::= InvalidAlloc ( AllocId )
+                      | InvalidAlloc ( AllocId ) // error marker
 
   // // static information about the base type interning in the MIR: Ty -> TypeInfo
   syntax TypeInfo ::= lookupTy ( Ty )    [function, total, symbol(lookupTy)]
-  // -----------------------------------------------------
-  rule lookupTy(_TY) => typeInfoVoidType [owise] // HACK
+
+  // default rules (unused, only required for compilation of the base semantics)
+  rule lookupFunction(ty(TY))   => monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(TY), noBody ) [owise]
+  rule lookupAlloc(ID)          => InvalidAlloc(ID)                                                  [owise]
+  rule lookupTy(_)              => typeInfoFunType(" ** INVALID LOOKUP CALL **" )                    [owise]
 ```
 
 ```k

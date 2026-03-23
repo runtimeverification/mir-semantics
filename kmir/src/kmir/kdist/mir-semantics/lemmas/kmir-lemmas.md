@@ -4,7 +4,7 @@ This file contains basic lemmas required for symbolic execution of MIR programs 
 
 Lemmas are simpliciations of symbolic function application that aims to confirm conditions for rewrite rules to avoid spurious branching on symbolic program parts.
 
-Some of the lemmas relate to the control flow implementation in `kmir.md` and will be needed in various proofs (for instance the simplification of list size for partially-symbolic lists of locals or stack frames).  
+Some of the lemmas relate to the control flow implementation in `kmir.md` and will be needed in various proofs (for instance the simplification of list size for partially-symbolic lists of locals or stack frames).
 Others are related to helper functions used for integer arithmetic.
 
 ```k
@@ -20,7 +20,7 @@ module KMIR-LEMMAS
 ```
 ## Simplifications for lists to avoid spurious branching on error cases in control flow
 
-Rewrite rules that look up locals or stack frames require that an index into the respective `List`s in the configuration be within the bounds of the locals list/stack. Therefore, the `size` function on lists needs to be computed. The following simplifications allow for locals and stacks to have concrete values in the beginning but a symbolic rest (of unknown size).  
+Rewrite rules that look up locals or stack frames require that an index into the respective `List`s in the configuration be within the bounds of the locals list/stack. Therefore, the `size` function on lists needs to be computed. The following simplifications allow for locals and stacks to have concrete values in the beginning but a symbolic rest (of unknown size).
 The lists used in the semantics are cons-lists, so only rules with a head element match are required.
 
 ```k
@@ -60,6 +60,51 @@ Definedness of the list and list elements is also guaranteed.
   rule #Ceil(#mapOffset(L, _)[I]) => #Ceil(L) #And {true #Equals 0 <=Int I} #And {true #Equals I <Int size(L)} [simplification]
 
   rule #Ceil(#mapOffset(L, _)) => #Ceil(L) [simplification]
+
+  rule #adjustRef(VAL:Value, 0) => VAL [simplification]
+
+  rule #adjustRef(#adjustRef(VAL, OFFSET1), OFFSET2)
+    => #adjustRef(VAL, OFFSET1 +Int OFFSET2)
+    [simplification]
+
+  rule #mapOffset(L, 0) => L [simplification]
+
+  rule #mapOffset(#mapOffset(L, OFFSET1), OFFSET2)
+    => #mapOffset(L, OFFSET1 +Int OFFSET2)
+    [simplification]
+```
+
+## Simplifications for `enum` Discriminants and Variant Indexes
+
+For symbolic enum values, the variant index remains unevaluated but the original (symbolic) discriminant can be restored:
+
+```k
+  rule #Ceil(#lookupDiscrAux(DISCRS:Discriminants, variantIdx(I)))
+    => #Ceil(DISCRS)
+     #And #Ceil(I)
+     #And {true #Equals 0 <=Int I}
+     #And {true #Equals I <Int size(DISCRS)}
+    [simplification]
+
+  rule #lookupDiscrAux(_, #findVariantIdxAux(DISCR, DISCRS, _IDX)) => DISCR
+    requires isOneOf(DISCR, DISCRS)
+    [simplification, preserves-definedness, symbolic(DISCR)]
+
+  rule asInt(#findVariantIdxAux(DISCR, DISCRS, C)) <Int X => size(DISCRS) +Int C <=Int X
+    requires isOneOf(DISCR, DISCRS)
+    [simplification, symbolic(DISCR)]
+
+  rule 0 <=Int asInt(#findVariantIdxAux(DISCR, DISCRS, _)) => true
+    requires isOneOf(DISCR, DISCRS)
+    [simplification, symbolic(DISCR)]
+
+  syntax Bool ::= isOneOf ( Int , Discriminants ) [function, total]
+  // --------------------------------------------------------------
+  rule isOneOf( _,                       .Discriminants                      ) => false
+  rule isOneOf( I, discriminant(D)                     .Discriminants        ) => I ==Int D
+  rule isOneOf( I, discriminant(mirInt(D))             .Discriminants        ) => I ==Int D
+  rule isOneOf( I, discriminant(D)         ((discriminant(_) _MORE) #as REST)) => I ==Int D orBool isOneOf(I, REST)
+  rule isOneOf( I, discriminant(mirInt(D)) ((discriminant(_) _MORE) #as REST)) => I ==Int D orBool isOneOf(I, REST)
 ```
 
 ## Simplifications for Int
@@ -118,6 +163,14 @@ power of two but the semantics will always operate with these particular ones.
   rule VAL &Int bitmask128 => VAL requires 0 <=Int VAL andBool VAL <=Int bitmask128 [simplification, preserves-definedness, smt-lemma]
 ```
 
+Repeated bit-masking can be simplified in an even more general way:
+
+```k
+     rule (X &Int MASK &Int MASK) => X &Int MASK
+       requires 0 <Int MASK
+       [simplification, smt-lemma]
+```
+
 Support for `transmute` between byte arrays and numbers (and vice-versa) uses computations involving bit masks with 255 and 8-bit shifts.
 To support simplifying round-trip conversion, the following simplifications are essential.
 
@@ -151,6 +204,43 @@ To support simplifying round-trip conversion, the following simplifications are 
       => VAL
     requires 0 <=Int VAL andBool VAL <=Int bitmask64
     [simplification, preserves-definedness, symbolic(VAL)]
+```
+
+More generally, a value which is composed of sliced bytes can generally be assumed to be in range of a suitable bitmask for the byte length.
+This avoids building up large expressions related to overflow checks and vacuous branches leading to overflow errors.
+
+```k
+  rule ((( _X0 )                                                                     &Int 255) +Int 256 *Int (
+         (( _X1 >>Int 8)                                                              &Int 255) +Int 256 *Int (
+           (( _X2 >>Int 8 >>Int 8)                                                    &Int 255) +Int 256 *Int (
+              (( _X3 >>Int 8 >>Int 8 >>Int 8)                                         &Int 255) +Int 256 *Int (
+                (( _X4 >>Int 8 >>Int 8 >>Int 8 >>Int 8)                               &Int 255) +Int 256 *Int (
+                  (( _X5 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8)                     &Int 255) +Int 256 *Int (
+                    (( _X6 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8)           &Int 255) +Int 256 *Int (
+                      (( _X7 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8) &Int 255)))))))))
+          <=Int bitmask64
+        => true
+    [simplification, preserves-definedness, symbolic]
+```
+
+Another more general simplification relates a `NUMBER` and the bytes from its representation.
+If the number is initially masked at 64 bits (`&Int bitmask64`), it is guaranteed to be positive
+and therefore the masked value equals its bytes taken individually and multiplied.
+Terms like this have been observed as branching conditions in a proof that heavily uses `[u8;8] <--> u64` conversions.
+The simplification eliminates the vacuous branches instantly.
+
+```k
+  rule ((NUMBER &Int bitmask64) &Int bitmask8) +Int 256 *Int (
+         ((NUMBER &Int bitmask64) >>Int 8 &Int bitmask8) +Int 256 *Int (
+           ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+             ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+               ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+                 ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+                   ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8) +Int 256 *Int (
+                     ((NUMBER &Int bitmask64) >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 >>Int 8 &Int bitmask8))))))))
+         &Int bitmask64
+         => NUMBER &Int bitmask64
+    [simplification, preserves-definedness, symbolic(NUMBER)]
 ```
 
 For the case where the (symbolic) byte values are first converted to a number, the round-trip simplification requires different matching.
