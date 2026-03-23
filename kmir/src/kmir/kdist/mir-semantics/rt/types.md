@@ -320,8 +320,9 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
   rule #zeroSizedType(typeInfoTupleType(.Tys, _)) => true
   rule #zeroSizedType(typeInfoStructType(_, _, .Tys, _)) => true
   rule #zeroSizedType(typeInfoVoidType) => true
-  // FIXME: Only unit tuples, empty structs, and void are recognized here; other
-  // zero-sized types (e.g. single-variant enums, function or closure items,
+  rule #zeroSizedType(typeInfoFunType(_)) => true
+  // FIXME: Only unit tuples, empty structs, void, and function items are
+  // recognized here; other zero-sized types (e.g. single-variant enums,
   // newtype wrappers around ZSTs) still fall through because we do not consult
   // the layout metadata yet. Update once we rely on machineSize(0).
   rule #zeroSizedType(_) => false [owise]

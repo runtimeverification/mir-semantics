@@ -42,10 +42,10 @@ PROVE_START_SYMBOLS = {
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
 PROVE_TERMINATE_ON_THUNK = [
-    'closure-staged-fail',
+    'closure-staged',
 ]
 PROVE_SHOW_SPECS = [
-    'closure-staged-fail',
+    'closure-staged',
     'local-raw-fail',
     'interior-mut-fail',
     'interior-mut3-fail',
