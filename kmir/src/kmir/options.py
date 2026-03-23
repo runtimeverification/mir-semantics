@@ -132,9 +132,12 @@ class ProveOpts(KMirOpts):
         add_module: Path | None = None,
         break_on_function: list[str] | None = None,
     ) -> None:
-        # store each non-empty line in the cfg roots file + start symbol
-        cfg_roots = list(filter(None, [root.strip() for root in cfg_roots.read_text().splitlines()])) if cfg_roots is not None else []
-        cfg_roots.append(start_symbol)
+        # store each non-empty line in the cfg roots file (empty list if no file provided)
+        cfg_roots_list: list[str] = (
+            list(filter(None, [root.strip() for root in cfg_roots.read_text().splitlines()]))
+            if cfg_roots is not None
+            else []
+        )
 
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -151,7 +154,7 @@ class ProveOpts(KMirOpts):
         self.smir = smir
         self.parsed_smir = parsed_smir
         self.start_symbol = start_symbol
-        self.cfg_roots = cfg_roots
+        self.cfg_roots = cfg_roots_list
         self.break_on_calls = break_on_calls
         self.break_on_function_calls = break_on_function_calls
         self.break_on_intrinsic_calls = break_on_intrinsic_calls

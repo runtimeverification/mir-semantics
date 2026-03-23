@@ -189,7 +189,7 @@ class SMIRInfo:
             case [*symbols] if symbols and all(isinstance(sym, str) for sym in symbols):
                 start_tys = [Ty(self.function_tys[sym]) for sym in symbols]
             case _:
-                raise ValueError("SMIRInfo.reduce_to() received an invalid start_symbol")
+                raise ValueError('SMIRInfo.reduce_to() received an invalid start_symbol')
 
         _LOGGER.debug(f'Reducing items, starting at {start_tys}. Call Edges {self.call_edges}')
 

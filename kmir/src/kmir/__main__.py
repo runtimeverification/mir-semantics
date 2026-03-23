@@ -554,7 +554,10 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
     prove_parser.add_argument(
-        '--cfg-roots', type=Path, metavar='CFG_ROOTS', help='Path to file containing newline-separated possible control flow graph roots (used to prune `rustc` generated MIR symbol table)'
+        '--cfg-roots',
+        type=Path,
+        metavar='CFG_ROOTS',
+        help='Path to file containing newline-separated possible control flow graph roots (used to prune `rustc` generated MIR symbol table)',
     )
     prove_parser.add_argument(
         '--add-module',

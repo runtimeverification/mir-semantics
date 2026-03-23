@@ -74,7 +74,8 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         else:
             smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-        smir_info = smir_info.reduce_to(opts.cfg_roots if opts.cfg_roots else opts.start_symbol)
+        reduce_roots = opts.cfg_roots + [opts.start_symbol] if opts.cfg_roots else opts.start_symbol
+        smir_info = smir_info.reduce_to(reduce_roots)
         # Report whether the reduced call graph includes any functions without MIR bodies
         missing_body_syms = [
             sym
