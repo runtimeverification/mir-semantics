@@ -78,56 +78,63 @@ module VALIDATE-OWNER-COMMON
   rule #bool2Int(true)  => 1
   rule #bool2Int(false) => 0
 
-  // --- 3 tx_signers ---
-  syntax Bool ::= #unsignedExists3( Key, Key, Key, Value, Int, Value, Int, Value, Int ) [function, total]
-  rule #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
-    => ( IS0 ==Int 0 andBool ( fromKey(SKEY0) ==K KEY0 orBool fromKey(SKEY1) ==K KEY0 orBool fromKey(SKEY2) ==K KEY0 ) )
-    orBool ( IS1 ==Int 0 andBool ( fromKey(SKEY0) ==K KEY1 orBool fromKey(SKEY1) ==K KEY1 orBool fromKey(SKEY2) ==K KEY1 ) )
-    orBool ( IS2 ==Int 0 andBool ( fromKey(SKEY0) ==K KEY2 orBool fromKey(SKEY1) ==K KEY2 orBool fromKey(SKEY2) ==K KEY2 ) )
+  // =========================================================================
+  // Generic signer checking helpers (list-based)
+  //
+  // These work for any number of tx_signers and registered signers.
+  // The caller constructs lists from the extracted values.
+  //
+  // keyAndIsSigner(KEY, IS) pairs a tx_signer's public key with its is_signer flag.
+  // firstN(N, LIST) takes the first N elements of LIST (implements [0..n] slicing).
+  //
+  // #unsignedExists(TxSigners, RegisteredKeys):
+  //   outer loop over tx_signers, inner loop over registered keys.
+  //   True if any tx_signer matches a registered key and is NOT a signer.
+  //
+  // #signersCount(TxSigners, RegisteredKeys):
+  //   outer loop over registered keys, inner loop over tx_signers.
+  //   Counts how many registered keys have a matching signed tx_signer.
+  // =========================================================================
 
-  syntax Bool ::= #signerMatched3( Key, Value, Int, Value, Int, Value, Int ) [function, total]
-  rule #signerMatched3(SK, KEY0, IS0, KEY1, IS1, KEY2, IS2)
-    => ( fromKey(SK) ==K KEY0 andBool IS0 =/=Int 0 )
-    orBool ( fromKey(SK) ==K KEY1 andBool IS1 =/=Int 0 )
-    orBool ( fromKey(SK) ==K KEY2 andBool IS2 =/=Int 0 )
+  syntax KeyAndIsSigner ::= keyAndIsSigner( Value, Int )
 
-  syntax Int ::= #signersCount3( Key, Key, Key, Value, Int, Value, Int, Value, Int ) [function, total]
-  rule #signersCount3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
-    => #bool2Int(#signerMatched3(SKEY0, KEY0, IS0, KEY1, IS1, KEY2, IS2))
-     +Int #bool2Int(#signerMatched3(SKEY1, KEY0, IS0, KEY1, IS1, KEY2, IS2))
-     +Int #bool2Int(#signerMatched3(SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2))
+  syntax List ::= firstN( Int, List ) [function, total]
+  // -------------------------------------------------
+  rule firstN(0, _) => .List
+  rule firstN(N, ListItem(X) REST) => ListItem(X) firstN(N -Int 1, REST) requires N >Int 0
+  rule firstN(_, .List) => .List [owise]
 
-  // --- 2 tx_signers ---
-  syntax Bool ::= #unsignedExists2( Key, Key, Key, Value, Int, Value, Int ) [function, total]
-  rule #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
-    => ( IS0 ==Int 0 andBool ( fromKey(SKEY0) ==K KEY0 orBool fromKey(SKEY1) ==K KEY0 orBool fromKey(SKEY2) ==K KEY0 ) )
-    orBool ( IS1 ==Int 0 andBool ( fromKey(SKEY0) ==K KEY1 orBool fromKey(SKEY1) ==K KEY1 orBool fromKey(SKEY2) ==K KEY1 ) )
+  // --- #unsignedExists: outer over tx_signers, inner over registered keys ---
 
-  syntax Bool ::= #signerMatched2( Key, Value, Int, Value, Int ) [function, total]
-  rule #signerMatched2(SK, KEY0, IS0, KEY1, IS1)
-    => ( fromKey(SK) ==K KEY0 andBool IS0 =/=Int 0 )
-    orBool ( fromKey(SK) ==K KEY1 andBool IS1 =/=Int 0 )
+  syntax Bool ::= #unsignedExists( List, List ) [function]
+  // -----------------------------------------------------------
+  rule #unsignedExists(.List, _REGS) => false
+  rule #unsignedExists(ListItem(keyAndIsSigner(KEY, IS)) REST, REGS)
+    => #unsignedExistsInner(KEY, IS, REGS)
+    orBool #unsignedExists(REST, REGS)
 
-  syntax Int ::= #signersCount2( Key, Key, Key, Value, Int, Value, Int ) [function, total]
-  rule #signersCount2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
-    => #bool2Int(#signerMatched2(SKEY0, KEY0, IS0, KEY1, IS1))
-     +Int #bool2Int(#signerMatched2(SKEY1, KEY0, IS0, KEY1, IS1))
-     +Int #bool2Int(#signerMatched2(SKEY2, KEY0, IS0, KEY1, IS1))
+  syntax Bool ::= #unsignedExistsInner( Value, Int, List ) [function]
+  // -----------------------------------------------------------------------
+  rule #unsignedExistsInner(_KEY, _IS, .List) => false
+  rule #unsignedExistsInner(KEY, IS, ListItem(SKEY) REST)
+    => ( IS ==Int 0 andBool fromKey(SKEY) ==K KEY )
+    orBool #unsignedExistsInner(KEY, IS, REST)
 
-  // --- 1 tx_signer ---
-  syntax Bool ::= #unsignedExists1( Key, Key, Key, Value, Int ) [function, total]
-  rule #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
-    => IS0 ==Int 0 andBool ( fromKey(SKEY0) ==K KEY0 orBool fromKey(SKEY1) ==K KEY0 orBool fromKey(SKEY2) ==K KEY0 )
+  // --- #signersCount: outer over registered keys, inner over tx_signers ---
 
-  syntax Bool ::= #signerMatched1( Key, Value, Int ) [function, total]
-  rule #signerMatched1(SK, KEY0, IS0)
-    => fromKey(SK) ==K KEY0 andBool IS0 =/=Int 0
+  syntax Int ::= #signersCount( List, List ) [function]
+  // ---------------------------------------------------------
+  rule #signersCount(_TXSIGNERS, .List) => 0
+  rule #signersCount(TXSIGNERS, ListItem(SKEY) REST)
+    => #bool2Int(#signerMatchedInner(SKEY, TXSIGNERS))
+     +Int #signersCount(TXSIGNERS, REST)
 
-  syntax Int ::= #signersCount1( Key, Key, Key, Value, Int ) [function, total]
-  rule #signersCount1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
-    => #bool2Int(#signerMatched1(SKEY0, KEY0, IS0))
-     +Int #bool2Int(#signerMatched1(SKEY1, KEY0, IS0))
-     +Int #bool2Int(#signerMatched1(SKEY2, KEY0, IS0))
+  syntax Bool ::= #signerMatchedInner( Key, List ) [function]
+  // ---------------------------------------------------------------
+  rule #signerMatchedInner(_SKEY, .List) => false
+  rule #signerMatchedInner(SKEY, ListItem(keyAndIsSigner(KEY, IS)) REST)
+    => ( fromKey(SKEY) ==K KEY andBool IS =/=Int 0 )
+    orBool #signerMatchedInner(SKEY, REST)
 
 endmodule
 ```
@@ -299,20 +306,67 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
   // Multisig signer-checking (Cases 8-10)
   // =========================================================================
 
-  rule [validate-owner-expected-multisig-check-signers]:
+  // N=3: all registered signers
+  rule [validate-owner-expected-multisig-check-signers-n3]:
     <k> #validateOwnerResultExpected(
             EXPECTED_OWNER,
             PAccountMultisig(
                 PAcc(_, _, _,_,_, OWNER_KEY, OWNER_OF_ACCOUNT, _, _),
-                IMulti(U8(M), _, _,
-                    Signers(ListItem(SKEY0) ListItem(SKEY1) ListItem(SKEY2)))),
+                IMulti(U8(M), U8(3), _, // N=3
+                    Signers(SKEYS))),
             place(LOCAL2, PROJS2),
             Aggregate(variantIdx(1), ListItem(
               Aggregate(variantIdx(0), ListItem(
                 BoolVal(true))))),                    // Some(Ok(true))
             DEST, TARGET)
       => #resolveSignerCountExpected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, SKEYS,
+            operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
+            place(LOCAL2, PROJS2),
+            DEST, TARGET)
+    </k>
+    requires EXPECTED_OWNER ==K fromKey(OWNER_KEY)
+     andBool OWNER_OF_ACCOUNT ==K #programIdKey
+    [priority(30)]
+
+  // N=2: first 2 registered signers
+  rule [validate-owner-expected-multisig-check-signers-n2]:
+    <k> #validateOwnerResultExpected(
+            EXPECTED_OWNER,
+            PAccountMultisig(
+                PAcc(_, _, _,_,_, OWNER_KEY, OWNER_OF_ACCOUNT, _, _),
+                IMulti(U8(M), U8(2), _, // N=2
+                    Signers(SKEYS))),
+            place(LOCAL2, PROJS2),
+            Aggregate(variantIdx(1), ListItem(
+              Aggregate(variantIdx(0), ListItem(
+                BoolVal(true))))),                    // Some(Ok(true))
+            DEST, TARGET)
+      => #resolveSignerCountExpected(
+            M, firstN(2, SKEYS),
+            operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
+            place(LOCAL2, PROJS2),
+            DEST, TARGET)
+    </k>
+    requires EXPECTED_OWNER ==K fromKey(OWNER_KEY)
+     andBool OWNER_OF_ACCOUNT ==K #programIdKey
+    [priority(30)]
+
+  // N=1: first registered signer only
+  rule [validate-owner-expected-multisig-check-signers-n1]:
+    <k> #validateOwnerResultExpected(
+            EXPECTED_OWNER,
+            PAccountMultisig(
+                PAcc(_, _, _,_,_, OWNER_KEY, OWNER_OF_ACCOUNT, _, _),
+                IMulti(U8(M), U8(1), _, // N=1
+                    Signers(SKEYS))),
+            place(LOCAL2, PROJS2),
+            Aggregate(variantIdx(1), ListItem(
+              Aggregate(variantIdx(0), ListItem(
+                BoolVal(true))))),                    // Some(Ok(true))
+            DEST, TARGET)
+      => #resolveSignerCountExpected(
+            M, firstN(1, SKEYS),
             operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
             place(LOCAL2, PROJS2),
             DEST, TARGET)
@@ -322,20 +376,20 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
     [priority(30)]
 
   syntax KItem ::= #resolveSignerCountExpected(
-      Int, Key, Key, Key,
+      Int, List,             // M, REGS (already-sliced registered keys)
       Evaluation,
       Place,
       Place, MaybeBasicBlockIdx
-    ) [seqstrict(5)]
+    ) [seqstrict(3)]
 
   rule [resolve-3-signers-expected]:
     <k> #resolveSignerCountExpected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Range(ListItem(_) ListItem(_) ListItem(_)),
             place(LOCAL2, PROJS2),
             DEST, TARGET)
       => #checkSigners3Expected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(0, 3)))),
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(1, 3)))),
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(2, 3)))),
@@ -345,12 +399,12 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
 
   rule [resolve-2-signers-expected]:
     <k> #resolveSignerCountExpected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Range(ListItem(_) ListItem(_)),
             place(LOCAL2, PROJS2),
             DEST, TARGET)
       => #checkSigners2Expected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(0, 2)))),
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(1, 2)))),
             DEST, TARGET)
@@ -359,141 +413,175 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
 
   rule [resolve-1-signer-expected]:
     <k> #resolveSignerCountExpected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Range(ListItem(_)),
             place(LOCAL2, PROJS2),
             DEST, TARGET)
       => #checkSigners1Expected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(0, 1)))),
             DEST, TARGET)
     </k>
     [priority(30)]
 
   // --- 3 tx_signers ---
+  // After evaluating the 3 tx_signer accounts, use generic list-based helpers.
+
   syntax KItem ::= #checkSigners3Expected(
-      Int, Key, Key, Key,
+      Int, List,             // M, REGS
       Evaluation, Evaluation, Evaluation,
       Place, MaybeBasicBlockIdx
-    ) [seqstrict(5,6,7)]
+    ) [seqstrict(3,4,5)]
 
   rule [validate-owner-expected-multisig-unsigned-3]:
     <k> #checkSigners3Expected(
-            _M, SKEY0, SKEY1, SKEY2,
+            _M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
             DEST, TARGET)
       => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)  // Err(MissingRequiredSignature)
     </k>
-    requires #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
+    requires #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS)
     [priority(30)]
 
   rule [validate-owner-expected-multisig-not-enough-3]:
     <k> #checkSigners3Expected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
             DEST, TARGET)
       => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)  // Err(MissingRequiredSignature)
     </k>
-    requires notBool #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
-     andBool #signersCount3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2) <Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS) <Int M
     [priority(30)]
 
   rule [validate-owner-expected-multisig-ok-3]:
     <k> #checkSigners3Expected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
             DEST, TARGET)
       => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)  // Ok(())
     </k>
-    requires notBool #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
-     andBool #signersCount3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2) >=Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS) >=Int M
     [priority(30)]
 
   // --- 2 tx_signers ---
+
   syntax KItem ::= #checkSigners2Expected(
-      Int, Key, Key, Key,
+      Int, List,             // M, REGS
       Evaluation, Evaluation,
       Place, MaybeBasicBlockIdx
-    ) [seqstrict(5,6)]
+    ) [seqstrict(3,4)]
 
   rule [validate-owner-expected-multisig-unsigned-2]:
     <k> #checkSigners2Expected(
-            _M, SKEY0, SKEY1, SKEY2,
+            _M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)  // Err(MissingRequiredSignature)
+      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
+    requires #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS)
     [priority(30)]
 
   rule [validate-owner-expected-multisig-not-enough-2]:
     <k> #checkSigners2Expected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)  // Err(MissingRequiredSignature)
+      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
-     andBool #signersCount2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1) <Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS) <Int M
     [priority(30)]
 
   rule [validate-owner-expected-multisig-ok-2]:
     <k> #checkSigners2Expected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)  // Ok(())
+      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
-     andBool #signersCount2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1) >=Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS) >=Int M
     [priority(30)]
 
   // --- 1 tx_signer ---
+
   syntax KItem ::= #checkSigners1Expected(
-      Int, Key, Key, Key,
+      Int, List,             // M, REGS
       Evaluation,
       Place, MaybeBasicBlockIdx
-    ) [seqstrict(5)]
+    ) [seqstrict(3)]
 
   rule [validate-owner-expected-multisig-unsigned-1]:
     <k> #checkSigners1Expected(
-            _M, SKEY0, SKEY1, SKEY2,
+            _M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)  // Err(MissingRequiredSignature)
+      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
+    requires #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS)
     [priority(30)]
 
   rule [validate-owner-expected-multisig-not-enough-1]:
     <k> #checkSigners1Expected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)  // Err(MissingRequiredSignature)
+      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
-     andBool #signersCount1(SKEY0, SKEY1, SKEY2, KEY0, IS0) <Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS) <Int M
     [priority(30)]
 
   rule [validate-owner-expected-multisig-ok-1]:
     <k> #checkSigners1Expected(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)  // Ok(())
+      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
-     andBool #signersCount1(SKEY0, SKEY1, SKEY2, KEY0, IS0) >=Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS) >=Int M
     [priority(30)]
 
 endmodule
@@ -801,15 +889,17 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
 
   // =========================================================================
   // Multisig signer-checking (Cases 8-10)
+  // Uses generic list-based #unsignedExists and #signersCount helpers.
   // =========================================================================
 
-  rule [inner-validate-owner-multisig-check-signers]:
+  // N=3: all registered signers
+  rule [inner-validate-owner-multisig-check-signers-n3]:
     <k> #validateOwnerResult(
             EXPECTED_OWNER,
             PAccountMultisig(
                 PAcc(_, _, _,_,_, OWNER_KEY, OWNER_OF_ACCOUNT, _, _),
-                IMulti(U8(M), _, _,
-                    Signers(ListItem(SKEY0) ListItem(SKEY1) ListItem(SKEY2)))),
+                IMulti(U8(M), U8(3), _, // N=3
+                    Signers(SKEYS))),
             place(LOCAL2, PROJS2),
             Aggregate(variantIdx(1), ListItem(
               Aggregate(variantIdx(0), ListItem(
@@ -817,7 +907,57 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             RESULT,
             DEST, TARGET)
       => #resolveSignerCount(
-            M, SKEY0, SKEY1, SKEY2,
+            M, SKEYS,
+            operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
+            place(LOCAL2, PROJS2),
+            RESULT,
+            DEST, TARGET)
+    </k>
+    requires EXPECTED_OWNER ==K fromKey(OWNER_KEY)
+     andBool OWNER_OF_ACCOUNT ==K #programIdKey
+    [priority(30)]
+
+  // N=2: first 2 registered signers
+  rule [inner-validate-owner-multisig-check-signers-n2]:
+    <k> #validateOwnerResult(
+            EXPECTED_OWNER,
+            PAccountMultisig(
+                PAcc(_, _, _,_,_, OWNER_KEY, OWNER_OF_ACCOUNT, _, _),
+                IMulti(U8(M), U8(2), _, // N=2
+                    Signers(SKEYS))),
+            place(LOCAL2, PROJS2),
+            Aggregate(variantIdx(1), ListItem(
+              Aggregate(variantIdx(0), ListItem(
+                BoolVal(true))))),                    // Some(Ok(true))
+            RESULT,
+            DEST, TARGET)
+      => #resolveSignerCount(
+            M, firstN(2, SKEYS),
+            operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
+            place(LOCAL2, PROJS2),
+            RESULT,
+            DEST, TARGET)
+    </k>
+    requires EXPECTED_OWNER ==K fromKey(OWNER_KEY)
+     andBool OWNER_OF_ACCOUNT ==K #programIdKey
+    [priority(30)]
+
+  // N=1: first registered signer only
+  rule [inner-validate-owner-multisig-check-signers-n1]:
+    <k> #validateOwnerResult(
+            EXPECTED_OWNER,
+            PAccountMultisig(
+                PAcc(_, _, _,_,_, OWNER_KEY, OWNER_OF_ACCOUNT, _, _),
+                IMulti(U8(M), U8(1), _, // N=1
+                    Signers(SKEYS))),
+            place(LOCAL2, PROJS2),
+            Aggregate(variantIdx(1), ListItem(
+              Aggregate(variantIdx(0), ListItem(
+                BoolVal(true))))),                    // Some(Ok(true))
+            RESULT,
+            DEST, TARGET)
+      => #resolveSignerCount(
+            M, firstN(1, SKEYS),
             operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
             place(LOCAL2, PROJS2),
             RESULT,
@@ -828,23 +968,23 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
     [priority(30)]
 
   syntax KItem ::= #resolveSignerCount(
-      Int, Key, Key, Key,
-      Evaluation,           // 5: deref'd slice (evaluates to array value)
-      Place,                // 6: original tx_signers Place
-      Value,                // 7: RESULT
+      Int, List,             // M, REGS (already-sliced registered keys)
+      Evaluation,            // 3: deref'd slice (evaluates to array value)
+      Place,                 // 4: original tx_signers Place
+      Value,                 // 5: RESULT
       Place, MaybeBasicBlockIdx
-    ) [seqstrict(5)]
+    ) [seqstrict(3)]
 
   // Dispatch: 3 tx_signers
   rule [resolve-3-signers]:
     <k> #resolveSignerCount(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Range(ListItem(_) ListItem(_) ListItem(_)),
             place(LOCAL2, PROJS2),
             RESULT,
             DEST, TARGET)
       => #checkSigners3(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(0, 3)))),
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(1, 3)))),
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(2, 3)))),
@@ -856,13 +996,13 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
   // Dispatch: 2 tx_signers
   rule [resolve-2-signers]:
     <k> #resolveSignerCount(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Range(ListItem(_) ListItem(_)),
             place(LOCAL2, PROJS2),
             RESULT,
             DEST, TARGET)
       => #checkSigners2(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(0, 2)))),
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(1, 2)))),
             RESULT,
@@ -873,13 +1013,13 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
   // Dispatch: 1 tx_signer
   rule [resolve-1-signer]:
     <k> #resolveSignerCount(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Range(ListItem(_)),
             place(LOCAL2, PROJS2),
             RESULT,
             DEST, TARGET)
       => #checkSigners1(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             operandCopy(place(LOCAL2, appendP(PROJS2, #txSignerAccountProjs(0, 1)))),
             RESULT,
             DEST, TARGET)
@@ -888,19 +1028,20 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
 
   // =========================================================================
   // 3 tx_signers: #checkSigners3
+  // Uses generic list-based #unsignedExists and #signersCount helpers.
   // =========================================================================
 
   syntax KItem ::= #checkSigners3(
-      Int, Key, Key, Key,
+      Int, List,             // M, REGS
       Evaluation, Evaluation, Evaluation,
-      Value,                // 8: RESULT
+      Value,                 // 6: RESULT
       Place, MaybeBasicBlockIdx
-    ) [seqstrict(5,6,7)]
+    ) [seqstrict(3,4,5)]
 
-  // Case 8a: unsigned signer exists => assert result == Err(MissingRequiredSignature)
+  // Case 8: unsigned signer exists => assert result == Err(MissingRequiredSignature)
   rule [inner-validate-owner-multisig-unsigned-3]:
     <k> #checkSigners3(
-            _M, SKEY0, SKEY1, SKEY2,
+            _M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
@@ -908,12 +1049,14 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             DEST, TARGET)
       => #setLocalValue(DEST, RESULT) ~> #continueAt(TARGET)
     </k>
-    requires #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
+    requires #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS)
     [priority(30)]
 
   rule [inner-validate-owner-multisig-unsigned-3-fail]:
     <k> #checkSigners3(
-            _M, SKEY0, SKEY1, SKEY2,
+            _M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
@@ -921,14 +1064,16 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             _DEST, _TARGET)
       => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
-    requires #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
+    requires #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS)
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
     [priority(30)]
 
-  // Case 9a: not enough signers => assert result == Err(MissingRequiredSignature)
+  // Case 9: not enough signers => assert result == Err(MissingRequiredSignature)
   rule [inner-validate-owner-multisig-not-enough-3]:
     <k> #checkSigners3(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
@@ -936,13 +1081,17 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             DEST, TARGET)
       => #setLocalValue(DEST, RESULT) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
-     andBool #signersCount3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2) <Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS) <Int M
     [priority(30)]
 
   rule [inner-validate-owner-multisig-not-enough-3-fail]:
     <k> #checkSigners3(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
@@ -950,15 +1099,19 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             _DEST, _TARGET)
       => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
-    requires notBool #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
-     andBool #signersCount3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2) <Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS) <Int M
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
     [priority(30)]
 
-  // Case 10a: enough signers => Ok(()) (no assert on result)
+  // Case 10: enough signers => Ok(()) (no assert on result)
   rule [inner-validate-owner-multisig-ok-3]:
     <k> #checkSigners3(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS2, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY2) ListItem(_) ListItem(_) ListItem(_)),
@@ -966,162 +1119,181 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             DEST, TARGET)
       => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)  // Ok(())
     </k>
-    requires notBool #unsignedExists3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2)
-     andBool #signersCount3(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1, KEY2, IS2) >=Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)) ListItem(keyAndIsSigner(KEY2, IS2)),
+               REGS) >=Int M
     [priority(30)]
 
-  // =========================================================================
-  // 2 tx_signers: #checkSigners2
-  // =========================================================================
+  // --- 2 tx_signers ---
 
   syntax KItem ::= #checkSigners2(
-      Int, Key, Key, Key,
+      Int, List,             // M, REGS
       Evaluation, Evaluation,
-      Value,                // 7: RESULT
+      Value,                 // 5: RESULT
       Place, MaybeBasicBlockIdx
-    ) [seqstrict(5,6)]
+    ) [seqstrict(3,4)]
 
-  // Case 8b: unsigned signer exists (2 tx_signers)
   rule [inner-validate-owner-multisig-unsigned-2]:
     <k> #checkSigners2(
-            _M, SKEY0, SKEY1, SKEY2,
+            _M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List))) #as RESULT,
             DEST, TARGET)
       => #setLocalValue(DEST, RESULT) ~> #continueAt(TARGET)
     </k>
-    requires #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
+    requires #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS)
     [priority(30)]
 
   rule [inner-validate-owner-multisig-unsigned-2-fail]:
     <k> #checkSigners2(
-            _M, SKEY0, SKEY1, SKEY2,
+            _M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
-            RESULT,
-            _DEST, _TARGET)
+            RESULT, _DEST, _TARGET)
       => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
-    requires #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
+    requires #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS)
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
     [priority(30)]
 
-  // Case 9b: not enough signers (2 tx_signers)
   rule [inner-validate-owner-multisig-not-enough-2]:
     <k> #checkSigners2(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List))) #as RESULT,
             DEST, TARGET)
       => #setLocalValue(DEST, RESULT) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
-     andBool #signersCount2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1) <Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS) <Int M
     [priority(30)]
 
   rule [inner-validate-owner-multisig-not-enough-2-fail]:
     <k> #checkSigners2(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
-            RESULT,
-            _DEST, _TARGET)
+            RESULT, _DEST, _TARGET)
       => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
-    requires notBool #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
-     andBool #signersCount2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1) <Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS) <Int M
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
     [priority(30)]
 
-  // Case 10b: enough signers (2 tx_signers) => Ok(())
   rule [inner-validate-owner-multisig-ok-2]:
     <k> #checkSigners2(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS1, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY1) ListItem(_) ListItem(_) ListItem(_)),
-            _RESULT,
-            DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)  // Ok(())
+            _RESULT, DEST, TARGET)
+      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1)
-     andBool #signersCount2(SKEY0, SKEY1, SKEY2, KEY0, IS0, KEY1, IS1) >=Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)) ListItem(keyAndIsSigner(KEY1, IS1)),
+               REGS) >=Int M
     [priority(30)]
 
-  // =========================================================================
-  // 1 tx_signer: #checkSigners1
-  // =========================================================================
+  // --- 1 tx_signer ---
 
   syntax KItem ::= #checkSigners1(
-      Int, Key, Key, Key,
+      Int, List,             // M, REGS
       Evaluation,
-      Value,                // 6: RESULT
+      Value,                 // 4: RESULT
       Place, MaybeBasicBlockIdx
-    ) [seqstrict(5)]
+    ) [seqstrict(3)]
 
-  // Case 8c: unsigned signer exists (1 tx_signer)
   rule [inner-validate-owner-multisig-unsigned-1]:
     <k> #checkSigners1(
-            _M, SKEY0, SKEY1, SKEY2,
+            _M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List))) #as RESULT,
             DEST, TARGET)
       => #setLocalValue(DEST, RESULT) ~> #continueAt(TARGET)
     </k>
-    requires #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
+    requires #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS)
     [priority(30)]
 
   rule [inner-validate-owner-multisig-unsigned-1-fail]:
     <k> #checkSigners1(
-            _M, SKEY0, SKEY1, SKEY2,
+            _M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
-            RESULT,
-            _DEST, _TARGET)
+            RESULT, _DEST, _TARGET)
       => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
-    requires #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
+    requires #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS)
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
     [priority(30)]
 
-  // Case 9c: not enough signers (1 tx_signer)
   rule [inner-validate-owner-multisig-not-enough-1]:
     <k> #checkSigners1(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
             Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List))) #as RESULT,
             DEST, TARGET)
       => #setLocalValue(DEST, RESULT) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
-     andBool #signersCount1(SKEY0, SKEY1, SKEY2, KEY0, IS0) <Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS) <Int M
     [priority(30)]
 
   rule [inner-validate-owner-multisig-not-enough-1-fail]:
     <k> #checkSigners1(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
-            RESULT,
-            _DEST, _TARGET)
+            RESULT, _DEST, _TARGET)
       => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
-    requires notBool #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
-     andBool #signersCount1(SKEY0, SKEY1, SKEY2, KEY0, IS0) <Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS) <Int M
      andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
     [priority(30)]
 
-  // Case 10c: enough signers (1 tx_signer) => Ok(())
   rule [inner-validate-owner-multisig-ok-1]:
     <k> #checkSigners1(
-            M, SKEY0, SKEY1, SKEY2,
+            M, REGS,
             Aggregate(variantIdx(0), ListItem(_) ListItem(Integer(IS0, 8, false)) ListItem(_) ListItem(_) ListItem(_) ListItem(KEY0) ListItem(_) ListItem(_) ListItem(_)),
-            _RESULT,
-            DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)  // Ok(())
+            _RESULT, DEST, TARGET)
+      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists1(SKEY0, SKEY1, SKEY2, KEY0, IS0)
-     andBool #signersCount1(SKEY0, SKEY1, SKEY2, KEY0, IS0) >=Int M
+    requires notBool #unsignedExists(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS)
+     andBool #signersCount(
+               ListItem(keyAndIsSigner(KEY0, IS0)),
+               REGS) >=Int M
     [priority(30)]
 
 endmodule
-```
