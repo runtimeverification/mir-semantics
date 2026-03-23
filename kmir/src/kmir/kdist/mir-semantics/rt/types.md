@@ -211,6 +211,14 @@ To make this function total, an optional `MaybeTy` is used.
   syntax MaybeTy ::= Ty
                    | "TyUnknown"
 
+  syntax MaybeTy ::= lookupDropFunctionTy ( Ty ) [function, total, symbol(lookupDropFunctionTy)]
+                   | #lookupDropFunctionTy ( MaybeTy ) [function, total]
+
+  rule #lookupDropFunctionTy(TY:Ty) => lookupDropFunctionTy(TY)
+  rule #lookupDropFunctionTy(TyUnknown) => TyUnknown
+
+  rule lookupDropFunctionTy(_) => TyUnknown [owise]
+
   syntax MaybeTy ::= #transparentFieldTy ( TypeInfo ) [function, total]
 
   rule #transparentFieldTy(typeInfoStructType(_, _, FIELD .Tys, LAYOUT)) => FIELD

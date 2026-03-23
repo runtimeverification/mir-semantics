@@ -7,7 +7,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING, NewType
 
 from .alloc import AllocInfo
-from .ty import EnumT, RefT, StructT, Ty, TypeMetadata, UnionT
+from .ty import ArrayT, EnumT, PtrT, RefT, StructT, TupleT, Ty, TypeMetadata, UnionT
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -174,6 +174,37 @@ class SMIRInfo:
         return res
 
     @cached_property
+    def drop_function_tys(self) -> dict[Ty, Ty]:
+        res: dict[Ty, Ty] = {}
+
+        for sym, item in self.items.items():
+            if sym not in self.function_symbols_reverse:
+                continue
+
+            mono_item = item['mono_item_kind'].get('MonoItemFn')
+            if mono_item is None:
+                continue
+
+            if not mono_item['name'].startswith('std::ptr::drop_in_place::<'):
+                continue
+
+            body = mono_item.get('body')
+            if body is None or body['arg_count'] < 1:
+                continue
+
+            arg_ty = Ty(body['locals'][1]['ty'])
+            arg_type = self.types.get(arg_ty)
+            if not isinstance(arg_type, (PtrT, RefT)):
+                _LOGGER.debug(f'Skipping drop glue {sym}: unexpected argument type {arg_type}')
+                continue
+
+            pointee_ty = Ty(arg_type.pointee_type)
+            fn_ty = Ty(self.function_symbols_reverse[sym][0])
+            res[pointee_ty] = fn_ty
+
+        return res
+
+    @cached_property
     def spans(self) -> dict[int, tuple[Path, int, int, int, int]]:
         return {id: (p, sr, sc, er, ec) for id, [p, sr, sc, er, ec] in self._smir['spans']}
 
@@ -232,28 +263,99 @@ class SMIRInfo:
             else:
                 called_tys = set()
                 for block in body['blocks']:
-                    if 'Call' not in block['terminator']['kind']:
-                        continue
-                    call = block['terminator']['kind']['Call']
+                    terminator = block['terminator']['kind']
 
-                    # 1. Direct call: the function being called
-                    func = call['func']
-                    if 'Constant' in func:
-                        called_tys.add(Ty(func['Constant']['const_']['ty']))
+                    if 'Call' in terminator:
+                        call = terminator['Call']
 
-                    # 2. Indirect call: function pointers passed as arguments
-                    #    These are ZeroSized constants whose ty is in the function table
-                    for arg in call.get('args', []):
-                        if 'Constant' in arg:
-                            const_ = arg['Constant'].get('const_', {})
-                            if const_.get('kind') == 'ZeroSized':
-                                ty = const_.get('ty')
-                                if isinstance(ty, int) and ty in function_tys:
-                                    called_tys.add(Ty(ty))
+                        # 1. Direct call: the function being called
+                        func = call['func']
+                        if 'Constant' in func:
+                            called_tys.add(Ty(func['Constant']['const_']['ty']))
+
+                        # 2. Indirect call: function pointers passed as arguments
+                        #    These are ZeroSized constants whose ty is in the function table
+                        for arg in call.get('args', []):
+                            if 'Constant' in arg:
+                                const_ = arg['Constant'].get('const_', {})
+                                if const_.get('kind') == 'ZeroSized':
+                                    ty = const_.get('ty')
+                                    if isinstance(ty, int) and ty in function_tys:
+                                        called_tys.add(Ty(ty))
+
+                    if 'Drop' in terminator:
+                        drop = terminator['Drop']
+                        drop_ty = self._place_ty(body, drop['place'])
+                        if drop_ty is None:
+                            continue
+                        drop_fn_ty = self.drop_function_tys.get(drop_ty)
+                        if drop_fn_ty is not None:
+                            called_tys.add(drop_fn_ty)
 
             for ty in self.function_symbols_reverse[sym]:
                 result[Ty(ty)] = called_tys
         return result
+
+    def _place_ty(self, body: dict, place: dict) -> Ty | None:
+        local = place.get('local')
+        if not isinstance(local, int):
+            return None
+        locals_ = body.get('locals', [])
+        if not (0 <= local < len(locals_)):
+            return None
+
+        current_ty = Ty(locals_[local]['ty'])
+        for projection in place.get('projection', []):
+            current_ty = self._projected_ty(current_ty, projection)
+            if current_ty is None:
+                return None
+
+        return current_ty
+
+    def _projected_ty(self, ty: Ty, projection: object) -> Ty | None:
+        type_info = self.types.get(ty)
+        if type_info is None:
+            return None
+
+        if projection == 'Deref':
+            if isinstance(type_info, (PtrT, RefT)):
+                return Ty(type_info.pointee_type)
+            return None
+
+        if not isinstance(projection, dict):
+            return None
+
+        if 'Field' in projection:
+            index, _ = projection['Field']
+            if isinstance(type_info, (StructT, UnionT)):
+                fields = type_info.fields
+            elif isinstance(type_info, TupleT):
+                fields = type_info.components
+            elif isinstance(type_info, EnumT):
+                # Field projection into enums is only well-defined after a downcast.
+                return None
+            else:
+                return None
+
+            if 0 <= index < len(fields):
+                return Ty(fields[index])
+            return None
+
+        if 'ConstantIndex' in projection and isinstance(type_info, ArrayT):
+            return Ty(type_info.element_type)
+
+        if 'Subslice' in projection and isinstance(type_info, ArrayT):
+            return ty
+
+        if 'OpaqueCast' in projection or 'Subtype' in projection:
+            key = 'OpaqueCast' if 'OpaqueCast' in projection else 'Subtype'
+            cast_ty = projection[key]
+            return Ty(cast_ty) if isinstance(cast_ty, int) else None
+
+        if 'Downcast' in projection:
+            return ty
+
+        return None
 
 
 def compute_closure(start_nodes: Sequence[Ty], edges: dict[Ty, set[Ty]]) -> set[Ty]:
