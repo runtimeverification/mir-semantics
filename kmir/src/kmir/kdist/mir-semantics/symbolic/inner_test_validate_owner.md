@@ -1,3 +1,140 @@
+# Lemma rules for `expected_validate_owner_result` and `inner_test_validate_owner`
+
+## Overview
+
+These lemma modules summarize two functions from the test harness
+(`specs/shared/inner_test_validate_owner.rs`) that specify the expected behavior
+of `validate_owner` in the SPL Token program. Instead of letting the K prover
+symbolically execute these functions step-by-step (which produces hundreds of
+splits from nested iterator loops), the lemma rules intercept each function call
+and directly produce the result in a single rewrite step.
+
+Both functions implement the same case analysis over the `validate_owner` logic.
+The difference is that `expected_validate_owner_result` computes and returns the
+expected `Result<(), ProgramError>`, while `inner_test_validate_owner` takes an
+additional `result` parameter and asserts (`assert_eq!`) that it matches the
+expected outcome at each error branch.
+
+## Case analysis
+
+The branching structure follows the Rust code in `expected_validate_owner_result`
+(and identically in `inner_test_validate_owner`):
+
+| Case | Condition | Result |
+|------|-----------|--------|
+| 1 | `expected_owner != key!(owner_account_info)` | `Err(Custom(4))` |
+| 2 | owner matches, non-multisig, `!is_signer` | `Err(MissingRequiredSignature)` |
+| 3 | owner matches, non-multisig, `is_signer` | `Ok(())` |
+| 4 | owner matches, multisig, `owner != PROGRAM_ID`, `!is_signer` | `Err(MissingRequiredSignature)` |
+| 5 | owner matches, multisig, `owner != PROGRAM_ID`, `is_signer` | `Ok(())` |
+| 6 | owner matches, multisig, `owner == PROGRAM_ID`, `is_initialized()` returns `Err` | `Err(InvalidAccountData)` |
+| 7 | owner matches, multisig, `owner == PROGRAM_ID`, `is_initialized()` returns `Ok(false)` | `Err(UninitializedAccount)` |
+| 8 | owner matches, multisig, `owner == PROGRAM_ID`, initialized, `unsigned_exists` | `Err(MissingRequiredSignature)` |
+| 9 | owner matches, multisig, `owner == PROGRAM_ID`, initialized, `!unsigned_exists`, `signers_count < m` | `Err(MissingRequiredSignature)` |
+| 10 | owner matches, multisig, `owner == PROGRAM_ID`, initialized, `!unsigned_exists`, `signers_count >= m` | `Ok(())` |
+
+Cases 1-3 apply when `maybe_multisig_is_initialised` is `None` (non-multisig
+path, used by `test_validate_owner`). Case 1 also applies to the multisig path
+since the owner check happens first regardless.
+
+Cases 4-5 are the multisig fallthrough: the account was passed as a multisig
+(`maybe_multisig_is_initialised` is `Some(...)`) but its `owner` field does not
+equal `PROGRAM_ID`, so the multisig signer-checking is skipped and the code
+falls through to the simple `is_signer` check.
+
+Cases 6-7 are multisig early exits based on the `is_initialized()` result
+(which comes from the `is_initialized` field of the `Multisig` struct: 0 means
+`Ok(false)`, 1 means `Ok(true)`, anything else means `Err(InvalidAccountData)`).
+
+Cases 8-10 are the multisig signer-checking phase, which involves two nested
+loops over tx_signers (transaction signer accounts from the input array) and
+`multisig.signers[0..n]` (the first `n` registered signer keys). The loop
+nesting order differs between the two checks:
+
+- **`unsigned_exists`** (case 8): outer loop over tx_signers, inner loop over
+  registered keys. True if any tx_signer matches a registered key but has
+  `is_signer == false`.
+- **`signers_count`** (cases 9-10): outer loop over registered keys, inner loop
+  over tx_signers. Counts how many registered keys have a matching signed
+  tx_signer.
+
+Cases 9 and 10 are only reachable when `unsigned_exists` is false (no unsigned
+signer matched a registered key). Case 9 then checks if `signers_count < m`
+(not enough signatures). Case 10 is the success path where
+`signers_count >= m`.
+
+## Signer-checking helpers
+
+The signer-checking logic in cases 8-10 uses list-based helper functions
+(`#unsignedExists`, `#signersCount`) that work generically over any number of
+signers, rather than having separate rules for each combination of tx_signer
+count and registered signer count.
+
+The two dimensions are:
+- **`n`** (registered signers, from `multisig.n`): can be 1, 2, or 3 (bounded
+  by `MAX_SIGNERS = 3`). Handled by matching `U8(N)` concretely in the
+  `IMulti` pattern and using `firstN(N, SKEYS)` to slice the registered keys.
+- **tx_signer count** (from the test input array size): any number. Handled
+  generically by manual heating/cooling rules that walk the `Range` pointer
+  list, evaluate each tx_signer account one at a time, and collect the results
+  into a `List`. The `#toKeyAndIsSignerList` function then extracts key and
+  is_signer fields from each evaluated account. No new rules are needed when
+  the tx_signer count changes.
+
+Both values of `n` and the tx_signer count are independent — any combination is
+handled.
+
+`n` is matched concretely (not passed as a symbolic argument) because when `n`
+is symbolic, `firstN` produces non-deterministic branches and a stuck node that
+the prover cannot prune.
+
+`m` (the threshold) remains symbolic throughout and is only used in the final
+comparison `#signersCount(...) <Int M` / `>=Int M`.
+
+## Heating/cooling for tx_signer evaluation
+
+The tx_signer accounts are evaluated using manual heating/cooling rather than
+`seqstrict`. This is because `seqstrict` only works on fixed positional
+arguments of a syntax term, not on elements of a `List`. Manual heating/cooling
+walks the `Range` pointer list, evaluates each tx_signer account one at a time
+via `operandCopy`, and collects the resulting `Value`s into a `List`. This makes
+the tx_signer count fully generic — no dispatch rules per count.
+
+The tx_signer count is always concrete (it comes from the test harness array
+size), unlike `n` which is symbolic. So there is no risk of non-deterministic
+branching.
+
+Each lemma module has its own heating/cooling loop (`#evalTxSignersExpected` /
+`#evalTxSigners`) because the `inner_test_validate_owner` version carries an
+additional `RESULT` parameter. The shared `#toKeyAndIsSignerList` function in
+`VALIDATE-OWNER-COMMON` handles the extraction step separately.
+
+## Module structure
+
+- **`VALIDATE-OWNER-COMMON`**: shared helpers — `Result2String`, `#programIdKey`,
+  `#txSignerAccountProjs`, `#bool2Int`, `firstN`, `#unsignedExists`,
+  `#signersCount`, `keyAndIsSigner`, `#toKeyAndIsSignerList`.
+- **`EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA`**: intercepts
+  `expected_validate_owner_result` (4 arguments), directly returns the result.
+- **`INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA`**: intercepts
+  `inner_test_validate_owner` (5 arguments, includes `result` parameter). Error
+  cases have pass/fail rule pairs; success cases return `Ok(())` without
+  asserting.
+
+## `inner_test_validate_owner` pass/fail rules
+
+For each error case (1, 2, 4, 6, 7, 8, 9), the `inner_test_validate_owner`
+lemma has two rules:
+- **Pass**: the `result` argument matches the expected error value (bound with
+  `#as RESULT`), so the rule returns it via `#setLocalValue(DEST, RESULT)`.
+- **Fail**: the `result` argument does not match, so the rule produces
+  `#ValidateOwnerAssertFailed(...)` with a diagnostic message showing the
+  mismatch.
+
+For the success cases (3, 5, 10), there is no assertion on `result` — the rule
+unconditionally returns `Ok(())`, matching the Rust code which does not call
+`assert_eq!` on the success path.
+
 ```k
 requires "../kmir-ast.md"
 requires "../rt/data.md"
@@ -82,7 +219,8 @@ module VALIDATE-OWNER-COMMON
   // Generic signer checking helpers (list-based)
   //
   // These work for any number of tx_signers and registered signers.
-  // The caller constructs lists from the extracted values.
+  // The heating/cooling loop collects evaluated account Values into a list,
+  // then #toKeyAndIsSignerList extracts key/is_signer pairs for these helpers.
   //
   // keyAndIsSigner(KEY, IS) pairs a tx_signer's public key with its is_signer flag.
   // firstN(N, LIST) takes the first N elements of LIST (implements [0..n] slicing).
@@ -166,7 +304,7 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
   imports VALIDATE-OWNER-COMMON
 
   // =========================================================================
-  // Intercept rule and dispatch helper
+  // Intercept rule
   // =========================================================================
 
   syntax KItem ::= #validateOwnerResultExpected( Evaluation, Evaluation, Place, Evaluation, Place, MaybeBasicBlockIdx )
@@ -336,7 +474,7 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
               Aggregate(variantIdx(0), ListItem(
                 BoolVal(true))))),                    // Some(Ok(true))
             DEST, TARGET)
-      => #resolveSignerCountExpected(
+      => #evalTxSignerAccountsExpected(
             M, SKEYS,
             operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
             place(LOCAL2, PROJS2),
@@ -359,7 +497,7 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
               Aggregate(variantIdx(0), ListItem(
                 BoolVal(true))))),                    // Some(Ok(true))
             DEST, TARGET)
-      => #resolveSignerCountExpected(
+      => #evalTxSignerAccountsExpected(
             M, firstN(2, SKEYS),
             operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
             place(LOCAL2, PROJS2),
@@ -382,7 +520,7 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
               Aggregate(variantIdx(0), ListItem(
                 BoolVal(true))))),                    // Some(Ok(true))
             DEST, TARGET)
-      => #resolveSignerCountExpected(
+      => #evalTxSignerAccountsExpected(
             M, firstN(1, SKEYS),
             operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
             place(LOCAL2, PROJS2),
@@ -398,7 +536,7 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
   // time, and collects the resulting Values into a list.
   // =========================================================================
 
-  syntax KItem ::= #resolveSignerCountExpected(
+  syntax KItem ::= #evalTxSignerAccountsExpected(
       Int, List,             // M, REGS (already-sliced registered keys)
       Evaluation,            // deref'd slice (evaluates to Range value)
       Place,                 // original tx_signers Place
@@ -407,7 +545,7 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
 
   // After the Range is evaluated, start the eval loop.
   rule [resolve-signers-expected-start]:
-    <k> #resolveSignerCountExpected(
+    <k> #evalTxSignerAccountsExpected(
             M, REGS,
             Range(PTRS),
             place(LOCAL2, PROJS2),
@@ -538,7 +676,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
   imports VALIDATE-OWNER-COMMON
 
   // =========================================================================
-  // Intercept rule and dispatch helper
+  // Intercept rule
   // =========================================================================
   //
   // inner_test_validate_owner has 5 arguments:
@@ -845,7 +983,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
                 BoolVal(true))))),                    // Some(Ok(true))
             RESULT,
             DEST, TARGET)
-      => #resolveSignerCount(
+      => #evalTxSignerAccounts(
             M, SKEYS,
             operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
             place(LOCAL2, PROJS2),
@@ -870,7 +1008,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
                 BoolVal(true))))),                    // Some(Ok(true))
             RESULT,
             DEST, TARGET)
-      => #resolveSignerCount(
+      => #evalTxSignerAccounts(
             M, firstN(2, SKEYS),
             operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
             place(LOCAL2, PROJS2),
@@ -895,7 +1033,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
                 BoolVal(true))))),                    // Some(Ok(true))
             RESULT,
             DEST, TARGET)
-      => #resolveSignerCount(
+      => #evalTxSignerAccounts(
             M, firstN(1, SKEYS),
             operandCopy(place(LOCAL2, appendP(PROJS2, projectionElemDeref .ProjectionElems))),
             place(LOCAL2, PROJS2),
@@ -911,7 +1049,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
   // Same structure as the Expected module, but carries RESULT for assertions.
   // =========================================================================
 
-  syntax KItem ::= #resolveSignerCount(
+  syntax KItem ::= #evalTxSignerAccounts(
       Int, List,             // M, REGS (already-sliced registered keys)
       Evaluation,            // deref'd slice (evaluates to Range value)
       Place,                 // original tx_signers Place
@@ -921,7 +1059,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
 
   // After the Range is evaluated, start the eval loop.
   rule [resolve-signers-start]:
-    <k> #resolveSignerCount(
+    <k> #evalTxSignerAccounts(
             M, REGS,
             Range(PTRS),
             place(LOCAL2, PROJS2),
