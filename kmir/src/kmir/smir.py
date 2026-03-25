@@ -304,8 +304,9 @@ class SMIRInfo:
         if not (0 <= local < len(locals_)):
             return None
 
-        current_ty = Ty(locals_[local]['ty'])
+        current_ty: Ty | None = Ty(locals_[local]['ty'])
         for projection in place.get('projection', []):
+            assert current_ty is not None
             current_ty = self._projected_ty(current_ty, projection)
             if current_ty is None:
                 return None
