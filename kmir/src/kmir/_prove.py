@@ -58,7 +58,7 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         kmir = KMIR.from_kompiled_kore(
             smir_info,
             target_dir=target_path,
-            extra_module=opts.add_module,
+            extra_modules=opts.add_modules or None,
             bug_report=opts.bug_report,
             symbolic=True,
             haskell_target=opts.haskell_target,
@@ -90,7 +90,7 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         kmir = KMIR.from_kompiled_kore(
             smir_info,
             target_dir=target_path,
-            extra_module=opts.add_module,
+            extra_modules=opts.add_modules or None,
             bug_report=opts.bug_report,
             symbolic=True,
             haskell_target=opts.haskell_target,

@@ -57,7 +57,7 @@ class KMIR(KProve, KRun, KParse):
         smir_info: SMIRInfo,
         target_dir: Path,
         *,
-        extra_module: Path | None = None,
+        extra_modules: list[Path] | None = None,
         bug_report: Path | None = None,
         symbolic: bool = True,
         llvm_target: str | None = None,
@@ -70,7 +70,7 @@ class KMIR(KProve, KRun, KParse):
         kompiled_smir = kompile_smir(
             smir_info=smir_info,
             target_dir=target_dir,
-            extra_module=extra_module,
+            extra_modules=extra_modules,
             bug_report=bug_report,
             symbolic=symbolic,
             llvm_target=llvm_target,

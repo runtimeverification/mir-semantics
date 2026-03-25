@@ -109,6 +109,29 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
             assert apr_proof.failed
 
 
+def test_cse(kmir: KMIR, tmp_path: Path) -> None:
+    """Test CSE pipeline: generate function summaries then reuse via --add-module."""
+    from kmir._cse import cse_prove
+
+    rs_file = PROVE_DIR / 'cse-multi-function.rs'
+    summary_dir = tmp_path / 'summaries'
+    proof_dir = tmp_path / 'proofs'
+
+    # Phase 1: CSE pipeline generates summaries
+    cse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=proof_dir)
+    result = cse_prove(cse_opts)
+    assert result.final_proof is not None
+    assert result.final_proof.passed
+    assert summary_dir.exists()
+    summary_files = list(summary_dir.glob('*.json'))
+    assert len(summary_files) > 0, 'CSE should have generated at least one summary'
+
+    # Phase 2: Reuse summaries in a fresh prove
+    reuse_opts = ProveOpts(rs_file, add_modules=summary_files, proof_dir=tmp_path / 'proofs2')
+    proof = KMIR.prove_program(reuse_opts)
+    assert proof.passed
+
+
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)
 MULTI_CRATE_TESTS = list(MULTI_CRATE_DIR.glob('*/main-crate'))
 

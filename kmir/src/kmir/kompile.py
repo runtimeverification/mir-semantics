@@ -203,7 +203,7 @@ def kompile_smir(
     target_dir: Path,
     *,
     bug_report: Path | None = None,
-    extra_module: Path | None = None,
+    extra_modules: list[Path] | None = None,
     symbolic: bool = True,
     llvm_target: str | None = None,
     llvm_lib_target: str | None = None,
@@ -253,9 +253,10 @@ def kompile_smir(
     # Load and convert extra module rules if provided
     # These are kept separate because LLVM backend doesn't support configuration rewrites
     extra_rules: list[Sentence] = []
-    if extra_module is not None:
-        extra_rules = _load_extra_module_rules(kmir, extra_module)
-        _LOGGER.info(f'Added {len(extra_rules)} rules from extra module: {extra_module}')
+    for mod_path in extra_modules or []:
+        mod_rules = _load_extra_module_rules(kmir, mod_path)
+        extra_rules.extend(mod_rules)
+        _LOGGER.info(f'Added {len(mod_rules)} rules from extra module: {mod_path}')
 
     # Combined rules for Haskell backend (supports both function equations and rewrites)
     all_rules = smir_rules + extra_rules
