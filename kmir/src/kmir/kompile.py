@@ -513,7 +513,10 @@ def make_kore_rules(
 
     type_equations = _make_stratified_rules(kmir, 'lookupTy', 'Ty', 'TypeInfo', 'ty', type_assocs, invalid_type)
 
-    drop_function_assocs = [(int(ty), KApply('ty', (intToken(int(drop_ty)),))) for ty, drop_ty in smir_info.drop_function_tys.items()]
+    drop_function_assocs: list[tuple[int, KInner]]
+    drop_function_assocs = [
+        (int(ty), KApply('ty', (intToken(int(drop_ty)),))) for ty, drop_ty in smir_info.drop_function_tys.items()
+    ]
     drop_function_equations = _make_stratified_rules(
         kmir,
         'lookupDropFunctionTy',
