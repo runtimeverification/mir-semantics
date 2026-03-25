@@ -219,15 +219,14 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
         t0 = time.time()
 
         try:
-            # Build ProveOpts for this callee
-            from .options import ProveOpts as ProveOptsClass
+            # Collect already-generated summaries for this callee's own callees
+            available_summaries = [p for p in result.summaries.values() if p.exists()]
 
             callee_proof_dir = opts.proof_dir / 'cse-callee-proofs' if opts.proof_dir else None
             if callee_proof_dir:
                 callee_proof_dir.mkdir(parents=True, exist_ok=True)
 
-            # Collect already-generated summaries for this callee's own callees
-            available_summaries = [p for p in result.summaries.values() if p.exists()]
+            from .options import ProveOpts as ProveOptsClass
 
             callee_opts = ProveOptsClass(
                 rs_file=opts.rs_file,

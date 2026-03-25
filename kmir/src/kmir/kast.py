@@ -241,6 +241,148 @@ def bool_var(var: KVariable) -> tuple[KInner, Iterable[KInner]]:
     return term, ()
 
 
+class CSEMode(NamedTuple):
+    """CSE mode: prove function as callee with symbolic caller context."""
+
+    ...
+
+
+def mk_cse_call_terminator(target: int, arg_count: int) -> KInner:
+    """Like mk_call_terminator but with someBasicBlockIdx(TARGET_BB) instead of noBasicBlockIdx.
+
+    This makes the function return via termReturnSome (stack pop + continue at caller)
+    instead of endprogram-return (#EndProgram), so the summary rule matches calling contexts.
+    """
+    operands = [
+        KApply(
+            'Operand::Copy',
+            (KApply('place', (KApply('local', (token(i + 1),)), KApply('ProjectionElems::empty', ()))),),
+        )
+        for i in range(arg_count)
+    ]
+
+    args = build_cons(KApply('Operands::empty', ()), 'Operands::append', operands)
+
+    # Use a symbolic basic block index for the return target
+    target_bb = KApply(
+        'someBasicBlockIdx(_)_BODY_MaybeBasicBlockIdx_BasicBlockIdx',
+        (KApply('basicBlockIdx(_)_BODY_BasicBlockIdx_Int', (KVariable('TARGET_BB', sort=KSort('Int')),)),),
+    )
+
+    return KApply(
+        '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator',
+        (
+            KApply(
+                'terminator(_,_)_BODY_Terminator_TerminatorKind_Span',
+                (
+                    KApply(
+                        'TerminatorKind::Call',
+                        (
+                            KApply(
+                                'Operand::Constant',
+                                (
+                                    KApply(
+                                        'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst',
+                                        (
+                                            KApply('span', token(0)),
+                                            KApply('noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex', ()),
+                                            KApply(
+                                                'mirConst(_,_,_)_TYPES_MirConst_ConstantKind_Ty_MirConstId',
+                                                (
+                                                    KApply('ConstantKind::ZeroSized', ()),
+                                                    KApply('ty', (token(target),)),
+                                                    KApply('mirConstId(_)_TYPES_MirConstId_Int', (token(0),)),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                            args,
+                            KApply(
+                                'place',
+                                (
+                                    KApply('local', (token(0),)),
+                                    KApply('ProjectionElems::empty', ()),
+                                ),
+                            ),
+                            target_bb,
+                            KApply('UnwindAction::Continue', ()),
+                        ),
+                    ),
+                    KApply('span', token(0)),
+                ),
+            ),
+        ),
+    )
+
+
+def make_cse_call_config(
+    definition: KDefinition,
+    *,
+    smir_info: SMIRInfo,
+    start_symbol: str,
+) -> CallConfig:
+    """Create initial configuration for CSE proof (function as callee).
+
+    Key differences from make_call_config with SymbolicMode:
+    - Uses someBasicBlockIdx(TARGET_BB) instead of noBasicBlockIdx
+    - Adds a symbolic StackFrame on the stack (representing caller context)
+    - After the function returns, termReturnSome fires (not endprogram-return)
+    """
+    fn_data = _FunctionData.load(smir_info=smir_info, start_symbol=start_symbol)
+    locals, constraints = _symbolic_locals(fn_data.args, smir_info.types)
+
+    # Build call terminator with someBasicBlockIdx
+    call_term = mk_cse_call_terminator(target=fn_data.target, arg_count=len(fn_data.args))
+
+    # Build a symbolic caller stack frame
+    caller_frame = KApply(
+        'StackFrame(_,_,_,_,_)_KMIR-CONFIGURATION_StackFrame_Ty_Place_MaybeBasicBlockIdx_UnwindAction_List',
+        (
+            KVariable('CSE_CALLER', sort=KSort('Ty')),
+            KApply(
+                'place',
+                (
+                    KApply('local', (KVariable('CSE_DEST_LOCAL', sort=KSort('Int')),)),
+                    KApply('ProjectionElems::empty', ()),
+                ),
+            ),
+            KApply(
+                'someBasicBlockIdx(_)_BODY_MaybeBasicBlockIdx_BasicBlockIdx',
+                (
+                    KApply(
+                        'basicBlockIdx(_)_BODY_BasicBlockIdx_Int',
+                        (KVariable('CSE_CALLER_TARGET', sort=KSort('Int')),),
+                    ),
+                ),
+            ),
+            KApply('UnwindAction::Continue', ()),
+            KVariable('CSE_CALLER_LOCALS', sort=KSort('List')),
+        ),
+    )
+
+    # Stack with the symbolic caller frame
+    stack_with_caller = KApply(
+        '_List_',
+        (
+            KApply('ListItem', (caller_frame,)),
+            KVariable('CSE_REST_STACK', sort=KSort('List')),
+        ),
+    )
+
+    subst = Subst(
+        {
+            'K_CELL': call_term,
+            'STACK_CELL': stack_with_caller,
+            'LOCALS_CELL': list_of(locals),
+        },
+    )
+    empty_config = definition.empty_config(KSort('GeneratedTopCell'))
+    config = subst(empty_config)
+    return CallConfig(config=config, constraints=tuple(constraints))
+
+
 def mk_call_terminator(target: int, arg_count: int) -> KInner:
     operands = [
         KApply(

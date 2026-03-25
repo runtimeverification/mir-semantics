@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from pyk.cterm import CTerm
 from pyk.cterm.symbolic import CTermSymbolic
-from pyk.kast.inner import KSequence, KVariable, Subst
+from pyk.kast.inner import KApply, KSequence, KSort, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
@@ -16,7 +16,7 @@ from pyk.proof.proof import parallel_advance_proof
 from pyk.proof.reachability import APRProof, APRProver
 
 from .cargo import cargo_get_smir_json
-from .kast import SymbolicMode, make_call_config
+from .kast import SymbolicMode, make_call_config, make_cse_call_config
 from .kmir import KMIR, KMIRSemantics
 from .smir import SMIRInfo
 
@@ -219,20 +219,73 @@ def apr_proof_from_smir(
     *,
     start_symbol: str = 'main',
     proof_dir: Path | None = None,
+    cse_mode: bool = False,
 ) -> APRProof:
-    lhs_config, constraints = make_call_config(
-        kmir.definition,
-        smir_info=smir_info,
-        start_symbol=start_symbol,
-        mode=SymbolicMode(),
-    )
+    if cse_mode:
+        lhs_config, constraints = make_cse_call_config(
+            kmir.definition,
+            smir_info=smir_info,
+            start_symbol=start_symbol,
+        )
+    else:
+        lhs_config, constraints = make_call_config(
+            kmir.definition,
+            smir_info=smir_info,
+            start_symbol=start_symbol,
+            mode=SymbolicMode(),
+        )
     lhs = CTerm(lhs_config, constraints)
 
     var_config, var_subst = split_config_from(lhs_config)
     _rhs_subst: dict[str, KInner] = {
         v_name: abstract_term_safely(KVariable('_'), base_name=v_name) for v_name in var_subst
     }
-    _rhs_subst['K_CELL'] = KSequence([KMIR.Symbols.END_PROGRAM])
+    if cse_mode:
+        # In CSE mode, the function returns via termReturnSome which:
+        # 1. Pops the stack frame and restores the caller context
+        # 2. Writes the return value to the destination
+        # 3. Continues execution at the caller's target basic block
+        #
+        # The target K cell should be: #setLocalValue(DEST, _VAL) ~> #execBlockIdx(TARGET_BB)
+        # This ensures the proof actually executes through the function body.
+        #
+        # We also need to specify that the caller's stack frame has been restored:
+        # - <stack> should be back to CSE_REST_STACK (the frame was popped)
+        # - <currentFunc>, <caller>, <dest>, <target>, <unwind>, <locals> should be from the caller frame
+        # After termReturnSome completes: #execBlockIdx(TARGET_BB) is at the top of <k>
+        # The return value has already been written to the caller's locals at this point.
+        _rhs_subst['K_CELL'] = KSequence(
+            [
+                KApply(
+                    '#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx',
+                    (
+                        KApply(
+                            'basicBlockIdx(_)_BODY_BasicBlockIdx_Int',
+                            (KVariable('TARGET_BB', sort=KSort('Int')),),
+                        ),
+                    ),
+                ),
+            ]
+        )
+        # The stack should have the caller frame popped
+        _rhs_subst['STACK_CELL'] = KVariable('CSE_REST_STACK', sort=KSort('List'))
+        # The caller's context should be restored
+        _rhs_subst['CURRENTFUNC_CELL'] = KVariable('CSE_CALLER', sort=KSort('Ty'))
+        _rhs_subst['CALLER_CELL'] = abstract_term_safely(KVariable('_'), base_name='CALLER_CELL')
+        _rhs_subst['DEST_CELL'] = abstract_term_safely(KVariable('_'), base_name='DEST_CELL')
+        _rhs_subst['TARGET_CELL'] = KApply(
+            'someBasicBlockIdx(_)_BODY_MaybeBasicBlockIdx_BasicBlockIdx',
+            (
+                KApply(
+                    'basicBlockIdx(_)_BODY_BasicBlockIdx_Int',
+                    (KVariable('CSE_CALLER_TARGET', sort=KSort('Int')),),
+                ),
+            ),
+        )
+        _rhs_subst['UNWIND_CELL'] = abstract_term_safely(KVariable('_'), base_name='UNWIND_CELL')
+        _rhs_subst['LOCALS_CELL'] = KVariable('CSE_CALLER_LOCALS', sort=KSort('List'))
+    else:
+        _rhs_subst['K_CELL'] = KSequence([KMIR.Symbols.END_PROGRAM])
     rhs = CTerm(Subst(_rhs_subst)(var_config))
     kcfg = KCFG()
     init_node = kcfg.create_node(lhs)

@@ -65,7 +65,7 @@ blocks, or call another function).
                  | #execStmt ( Statement )
                  | #execTerminator ( Terminator )
 
-  rule <k> #execBlockIdx(basicBlockIdx(I))
+  rule [execBlockIdx]: <k> #execBlockIdx(basicBlockIdx(I))
          =>
            #execBlock( {BLOCKS[I]}:>BasicBlock )
          ...
