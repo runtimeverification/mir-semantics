@@ -574,9 +574,42 @@ class KMIRCSESemantics(KMIRSemantics):
                 # Fall back to using the un-simplified candidate
                 post_return_cterms.append(candidate)
 
-        if not post_return_cterms:
+        # Check if the callee proof has stuck nodes with feasible constraints.
+        # For those paths, we can't construct a post-return state (callee didn't return).
+        # Instead, add the ORIGINAL caller state (unmodified) as a fallback branch —
+        # the prover will execute the callee normally for those paths.
+        has_stuck_fallback = False
+        stuck_nodes = [n for n in callee_proof.kcfg.leaves if callee_proof.kcfg.is_stuck(n.id)]
+        if stuck_nodes:
+            for stuck_node in stuck_nodes:
+                stuck_constraints = tuple(arg_subst(sc) for sc in stuck_node.cterm.constraints)
+                try:
+                    stuck_candidate = CTerm(c.config, c.constraints + stuck_constraints)
+                    simplified_stuck, _ = cs.simplify(stuck_candidate)
+                    if not _is_bottom(simplified_stuck):
+                        has_stuck_fallback = True
+                        _LOGGER.info('CSE: stuck path feasible, adding fallback branch')
+                        break
+                except Exception:
+                    has_stuck_fallback = True  # err on the side of caution
+                    break
+
+        if not post_return_cterms and not has_stuck_fallback:
             _LOGGER.warning(f'CSE: all branches infeasible for ty({func_ty})')
             return None
+
+        if not post_return_cterms:
+            # Only stuck paths feasible — don't intercept, let backend execute normally
+            _LOGGER.info(f'CSE: no cover paths feasible, falling back to normal execution for ty({func_ty})')
+            return None
+
+        if has_stuck_fallback:
+            # Mix CSE-accelerated cover paths with a fallback for stuck paths.
+            # The fallback is the original state — the prover will execute it normally.
+            _LOGGER.info(f'CSE custom_step: {len(post_return_cterms)} CSE paths + 1 fallback for ty({func_ty})')
+            all_cterms = tuple(post_return_cterms) + (c,)
+            all_labels = ['CSE-SUMMARY'] * len(post_return_cterms) + ['CSE-FALLBACK']
+            return NDBranch(cterms=all_cterms, logs=(), rule_labels=tuple(all_labels))
 
         if len(post_return_cterms) == 1:
             _LOGGER.info(f'CSE custom_step: single-path summary for ty({func_ty})')
