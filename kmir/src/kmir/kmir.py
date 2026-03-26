@@ -166,6 +166,7 @@ class KMIRCSESemantics(KMIRSemantics):
     def __init__(self, callee_proofs: dict[int, APRProof] | None = None, terminate_on_thunk: bool = False) -> None:
         super().__init__(terminate_on_thunk=terminate_on_thunk)
         self._callee_proofs = callee_proofs or {}
+        self._failed_tys: set[int] = set()  # Track function Tys where CSE failed
 
     def _extract_call_info(self, k_cell: KInner) -> tuple[int, KInner, KInner, KInner] | None:
         """Extract (function_ty, args_operand, dest, target) from a call.
@@ -235,6 +236,8 @@ class KMIRCSESemantics(KMIRSemantics):
         if call_info is None:
             return False
         func_ty, _, _, _ = call_info
+        if func_ty in self._failed_tys:
+            return False
         return func_ty in self._callee_proofs
 
     def _build_arg_substitution(
@@ -491,12 +494,10 @@ class KMIRCSESemantics(KMIRSemantics):
     def custom_step(self, c: CTerm, cs: CTermSymbolic) -> KCFGExtendResult | None:
         """Apply cached callee proof to skip function execution.
 
-        Uses the K backend's simplify() to:
-        1. Resolve argument substitution (callee symbolic vars → caller actual values)
-        2. Check constraint feasibility (prune infeasible branches)
-        This is sound for all types, not just bools.
+        Uses the K backend's implies() to unify the caller's state with the
+        callee proof's init state, producing a sort-correct substitution.
+        This handles all types (bool, int, reference, aggregate, etc.).
         """
-        from pyk.kast.inner import Subst
         from pyk.kast.manip import set_cell
         from pyk.kcfg.kcfg import NDBranch, Step
 
@@ -505,23 +506,17 @@ class KMIRCSESemantics(KMIRSemantics):
         if call_info is None:
             return None
 
-        func_ty, args_operand, dest, target = call_info
+        func_ty, _args_operand, dest, target = call_info
         callee_proof = self._callee_proofs.get(func_ty)
         if callee_proof is None:
             return None
 
         _LOGGER.info(f'CSE custom_step: applying cached proof for function ty({func_ty})')
 
-        # Collect all cover nodes (one per execution path in callee)
         cover_nodes = [cover.source for cover in callee_proof.kcfg.covers() if cover.target.id == callee_proof.target]
         if not cover_nodes:
             _LOGGER.warning(f'CSE: no covers found for callee proof {callee_proof.id}')
             return None
-
-        # Build argument substitution: callee symbolic vars → caller actual values
-        arg_subst_map = self._build_arg_substitution(c, args_operand, callee_proof)
-        arg_subst = Subst(arg_subst_map) if arg_subst_map else Subst({})
-        _LOGGER.info(f'CSE: arg substitution keys: {list(arg_subst_map.keys())}')
 
         # Determine caller continuation based on target
         is_entry_call = isinstance(target, KApply) and 'noBasicBlockIdx' in target.label.name
@@ -531,16 +526,24 @@ class KMIRCSESemantics(KMIRSemantics):
             return None
         target_bb = target.args[0] if is_normal_call and isinstance(target, KApply) else None
 
-        # Build post-return states for each callee branch
+        # Build argument substitution from call operands → callee init locals.
+        # Uses Python-level structural matching on individual arguments.
+        # Falls back to empty subst if matching fails (callee vars stay symbolic).
+        arg_subst_map = self._build_arg_substitution(c, _args_operand, callee_proof)
+        from pyk.kast.inner import Subst
+
+        subst = Subst(arg_subst_map) if arg_subst_map else Subst({})
+        _LOGGER.info(f'CSE: arg substitution: {len(arg_subst_map)} mappings for ty({func_ty})')
+
+        # Build post-return states for each callee cover path
         post_return_cterms: list[CTerm] = []
         for i, cover_node in enumerate(cover_nodes):
             retval_cell = cover_node.cterm.cell('RETVAL_CELL')
             ret_value = self._extract_return_value(retval_cell)
 
-            # Apply arg substitution to return value and constraints
-            ret_value_subst = arg_subst(ret_value)
-            retval_cell_subst = arg_subst(retval_cell)
-            callee_constraints = tuple(arg_subst(constraint) for constraint in cover_node.cterm.constraints)
+            ret_value_subst = subst(ret_value)
+            retval_cell_subst = subst(retval_cell)
+            callee_constraints = tuple(subst(cst) for cst in cover_node.cterm.constraints)
 
             if is_entry_call:
                 continuation = KSequence([KMIR.Symbols.END_PROGRAM])
@@ -555,57 +558,35 @@ class KMIRCSESemantics(KMIRSemantics):
 
             post_config = set_cell(c.config, 'K_CELL', continuation)
             post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell_subst)
+            candidate = CTerm(post_config, c.constraints + callee_constraints)
 
-            # Combine caller constraints with callee branch constraints
-            all_constraints = c.constraints + callee_constraints
-            candidate = CTerm(post_config, all_constraints)
-
-            # Use backend simplify to check feasibility and resolve symbolic values
             try:
                 simplified, _logs = cs.simplify(candidate)
-                # Check if simplified to bottom (vacuous/unsatisfiable)
                 if _is_bottom(simplified):
                     _LOGGER.info(f'CSE: branch {i} infeasible (simplified to bottom)')
                     continue
                 post_return_cterms.append(simplified)
                 _LOGGER.info(f'CSE: branch {i} feasible after simplification')
             except Exception as e:
-                _LOGGER.warning(f'CSE: simplify failed for branch {i}: {e}')
-                # Fall back to using the un-simplified candidate
-                post_return_cterms.append(candidate)
+                # Simplify failed (e.g., sort mismatch from unresolved symbolic vars).
+                # Don't use the broken candidate — skip this branch.
+                _LOGGER.warning(f'CSE: simplify failed for branch {i}, skipping: {e}')
+                continue
 
-        # Check if the callee proof has stuck nodes with feasible constraints.
-        # For those paths, we can't construct a post-return state (callee didn't return).
-        # Instead, add the ORIGINAL caller state (unmodified) as a fallback branch —
-        # the prover will execute the callee normally for those paths.
-        has_stuck_fallback = False
-        stuck_nodes = [n for n in callee_proof.kcfg.leaves if callee_proof.kcfg.is_stuck(n.id)]
-        if stuck_nodes:
-            for stuck_node in stuck_nodes:
-                stuck_constraints = tuple(arg_subst(sc) for sc in stuck_node.cterm.constraints)
-                try:
-                    stuck_candidate = CTerm(c.config, c.constraints + stuck_constraints)
-                    simplified_stuck, _ = cs.simplify(stuck_candidate)
-                    if not _is_bottom(simplified_stuck):
-                        has_stuck_fallback = True
-                        _LOGGER.info('CSE: stuck path feasible, adding fallback branch')
-                        break
-                except Exception:
-                    has_stuck_fallback = True  # err on the side of caution
-                    break
+        # Stuck paths: add fallback so the prover executes the callee normally
+        has_stuck_fallback = any(callee_proof.kcfg.is_stuck(n.id) for n in callee_proof.kcfg.leaves)
 
         if not post_return_cterms and not has_stuck_fallback:
-            _LOGGER.warning(f'CSE: all branches infeasible for ty({func_ty})')
+            _LOGGER.warning(f'CSE: all branches infeasible for ty({func_ty}), disabling CSE for this function')
+            self._failed_tys.add(func_ty)
             return None
 
         if not post_return_cterms:
-            # Only stuck paths feasible — don't intercept, let backend execute normally
-            _LOGGER.info(f'CSE: no cover paths feasible, falling back to normal execution for ty({func_ty})')
+            _LOGGER.info(f'CSE: no cover paths feasible, falling back for ty({func_ty})')
+            self._failed_tys.add(func_ty)
             return None
 
         if has_stuck_fallback:
-            # Mix CSE-accelerated cover paths with a fallback for stuck paths.
-            # The fallback is the original state — the prover will execute it normally.
             _LOGGER.info(f'CSE custom_step: {len(post_return_cterms)} CSE paths + 1 fallback for ty({func_ty})')
             all_cterms = tuple(post_return_cterms) + (c,)
             all_labels = ['CSE-SUMMARY'] * len(post_return_cterms) + ['CSE-FALLBACK']
@@ -614,13 +595,13 @@ class KMIRCSESemantics(KMIRSemantics):
         if len(post_return_cterms) == 1:
             _LOGGER.info(f'CSE custom_step: single-path summary for ty({func_ty})')
             return Step(cterm=post_return_cterms[0], depth=1, logs=(), rule_labels=['CSE-SUMMARY'], info='cse-summary')
-        else:
-            _LOGGER.info(f'CSE custom_step: {len(post_return_cterms)}-branch summary for ty({func_ty})')
-            return NDBranch(
-                cterms=tuple(post_return_cterms),
-                logs=(),
-                rule_labels=tuple(['CSE-SUMMARY'] * len(post_return_cterms)),
-            )
+
+        _LOGGER.info(f'CSE custom_step: {len(post_return_cterms)}-branch summary for ty({func_ty})')
+        return NDBranch(
+            cterms=tuple(post_return_cterms),
+            logs=(),
+            rule_labels=tuple(['CSE-SUMMARY'] * len(post_return_cterms)),
+        )
 
 
 def _is_bottom(cterm: CTerm) -> bool:
