@@ -38,9 +38,15 @@ def prove(opts: ProveOpts) -> APRProof:
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
 
-    # Sanitize label: K module names only allow alphanumeric + hyphen + underscore + dot
+    # Sanitize label: K module names only allow alphanumeric + hyphen + underscore + dot.
+    # Also truncate to avoid filesystem path length limits.
+    import hashlib
+
     raw_label = f'{opts.rs_file.stem}.{opts.start_symbol}'
     label = ''.join(c if c.isalnum() or c in '._-' else '_' for c in raw_label)
+    if len(label) > 200:
+        digest = hashlib.sha256(raw_label.encode()).hexdigest()[:12]
+        label = label[:200] + '_' + digest
 
     if opts.proof_dir is not None:
         target_path = opts.proof_dir / label
