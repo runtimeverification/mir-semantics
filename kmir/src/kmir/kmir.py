@@ -157,7 +157,8 @@ class KMIRCSESemantics(KMIRSemantics):
 
     When encountering a function call for which we have a cached proof,
     constructs the post-return configuration directly instead of stepping
-    through the callee's execution.
+    through the callee's execution. Handles multi-branch callee proofs
+    by producing NDBranch results.
     """
 
     _callee_proofs: dict[int, APRProof]  # function Ty -> completed proof
@@ -167,12 +168,7 @@ class KMIRCSESemantics(KMIRSemantics):
         self._callee_proofs = callee_proofs or {}
 
     def _extract_call_info(self, k_cell: KInner) -> tuple[int, KInner, KInner, KInner] | None:
-        """Extract (function_ty, args, dest, target) from a call terminator in <k> cell.
-
-        Returns None if the K cell is not a function call terminator.
-        """
-        # Match: #execTerminator(terminator(terminatorKindCall(func, args, dest, target, unwind), span))
-        # or the KSequence variant with continuation
+        """Extract (function_ty, args_operand, dest, target) from a call terminator."""
         term = k_cell
         if isinstance(term, KSequence) and term.items:
             term = term.items[0]
@@ -182,7 +178,6 @@ class KMIRCSESemantics(KMIRSemantics):
         if term.label.name != '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator':
             return None
 
-        # term.args[0] is terminator(kind, span)
         terminator = term.args[0]
         if not isinstance(terminator, KApply) or len(terminator.args) < 1:
             return None
@@ -191,11 +186,7 @@ class KMIRCSESemantics(KMIRSemantics):
         if not isinstance(kind, KApply) or kind.label.name != 'TerminatorKind::Call':
             return None
 
-        # kind.args = (func, args, dest, target, unwind)
         func_operand, args_operand, dest, target, _unwind = kind.args
-
-        # Extract function Ty from func operand
-        # func is operandConstant(constOperand(span, userTy, mirConst(kind, ty(N), id)))
         func_ty = self._extract_func_ty(func_operand)
         if func_ty is None:
             return None
@@ -206,7 +197,6 @@ class KMIRCSESemantics(KMIRSemantics):
     def _extract_func_ty(func_operand: KInner) -> int | None:
         """Extract the function Ty integer from a function operand."""
         try:
-            # operandConstant(constOperand(span, userTy, mirConst(kind, ty(N), id)))
             if not isinstance(func_operand, KApply):
                 return None
             const_operand = func_operand.args[0]
@@ -233,72 +223,298 @@ class KMIRCSESemantics(KMIRSemantics):
         func_ty, _, _, _ = call_info
         return func_ty in self._callee_proofs
 
-    def custom_step(self, c: CTerm, cs: CTermSymbolic) -> KCFGExtendResult | None:
-        from pyk.kcfg.kcfg import Step
+    def _build_arg_substitution(
+        self, caller_cterm: CTerm, args_operand: KInner, callee_proof: APRProof
+    ) -> dict[str, KInner]:
+        """Build substitution mapping callee symbolic arg variables to caller's actual values.
 
-        k_cell = c.cell('K_CELL')
-        call_info = self._extract_call_info(k_cell)
-        if call_info is None:
-            return None
+        Handles both Operand::Copy (reference to caller local) and
+        Operand::Constant (inline constant value) arguments.
+        """
 
-        func_ty, _args, dest, target = call_info
-        callee_proof = self._callee_proofs.get(func_ty)
-        if callee_proof is None:
-            return None
-        if not callee_proof.passed:
-            return None
+        subst: dict[str, KInner] = {}
 
-        _LOGGER.info(f'CSE custom_step: applying cached proof for function ty({func_ty})')
+        # Get callee's init node locals (symbolic arg values)
+        callee_init = callee_proof.kcfg.node(callee_proof.init)
+        callee_locals = callee_init.cterm.cell('LOCALS_CELL')
+        callee_arg_items = self._list_items(callee_locals)
 
-        # Get the callee's final computed state (the node that covers the target)
-        final_node = None
-        for cover in callee_proof.kcfg.covers():
-            if cover.target.id == callee_proof.target:
-                final_node = cover.source
+        # Get caller's locals (for Operand::Copy resolution)
+        caller_locals = caller_cterm.cell('LOCALS_CELL')
+        caller_local_items = self._list_items(caller_locals)
+
+        # Extract actual argument values from call operands
+        actual_arg_values = self._extract_arg_values(args_operand, caller_local_items)
+
+        # For each arg: map callee's symbolic variable to caller's actual value
+        for i, caller_value in enumerate(actual_arg_values):
+            callee_local_idx = i + 1  # local[0] is return value, args start at local[1]
+            if callee_local_idx >= len(callee_arg_items):
+                continue
+            if caller_value is None:
+                continue
+
+            callee_typed_val = callee_arg_items[callee_local_idx]
+            callee_vars = self._extract_free_vars(callee_typed_val)
+
+            for var_name, _var_node in callee_vars:
+                # Match sort: callee var might be Bool but caller value is Value::BoolVal(Bool)
+                # Unwrap wrapper constructors to get matching sort
+                unwrapped = self._unwrap_value(caller_value)
+                subst[var_name] = unwrapped
+
+        return subst
+
+    def _extract_arg_values(self, args_operand: KInner, caller_locals: list[KInner]) -> list[KInner | None]:
+        """Extract actual argument values from call operands.
+
+        Handles:
+        - Operand::Copy(place(local(I))) → value from caller's locals[I]
+        - Operand::Move(place(local(I))) → value from caller's locals[I]
+        - Operand::Constant(constOperand(..., mirConst(Allocated(alloc), ty, id))) → decoded constant
+        """
+        operands = self._flatten_operands(args_operand)
+        values: list[KInner | None] = []
+
+        for op in operands:
+            if not isinstance(op, KApply):
+                values.append(None)
+                continue
+
+            if op.label.name in ('Operand::Copy', 'Operand::Move'):
+                # Reference to caller's local
+                place = op.args[0]
+                if isinstance(place, KApply) and place.label.name == 'place':
+                    local = place.args[0]
+                    if isinstance(local, KApply) and isinstance(local.args[0], KToken):
+                        idx = int(local.args[0].token)
+                        if idx < len(caller_locals):
+                            val = self._extract_value_from_typed(caller_locals[idx])
+                            values.append(val)
+                            continue
+                values.append(None)
+
+            elif op.label.name == 'Operand::Constant':
+                # Inline constant — try to decode
+                decoded = self._decode_constant_operand(op)
+                values.append(decoded)
+
+            else:
+                values.append(None)
+
+        return values
+
+    @staticmethod
+    def _flatten_operands(args_operand: KInner) -> list[KInner]:
+        """Flatten Operands::append chain into a list of individual operands."""
+        result: list[KInner] = []
+        current = args_operand
+        while isinstance(current, KApply):
+            if 'append' in current.label.name.lower() or current.label.name == 'Operands::append':
+                if len(current.args) >= 2:
+                    result.append(current.args[0])
+                    current = current.args[1]
+                else:
+                    break
+            elif 'empty' in current.label.name.lower():
                 break
-        if final_node is None:
-            _LOGGER.warning(f'CSE: no cover found for callee proof {callee_proof.id}')
+            else:
+                result.append(current)
+                break
+        # Operands::append builds right-to-left, so reverse
+        result.reverse()
+        return result
+
+    @staticmethod
+    def _decode_constant_operand(op: KInner) -> KInner | None:
+        """Decode a constant operand to a K Value term.
+
+        Handles ConstantKind::Allocated with simple types (bool, small ints).
+        """
+        try:
+            if not isinstance(op, KApply):
+                return None
+            const_operand = op.args[0]  # constOperand(span, userTy, mirConst)
+            if not isinstance(const_operand, KApply):
+                return None
+            mir_const = const_operand.args[2]  # mirConst(kind, ty, id)
+            if not isinstance(mir_const, KApply):
+                return None
+            kind = mir_const.args[0]  # ConstantKind::Allocated(allocation) or ZeroSized
+            if not isinstance(kind, KApply):
+                return None
+
+            if kind.label.name == 'ConstantKind::Allocated':
+                alloc = kind.args[0]  # allocation(bytes, provenance, align, mutability)
+                if not isinstance(alloc, KApply):
+                    return None
+                bytes_token = alloc.args[0]
+                if not isinstance(bytes_token, KToken) or bytes_token.sort.name != 'Bytes':
+                    return None
+
+                raw_bytes = bytes_token.token
+                # Decode Python bytes literal: b"\x01" etc.
+                if raw_bytes.startswith('b"') and raw_bytes.endswith('"'):
+                    byte_str = raw_bytes[2:-1]
+                    # Decode escape sequences
+                    decoded = byte_str.encode('utf-8').decode('unicode_escape').encode('latin-1')
+                elif raw_bytes.startswith("b'") and raw_bytes.endswith("'"):
+                    byte_str = raw_bytes[2:-1]
+                    decoded = byte_str.encode('utf-8').decode('unicode_escape').encode('latin-1')
+                else:
+                    return None
+
+                # Check the type to determine how to interpret
+                ty = mir_const.args[1]
+                if isinstance(ty, KApply) and ty.label.name == 'ty' and isinstance(ty.args[0], KToken):
+                    # For 1-byte values, try bool decode
+                    if len(decoded) == 1:
+                        val = decoded[0]
+                        # Bool: 0=false, 1=true (ty is usually bool type)
+                        return KApply(
+                            'Value::BoolVal',
+                            (KToken('true' if val != 0 else 'false', KSort('Bool')),),
+                        )
+            return None
+        except (IndexError, ValueError, TypeError):
             return None
 
-        # Extract the return value from the callee's final RETVAL_CELL
-        retval_cell = final_node.cterm.cell('RETVAL_CELL')
+    @staticmethod
+    def _list_items(list_term: KInner) -> list[KInner]:
+        """Extract items from a K List term."""
+        items: list[KInner] = []
+        current = list_term
+        while isinstance(current, KApply):
+            if current.label.name == 'ListItem':
+                items.append(current.args[0])
+                return items
+            elif current.label.name == '_List_':
+                left, right = current.args
+                if isinstance(left, KApply) and left.label.name == 'ListItem':
+                    items.append(left.args[0])
+                current = right
+            else:
+                break
+        return items
 
-        # Build the post-return configuration:
-        # - K_CELL: the caller continuation after the call
-        # - RETVAL_CELL: updated with callee's return value
-        # - All other cells: same as the caller's current state
+    @staticmethod
+    def _extract_arg_local_indices(args_operand: KInner) -> list[int]:
+        """Extract local indices from call argument operands."""
+        indices: list[int] = []
+        current = args_operand
+        while isinstance(current, KApply):
+            if current.label.name in ('Operand::Copy', 'Operand::Move'):
+                place = current.args[0]
+                if isinstance(place, KApply) and place.label.name == 'place':
+                    local = place.args[0]
+                    if isinstance(local, KApply) and local.label.name == 'local':
+                        idx_token = local.args[0]
+                        if isinstance(idx_token, KToken):
+                            indices.append(int(idx_token.token))
+                return indices
+            elif 'append' in current.label.name.lower():
+                # Operands::append(rest, operand)
+                rest, operand = current.args
+                if isinstance(operand, KApply) and operand.label.name in ('Operand::Copy', 'Operand::Move'):
+                    place = operand.args[0]
+                    if isinstance(place, KApply) and place.label.name == 'place':
+                        local = place.args[0]
+                        if isinstance(local, KApply) and local.label.name == 'local':
+                            idx_token = local.args[0]
+                            if isinstance(idx_token, KToken):
+                                indices.append(int(idx_token.token))
+                current = rest
+            else:
+                break
+        return indices
 
-        # Determine continuation based on target
-        if isinstance(target, KApply) and 'someBasicBlockIdx' in target.label.name:
-            # Normal call: continue at target basic block
-            target_bb = target.args[0]  # basicBlockIdx(N)
-            continuation = KSequence(
-                [
-                    KApply(
-                        '#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation',
-                        (dest, self._extract_return_value(retval_cell)),
-                    ),
-                    KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,)),
-                ]
-            )
-        elif isinstance(target, KApply) and 'noBasicBlockIdx' in target.label.name:
-            # Entry function call: end with #EndProgram
-            continuation = KSequence([KMIR.Symbols.END_PROGRAM])
-        else:
-            _LOGGER.warning(f'CSE: unexpected target type: {target}')
-            return None
+    @staticmethod
+    def _extract_free_vars(term: KInner) -> list[tuple[str, KInner]]:
+        """Extract (name, node) pairs for free KVariables in a term."""
+        from pyk.kast.inner import KVariable
 
-        # Construct the post-return CTerm by substituting cells in the current config
-        from pyk.kast.manip import set_cell
+        result: list[tuple[str, KInner]] = []
+        worklist = [term]
+        while worklist:
+            t = worklist.pop()
+            if isinstance(t, KVariable):
+                result.append((t.name, t))
+            elif isinstance(t, KApply):
+                worklist.extend(t.args)
+            elif isinstance(t, KSequence):
+                worklist.extend(t.items)
+        return result
 
-        post_config = c.config
-        post_config = set_cell(post_config, 'K_CELL', continuation)
-        post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell)
+    @staticmethod
+    def _extract_value_from_typed(typed_val: KInner) -> KInner | None:
+        """Extract the Value from typedValue(Value, Ty, Mut)."""
+        if isinstance(typed_val, KApply) and typed_val.label.name == 'typedValue':
+            return typed_val.args[0]
+        return None
 
-        post_cterm = CTerm(post_config, c.constraints)
+    @staticmethod
+    def _has_trivially_false_constraint(constraints: tuple[KInner, ...]) -> bool:
+        """Check if any constraint is trivially false after substitution.
 
-        _LOGGER.info(f'CSE custom_step: constructed post-return state for ty({func_ty})')
-        return Step(cterm=post_cterm, depth=1, logs=(), rule_labels=['CSE-FUNCTION-SUMMARY'], info='cse-summary')
+        Detects patterns like:
+        - #Equals(true, false) / #Equals(false, true)
+        - #Equals(true, notBool <concrete_true>) where <concrete_true> evaluates to true
+        """
+
+        def _is_concrete_true(term: KInner) -> bool:
+            """Check if a term is trivially true (bare true or BoolVal(true))."""
+            if isinstance(term, KToken) and term.token == 'true':
+                return True
+            if isinstance(term, KApply) and 'BoolVal' in term.label.name:
+                inner = term.args[0]
+                return isinstance(inner, KToken) and inner.token == 'true'
+            return False
+
+        def _is_concrete_false(term: KInner) -> bool:
+            if isinstance(term, KToken) and term.token == 'false':
+                return True
+            if isinstance(term, KApply) and 'BoolVal' in term.label.name:
+                inner = term.args[0]
+                return isinstance(inner, KToken) and inner.token == 'false'
+            return False
+
+        for c in constraints:
+            if not isinstance(c, KApply) or '#Equals' not in c.label.name:
+                continue
+            if len(c.args) != 2:
+                continue
+            lhs, rhs = c.args
+
+            # #Equals(true, false) or #Equals(false, true)
+            if _is_concrete_true(lhs) and _is_concrete_false(rhs):
+                return True
+            if _is_concrete_false(lhs) and _is_concrete_true(rhs):
+                return True
+
+            # #Equals(true, notBool X) where X is concrete true → false
+            if _is_concrete_true(lhs) and isinstance(rhs, KApply) and 'notBool' in rhs.label.name:
+                if _is_concrete_true(rhs.args[0]):
+                    return True
+            if _is_concrete_true(rhs) and isinstance(lhs, KApply) and 'notBool' in lhs.label.name:
+                if _is_concrete_true(lhs.args[0]):
+                    return True
+
+        return False
+
+    @staticmethod
+    def _unwrap_value(value: KInner) -> KInner:
+        """Unwrap Value constructors to get the inner value matching the variable's sort.
+
+        BoolVal(true:Bool) → true:Bool
+        Integer(N:Int, width, signed) → N:Int
+        Otherwise returns the value as-is.
+        """
+        if isinstance(value, KApply):
+            if 'BoolVal' in value.label.name and value.args:
+                return value.args[0]
+            if 'Integer' in value.label.name and value.args:
+                return value.args[0]
+        return value
 
     @staticmethod
     def _extract_return_value(retval_cell: KInner) -> KInner:
@@ -306,6 +522,87 @@ class KMIRCSESemantics(KMIRSemantics):
         if isinstance(retval_cell, KApply) and 'return' in retval_cell.label.name:
             return retval_cell.args[0]
         return retval_cell
+
+    def custom_step(self, c: CTerm, cs: CTermSymbolic) -> KCFGExtendResult | None:
+        from pyk.kast.inner import Subst
+        from pyk.kast.manip import set_cell
+        from pyk.kcfg.kcfg import NDBranch, Step
+
+        k_cell = c.cell('K_CELL')
+        call_info = self._extract_call_info(k_cell)
+        if call_info is None:
+            return None
+
+        func_ty, args_operand, dest, target = call_info
+        callee_proof = self._callee_proofs.get(func_ty)
+        if callee_proof is None or not callee_proof.passed:
+            return None
+
+        _LOGGER.info(f'CSE custom_step: applying cached proof for function ty({func_ty})')
+
+        # Collect all cover nodes (one per execution path in callee)
+        cover_nodes = [cover.source for cover in callee_proof.kcfg.covers() if cover.target.id == callee_proof.target]
+        if not cover_nodes:
+            _LOGGER.warning(f'CSE: no covers found for callee proof {callee_proof.id}')
+            return None
+
+        # Build argument substitution: callee symbolic vars → caller actual values
+        arg_subst_map = self._build_arg_substitution(c, args_operand, callee_proof)
+        arg_subst = Subst(arg_subst_map) if arg_subst_map else Subst({})
+        _LOGGER.info(f'CSE: arg substitution: {list(arg_subst_map.keys())}')
+
+        # Determine caller continuation based on target
+        if isinstance(target, KApply) and 'someBasicBlockIdx' in target.label.name:
+            target_bb = target.args[0]
+            make_continuation = lambda ret_val: KSequence(  # noqa: E731
+                [
+                    KApply('#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation', (dest, ret_val)),
+                    KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,)),
+                ]
+            )
+        elif isinstance(target, KApply) and 'noBasicBlockIdx' in target.label.name:
+            make_continuation = lambda _ret_val: KSequence([KMIR.Symbols.END_PROGRAM])  # noqa: E731
+        else:
+            _LOGGER.warning(f'CSE: unexpected target type: {target}')
+            return None
+
+        # Build post-return states for each callee branch, filtering trivially infeasible ones
+        post_return_cterms: list[CTerm] = []
+        for cover_node in cover_nodes:
+            retval_cell = cover_node.cterm.cell('RETVAL_CELL')
+            ret_value = self._extract_return_value(retval_cell)
+
+            # Apply arg substitution to return value and constraints
+            ret_value_subst = arg_subst(ret_value)
+            retval_cell_subst = arg_subst(retval_cell)
+            callee_constraints = tuple(arg_subst(constraint) for constraint in cover_node.cterm.constraints)
+
+            # Skip branches with trivially false constraints (e.g., notBool true == true)
+            if self._has_trivially_false_constraint(callee_constraints):
+                _LOGGER.info('CSE: skipping infeasible branch (trivially false constraint)')
+                continue
+
+            continuation = make_continuation(ret_value_subst)
+
+            post_config = set_cell(c.config, 'K_CELL', continuation)
+            post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell_subst)
+
+            # Combine caller constraints with callee branch constraints
+            all_constraints = c.constraints + callee_constraints
+            post_return_cterms.append(CTerm(post_config, all_constraints))
+
+        if not post_return_cterms:
+            _LOGGER.warning(f'CSE: all branches infeasible for ty({func_ty})')
+            return None
+
+        if len(post_return_cterms) == 1:
+            _LOGGER.info(f'CSE custom_step: single-path summary for ty({func_ty})')
+            return Step(cterm=post_return_cterms[0], depth=1, logs=(), rule_labels=['CSE-SUMMARY'], info='cse-summary')
+        else:
+            _LOGGER.info(f'CSE custom_step: {len(post_return_cterms)}-branch summary for ty({func_ty})')
+            return NDBranch(
+                cterms=tuple(post_return_cterms), logs=(), rule_labels=tuple(['CSE-SUMMARY'] * len(post_return_cterms))
+            )
 
 
 class KMIRNodePrinter(NodePrinter):

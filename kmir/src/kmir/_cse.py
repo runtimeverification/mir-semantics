@@ -362,10 +362,11 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
                 kcfg_explore,
                 execute_depth=opts.max_depth,
                 cut_point_rules=cse_cut_points,
+                # fast_check_subsumption=True,  # TODO: re-enable after debugging subsumption
             )
             prover.advance_proof(
                 final_proof,
-                max_iterations=opts.max_iterations,
+                max_iterations=opts.max_iterations or 1000,
                 fail_fast=opts.fail_fast,
                 maintenance_rate=opts.maintenance_rate,
             )
