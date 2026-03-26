@@ -38,7 +38,9 @@ def prove(opts: ProveOpts) -> APRProof:
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
 
-    label = f'{opts.rs_file.stem}.{opts.start_symbol}'
+    # Sanitize label: K module names only allow alphanumeric + hyphen + underscore + dot
+    raw_label = f'{opts.rs_file.stem}.{opts.start_symbol}'
+    label = ''.join(c if c.isalnum() or c in '._-' else '_' for c in raw_label)
 
     if opts.proof_dir is not None:
         target_path = opts.proof_dir / label
