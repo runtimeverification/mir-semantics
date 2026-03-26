@@ -9,14 +9,13 @@ from typing import TYPE_CHECKING
 
 from pyk.kast.manip import remove_generated_cells
 from pyk.kast.outer import KRule
+from pyk.proof.reachability import APRProof
 
 from .kmir import KMIR
 from .smir import SMIRInfo, Ty
 
 if TYPE_CHECKING:
     from typing import Final
-
-    from pyk.proof.reachability import APRProof
 
     from .options import ProveOpts
 
@@ -280,47 +279,97 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     # Also include any user-provided modules
     all_modules = list(opts.add_modules) + all_summary_paths
 
-    print(f'[CSE] Proving {start_name} with {len(all_summary_paths)} summaries...', flush=True)
+    # Build callee_proofs map: function Ty -> APRProof (for CSE semantics)
+    callee_proofs: dict[int, APRProof] = {}
+    for callee_name, _summary_path in result.summaries.items():
+        # Load the callee proof if it exists
+        callee_proof_dir_path = opts.proof_dir / 'cse-callee-proofs' if opts.proof_dir else None
+        if callee_proof_dir_path:
+            callee_label = f'{opts.rs_file.stem}.{callee_name}'
+            if APRProof.proof_data_exists(callee_label, callee_proof_dir_path):
+                callee_proof = APRProof.read_proof_data(callee_proof_dir_path, callee_label)
+                if callee_proof.passed:
+                    # Map function Ty -> proof
+                    if callee_name in smir_info.function_tys:
+                        func_ty = smir_info.function_tys[callee_name]
+                        callee_proofs[func_ty] = callee_proof
+                        _LOGGER.info(f'CSE: loaded callee proof for {callee_name} (ty={func_ty})')
+
+    print(
+        f'[CSE] Proving {start_name} with {len(callee_proofs)} dynamic summaries '
+        f'+ {len(all_summary_paths)} module summaries...',
+        flush=True,
+    )
     t0 = time.time()
 
-    from .options import ProveOpts as ProveOptsClass
+    # Build the proof with CSE semantics for dynamic interception
+    from ._prove import apr_proof_from_smir
 
-    final_opts = ProveOptsClass(
-        rs_file=opts.rs_file,
-        proof_dir=opts.proof_dir,
+    main_smir = smir_info.reduce_to(start_name)
+    kmir = KMIR.from_kompiled_kore(
+        main_smir,
+        target_dir=opts.proof_dir / f'{opts.rs_file.stem}.{start_name}' if opts.proof_dir else Path('/tmp/cse-main'),
+        extra_modules=all_modules or None,
+        bug_report=opts.bug_report,
+        symbolic=True,
         haskell_target=opts.haskell_target,
         llvm_lib_target=opts.llvm_lib_target,
-        bug_report=opts.bug_report,
-        max_depth=opts.max_depth,
-        max_iterations=opts.max_iterations,
-        max_workers=opts.max_workers,
-        reload=opts.reload,
-        fail_fast=opts.fail_fast,
-        maintenance_rate=opts.maintenance_rate,
-        save_smir=opts.save_smir,
-        smir=opts.smir,
-        parsed_smir=smir_info._smir,
-        start_symbol=start_name,
-        add_modules=all_modules,
-        break_on_calls=opts.break_on_calls,
-        break_on_function_calls=opts.break_on_function_calls,
-        break_on_intrinsic_calls=opts.break_on_intrinsic_calls,
-        break_on_thunk=opts.break_on_thunk,
-        terminate_on_thunk=opts.terminate_on_thunk,
-        break_every_statement=opts.break_every_statement,
-        break_on_terminator_goto=opts.break_on_terminator_goto,
-        break_on_terminator_switch_int=opts.break_on_terminator_switch_int,
-        break_on_terminator_return=opts.break_on_terminator_return,
-        break_on_terminator_call=opts.break_on_terminator_call,
-        break_on_terminator_assert=opts.break_on_terminator_assert,
-        break_on_terminator_drop=opts.break_on_terminator_drop,
-        break_on_terminator_unreachable=opts.break_on_terminator_unreachable,
-        break_every_terminator=opts.break_every_terminator,
-        break_every_step=opts.break_every_step,
-        break_on_function=opts.break_on_function,
     )
 
-    final_proof = prove(final_opts)
+    final_proof = apr_proof_from_smir(
+        kmir,
+        f'{opts.rs_file.stem}.{start_name}',
+        main_smir,
+        start_symbol=start_name,
+        proof_dir=opts.proof_dir,
+    )
+    if opts.proof_dir:
+        main_smir.dump(opts.proof_dir / final_proof.id / 'smir.json')
+
+    if not final_proof.passed:
+        from .kmir import KMIRCSESemantics
+        from .options import ProveOpts as ProveOptsClass
+
+        # Use CSE semantics with callee proofs for dynamic function call interception
+        cse_semantics = KMIRCSESemantics(
+            callee_proofs=callee_proofs,
+            terminate_on_thunk=opts.terminate_on_thunk,
+        )
+
+        from pyk.cterm import cterm_symbolic as _cterm_symbolic
+        from pyk.kcfg.explore import KCFGExplore
+        from pyk.proof.reachability import APRProver
+
+        with _cterm_symbolic(
+            kmir.definition,
+            kmir.definition_dir,
+            llvm_definition_dir=kmir.llvm_library_dir,
+            bug_report=kmir.bug_report,
+            simplify_each=30,
+        ) as cts:
+            kcfg_explore = KCFGExplore(cts, kcfg_semantics=cse_semantics)
+            # Use termCall as cut-point so the backend stops BEFORE function call execution.
+            # This creates a frontier node with <k> = #execTerminatorCall(...),
+            # and on the next extend_cterm call, custom_step can check if the PREVIOUS
+            # state (with #execTerminator(terminatorKindCall(...))) had a cached proof.
+            # We use termCall (which fires first, converting #execTerminator to #execTerminatorCall)
+            # so the node BEFORE it has the call pattern that custom_step recognizes.
+            cse_cut_points = [
+                'KMIR-CONTROL-FLOW.termCall',
+                'KMIR-CONTROL-FLOW.termCallIndirect',
+            ]
+            prover = APRProver(
+                kcfg_explore,
+                execute_depth=opts.max_depth,
+                cut_point_rules=cse_cut_points,
+            )
+            prover.advance_proof(
+                final_proof,
+                max_iterations=opts.max_iterations,
+                fail_fast=opts.fail_fast,
+                maintenance_rate=opts.maintenance_rate,
+            )
+
     result.final_prove_time = time.time() - t0
     result.final_proof = final_proof
     print(f'[CSE] {start_name}: {"PASSED" if final_proof.passed else "FAILED"} in {result.final_prove_time:.1f}s')

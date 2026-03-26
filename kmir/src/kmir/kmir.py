@@ -6,7 +6,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
-from pyk.cterm import cterm_symbolic
+from pyk.cterm import CTerm, cterm_symbolic
 from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
@@ -25,10 +25,11 @@ if TYPE_CHECKING:
     from pathlib import Path
     from typing import Final
 
-    from pyk.cterm import CTerm
+    from pyk.cterm import CTermSymbolic
     from pyk.cterm.show import CTermShow
     from pyk.kast.inner import KInner
     from pyk.kcfg import KCFG
+    from pyk.kcfg.kcfg import KCFGExtendResult
     from pyk.kore.syntax import Pattern
     from pyk.proof.reachability import APRProof
     from pyk.utils import BugReport
@@ -149,6 +150,162 @@ class KMIRSemantics(DefaultSemantics):
             if k_cell.arity == 1 and k_cell[0] == KMIR.Symbols.END_PROGRAM:
                 return True
         return False
+
+
+class KMIRCSESemantics(KMIRSemantics):
+    """Extended semantics with Compositional Symbolic Execution support.
+
+    When encountering a function call for which we have a cached proof,
+    constructs the post-return configuration directly instead of stepping
+    through the callee's execution.
+    """
+
+    _callee_proofs: dict[int, APRProof]  # function Ty -> completed proof
+
+    def __init__(self, callee_proofs: dict[int, APRProof] | None = None, terminate_on_thunk: bool = False) -> None:
+        super().__init__(terminate_on_thunk=terminate_on_thunk)
+        self._callee_proofs = callee_proofs or {}
+
+    def _extract_call_info(self, k_cell: KInner) -> tuple[int, KInner, KInner, KInner] | None:
+        """Extract (function_ty, args, dest, target) from a call terminator in <k> cell.
+
+        Returns None if the K cell is not a function call terminator.
+        """
+        # Match: #execTerminator(terminator(terminatorKindCall(func, args, dest, target, unwind), span))
+        # or the KSequence variant with continuation
+        term = k_cell
+        if isinstance(term, KSequence) and term.items:
+            term = term.items[0]
+
+        if not isinstance(term, KApply):
+            return None
+        if term.label.name != '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator':
+            return None
+
+        # term.args[0] is terminator(kind, span)
+        terminator = term.args[0]
+        if not isinstance(terminator, KApply) or len(terminator.args) < 1:
+            return None
+
+        kind = terminator.args[0]
+        if not isinstance(kind, KApply) or kind.label.name != 'TerminatorKind::Call':
+            return None
+
+        # kind.args = (func, args, dest, target, unwind)
+        func_operand, args_operand, dest, target, _unwind = kind.args
+
+        # Extract function Ty from func operand
+        # func is operandConstant(constOperand(span, userTy, mirConst(kind, ty(N), id)))
+        func_ty = self._extract_func_ty(func_operand)
+        if func_ty is None:
+            return None
+
+        return (func_ty, args_operand, dest, target)
+
+    @staticmethod
+    def _extract_func_ty(func_operand: KInner) -> int | None:
+        """Extract the function Ty integer from a function operand."""
+        try:
+            # operandConstant(constOperand(span, userTy, mirConst(kind, ty(N), id)))
+            if not isinstance(func_operand, KApply):
+                return None
+            const_operand = func_operand.args[0]
+            if not isinstance(const_operand, KApply):
+                return None
+            mir_const = const_operand.args[2]
+            if not isinstance(mir_const, KApply):
+                return None
+            ty_term = mir_const.args[1]
+            if not isinstance(ty_term, KApply) or ty_term.label.name != 'ty':
+                return None
+            ty_token = ty_term.args[0]
+            if not isinstance(ty_token, KToken):
+                return None
+            return int(ty_token.token)
+        except (IndexError, ValueError, TypeError):
+            return None
+
+    def can_make_custom_step(self, c: CTerm) -> bool:
+        k_cell = c.cell('K_CELL')
+        call_info = self._extract_call_info(k_cell)
+        if call_info is None:
+            return False
+        func_ty, _, _, _ = call_info
+        return func_ty in self._callee_proofs
+
+    def custom_step(self, c: CTerm, cs: CTermSymbolic) -> KCFGExtendResult | None:
+        from pyk.kcfg.kcfg import Step
+
+        k_cell = c.cell('K_CELL')
+        call_info = self._extract_call_info(k_cell)
+        if call_info is None:
+            return None
+
+        func_ty, _args, dest, target = call_info
+        callee_proof = self._callee_proofs.get(func_ty)
+        if callee_proof is None:
+            return None
+        if not callee_proof.passed:
+            return None
+
+        _LOGGER.info(f'CSE custom_step: applying cached proof for function ty({func_ty})')
+
+        # Get the callee's final computed state (the node that covers the target)
+        final_node = None
+        for cover in callee_proof.kcfg.covers():
+            if cover.target.id == callee_proof.target:
+                final_node = cover.source
+                break
+        if final_node is None:
+            _LOGGER.warning(f'CSE: no cover found for callee proof {callee_proof.id}')
+            return None
+
+        # Extract the return value from the callee's final RETVAL_CELL
+        retval_cell = final_node.cterm.cell('RETVAL_CELL')
+
+        # Build the post-return configuration:
+        # - K_CELL: the caller continuation after the call
+        # - RETVAL_CELL: updated with callee's return value
+        # - All other cells: same as the caller's current state
+
+        # Determine continuation based on target
+        if isinstance(target, KApply) and 'someBasicBlockIdx' in target.label.name:
+            # Normal call: continue at target basic block
+            target_bb = target.args[0]  # basicBlockIdx(N)
+            continuation = KSequence(
+                [
+                    KApply(
+                        '#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation',
+                        (dest, self._extract_return_value(retval_cell)),
+                    ),
+                    KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,)),
+                ]
+            )
+        elif isinstance(target, KApply) and 'noBasicBlockIdx' in target.label.name:
+            # Entry function call: end with #EndProgram
+            continuation = KSequence([KMIR.Symbols.END_PROGRAM])
+        else:
+            _LOGGER.warning(f'CSE: unexpected target type: {target}')
+            return None
+
+        # Construct the post-return CTerm by substituting cells in the current config
+        from pyk.kast.manip import set_cell
+
+        post_config = c.config
+        post_config = set_cell(post_config, 'K_CELL', continuation)
+        post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell)
+
+        post_cterm = CTerm(post_config, c.constraints)
+
+        _LOGGER.info(f'CSE custom_step: constructed post-return state for ty({func_ty})')
+        return Step(cterm=post_cterm, depth=1, logs=(), rule_labels=['CSE-FUNCTION-SUMMARY'], info='cse-summary')
+
+    @staticmethod
+    def _extract_return_value(retval_cell: KInner) -> KInner:
+        """Extract the Value from return(Value) in RETVAL_CELL."""
+        if isinstance(retval_cell, KApply) and 'return' in retval_cell.label.name:
+            return retval_cell.args[0]
+        return retval_cell
 
 
 class KMIRNodePrinter(NodePrinter):
