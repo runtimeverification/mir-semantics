@@ -526,14 +526,12 @@ class KMIRCSESemantics(KMIRSemantics):
             return None
         target_bb = target.args[0] if is_normal_call and isinstance(target, KApply) else None
 
-        # Build argument substitution from call operands → callee init locals.
-        # Uses Python-level structural matching on individual arguments.
-        # Falls back to empty subst if matching fails (callee vars stay symbolic).
-        arg_subst_map = self._build_arg_substitution(c, _args_operand, callee_proof)
+        # No manual substitution — callee's symbolic vars (ARG_X:Int, ARG_Y:Bool, etc.)
+        # have correct K sorts and are handled by the backend's simplify as existentials.
+        # Manual substitution caused sort mismatches (e.g., Value::Reference vs Int).
         from pyk.kast.inner import Subst
 
-        subst = Subst(arg_subst_map) if arg_subst_map else Subst({})
-        _LOGGER.info(f'CSE: arg substitution: {len(arg_subst_map)} mappings for ty({func_ty})')
+        subst = Subst({})
 
         # Build post-return states for each callee cover path
         post_return_cterms: list[CTerm] = []
