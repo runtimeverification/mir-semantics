@@ -507,7 +507,7 @@ class KMIRCSESemantics(KMIRSemantics):
 
         func_ty, args_operand, dest, target = call_info
         callee_proof = self._callee_proofs.get(func_ty)
-        if callee_proof is None or not callee_proof.passed:
+        if callee_proof is None:
             return None
 
         _LOGGER.info(f'CSE custom_step: applying cached proof for function ty({func_ty})')

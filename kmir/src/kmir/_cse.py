@@ -269,12 +269,19 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             proof = prove(callee_opts)
             elapsed = time.time() - t0
 
-            if not proof.passed:
-                print(f'[CSE] {name}: proof FAILED in {elapsed:.1f}s, skipping summary')
-                result.skipped[name] = f'proof failed ({elapsed:.1f}s)'
+            # Check if the proof has any successful paths (cover edges to target)
+            covers = [c for c in proof.kcfg.covers() if c.target.id == proof.target]
+            stuck_nodes = [n for n in proof.kcfg.leaves if proof.kcfg.is_stuck(n.id)]
+
+            if not covers:
+                print(f'[CSE] {name}: no successful paths in {elapsed:.1f}s, skipping summary')
+                result.skipped[name] = f'no covers ({elapsed:.1f}s)'
                 continue
 
-            # Minimize and export
+            status_str = 'PASSED' if proof.passed else f'PARTIAL ({len(covers)} paths ok, {len(stuck_nodes)} stuck)'
+            print(f'[CSE] {name}: {status_str} in {elapsed:.1f}s', flush=True)
+
+            # Export summaries from successful paths (even if some paths are stuck)
             proof.minimize_kcfg()
 
             from pyk.kdist import kdist
@@ -287,7 +294,7 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
 
             result.summaries[name] = summary_path
             result.summary_times[name] = elapsed
-            print(f'[CSE] {name}: proved in {elapsed:.1f}s, exported to {summary_path}')
+            print(f'[CSE] {name}: exported {len(covers)} path summaries to {summary_path}')
 
         except Exception as e:
             elapsed = time.time() - t0
@@ -306,11 +313,18 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
         # Load the callee proof if it exists
         callee_proof_dir_path = opts.proof_dir / 'cse-callee-proofs' if opts.proof_dir else None
         if callee_proof_dir_path:
-            callee_label = f'{opts.rs_file.stem}.{callee_name}'
+            import hashlib as _hashlib
+
+            raw_label = f'{opts.rs_file.stem}.{callee_name}'
+            callee_label = ''.join(c if c.isalnum() or c in '._-' else '_' for c in raw_label)
+            if len(callee_label) > 200:
+                digest = _hashlib.sha256(raw_label.encode()).hexdigest()[:12]
+                callee_label = callee_label[:200] + '_' + digest
             if APRProof.proof_data_exists(callee_label, callee_proof_dir_path):
                 callee_proof = APRProof.read_proof_data(callee_proof_dir_path, callee_label)
-                if callee_proof.passed:
-                    # Map function Ty -> proof
+                # Accept proofs with any cover edges (not just fully passed)
+                has_covers = any(c.target.id == callee_proof.target for c in callee_proof.kcfg.covers())
+                if has_covers:
                     if callee_name in smir_info.function_tys:
                         func_ty = smir_info.function_tys[callee_name]
                         callee_proofs[func_ty] = callee_proof
