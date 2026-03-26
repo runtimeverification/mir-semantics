@@ -45,7 +45,6 @@ PROVE_TERMINATE_ON_THUNK = [
     'closure-staged',
 ]
 PROVE_SHOW_SPECS = [
-    'closure-staged',
     'local-raw-fail',
     'interior-mut-fail',
     'interior-mut3-fail',
