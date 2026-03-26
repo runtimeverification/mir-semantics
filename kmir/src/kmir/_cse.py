@@ -152,8 +152,17 @@ def _has_body(smir_info: SMIRInfo, ty: Ty) -> bool:
 
 
 def _sanitize_filename(name: str) -> str:
-    """Convert a function name to a safe filename."""
-    return name.replace('::', '__').replace('<', '_').replace('>', '_').replace(' ', '_')
+    """Convert a function name to a safe filename, truncated to fit filesystem limits."""
+    import hashlib
+
+    safe = name.replace('::', '__').replace('<', '_').replace('>', '_').replace(' ', '_')
+    safe = ''.join(c if c.isalnum() or c in '_-' else '_' for c in safe)
+    # Filesystem limit is 255 bytes; leave room for .json extension + hash suffix
+    max_base = 200
+    if len(safe) > max_base:
+        digest = hashlib.sha256(name.encode()).hexdigest()[:12]
+        safe = safe[:max_base] + '_' + digest
+    return safe
 
 
 def cse_prove(opts: ProveOpts) -> CSEResult:
