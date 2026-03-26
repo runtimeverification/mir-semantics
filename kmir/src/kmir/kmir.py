@@ -258,10 +258,10 @@ class KMIRCSESemantics(KMIRSemantics):
             callee_vars = self._extract_free_vars(callee_typed_val)
 
             for var_name, _var_node in callee_vars:
-                # Match sort: callee var might be Bool but caller value is Value::BoolVal(Bool)
-                # Unwrap wrapper constructors to get matching sort
-                unwrapped = self._unwrap_value(caller_value)
-                subst[var_name] = unwrapped
+                # Unwrap Value constructors to match the callee variable's sort.
+                # E.g., caller has BoolVal(true):Value but callee var is ARG_BOOL:Bool
+                # → unwrap to true:Bool for sort-correct Kore conversion.
+                subst[var_name] = self._unwrap_value(caller_value)
 
         return subst
 
@@ -453,57 +453,8 @@ class KMIRCSESemantics(KMIRSemantics):
         return None
 
     @staticmethod
-    def _has_trivially_false_constraint(constraints: tuple[KInner, ...]) -> bool:
-        """Check if any constraint is trivially false after substitution.
-
-        Detects patterns like:
-        - #Equals(true, false) / #Equals(false, true)
-        - #Equals(true, notBool <concrete_true>) where <concrete_true> evaluates to true
-        """
-
-        def _is_concrete_true(term: KInner) -> bool:
-            """Check if a term is trivially true (bare true or BoolVal(true))."""
-            if isinstance(term, KToken) and term.token == 'true':
-                return True
-            if isinstance(term, KApply) and 'BoolVal' in term.label.name:
-                inner = term.args[0]
-                return isinstance(inner, KToken) and inner.token == 'true'
-            return False
-
-        def _is_concrete_false(term: KInner) -> bool:
-            if isinstance(term, KToken) and term.token == 'false':
-                return True
-            if isinstance(term, KApply) and 'BoolVal' in term.label.name:
-                inner = term.args[0]
-                return isinstance(inner, KToken) and inner.token == 'false'
-            return False
-
-        for c in constraints:
-            if not isinstance(c, KApply) or '#Equals' not in c.label.name:
-                continue
-            if len(c.args) != 2:
-                continue
-            lhs, rhs = c.args
-
-            # #Equals(true, false) or #Equals(false, true)
-            if _is_concrete_true(lhs) and _is_concrete_false(rhs):
-                return True
-            if _is_concrete_false(lhs) and _is_concrete_true(rhs):
-                return True
-
-            # #Equals(true, notBool X) where X is concrete true → false
-            if _is_concrete_true(lhs) and isinstance(rhs, KApply) and 'notBool' in rhs.label.name:
-                if _is_concrete_true(rhs.args[0]):
-                    return True
-            if _is_concrete_true(rhs) and isinstance(lhs, KApply) and 'notBool' in lhs.label.name:
-                if _is_concrete_true(lhs.args[0]):
-                    return True
-
-        return False
-
-    @staticmethod
     def _unwrap_value(value: KInner) -> KInner:
-        """Unwrap Value constructors to get the inner value matching the variable's sort.
+        """Unwrap Value constructors to match the callee variable's sort.
 
         BoolVal(true:Bool) → true:Bool
         Integer(N:Int, width, signed) → N:Int
@@ -524,6 +475,13 @@ class KMIRCSESemantics(KMIRSemantics):
         return retval_cell
 
     def custom_step(self, c: CTerm, cs: CTermSymbolic) -> KCFGExtendResult | None:
+        """Apply cached callee proof to skip function execution.
+
+        Uses the K backend's simplify() to:
+        1. Resolve argument substitution (callee symbolic vars → caller actual values)
+        2. Check constraint feasibility (prune infeasible branches)
+        This is sound for all types, not just bools.
+        """
         from pyk.kast.inner import Subst
         from pyk.kast.manip import set_cell
         from pyk.kcfg.kcfg import NDBranch, Step
@@ -549,26 +507,19 @@ class KMIRCSESemantics(KMIRSemantics):
         # Build argument substitution: callee symbolic vars → caller actual values
         arg_subst_map = self._build_arg_substitution(c, args_operand, callee_proof)
         arg_subst = Subst(arg_subst_map) if arg_subst_map else Subst({})
-        _LOGGER.info(f'CSE: arg substitution: {list(arg_subst_map.keys())}')
+        _LOGGER.info(f'CSE: arg substitution keys: {list(arg_subst_map.keys())}')
 
         # Determine caller continuation based on target
-        if isinstance(target, KApply) and 'someBasicBlockIdx' in target.label.name:
-            target_bb = target.args[0]
-            make_continuation = lambda ret_val: KSequence(  # noqa: E731
-                [
-                    KApply('#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation', (dest, ret_val)),
-                    KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,)),
-                ]
-            )
-        elif isinstance(target, KApply) and 'noBasicBlockIdx' in target.label.name:
-            make_continuation = lambda _ret_val: KSequence([KMIR.Symbols.END_PROGRAM])  # noqa: E731
-        else:
+        is_entry_call = isinstance(target, KApply) and 'noBasicBlockIdx' in target.label.name
+        is_normal_call = isinstance(target, KApply) and 'someBasicBlockIdx' in target.label.name
+        if not is_entry_call and not is_normal_call:
             _LOGGER.warning(f'CSE: unexpected target type: {target}')
             return None
+        target_bb = target.args[0] if is_normal_call and isinstance(target, KApply) else None
 
-        # Build post-return states for each callee branch, filtering trivially infeasible ones
+        # Build post-return states for each callee branch
         post_return_cterms: list[CTerm] = []
-        for cover_node in cover_nodes:
+        for i, cover_node in enumerate(cover_nodes):
             retval_cell = cover_node.cterm.cell('RETVAL_CELL')
             ret_value = self._extract_return_value(retval_cell)
 
@@ -577,19 +528,37 @@ class KMIRCSESemantics(KMIRSemantics):
             retval_cell_subst = arg_subst(retval_cell)
             callee_constraints = tuple(arg_subst(constraint) for constraint in cover_node.cterm.constraints)
 
-            # Skip branches with trivially false constraints (e.g., notBool true == true)
-            if self._has_trivially_false_constraint(callee_constraints):
-                _LOGGER.info('CSE: skipping infeasible branch (trivially false constraint)')
-                continue
-
-            continuation = make_continuation(ret_value_subst)
+            if is_entry_call:
+                continuation = KSequence([KMIR.Symbols.END_PROGRAM])
+            else:
+                assert target_bb is not None
+                continuation = KSequence(
+                    [
+                        KApply('#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation', (dest, ret_value_subst)),
+                        KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,)),
+                    ]
+                )
 
             post_config = set_cell(c.config, 'K_CELL', continuation)
             post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell_subst)
 
             # Combine caller constraints with callee branch constraints
             all_constraints = c.constraints + callee_constraints
-            post_return_cterms.append(CTerm(post_config, all_constraints))
+            candidate = CTerm(post_config, all_constraints)
+
+            # Use backend simplify to check feasibility and resolve symbolic values
+            try:
+                simplified, _logs = cs.simplify(candidate)
+                # Check if simplified to bottom (vacuous/unsatisfiable)
+                if _is_bottom(simplified):
+                    _LOGGER.info(f'CSE: branch {i} infeasible (simplified to bottom)')
+                    continue
+                post_return_cterms.append(simplified)
+                _LOGGER.info(f'CSE: branch {i} feasible after simplification')
+            except Exception as e:
+                _LOGGER.warning(f'CSE: simplify failed for branch {i}: {e}')
+                # Fall back to using the un-simplified candidate
+                post_return_cterms.append(candidate)
 
         if not post_return_cterms:
             _LOGGER.warning(f'CSE: all branches infeasible for ty({func_ty})')
@@ -601,8 +570,27 @@ class KMIRCSESemantics(KMIRSemantics):
         else:
             _LOGGER.info(f'CSE custom_step: {len(post_return_cterms)}-branch summary for ty({func_ty})')
             return NDBranch(
-                cterms=tuple(post_return_cterms), logs=(), rule_labels=tuple(['CSE-SUMMARY'] * len(post_return_cterms))
+                cterms=tuple(post_return_cterms),
+                logs=(),
+                rule_labels=tuple(['CSE-SUMMARY'] * len(post_return_cterms)),
             )
+
+
+def _is_bottom(cterm: CTerm) -> bool:
+    """Check if a CTerm has been simplified to #Bottom (unsatisfiable constraints)."""
+    from pyk.kast.inner import KToken
+
+    # After simplify, vacuous terms may have config = #Bottom or constraints containing #Bottom
+    config = cterm.config
+    if isinstance(config, KApply) and 'Bottom' in config.label.name:
+        return True
+    # Check if any constraint is literally 'false'
+    for c in cterm.constraints:
+        if isinstance(c, KToken) and c.token == 'false':
+            return True
+        if isinstance(c, KApply) and '#Bottom' in c.label.name:
+            return True
+    return False
 
 
 class KMIRNodePrinter(NodePrinter):
