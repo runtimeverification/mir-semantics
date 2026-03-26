@@ -168,30 +168,44 @@ class KMIRCSESemantics(KMIRSemantics):
         self._callee_proofs = callee_proofs or {}
 
     def _extract_call_info(self, k_cell: KInner) -> tuple[int, KInner, KInner, KInner] | None:
-        """Extract (function_ty, args_operand, dest, target) from a call terminator."""
+        """Extract (function_ty, args_operand, dest, target) from a call.
+
+        Matches two patterns:
+        1. #execTerminator(terminator(terminatorKindCall(func, args, dest, target, unwind), span))
+        2. #execTerminatorCall(Ty, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+           (after call dispatch, at termCallFunction cut-point)
+        """
         term = k_cell
         if isinstance(term, KSequence) and term.items:
             term = term.items[0]
 
         if not isinstance(term, KApply):
             return None
-        if term.label.name != '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator':
-            return None
 
-        terminator = term.args[0]
-        if not isinstance(terminator, KApply) or len(terminator.args) < 1:
-            return None
+        # Pattern 1: #execTerminator(terminator(terminatorKindCall(...), span))
+        if term.label.name == '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator':
+            terminator = term.args[0]
+            if not isinstance(terminator, KApply) or len(terminator.args) < 1:
+                return None
+            kind = terminator.args[0]
+            if not isinstance(kind, KApply) or kind.label.name != 'TerminatorKind::Call':
+                return None
+            func_operand, args_operand, dest, target, _unwind = kind.args
+            func_ty = self._extract_func_ty(func_operand)
+            if func_ty is None:
+                return None
+            return (func_ty, args_operand, dest, target)
 
-        kind = terminator.args[0]
-        if not isinstance(kind, KApply) or kind.label.name != 'TerminatorKind::Call':
-            return None
+        # Pattern 2: #execTerminatorCall(Ty, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN)
+        if '#execTerminatorCall' in term.label.name and len(term.args) >= 5:
+            ty_term = term.args[0]
+            args_operand = term.args[2]
+            dest = term.args[3]
+            target = term.args[4]
+            if isinstance(ty_term, KApply) and ty_term.label.name == 'ty' and isinstance(ty_term.args[0], KToken):
+                return (int(ty_term.args[0].token), args_operand, dest, target)
 
-        func_operand, args_operand, dest, target, _unwind = kind.args
-        func_ty = self._extract_func_ty(func_operand)
-        if func_ty is None:
-            return None
-
-        return (func_ty, args_operand, dest, target)
+        return None
 
     @staticmethod
     def _extract_func_ty(func_operand: KInner) -> int | None:

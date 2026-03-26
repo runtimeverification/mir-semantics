@@ -63,7 +63,9 @@ class CSEResult:
 
 def write_to_module(kmir: KMIR, proof: APRProof, to_module_path: Path) -> None:
     """Write proof KCFG as a K module to the specified path."""
-    module_name = proof.id.upper().replace('.', '-').replace('_', '-') + '-SUMMARY'
+    # Sanitize module name: K identifiers only allow alphanumeric + hyphen
+    raw_name = proof.id.upper().replace('.', '-').replace('_', '-')
+    module_name = ''.join(c if c.isalnum() or c == '-' else '-' for c in raw_name) + '-SUMMARY'
     k_module = proof.kcfg.to_module(module_name=module_name, defunc_with=kmir.definition)
 
     if to_module_path.suffix == '.json':
@@ -358,15 +360,14 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             simplify_each=30,
         ) as cts:
             kcfg_explore = KCFGExplore(cts, kcfg_semantics=cse_semantics)
-            # Use termCall as cut-point so the backend stops BEFORE function call execution.
-            # This creates a frontier node with <k> = #execTerminatorCall(...),
-            # and on the next extend_cterm call, custom_step can check if the PREVIOUS
-            # state (with #execTerminator(terminatorKindCall(...))) had a cached proof.
-            # We use termCall (which fires first, converting #execTerminator to #execTerminatorCall)
-            # so the node BEFORE it has the call pattern that custom_step recognizes.
+            # Use termCallFunction as cut-point so the backend stops at function calls.
+            # After the cut, <k> has #execTerminatorCall(Ty, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN).
+            # custom_step recognizes this pattern (Pattern 2 in _extract_call_info).
+            # Note: we use existing rule labels to avoid adding new ones to kmir.md
+            # (which can cause LLVM backend compilation order changes).
             cse_cut_points = [
-                'KMIR-CONTROL-FLOW.termCall',
-                'KMIR-CONTROL-FLOW.termCallIndirect',
+                'KMIR-CONTROL-FLOW.termCallFunction',
+                'KMIR-CONTROL-FLOW.termCallFunctionFilter',
             ]
             prover = APRProver(
                 kcfg_explore,
