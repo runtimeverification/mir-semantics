@@ -33,10 +33,18 @@ class CSEResult:
     final_proof: APRProof | None = None
     final_prove_time: float = 0.0
 
+    @property
+    def total_callee_time(self) -> float:
+        return sum(self.summary_times.values())
+
+    @property
+    def total_time(self) -> float:
+        return self.total_callee_time + self.final_prove_time
+
     def summary_report(self) -> str:
         lines = ['=== CSE Summary ===']
         if self.summaries:
-            lines.append(f'Generated {len(self.summaries)} function summaries:')
+            lines.append(f'Callee summaries ({len(self.summaries)}, total {self.total_callee_time:.1f}s):')
             for name, path in self.summaries.items():
                 t = self.summary_times.get(name, 0.0)
                 lines.append(f'  {name}: {t:.1f}s -> {path}')
@@ -45,8 +53,10 @@ class CSEResult:
             for name, reason in self.skipped.items():
                 lines.append(f'  {name}: {reason}')
         if self.final_proof is not None:
+            status = 'PASSED' if self.final_proof.passed else 'FAILED'
+            lines.append(f'Main proof: {status} ({self.final_prove_time:.1f}s)')
             lines.append(
-                f'Final proof: {"PASSED" if self.final_proof.passed else "FAILED"} ({self.final_prove_time:.1f}s)'
+                f'Total: {self.total_time:.1f}s (callees {self.total_callee_time:.1f}s + main {self.final_prove_time:.1f}s)'
             )
         return '\n'.join(lines)
 
