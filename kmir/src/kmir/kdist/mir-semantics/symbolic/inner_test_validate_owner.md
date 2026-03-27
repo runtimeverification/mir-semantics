@@ -216,22 +216,28 @@ module VALIDATE-OWNER-COMMON
   rule #bool2Int(false) => 0
 
   // =========================================================================
-  // Generic signer checking helpers (list-based)
+  // Generic signer checking (list-based, KItem rewrite rules)
   //
-  // These work for any number of tx_signers and registered signers.
-  // The heating/cooling loop collects evaluated account Values into a list,
-  // then #toKeyAndIsSignerList extracts key/is_signer pairs for these helpers.
+  // These implement the signer-checking loops from cases 8-10 as rewrite
+  // rules on the <k> cell rather than [function] rules, so that the prover
+  // can use path constraints (via splits) to resolve symbolic key comparisons.
   //
   // keyAndIsSigner(KEY, IS) pairs a tx_signer's public key with its is_signer flag.
   // firstN(N, LIST) takes the first N elements of LIST (implements [0..n] slicing).
   //
-  // #unsignedExists(TxSigners, RegisteredKeys):
-  //   outer loop over tx_signers, inner loop over registered keys.
-  //   True if any tx_signer matches a registered key and is NOT a signer.
+  // The loops produce a #signerCheckResult(outcome) on the <k> cell.
+  // Each lemma module pushes a handler continuation after the loop to
+  // interpret the outcome (Expected: return result; Inner: pass/fail check).
   //
-  // #signersCount(TxSigners, RegisteredKeys):
-  //   outer loop over registered keys, inner loop over tx_signers.
+  // #checkUnsignedLoop: outer over tx_signers, inner over registered keys.
+  //   Checks if any tx_signer matches a registered key and is NOT a signer.
+  //   If found: produces #signerCheckResult(unsignedFound).
+  //   If not found: proceeds to #countSignersLoop.
+  //
+  // #countSignersLoop: outer over registered keys, inner over tx_signers.
   //   Counts how many registered keys have a matching signed tx_signer.
+  //   Produces #signerCheckResult(notEnoughSigners) or
+  //            #signerCheckResult(enoughSigners).
   // =========================================================================
 
   syntax KeyAndIsSigner ::= keyAndIsSigner( Value, Int )
@@ -242,37 +248,157 @@ module VALIDATE-OWNER-COMMON
   rule firstN(N, ListItem(X) REST) => ListItem(X) firstN(N -Int 1, REST) requires N >Int 0
   rule firstN(_, .List) => .List [owise]
 
-  // --- #unsignedExists: outer over tx_signers, inner over registered keys ---
+  syntax SignerCheckOutcome ::= "unsignedFound" | "notEnoughSigners" | "enoughSigners"
+  syntax KItem ::= #signerCheckResult( SignerCheckOutcome )
 
-  syntax Bool ::= #unsignedExists( List, List ) [function]
-  // -----------------------------------------------------------
-  rule #unsignedExists(.List, _REGS) => false
-  rule #unsignedExists(ListItem(keyAndIsSigner(KEY, IS)) REST, REGS)
-    => #unsignedExistsInner(KEY, IS, REGS)
-    orBool #unsignedExists(REST, REGS)
+  // --- #checkUnsignedLoop: outer over tx_signers ---
 
-  syntax Bool ::= #unsignedExistsInner( Value, Int, List ) [function]
-  // -----------------------------------------------------------------------
-  rule #unsignedExistsInner(_KEY, _IS, .List) => false
-  rule #unsignedExistsInner(KEY, IS, ListItem(SKEY) REST)
-    => ( IS ==Int 0 andBool fromKey(SKEY) ==K KEY )
-    orBool #unsignedExistsInner(KEY, IS, REST)
+  syntax KItem ::= #checkUnsignedLoop(
+      List,    // remaining tx_signers (keyAndIsSigner pairs)
+      List,    // REGS (registered keys, full list)
+      Int,     // M (threshold, for signersCount phase)
+      List,    // original TXSIGNERS (for signersCount phase)
+      List     // original REGS (for signersCount phase)
+    )
 
-  // --- #signersCount: outer over registered keys, inner over tx_signers ---
+  // No more tx_signers: no unsigned found → proceed to count signers
+  rule [unsigned-loop-done]:
+    <k> #checkUnsignedLoop(.List, _REGS, M, TXSIGNERS, REGS_ORIG)
+      => #countSignersLoop(REGS_ORIG, TXSIGNERS, 0, M)
+    </k>
+    [priority(30)]
 
-  syntax Int ::= #signersCount( List, List ) [function]
-  // ---------------------------------------------------------
-  rule #signersCount(_TXSIGNERS, .List) => 0
-  rule #signersCount(TXSIGNERS, ListItem(SKEY) REST)
-    => #bool2Int(#signerMatchedInner(SKEY, TXSIGNERS))
-     +Int #signersCount(TXSIGNERS, REST)
+  // tx_signer with IS != 0 (signed): can't be unsigned, skip to next
+  rule [unsigned-loop-signed]:
+    <k> #checkUnsignedLoop(
+            ListItem(keyAndIsSigner(_KEY, IS)) REST_TX,
+            REGS, M, TXSIGNERS, REGS_ORIG)
+      => #checkUnsignedLoop(REST_TX, REGS, M, TXSIGNERS, REGS_ORIG)
+    </k>
+    requires IS =/=Int 0
+    [priority(30)]
 
-  syntax Bool ::= #signerMatchedInner( Key, List ) [function]
-  // ---------------------------------------------------------------
-  rule #signerMatchedInner(_SKEY, .List) => false
-  rule #signerMatchedInner(SKEY, ListItem(keyAndIsSigner(KEY, IS)) REST)
-    => ( fromKey(SKEY) ==K KEY andBool IS =/=Int 0 )
-    orBool #signerMatchedInner(SKEY, REST)
+  // tx_signer with IS == 0 (not signed): check key against registered keys
+  rule [unsigned-loop-check]:
+    <k> #checkUnsignedLoop(
+            ListItem(keyAndIsSigner(KEY, IS)) REST_TX,
+            REGS, M, TXSIGNERS, REGS_ORIG)
+      => #checkUnsignedInner(KEY, REGS, REST_TX, M, TXSIGNERS, REGS_ORIG)
+    </k>
+    requires IS ==Int 0
+    [priority(30)]
+
+  // --- #checkUnsignedInner: check one unsigned tx_signer against registered keys ---
+
+  syntax KItem ::= #checkUnsignedInner(
+      Value,   // KEY (tx_signer's public key)
+      List,    // remaining registered keys to check
+      List,    // REST_TX (remaining tx_signers for outer loop)
+      Int,     // M
+      List,    // original TXSIGNERS
+      List     // original REGS
+    )
+
+  // No more registered keys: this tx_signer's key didn't match any → continue outer
+  rule [unsigned-inner-done]:
+    <k> #checkUnsignedInner(_KEY, .List, REST_TX, M, TXSIGNERS, REGS_ORIG)
+      => #checkUnsignedLoop(REST_TX, REGS_ORIG, M, TXSIGNERS, REGS_ORIG)
+    </k>
+    [priority(30)]
+
+  // Key matches registered key → found unsigned signer!
+  rule [unsigned-inner-match]:
+    <k> #checkUnsignedInner(KEY, ListItem(SKEY) _REST_REG, _REST_TX, _M, _TXSIGNERS, _REGS_ORIG)
+      => #signerCheckResult(unsignedFound)
+    </k>
+    requires fromKey(SKEY) ==K KEY
+    [priority(30)]
+
+  // Key doesn't match → try next registered key
+  rule [unsigned-inner-no-match]:
+    <k> #checkUnsignedInner(KEY, ListItem(SKEY) REST_REG, REST_TX, M, TXSIGNERS, REGS_ORIG)
+      => #checkUnsignedInner(KEY, REST_REG, REST_TX, M, TXSIGNERS, REGS_ORIG)
+    </k>
+    requires fromKey(SKEY) =/=K KEY
+    [priority(30)]
+
+  // --- #countSignersLoop: outer over registered keys ---
+
+  syntax KItem ::= #countSignersLoop(
+      List,    // remaining registered keys
+      List,    // TXSIGNERS (full, for inner loop)
+      Int,     // accumulated count
+      Int      // M (threshold)
+    )
+
+  // No more registered keys: compare count with threshold
+  rule [signers-count-done-not-enough]:
+    <k> #countSignersLoop(.List, _TXSIGNERS, COUNT, M)
+      => #signerCheckResult(notEnoughSigners)
+    </k>
+    requires COUNT <Int M
+    [priority(30)]
+
+  rule [signers-count-done-enough]:
+    <k> #countSignersLoop(.List, _TXSIGNERS, COUNT, M)
+      => #signerCheckResult(enoughSigners)
+    </k>
+    requires COUNT >=Int M
+    [priority(30)]
+
+  // Next registered key: check against all tx_signers
+  rule [signers-count-next]:
+    <k> #countSignersLoop(ListItem(SKEY) REST_REGS, TXSIGNERS, COUNT, M)
+      => #countSignersInner(SKEY, TXSIGNERS, REST_REGS, COUNT, M, TXSIGNERS)
+    </k>
+    [priority(30)]
+
+  // --- #countSignersInner: check one registered key against tx_signers ---
+
+  syntax KItem ::= #countSignersInner(
+      Key,     // SKEY (registered key being checked)
+      List,    // remaining tx_signers (inner)
+      List,    // REST_REGS (remaining registered keys for outer)
+      Int,     // accumulated count
+      Int,     // M
+      List     // original TXSIGNERS
+    )
+
+  // No more tx_signers: no match found for this registered key → count unchanged
+  rule [signers-count-inner-done]:
+    <k> #countSignersInner(_SKEY, .List, REST_REGS, COUNT, M, TXSIGNERS)
+      => #countSignersLoop(REST_REGS, TXSIGNERS, COUNT, M)
+    </k>
+    [priority(30)]
+
+  // tx_signer not signed (IS == 0): can't count as a signer, skip
+  rule [signers-count-inner-not-signed]:
+    <k> #countSignersInner(SKEY, ListItem(keyAndIsSigner(_KEY, IS)) REST_TX,
+            REST_REGS, COUNT, M, TXSIGNERS)
+      => #countSignersInner(SKEY, REST_TX, REST_REGS, COUNT, M, TXSIGNERS)
+    </k>
+    requires IS ==Int 0
+    [priority(30)]
+
+  // tx_signer signed and key matches: found! increment count, move to next registered key
+  rule [signers-count-inner-match]:
+    <k> #countSignersInner(SKEY, ListItem(keyAndIsSigner(KEY, IS)) _REST_TX,
+            REST_REGS, COUNT, M, TXSIGNERS)
+      => #countSignersLoop(REST_REGS, TXSIGNERS, COUNT +Int 1, M)
+    </k>
+    requires IS =/=Int 0
+     andBool fromKey(SKEY) ==K KEY
+    [priority(30)]
+
+  // tx_signer signed but key doesn't match: try next tx_signer
+  rule [signers-count-inner-no-match]:
+    <k> #countSignersInner(SKEY, ListItem(keyAndIsSigner(KEY, IS)) REST_TX,
+            REST_REGS, COUNT, M, TXSIGNERS)
+      => #countSignersInner(SKEY, REST_TX, REST_REGS, COUNT, M, TXSIGNERS)
+    </k>
+    requires IS =/=Int 0
+     andBool fromKey(SKEY) =/=K KEY
+    [priority(30)]
 
   // =========================================================================
   // Extract key and is_signer from a list of evaluated tx_signer account
@@ -631,6 +757,7 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
 
   // =========================================================================
   // Generic signer checking (cases 8-10) for expected_validate_owner_result.
+  // Launches the shared loops from COMMON and handles the outcome.
   // =========================================================================
 
   syntax KItem ::= #checkSignersExpected(
@@ -638,27 +765,35 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
       List,                  // tx_signers as keyAndIsSigner pairs
       Place, MaybeBasicBlockIdx )
 
+  syntax KItem ::= #handleSignerResultExpected( Place, MaybeBasicBlockIdx )
+
+  // Entry: start the unsigned check loop, push handler as continuation
+  rule [check-signers-expected-start]:
+    <k> #checkSignersExpected(M, REGS, TXSIGNERS, DEST, TARGET)
+      => #checkUnsignedLoop(TXSIGNERS, REGS, M, TXSIGNERS, REGS)
+      ~> #handleSignerResultExpected(DEST, TARGET)
+    </k>
+    [priority(30)]
+
+  // Case 8: unsigned signer found => Err(MissingRequiredSignature)
   rule [validate-owner-expected-multisig-unsigned]:
-    <k> #checkSignersExpected(_M, REGS, TXSIGNERS, DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)  // Err(MissingRequiredSignature)
+    <k> #signerCheckResult(unsignedFound) ~> #handleSignerResultExpected(DEST, TARGET)
+      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires #unsignedExists(TXSIGNERS, REGS)
     [priority(30)]
 
+  // Case 9: not enough signers => Err(MissingRequiredSignature)
   rule [validate-owner-expected-multisig-not-enough]:
-    <k> #checkSignersExpected(M, REGS, TXSIGNERS, DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)  // Err(MissingRequiredSignature)
+    <k> #signerCheckResult(notEnoughSigners) ~> #handleSignerResultExpected(DEST, TARGET)
+      => #setLocalValue(DEST, Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists(TXSIGNERS, REGS)
-     andBool #signersCount(TXSIGNERS, REGS) <Int M
     [priority(30)]
 
+  // Case 10: enough signers => Ok(())
   rule [validate-owner-expected-multisig-ok]:
-    <k> #checkSignersExpected(M, REGS, TXSIGNERS, DEST, TARGET)
-      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)  // Ok(())
+    <k> #signerCheckResult(enoughSigners) ~> #handleSignerResultExpected(DEST, TARGET)
+      => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists(TXSIGNERS, REGS)
-     andBool #signersCount(TXSIGNERS, REGS) >=Int M
     [priority(30)]
 
 endmodule
@@ -1154,6 +1289,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
 
   // =========================================================================
   // Generic signer checking (cases 8-10) for inner_test_validate_owner.
+  // Launches the shared loops from COMMON and handles the outcome.
   // Each case has pass/fail rule pairs for the assert_eq! check.
   // =========================================================================
 
@@ -1163,62 +1299,62 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
       Value,                 // RESULT
       Place, MaybeBasicBlockIdx )
 
-  // Case 8: unsigned signer exists => assert result == Err(MissingRequiredSignature)
+  syntax KItem ::= #handleSignerResult( Value, Place, MaybeBasicBlockIdx )
+
+  // Entry: start the unsigned check loop, push handler as continuation
+  rule [check-signers-start]:
+    <k> #checkSigners(M, REGS, TXSIGNERS, RESULT, DEST, TARGET)
+      => #checkUnsignedLoop(TXSIGNERS, REGS, M, TXSIGNERS, REGS)
+      ~> #handleSignerResult(RESULT, DEST, TARGET)
+    </k>
+    [priority(30)]
+
+  // Case 8: unsigned signer found => assert result == Err(MissingRequiredSignature)
+  // Pass: result matches
   rule [inner-validate-owner-multisig-unsigned]:
-    <k> #checkSigners(
-            _M, REGS, TXSIGNERS,
+    <k> #signerCheckResult(unsignedFound)
+      ~> #handleSignerResult(
             Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List))) #as RESULT,
             DEST, TARGET)
       => #setLocalValue(DEST, RESULT) ~> #continueAt(TARGET)
     </k>
-    requires #unsignedExists(TXSIGNERS, REGS)
     [priority(30)]
 
+  // Fail: result does not match
   rule [inner-validate-owner-multisig-unsigned-fail]:
-    <k> #checkSigners(
-            _M, REGS, TXSIGNERS,
-            RESULT,
-            _DEST, _TARGET)
+    <k> #signerCheckResult(unsignedFound)
+      ~> #handleSignerResult(RESULT, _DEST, _TARGET)
       => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
-    requires #unsignedExists(TXSIGNERS, REGS)
-     andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
+    requires RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
     [priority(30)]
 
   // Case 9: not enough signers => assert result == Err(MissingRequiredSignature)
+  // Pass: result matches
   rule [inner-validate-owner-multisig-not-enough]:
-    <k> #checkSigners(
-            M, REGS, TXSIGNERS,
+    <k> #signerCheckResult(notEnoughSigners)
+      ~> #handleSignerResult(
             Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List))) #as RESULT,
             DEST, TARGET)
       => #setLocalValue(DEST, RESULT) ~> #continueAt(TARGET)
     </k>
-    requires notBool #unsignedExists(TXSIGNERS, REGS)
-     andBool #signersCount(TXSIGNERS, REGS) <Int M
     [priority(30)]
 
+  // Fail: result does not match
   rule [inner-validate-owner-multisig-not-enough-fail]:
-    <k> #checkSigners(
-            M, REGS, TXSIGNERS,
-            RESULT,
-            _DEST, _TARGET)
+    <k> #signerCheckResult(notEnoughSigners)
+      ~> #handleSignerResult(RESULT, _DEST, _TARGET)
       => #ValidateOwnerAssertFailed(Result2String(RESULT) +String " =/= " +String Result2String(Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))))
     </k>
-    requires notBool #unsignedExists(TXSIGNERS, REGS)
-     andBool #signersCount(TXSIGNERS, REGS) <Int M
-     andBool RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
+    requires RESULT =/=K Aggregate(variantIdx(1), ListItem(Aggregate(variantIdx(7), .List)))
     [priority(30)]
 
   // Case 10: enough signers => Ok(()) (no assert on result)
   rule [inner-validate-owner-multisig-ok]:
-    <k> #checkSigners(
-            M, REGS, TXSIGNERS,
-            _RESULT,
-            DEST, TARGET)
+    <k> #signerCheckResult(enoughSigners)
+      ~> #handleSignerResult(_RESULT, DEST, TARGET)
       => #setLocalValue(DEST, Aggregate(variantIdx(0), ListItem(Aggregate(variantIdx(0), .List)))) ~> #continueAt(TARGET)  // Ok(())
     </k>
-    requires notBool #unsignedExists(TXSIGNERS, REGS)
-     andBool #signersCount(TXSIGNERS, REGS) >=Int M
     [priority(30)]
 
 endmodule
