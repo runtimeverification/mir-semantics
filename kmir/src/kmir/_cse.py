@@ -244,11 +244,12 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             if callee_proof_dir:
                 callee_proof_dir.mkdir(parents=True, exist_ok=True)
 
-            # Step 1: Build KMIR with function tables for this callee
-            callee_smir = smir_info.reduce_to(name)
+            # Step 1: Build KMIR with the FULL SMIR (not reduce_to) so that
+            # type IDs and function bodies are identical to the main proof's kompile.
+            # This is critical for locals matching in custom_step.
             callee_target = callee_proof_dir / safe_name if callee_proof_dir else Path(f'/tmp/cse-{safe_name}')
             kmir_callee = KMIR.from_kompiled_kore(
-                callee_smir,
+                smir_info,
                 target_dir=callee_target,
                 extra_modules=available_summaries or None,
                 bug_report=opts.bug_report,
@@ -262,7 +263,7 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
 
             init_config, init_constraints = make_call_config(
                 kmir_callee.definition,
-                smir_info=callee_smir,
+                smir_info=smir_info,
                 start_symbol=name,
                 mode=SymbolicMode(),
             )
@@ -322,13 +323,13 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             proof = apr_proof_from_smir(
                 kmir_callee,
                 callee_label,
-                callee_smir,
+                smir_info,
                 start_symbol=name,
                 proof_dir=callee_proof_dir,
                 init_cterm=normalized,
             )
             if callee_proof_dir:
-                callee_smir.dump(callee_proof_dir / callee_label / 'smir.json')
+                smir_info.dump(callee_proof_dir / callee_label / 'smir.json')
 
             # Step 4: Run the prover with a reasonable iteration limit for callees.
             # Complex callees (Result::map, etc.) can explode into thousands of nodes.
@@ -423,9 +424,8 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     # Build the proof with CSE semantics for dynamic interception
     from ._prove import apr_proof_from_smir
 
-    main_smir = smir_info.reduce_to(start_name)
     kmir = KMIR.from_kompiled_kore(
-        main_smir,
+        smir_info,
         target_dir=opts.proof_dir / f'{opts.rs_file.stem}.{start_name}' if opts.proof_dir else Path('/tmp/cse-main'),
         extra_modules=all_modules or None,
         bug_report=opts.bug_report,
@@ -437,12 +437,12 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     final_proof = apr_proof_from_smir(
         kmir,
         f'{opts.rs_file.stem}.{start_name}',
-        main_smir,
+        smir_info,
         start_symbol=start_name,
         proof_dir=opts.proof_dir,
     )
     if opts.proof_dir:
-        main_smir.dump(opts.proof_dir / final_proof.id / 'smir.json')
+        smir_info.dump(opts.proof_dir / final_proof.id / 'smir.json')
 
     if not final_proof.passed:
         from .kmir import KMIRCSESemantics
