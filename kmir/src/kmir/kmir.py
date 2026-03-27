@@ -243,44 +243,77 @@ class KMIRCSESemantics(KMIRSemantics):
     def _build_arg_substitution(
         self, caller_cterm: CTerm, args_operand: KInner, callee_proof: APRProof
     ) -> dict[str, KInner]:
-        """Build substitution mapping callee symbolic arg variables to caller's actual values.
+        """Build substitution mapping callee symbolic vars to caller's actual values.
 
-        Handles both Operand::Copy (reference to caller local) and
-        Operand::Constant (inline constant value) arguments.
+        Strategy: for each callee symbolic variable, find its sort, then search
+        caller locals for a value of matching sort. Unwraps Value constructors
+        (BoolVal→Bool, Integer→Int, Range→List) for sort-correct substitution.
+        Also scans all caller locals to find pointee data for reference args.
         """
+        from pyk.kast.inner import KVariable
 
         subst: dict[str, KInner] = {}
 
-        # Get callee's init node locals (symbolic arg values)
         callee_init = callee_proof.kcfg.node(callee_proof.init)
         callee_locals = callee_init.cterm.cell('LOCALS_CELL')
         callee_arg_items = self._list_items(callee_locals)
 
-        # Get caller's locals (for Operand::Copy resolution)
         caller_locals = caller_cterm.cell('LOCALS_CELL')
         caller_local_items = self._list_items(caller_locals)
 
-        # Extract actual argument values from call operands
+        # Extract argument values from call operands
         actual_arg_values = self._extract_arg_values(args_operand, caller_local_items)
 
-        # For each arg: map callee's symbolic variable to caller's actual value
+        # Phase 1: Map callee arg locals to caller operand values
         for i, caller_value in enumerate(actual_arg_values):
-            callee_local_idx = i + 1  # local[0] is return value, args start at local[1]
-            if callee_local_idx >= len(callee_arg_items):
+            callee_local_idx = i + 1
+            if callee_local_idx >= len(callee_arg_items) or caller_value is None:
                 continue
-            if caller_value is None:
-                continue
-
             callee_typed_val = callee_arg_items[callee_local_idx]
-            callee_vars = self._extract_free_vars(callee_typed_val)
+            for var_name, var_node in self._extract_free_vars(callee_typed_val):
+                sort_name = var_node.sort.name if isinstance(var_node, KVariable) and var_node.sort else None
+                unwrapped = self._unwrap_value_for_sort(caller_value, sort_name)
+                # Only substitute if the unwrapped value has matching sort
+                if self._sort_matches(unwrapped, sort_name):
+                    subst[var_name] = unwrapped
 
-            for var_name, _var_node in callee_vars:
-                # Unwrap Value constructors to match the callee variable's sort.
-                # E.g., caller has BoolVal(true):Value but callee var is ARG_BOOL:Bool
-                # → unwrap to true:Bool for sort-correct Kore conversion.
-                subst[var_name] = self._unwrap_value(caller_value)
+        # Phase 2: For remaining vars (e.g., pointee data in separate locals),
+        # scan ALL caller locals for matching-sort values
+        all_callee_vars: dict[str, str | None] = {}
+        for item in callee_arg_items:
+            for vname, vnode in self._extract_free_vars(item):
+                if vname not in subst:
+                    sort_name = vnode.sort.name if isinstance(vnode, KVariable) and vnode.sort else None
+                    all_callee_vars[vname] = sort_name
+
+        for var_name, sort_name in all_callee_vars.items():
+            if var_name in subst:
+                continue
+            if sort_name is None:
+                continue  # Can't match without known sort
+            for item in caller_local_items:
+                caller_val = self._extract_value_from_typed(item)
+                if caller_val is None:
+                    continue
+                unwrapped = self._unwrap_value_for_sort(caller_val, sort_name)
+                if self._sort_matches(unwrapped, sort_name):
+                    subst[var_name] = unwrapped
+                    break
 
         return subst
+
+    @staticmethod
+    def _sort_matches(term: KInner, sort_name: str | None) -> bool:
+        """Check if a term matches the expected sort (or any K sort if sort_name is None)."""
+        if isinstance(term, KToken):
+            if sort_name is None:
+                return term.sort.name in ('Int', 'Bool', 'String')
+            return term.sort.name == sort_name
+        if isinstance(term, KApply):
+            label = term.label.name
+            if sort_name == 'List' or (sort_name is None and ('List' in label or 'ListItem' in label)):
+                return 'List' in label or 'ListItem' in label
+        return False
 
     def _extract_arg_values(self, args_operand: KInner, caller_locals: list[KInner]) -> list[KInner | None]:
         """Extract actual argument values from call operands.
@@ -470,18 +503,23 @@ class KMIRCSESemantics(KMIRSemantics):
         return None
 
     @staticmethod
-    def _unwrap_value(value: KInner) -> KInner:
+    def _unwrap_value_for_sort(value: KInner, target_sort: str | None) -> KInner:
         """Unwrap Value constructors to match the callee variable's sort.
 
-        BoolVal(true:Bool) → true:Bool
-        Integer(N:Int, width, signed) → N:Int
+        BoolVal(x:Bool) → x:Bool       (for sort Bool)
+        Integer(n:Int, ...) → n:Int     (for sort Int)
+        Range(list:List) → list:List    (for sort List)
         Otherwise returns the value as-is.
         """
-        if isinstance(value, KApply):
-            if 'BoolVal' in value.label.name and value.args:
-                return value.args[0]
-            if 'Integer' in value.label.name and value.args:
-                return value.args[0]
+        if not isinstance(value, KApply):
+            return value
+        if 'BoolVal' in value.label.name and value.args:
+            return value.args[0]
+        if 'Integer' in value.label.name and value.args:
+            return value.args[0]
+        if 'Range' in value.label.name and value.args:
+            return value.args[0]
+        # For Aggregate, Reference etc: return as-is (sort Value)
         return value
 
     @staticmethod
@@ -526,12 +564,14 @@ class KMIRCSESemantics(KMIRSemantics):
             return None
         target_bb = target.args[0] if is_normal_call and isinstance(target, KApply) else None
 
-        # No manual substitution — callee's symbolic vars (ARG_X:Int, ARG_Y:Bool, etc.)
-        # have correct K sorts and are handled by the backend's simplify as existentials.
-        # Manual substitution caused sort mismatches (e.g., Value::Reference vs Int).
+        # Build sort-correct substitution: callee symbolic vars → caller actual values.
+        # Uses sort-aware unwrapping (BoolVal→Bool, Integer→Int, Range→List) and
+        # scans all caller locals for pointee data (handles reference args).
+        arg_subst_map = self._build_arg_substitution(c, _args_operand, callee_proof)
         from pyk.kast.inner import Subst
 
-        subst = Subst({})
+        subst = Subst(arg_subst_map) if arg_subst_map else Subst({})
+        _LOGGER.info(f'CSE: substitution: {list(arg_subst_map.keys())} for ty({func_ty})')
 
         # Build post-return states for each callee cover path
         post_return_cterms: list[CTerm] = []
