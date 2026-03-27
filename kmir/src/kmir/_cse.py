@@ -330,14 +330,17 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             if callee_proof_dir:
                 callee_smir.dump(callee_proof_dir / callee_label / 'smir.json')
 
-            # Step 4: Run the prover
+            # Step 4: Run the prover with a reasonable iteration limit for callees.
+            # Complex callees (Result::map, etc.) can explode into thousands of nodes.
+            # Limit to 100 iterations — if the callee can't be proved quickly, skip it.
+            cse_callee_max_iterations = 100
             if not proof.passed:
                 from .options import ProveOpts as ProveOptsClass
 
                 callee_opts = ProveOptsClass(
                     rs_file=opts.rs_file,
                     max_depth=opts.max_depth,
-                    max_iterations=opts.max_iterations,
+                    max_iterations=cse_callee_max_iterations,
                 )
                 _prove_sequential(
                     kmir_callee,
