@@ -244,12 +244,11 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             if callee_proof_dir:
                 callee_proof_dir.mkdir(parents=True, exist_ok=True)
 
-            # Step 1: Build KMIR with the FULL SMIR (not reduce_to) so that
-            # type IDs and function bodies are identical to the main proof's kompile.
-            # This is critical for locals matching in custom_step.
+            # Step 1: Build callee KMIR with reduce_to for efficient kompile
+            callee_smir = smir_info.reduce_to(name)
             callee_target = callee_proof_dir / safe_name if callee_proof_dir else Path(f'/tmp/cse-{safe_name}')
             kmir_callee = KMIR.from_kompiled_kore(
-                smir_info,
+                callee_smir,
                 target_dir=callee_target,
                 extra_modules=available_summaries or None,
                 bug_report=opts.bug_report,
@@ -258,12 +257,15 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
                 llvm_lib_target=opts.llvm_lib_target,
             )
 
-            # Step 2: Create synthetic init state and execute call setup to normalized entry
+            # Step 2: Create synthetic init and normalize using the CALLEE's kompile.
+            # The callee kompile uses reduce_to(name), which preserves type IDs
+            # from the original SMIR. The normalization produces the callee entry
+            # state that the callee proof will start from.
             from .kast import SymbolicMode, make_call_config
 
             init_config, init_constraints = make_call_config(
                 kmir_callee.definition,
-                smir_info=smir_info,
+                smir_info=callee_smir,
                 start_symbol=name,
                 mode=SymbolicMode(),
             )
@@ -323,13 +325,13 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             proof = apr_proof_from_smir(
                 kmir_callee,
                 callee_label,
-                smir_info,
+                callee_smir,
                 start_symbol=name,
                 proof_dir=callee_proof_dir,
                 init_cterm=normalized,
             )
             if callee_proof_dir:
-                smir_info.dump(callee_proof_dir / callee_label / 'smir.json')
+                callee_smir.dump(callee_proof_dir / callee_label / 'smir.json')
 
             # Step 4: Run the prover with a reasonable iteration limit for callees.
             # Complex callees (Result::map, etc.) can explode into thousands of nodes.
