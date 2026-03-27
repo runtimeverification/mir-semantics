@@ -173,7 +173,6 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     3. For each callee: prove, minimize, export summary
     4. Re-prove target with all summaries
     """
-    from ._prove import prove
     from .cargo import cargo_get_smir_json
 
     result = CSEResult()
@@ -235,38 +234,119 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             result.skipped[name] = 'not in function_tys'
             continue
 
-        print(f'[CSE] {name}: proving...', flush=True)
+        print(f'[CSE] {name}: proving (normalized entry)...', flush=True)
         t0 = time.time()
 
         try:
-            # Collect already-generated summaries for this callee's own callees
             available_summaries = [p for p in result.summaries.values() if p.exists()]
 
             callee_proof_dir = opts.proof_dir / 'cse-callee-proofs' if opts.proof_dir else None
             if callee_proof_dir:
                 callee_proof_dir.mkdir(parents=True, exist_ok=True)
 
-            from .options import ProveOpts as ProveOptsClass
-
-            callee_opts = ProveOptsClass(
-                rs_file=opts.rs_file,
-                proof_dir=callee_proof_dir,
+            # Step 1: Build KMIR with function tables for this callee
+            callee_smir = smir_info.reduce_to(name)
+            callee_target = callee_proof_dir / safe_name if callee_proof_dir else Path(f'/tmp/cse-{safe_name}')
+            kmir_callee = KMIR.from_kompiled_kore(
+                callee_smir,
+                target_dir=callee_target,
+                extra_modules=available_summaries or None,
+                bug_report=opts.bug_report,
+                symbolic=True,
                 haskell_target=opts.haskell_target,
                 llvm_lib_target=opts.llvm_lib_target,
-                bug_report=opts.bug_report,
-                max_depth=opts.max_depth,
-                max_iterations=opts.max_iterations,
-                reload=opts.reload,
-                fail_fast=True,
-                maintenance_rate=opts.maintenance_rate,
-                save_smir=opts.save_smir,
-                smir=opts.smir,
-                parsed_smir=smir_info._smir,
-                start_symbol=name,
-                add_modules=available_summaries,
             )
 
-            proof = prove(callee_opts)
+            # Step 2: Create synthetic init state and execute call setup to normalized entry
+            from .kast import SymbolicMode, make_call_config
+
+            init_config, init_constraints = make_call_config(
+                kmir_callee.definition,
+                smir_info=callee_smir,
+                start_symbol=name,
+                mode=SymbolicMode(),
+            )
+            from pyk.cterm import CTerm, cterm_symbolic
+
+            init_cterm = CTerm(init_config, init_constraints)
+
+            with cterm_symbolic(
+                kmir_callee.definition,
+                kmir_callee.definition_dir,
+                llvm_definition_dir=kmir_callee.llvm_library_dir,
+                bug_report=kmir_callee.bug_report,
+            ) as cts:
+                # Execute call setup step-by-step until #execBlock is in <k>
+                normalized = init_cterm
+                setup_depth = 0
+                for _step in range(30):
+                    result_cterm, _next, depth, _vacuous, _logs = cts.execute(normalized, depth=1)
+                    if depth == 0:
+                        if _next:
+                            normalized = _next[0].state
+                            setup_depth += 1
+                        else:
+                            break  # stuck
+                    else:
+                        normalized = result_cterm
+                        setup_depth += 1
+
+                    # Check if K cell starts with #execBlock
+                    k = normalized.cell('K_CELL')
+                    from pyk.kast.inner import KApply as _KApp
+                    from pyk.kast.inner import KSequence as _KSeq
+
+                    first = k.items[0] if isinstance(k, _KSeq) and k.items else k
+                    if isinstance(first, _KApp) and '#execBlock(' in first.label.name:
+                        break
+
+                if setup_depth == 0:
+                    _LOGGER.warning(f'CSE: call setup made no progress for {name}')
+                    result.skipped[name] = 'setup stuck'
+                    continue
+
+            _LOGGER.info(f'CSE: normalized entry in {setup_depth} steps for {name}')
+
+            # Step 3: Create proof from normalized entry (not synthetic init)
+            from ._prove import _prove_sequential, apr_proof_from_smir
+
+            callee_label = f'{opts.rs_file.stem}.{name}'
+            import hashlib as _hashlib
+
+            raw_label = callee_label
+            callee_label = ''.join(c if c.isalnum() or c in '._-' else '_' for c in raw_label)
+            if len(callee_label) > 200:
+                digest = _hashlib.sha256(raw_label.encode()).hexdigest()[:12]
+                callee_label = callee_label[:200] + '_' + digest
+
+            proof = apr_proof_from_smir(
+                kmir_callee,
+                callee_label,
+                callee_smir,
+                start_symbol=name,
+                proof_dir=callee_proof_dir,
+                init_cterm=normalized,
+            )
+            if callee_proof_dir:
+                callee_smir.dump(callee_proof_dir / callee_label / 'smir.json')
+
+            # Step 4: Run the prover
+            if not proof.passed:
+                from .options import ProveOpts as ProveOptsClass
+
+                callee_opts = ProveOptsClass(
+                    rs_file=opts.rs_file,
+                    max_depth=opts.max_depth,
+                    max_iterations=opts.max_iterations,
+                )
+                _prove_sequential(
+                    kmir_callee,
+                    proof,
+                    opts=callee_opts,
+                    label=callee_label,
+                    cut_point_rules=[],
+                )
+
             elapsed = time.time() - t0
 
             # Check if the proof has any successful paths (cover edges to target)

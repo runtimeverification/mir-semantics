@@ -564,14 +564,46 @@ class KMIRCSESemantics(KMIRSemantics):
             return None
         target_bb = target.args[0] if is_normal_call and isinstance(target, KApply) else None
 
-        # Build sort-correct substitution: callee symbolic vars → caller actual values.
-        # Uses sort-aware unwrapping (BoolVal→Bool, Integer→Int, Range→List) and
-        # scans all caller locals for pointee data (handles reference args).
-        arg_subst_map = self._build_arg_substitution(c, _args_operand, callee_proof)
+        # Execute real call setup to get normalized callee entry state.
+        # Then match callee proof's init locals against these to get sort-correct substitution.
         from pyk.kast.inner import Subst
 
-        subst = Subst(arg_subst_map) if arg_subst_map else Subst({})
-        _LOGGER.info(f'CSE: substitution: {list(arg_subst_map.keys())} for ty({func_ty})')
+        try:
+            # Execute call setup step-by-step until #execBlock is in <k>
+            normalized_entry = c
+            setup_depth = 0
+            for _step in range(30):
+                r, _next, depth, _, _ = cs.execute(normalized_entry, depth=1)
+                if depth == 0 and not _next:
+                    break
+                normalized_entry = r if depth > 0 else (_next[0].state if _next else r)
+                setup_depth += 1
+                k = normalized_entry.cell('K_CELL')
+                first = k.items[0] if isinstance(k, KSequence) and k.items else k
+                if isinstance(first, KApply) and '#execBlock(' in first.label.name:
+                    break
+            if setup_depth == 0:
+                self._failed_tys.add(func_ty)
+                return None
+            _LOGGER.info(f'CSE: real call setup in {setup_depth} steps for ty({func_ty})')
+        except Exception as e:
+            _LOGGER.warning(f'CSE: call setup failed for ty({func_ty}): {e}')
+            self._failed_tys.add(func_ty)
+            return None
+
+        # Match callee proof's init locals against normalized entry locals
+        callee_init = callee_proof.kcfg.node(callee_proof.init)
+        callee_init_locals = callee_init.cterm.cell('LOCALS_CELL')
+        entry_locals = normalized_entry.cell('LOCALS_CELL')
+
+        subst_result = callee_init_locals.match(entry_locals)
+        if subst_result is None:
+            _LOGGER.info(f'CSE: locals match failed for ty({func_ty}), falling back')
+            self._failed_tys.add(func_ty)
+            return None
+
+        subst = Subst(subst_result)
+        _LOGGER.info(f'CSE: matched {len(subst_result)} vars for ty({func_ty}): {list(subst_result.keys())}')
 
         # Build post-return states for each callee cover path
         post_return_cterms: list[CTerm] = []
