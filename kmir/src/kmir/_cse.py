@@ -303,7 +303,7 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
                     from pyk.kast.inner import KSequence as _KSeq
 
                     first = k.items[0] if isinstance(k, _KSeq) and k.items else k
-                    if isinstance(first, _KApp) and '#execBlock(' in first.label.name:
+                    if isinstance(first, _KApp) and '#execTerminatorCall(' in first.label.name:
                         break
 
                 if setup_depth == 0:

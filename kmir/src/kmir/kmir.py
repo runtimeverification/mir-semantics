@@ -580,7 +580,7 @@ class KMIRCSESemantics(KMIRSemantics):
                 setup_depth += 1
                 k = normalized_entry.cell('K_CELL')
                 first = k.items[0] if isinstance(k, KSequence) and k.items else k
-                if isinstance(first, KApply) and '#execBlock(' in first.label.name:
+                if isinstance(first, KApply) and '#execTerminatorCall(' in first.label.name:
                     break
             if setup_depth == 0:
                 self._failed_tys.add(func_ty)
@@ -598,22 +598,29 @@ class KMIRCSESemantics(KMIRSemantics):
         callee_init_locals = callee_init.cterm.cell('LOCALS_CELL')
         entry_locals = normalized_entry.cell('LOCALS_CELL')
 
-        # Try full match first (fast path)
-        subst_result = callee_init_locals.match(entry_locals)
-        if subst_result is not None:
-            subst = Subst(subst_result)
-            _LOGGER.info(f'CSE: full match {len(subst_result)} vars for ty({func_ty}): {list(subst_result.keys())}')
+        # Per-item partial match on locals
+        subst_map: dict[str, KInner] = {}
+        callee_items = self._list_items(callee_init_locals)
+        entry_items = self._list_items(entry_locals)
+        for idx in range(min(len(callee_items), len(entry_items))):
+            item_subst = callee_items[idx].match(entry_items[idx])
+            if item_subst is not None:
+                subst_map.update(item_subst)
+
+        # Fallback: match K_CELL (both have #execTerminatorCall with call args)
+        if not subst_map:
+            callee_k = callee_init.cterm.cell('K_CELL')
+            entry_k = normalized_entry.cell('K_CELL')
+            k_subst = callee_k.match(entry_k)
+            if k_subst is not None:
+                subst_map.update(k_subst)
+                _LOGGER.info(f'CSE: K_CELL match {len(k_subst)} vars for ty({func_ty})')
+
+        subst = Subst(subst_map)
+        if subst_map:
+            _LOGGER.info(f'CSE: matched {len(subst_map)} vars for ty({func_ty}): {list(subst_map.keys())}')
         else:
-            # Partial match: per-item matching to collect what we can
-            subst_map: dict[str, KInner] = {}
-            callee_items = self._list_items(callee_init_locals)
-            entry_items = self._list_items(entry_locals)
-            for idx in range(min(len(callee_items), len(entry_items))):
-                item_subst = callee_items[idx].match(entry_items[idx])
-                if item_subst is not None:
-                    subst_map.update(item_subst)
-            subst = Subst(subst_map)
-            _LOGGER.info(f'CSE: partial match {len(subst_map)} vars for ty({func_ty}): {list(subst_map.keys())}')
+            _LOGGER.info(f'CSE: no vars matched for ty({func_ty}), using empty subst')
 
         # Build post-return states for each callee cover path
         post_return_cterms: list[CTerm] = []
