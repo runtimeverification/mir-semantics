@@ -664,8 +664,13 @@ class KMIRCSESemantics(KMIRSemantics):
                 _LOGGER.warning(f'CSE: simplify failed for branch {i}, skipping: {e}')
                 continue
 
-        # Stuck paths: add fallback so the prover executes the callee normally
-        has_stuck_fallback = any(callee_proof.kcfg.is_stuck(n.id) for n in callee_proof.kcfg.leaves)
+        # Only add stuck fallback if NO CSE paths are feasible.
+        # If we have feasible CSE paths, the stuck paths are likely unreachable
+        # from the caller's actual arguments. Adding fallback for stuck paths
+        # when CSE paths exist causes proof tree explosion (NDBranch everywhere).
+        has_stuck_fallback = not post_return_cterms and any(
+            callee_proof.kcfg.is_stuck(n.id) for n in callee_proof.kcfg.leaves
+        )
 
         if not post_return_cterms and not has_stuck_fallback:
             _LOGGER.warning(f'CSE: all branches infeasible for ty({func_ty}), disabling CSE for this function')
