@@ -617,12 +617,26 @@ class KMIRCSESemantics(KMIRSemantics):
                 _LOGGER.info(f'CSE: K_CELL match {len(k_subst)} vars for ty({func_ty})')
 
         subst = Subst(subst_map)
-        if subst_map:
-            _LOGGER.info(f'CSE: matched {len(subst_map)} vars for ty({func_ty}): {list(subst_map.keys())}')
-        else:
-            # No vars matched → existential variables produce unconstrained branches
-            # that explode the proof tree. Skip CSE for this function.
+        if not subst_map:
             _LOGGER.info(f'CSE: no vars matched for ty({func_ty}), skipping CSE')
+            self._failed_tys.add(func_ty)
+            return None
+        _LOGGER.info(f'CSE: matched {len(subst_map)} vars for ty({func_ty}): {list(subst_map.keys())}')
+
+        # Check that ALL cover node RETVALs are fully concrete after substitution.
+        # If any RETVAL still has free vars, skip CSE (would cause stuck projections).
+        from pyk.kast.manip import free_vars as _fv
+
+        all_concrete = True
+        for cover_node in cover_nodes:
+            retval = cover_node.cterm.cell('RETVAL_CELL')
+            retval_subst = subst(retval)
+            remaining_fvs = _fv(retval_subst)
+            if remaining_fvs:
+                _LOGGER.info(f'CSE: RETVAL has {len(remaining_fvs)} unresolved vars for ty({func_ty}), skipping')
+                all_concrete = False
+                break
+        if not all_concrete:
             self._failed_tys.add(func_ty)
             return None
 
