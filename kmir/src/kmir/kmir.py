@@ -591,19 +591,29 @@ class KMIRCSESemantics(KMIRSemantics):
             self._failed_tys.add(func_ty)
             return None
 
-        # Match callee proof's init locals against normalized entry locals
+        # Match callee proof's init locals against normalized entry locals.
+        # Use per-item partial matching: collect bindings from items that match,
+        # leave unmatched variables as existentials (handled by simplify).
         callee_init = callee_proof.kcfg.node(callee_proof.init)
         callee_init_locals = callee_init.cterm.cell('LOCALS_CELL')
         entry_locals = normalized_entry.cell('LOCALS_CELL')
 
+        # Try full match first (fast path)
         subst_result = callee_init_locals.match(entry_locals)
-        if subst_result is None:
-            _LOGGER.info(f'CSE: locals match failed for ty({func_ty}), falling back')
-            self._failed_tys.add(func_ty)
-            return None
-
-        subst = Subst(subst_result)
-        _LOGGER.info(f'CSE: matched {len(subst_result)} vars for ty({func_ty}): {list(subst_result.keys())}')
+        if subst_result is not None:
+            subst = Subst(subst_result)
+            _LOGGER.info(f'CSE: full match {len(subst_result)} vars for ty({func_ty}): {list(subst_result.keys())}')
+        else:
+            # Partial match: per-item matching to collect what we can
+            subst_map: dict[str, KInner] = {}
+            callee_items = self._list_items(callee_init_locals)
+            entry_items = self._list_items(entry_locals)
+            for idx in range(min(len(callee_items), len(entry_items))):
+                item_subst = callee_items[idx].match(entry_items[idx])
+                if item_subst is not None:
+                    subst_map.update(item_subst)
+            subst = Subst(subst_map)
+            _LOGGER.info(f'CSE: partial match {len(subst_map)} vars for ty({func_ty}): {list(subst_map.keys())}')
 
         # Build post-return states for each callee cover path
         post_return_cterms: list[CTerm] = []
