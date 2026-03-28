@@ -620,7 +620,11 @@ class KMIRCSESemantics(KMIRSemantics):
         if subst_map:
             _LOGGER.info(f'CSE: matched {len(subst_map)} vars for ty({func_ty}): {list(subst_map.keys())}')
         else:
-            _LOGGER.info(f'CSE: no vars matched for ty({func_ty}), using empty subst')
+            # No vars matched → existential variables produce unconstrained branches
+            # that explode the proof tree. Skip CSE for this function.
+            _LOGGER.info(f'CSE: no vars matched for ty({func_ty}), skipping CSE')
+            self._failed_tys.add(func_ty)
+            return None
 
         # Build post-return states for each callee cover path
         post_return_cterms: list[CTerm] = []
