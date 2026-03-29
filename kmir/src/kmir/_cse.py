@@ -472,15 +472,11 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             simplify_each=30,
         ) as cts:
             kcfg_explore = KCFGExplore(cts, kcfg_semantics=cse_semantics)
-            # Use termCallFunction as cut-point so the backend stops at function calls.
-            # After the cut, <k> has #execTerminatorCall(Ty, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN).
-            # custom_step recognizes this pattern (Pattern 2 in _extract_call_info).
-            # Note: we use existing rule labels to avoid adding new ones to kmir.md
-            # (which can cause LLVM backend compilation order changes).
-            cse_cut_points = [
-                'KMIR-CONTROL-FLOW.termCallFunction',
-                'KMIR-CONTROL-FLOW.termCallFunctionFilter',
-            ]
+            # No cut-points: the backend executes through function calls in one shot.
+            # custom_step only fires when the K cell happens to start with
+            # #execTerminatorCall at the beginning of an extend_cterm call.
+            # This eliminates the ~3s-per-call overhead from cut-point stops.
+            cse_cut_points: list[str] = []
             prover = APRProver(
                 kcfg_explore,
                 execute_depth=opts.max_depth,
