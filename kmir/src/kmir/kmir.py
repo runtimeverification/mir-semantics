@@ -242,11 +242,11 @@ class KMIRCSESemantics(KMIRSemantics):
             return False
         if func_ty not in self._callee_proofs:
             return False
-        # Check if args have local indices (Operand::Copy/Move, not Constant)
+        # Check if args have at least one local index (Operand::Copy/Move)
         _, args_operand, _, _ = call_info
         indices = self._extract_arg_local_indices(args_operand)
-        if not indices:
-            self._failed_tys.add(func_ty)  # Pre-fail: no local indices → can't match
+        if not any(idx >= 0 for idx in indices):
+            self._failed_tys.add(func_ty)
             return False
         return True
 
@@ -459,33 +459,41 @@ class KMIRCSESemantics(KMIRSemantics):
 
     @staticmethod
     def _extract_arg_local_indices(args_operand: KInner) -> list[int]:
-        """Extract local indices from call argument operands."""
-        indices: list[int] = []
+        """Extract local indices from call argument operands.
+
+        Handles the Operands::append chain: append(op1, append(op2, empty)).
+        Returns indices in argument order (op1 first, op2 second).
+        """
+        # First flatten the operand chain
+        operands: list[KInner] = []
         current = args_operand
         while isinstance(current, KApply):
-            if current.label.name in ('Operand::Copy', 'Operand::Move'):
-                place = current.args[0]
+            if current.label.name in ('Operand::Copy', 'Operand::Move', 'Operand::Constant'):
+                operands.append(current)
+                break
+            elif 'append' in current.label.name.lower():
+                first_arg, rest = current.args
+                operands.append(first_arg)
+                current = rest
+            elif 'empty' in current.label.name.lower():
+                break
+            else:
+                break
+        operands.reverse()  # append builds right-to-left
+
+        # Extract local indices from Move/Copy operands
+        indices: list[int] = []
+        for op in operands:
+            if isinstance(op, KApply) and op.label.name in ('Operand::Copy', 'Operand::Move'):
+                place = op.args[0]
                 if isinstance(place, KApply) and place.label.name == 'place':
                     local = place.args[0]
                     if isinstance(local, KApply) and local.label.name == 'local':
                         idx_token = local.args[0]
                         if isinstance(idx_token, KToken):
                             indices.append(int(idx_token.token))
-                return indices
-            elif 'append' in current.label.name.lower():
-                # Operands::append(rest, operand)
-                rest, operand = current.args
-                if isinstance(operand, KApply) and operand.label.name in ('Operand::Copy', 'Operand::Move'):
-                    place = operand.args[0]
-                    if isinstance(place, KApply) and place.label.name == 'place':
-                        local = place.args[0]
-                        if isinstance(local, KApply) and local.label.name == 'local':
-                            idx_token = local.args[0]
-                            if isinstance(idx_token, KToken):
-                                indices.append(int(idx_token.token))
-                current = rest
-            else:
-                break
+                            continue
+            indices.append(-1)  # placeholder for non-local operands
         return indices
 
     @staticmethod
@@ -590,6 +598,8 @@ class KMIRCSESemantics(KMIRSemantics):
         operand_indices = self._extract_arg_local_indices(_args_operand)
         for arg_num, caller_local_idx in enumerate(operand_indices):
             callee_local_idx = arg_num + 1
+            if caller_local_idx < 0:
+                continue  # Non-local operand (e.g., Constant)
             if callee_local_idx < len(callee_items) and caller_local_idx < len(caller_items):
                 item_subst = callee_items[callee_local_idx].match(caller_items[caller_local_idx])
                 if item_subst is not None:
