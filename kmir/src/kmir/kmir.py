@@ -564,50 +564,24 @@ class KMIRCSESemantics(KMIRSemantics):
             return None
         target_bb = target.args[0] if is_normal_call and isinstance(target, KApply) else None
 
-        # Execute real call setup to get normalized callee entry state.
-        # Then match callee proof's init locals against these to get sort-correct substitution.
+        # Match callee proof's init arg locals against the CALLER's locals directly.
+        # NO call setup execution — use operand indices to find correct caller locals.
+        # This avoids expensive backend execute() calls (~40s each).
         from pyk.kast.inner import Subst
 
-        try:
-            # Execute call setup step-by-step until #execBlock is in <k>
-            normalized_entry = c
-            setup_depth = 0
-            for _step in range(30):
-                r, _next, depth, _, _ = cs.execute(normalized_entry, depth=1)
-                if depth == 0 and not _next:
-                    break
-                normalized_entry = r if depth > 0 else (_next[0].state if _next else r)
-                setup_depth += 1
-                k = normalized_entry.cell('K_CELL')
-                first = k.items[0] if isinstance(k, KSequence) and k.items else k
-                if isinstance(first, KApply) and '#execTerminatorCall(' in first.label.name:
-                    break
-            if setup_depth == 0:
-                self._failed_tys.add(func_ty)
-                return None
-            _LOGGER.info(f'CSE: real call setup in {setup_depth} steps for ty({func_ty})')
-        except Exception as e:
-            _LOGGER.warning(f'CSE: call setup failed for ty({func_ty}): {e}')
-            self._failed_tys.add(func_ty)
-            return None
-
-        # Match callee proof's init arg locals against the caller's corresponding locals.
-        # The call operands (from the K cell) tell us which caller locals correspond
-        # to which callee arguments. We match callee local[i+1] against caller local[operand_idx].
         callee_init = callee_proof.kcfg.node(callee_proof.init)
         callee_init_locals = callee_init.cterm.cell('LOCALS_CELL')
-        entry_locals = normalized_entry.cell('LOCALS_CELL')
+        caller_locals = c.cell('LOCALS_CELL')
 
         subst_map: dict[str, KInner] = {}
         callee_items = self._list_items(callee_init_locals)
-        entry_items = self._list_items(entry_locals)
+        caller_items = self._list_items(caller_locals)
 
-        # Use call operands to map callee args to correct caller locals
         operand_indices = self._extract_arg_local_indices(_args_operand)
         for arg_num, caller_local_idx in enumerate(operand_indices):
-            callee_local_idx = arg_num + 1  # callee local[0] is return, args start at 1
-            if callee_local_idx < len(callee_items) and caller_local_idx < len(entry_items):
-                item_subst = callee_items[callee_local_idx].match(entry_items[caller_local_idx])
+            callee_local_idx = arg_num + 1
+            if callee_local_idx < len(callee_items) and caller_local_idx < len(caller_items):
+                item_subst = callee_items[callee_local_idx].match(caller_items[caller_local_idx])
                 if item_subst is not None:
                     subst_map.update(item_subst)
                     _LOGGER.info(
