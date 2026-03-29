@@ -235,10 +235,20 @@ class KMIRCSESemantics(KMIRSemantics):
         call_info = self._extract_call_info(k_cell)
         if call_info is None:
             return False
-        func_ty, _, _, _ = call_info
+        func_ty = call_info[0]
+        # Only intercept functions that are known to match (not in failed set)
+        # AND have Operand::Copy/Move args (not Operand::Constant which we can't match)
         if func_ty in self._failed_tys:
             return False
-        return func_ty in self._callee_proofs
+        if func_ty not in self._callee_proofs:
+            return False
+        # Check if args have local indices (Operand::Copy/Move, not Constant)
+        _, args_operand, _, _ = call_info
+        indices = self._extract_arg_local_indices(args_operand)
+        if not indices:
+            self._failed_tys.add(func_ty)  # Pre-fail: no local indices → can't match
+            return False
+        return True
 
     def _build_arg_substitution(
         self, caller_cterm: CTerm, args_operand: KInner, callee_proof: APRProof
