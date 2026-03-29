@@ -74,8 +74,12 @@ jobs:
             test-args: '-k "test_prove and not test_prove_termination"'
             parallel: 6
             timeout: 60
+          - name: 'Verify Rust Std'
+            test-args: '-k test_verify_rust_std'
+            parallel: 6
+            timeout: 60
           - name: 'Remainder'
-            test-args: '-k "not llvm and not test_run_smir_random and not test_exec_smir and not test_prove_termination and not test_prove"'
+            test-args: '-k "not llvm and not test_run_smir_random and not test_exec_smir and not test_prove_termination and not test_prove and not test_verify_rust_std"'
             parallel: 6
             timeout: 20
     steps:
