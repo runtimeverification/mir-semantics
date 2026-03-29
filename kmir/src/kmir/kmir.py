@@ -591,30 +591,29 @@ class KMIRCSESemantics(KMIRSemantics):
             self._failed_tys.add(func_ty)
             return None
 
-        # Match callee proof's init locals against normalized entry locals.
-        # Use per-item partial matching: collect bindings from items that match,
-        # leave unmatched variables as existentials (handled by simplify).
+        # Match callee proof's init arg locals against the caller's corresponding locals.
+        # The call operands (from the K cell) tell us which caller locals correspond
+        # to which callee arguments. We match callee local[i+1] against caller local[operand_idx].
         callee_init = callee_proof.kcfg.node(callee_proof.init)
         callee_init_locals = callee_init.cterm.cell('LOCALS_CELL')
         entry_locals = normalized_entry.cell('LOCALS_CELL')
 
-        # Per-item partial match on locals
         subst_map: dict[str, KInner] = {}
         callee_items = self._list_items(callee_init_locals)
         entry_items = self._list_items(entry_locals)
-        for idx in range(min(len(callee_items), len(entry_items))):
-            item_subst = callee_items[idx].match(entry_items[idx])
-            if item_subst is not None:
-                subst_map.update(item_subst)
 
-        # Fallback: match K_CELL (both have #execTerminatorCall with call args)
-        if not subst_map:
-            callee_k = callee_init.cterm.cell('K_CELL')
-            entry_k = normalized_entry.cell('K_CELL')
-            k_subst = callee_k.match(entry_k)
-            if k_subst is not None:
-                subst_map.update(k_subst)
-                _LOGGER.info(f'CSE: K_CELL match {len(k_subst)} vars for ty({func_ty})')
+        # Use call operands to map callee args to correct caller locals
+        operand_indices = self._extract_arg_local_indices(_args_operand)
+        for arg_num, caller_local_idx in enumerate(operand_indices):
+            callee_local_idx = arg_num + 1  # callee local[0] is return, args start at 1
+            if callee_local_idx < len(callee_items) and caller_local_idx < len(entry_items):
+                item_subst = callee_items[callee_local_idx].match(entry_items[caller_local_idx])
+                if item_subst is not None:
+                    subst_map.update(item_subst)
+                    _LOGGER.info(
+                        f'CSE: arg {arg_num}: callee[{callee_local_idx}].match(caller[{caller_local_idx}]) '
+                        f'= {list(item_subst.keys())}'
+                    )
 
         subst = Subst(subst_map)
         if not subst_map:
