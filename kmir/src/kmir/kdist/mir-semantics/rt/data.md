@@ -178,15 +178,11 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
 The `#setLocalValue` operation writes a `Value` value to a given `Place` within the `List` of local variables currently on top of the stack.
 If we are setting a value at a `Place` which has `Projection`s in it, then we must first traverse the projections before setting the value.
-A variant `#forceSetLocal` is provided for setting the local value without checking the mutability of the location.
 
 **Note on mutability:** The Rust compiler validates assignment legality and may reuse immutable locals in MIR (e.g., loop variables), so `#setLocalValue` does not guard on mutability.
 
-TODO: `#forceSetLocal` is now functionally identical to `#setLocalValue` and may be removed.
-
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
-                 | #forceSetLocal ( Local , Evaluation ) [strict(2)]
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
@@ -216,11 +212,6 @@ TODO: `#forceSetLocal` is now functionally identical to `#setLocalValue` and may
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
 
-  rule <k> #forceSetLocal(local(I), MBVAL:Value) => .K ... </k>
-       <locals> LOCALS => LOCALS[I <- typedValue(MBVAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))] </locals>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
 ```
 
 ### Traversing Projections for Reads and Writes
@@ -270,7 +261,7 @@ A `Deref` projection in the projections list changes the target of the write ope
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeMoved
-        => #forceSetLocal(local(I), #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
+        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
        ...
        </k>
      [preserves-definedness] // valid context ensured upon context construction
@@ -1238,8 +1229,8 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
-        => #forceSetLocal(
-              local(I),
+        => #setLocalValue(
+              place(local(I), .ProjectionElems),
               #decodeConstant(
                 constantKindZeroSized,
                 tyOfLocal(getLocal(LOCALS, I)),
@@ -1930,6 +1921,9 @@ Zero-sized types can be decoded trivially into their respective representation.
   // zero-sized array
   rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoArrayType(_, _))
         => Range(.List) ... </k>
+  // zero-sized function item (e.g., closures without captures)
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoFunType(_))
+        => Aggregate(variantIdx(0), .List) ... </k>
 ```
 
 Allocated constants of reference type with a single provenance map entry are decoded as references
