@@ -654,54 +654,35 @@ def test_schema_kapply_parse(
 ARITH_SMIR = PROVE_DIR / 'arith.smir.json'
 
 
-def test_cfg_roots_prove_pipeline(caplog: pytest.LogCaptureFixture) -> None:
-    """Test that --cfg-roots expands the retained function set during prove."""
-    import logging
-    import re
-
+def test_reduce_standalone() -> None:
+    """Test that kmir reduce correctly prunes SMIR items by reachability."""
     smir_data = json.loads(ARITH_SMIR.read_text())
+    info = SMIRInfo(smir_data)
+    assert len(info.items) == 11
 
-    def _prove_and_extract_stats(start_symbol: str, cfg_roots_file: Path | None = None) -> tuple[int, int, int]:
-        """Run prove and extract (original_items, reduced_items, root_count) from logs."""
-        opts = ProveOpts(rs_file=ARITH_SMIR, smir=True, parsed_smir=smir_data, start_symbol=start_symbol)
-        if cfg_roots_file is not None:
-            opts.cfg_roots = list(filter(None, [r.strip() for r in cfg_roots_file.read_text().splitlines()]))
-        with caplog.at_level(logging.INFO, logger='kmir'):
-            caplog.clear()
-            KMIR.prove_program(opts)
+    # Single root 'add' — should keep 1 item
+    reduced_add = info.reduce_to('add')
+    assert len(reduced_add.items) == 1
 
-        original_items = 0
-        reduced_items = 0
-        root_count = 0
-        for record in caplog.records:
-            m = re.search(r'Symbol table reduction: (\d+) -> (\d+) items .* (\d+) root', record.message)
-            if m:
-                original_items = int(m.group(1))
-                reduced_items = int(m.group(2))
-                root_count = int(m.group(3))
-        return original_items, reduced_items, root_count
+    # Single root 'mul' — should keep 1 item (independent from add)
+    reduced_mul = info.reduce_to('mul')
+    assert len(reduced_mul.items) == 1
 
-    # Single root: only 'add'
-    orig_single, items_single, roots_single = _prove_and_extract_stats('add')
+    # Multiple roots — should keep strictly more than either alone
+    reduced_multi = info.reduce_to(['add', 'mul'])
+    assert len(reduced_multi.items) == 2
 
-    # Multi root: 'add' + 'mul' via cfg_roots
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
-        f.write('mul\n')
-        f.flush()
-        cfg_roots_path = Path(f.name)
+    # 'main' calls both add and mul — should keep all 3
+    reduced_main = info.reduce_to('main')
+    assert len(reduced_main.items) == 3
+
+    # Roundtrip: save reduced SMIR and reload it
+    with tempfile.NamedTemporaryFile(suffix='.smir.json', delete=False, mode='w') as f:
+        f.write(json.dumps(reduced_multi._smir))
+        reduced_path = Path(f.name)
 
     try:
-        orig_multi, items_multi, roots_multi = _prove_and_extract_stats('add', cfg_roots_path)
+        reloaded = SMIRInfo(json.loads(reduced_path.read_text()))
+        assert len(reloaded.items) == 2
     finally:
-        cfg_roots_path.unlink()
-
-    # Both start from the same original item count
-    assert orig_single == orig_multi == 11
-
-    # Single root should use 1 root, multi should use 2
-    assert roots_single == 1
-    assert roots_multi == 2
-
-    # Multi-root should retain strictly more items (add + mul vs just add)
-    assert items_single == 1, f'Expected single-root to retain 1 item, got {items_single}'
-    assert items_multi == 2, f'Expected multi-root to retain 2 items, got {items_multi}'
+        reduced_path.unlink()

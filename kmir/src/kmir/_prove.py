@@ -75,19 +75,16 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         else:
             smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-        reduce_roots = opts.cfg_roots + [opts.start_symbol] if opts.cfg_roots else opts.start_symbol
         original_items = len(smir_info.items)
-        _LOGGER.debug(f'Reduction roots: {reduce_roots}')
         t0 = time.monotonic()
-        smir_info = smir_info.reduce_to(reduce_roots)
+        smir_info = smir_info.reduce_to(opts.start_symbol)
         reduction_ms = (time.monotonic() - t0) * 1000
         reduced_items = len(smir_info.items)
         pruned = original_items - reduced_items
         pct = (pruned / original_items * 100) if original_items > 0 else 0
-        root_count = len(reduce_roots) if isinstance(reduce_roots, list) else 1
         _LOGGER.info(
             f'Symbol table reduction: {original_items} -> {reduced_items} items'
-            f' ({pruned} pruned, {pct:.1f}%), {root_count} root(s), {reduction_ms:.1f}ms'
+            f' ({pruned} pruned, {pct:.1f}%), {reduction_ms:.1f}ms'
         )
         # Report whether the reduced call graph includes any functions without MIR bodies
         missing_body_syms = [

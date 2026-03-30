@@ -92,7 +92,6 @@ class ProveOpts(KMirOpts):
     break_every_terminator: bool
     break_every_step: bool
     terminate_on_thunk: bool
-    cfg_roots: list[str]
     break_on_function: list[str]
 
     def __init__(
@@ -113,7 +112,6 @@ class ProveOpts(KMirOpts):
         smir: bool = False,
         parsed_smir: dict | None = None,
         start_symbol: str = 'main',
-        cfg_roots: Path | None = None,
         break_on_calls: bool = False,
         break_on_function_calls: bool = False,
         break_on_intrinsic_calls: bool = False,
@@ -132,13 +130,6 @@ class ProveOpts(KMirOpts):
         add_module: Path | None = None,
         break_on_function: list[str] | None = None,
     ) -> None:
-        # store each non-empty line in the cfg roots file (empty list if no file provided)
-        cfg_roots_list: list[str] = (
-            list(filter(None, [root.strip() for root in cfg_roots.read_text().splitlines()]))
-            if cfg_roots is not None
-            else []
-        )
-
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
         self.haskell_target = haskell_target
@@ -154,7 +145,6 @@ class ProveOpts(KMirOpts):
         self.smir = smir
         self.parsed_smir = parsed_smir
         self.start_symbol = start_symbol
-        self.cfg_roots = cfg_roots_list
         self.break_on_calls = break_on_calls
         self.break_on_function_calls = break_on_function_calls
         self.break_on_intrinsic_calls = break_on_intrinsic_calls
@@ -333,3 +323,20 @@ class LinkOpts(KMirOpts):
     def __init__(self, smir_files: list[str], output_file: str | None = None) -> None:
         self.smir_files = [Path(f) for f in smir_files]
         self.output_file = Path(output_file) if output_file is not None else Path('linker_output.smir.json')
+
+
+@dataclass
+class ReduceOpts(KMirOpts):
+    smir_file: Path
+    output_file: Path
+    roots: list[str]
+
+    def __init__(self, smir_file: str, roots: str, output_file: str | None = None) -> None:
+        self.smir_file = Path(smir_file)
+        self.output_file = Path(output_file) if output_file is not None else Path('reduced.smir.json')
+        # Support @file syntax for reading roots from a file
+        if roots.startswith('@'):
+            roots_file = Path(roots[1:])
+            self.roots = list(filter(None, [r.strip() for r in roots_file.read_text().splitlines()]))
+        else:
+            self.roots = [r.strip() for r in roots.split(',') if r.strip()]

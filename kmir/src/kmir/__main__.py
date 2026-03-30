@@ -23,6 +23,7 @@ from .options import (
     LinkOpts,
     ProveOpts,
     PruneOpts,
+    ReduceOpts,
     RunOpts,
     SectionEdgeOpts,
     ShowOpts,
@@ -251,6 +252,17 @@ def _kmir_link(opts: LinkOpts) -> None:
     result.dump(opts.output_file)
 
 
+def _kmir_reduce(opts: ReduceOpts) -> None:
+    smir_info = SMIRInfo.from_file(opts.smir_file)
+    original = len(smir_info.items)
+    reduced = smir_info.reduce_to(opts.roots)
+    reduced.dump(opts.output_file)
+    _LOGGER.info(
+        f'Reduced {original} -> {len(reduced.items)} items'
+        f' ({original - len(reduced.items)} pruned), written to {opts.output_file}'
+    )
+
+
 def kmir(args: Sequence[str]) -> None:
     ns = _arg_parser().parse_args(args)
     opts = _parse_args(ns)
@@ -272,6 +284,8 @@ def kmir(args: Sequence[str]) -> None:
             _kmir_prove(opts)
         case LinkOpts():
             _kmir_link(opts)
+        case ReduceOpts():
+            _kmir_reduce(opts)
         case _:
             raise AssertionError()
 
@@ -554,12 +568,6 @@ def _arg_parser() -> ArgumentParser:
         '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
     )
     prove_parser.add_argument(
-        '--cfg-roots',
-        type=Path,
-        metavar='CFG_ROOTS',
-        help='Path to file containing newline-separated possible control flow graph roots (used to prune `rustc` generated MIR symbol table)',
-    )
-    prove_parser.add_argument(
         '--add-module',
         type=Path,
         metavar='FILE',
@@ -579,6 +587,27 @@ def _arg_parser() -> ArgumentParser:
         metavar='FILE',
         help='Output file (default: linker_output.smir.json)',
         default='linker_output.smir.json',
+    )
+
+    reduce_parser = command_parser.add_parser(
+        'reduce',
+        help='Reduce SMIR to functions reachable from given roots',
+        parents=[kcli_args.logging_args],
+    )
+    reduce_parser.add_argument('smir_file', metavar='SMIR_JSON', help='SMIR JSON file to reduce')
+    reduce_parser.add_argument(
+        '--roots',
+        '-r',
+        required=True,
+        metavar='ROOTS',
+        help='Comma-separated root function names, or @file for newline-separated file',
+    )
+    reduce_parser.add_argument(
+        '--output-file',
+        '-o',
+        metavar='FILE',
+        help='Output file (default: reduced.smir.json)',
+        default='reduced.smir.json',
     )
 
     return parser
@@ -660,7 +689,6 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 save_smir=ns.save_smir,
                 smir=ns.smir,
                 start_symbol=ns.start_symbol,
-                cfg_roots=ns.cfg_roots,
                 break_on_calls=ns.break_on_calls,
                 break_on_function_calls=ns.break_on_function_calls,
                 break_on_intrinsic_calls=ns.break_on_intrinsic_calls,
@@ -682,6 +710,12 @@ def _parse_args(ns: Namespace) -> KMirOpts:
         case 'link':
             return LinkOpts(
                 smir_files=ns.smir_files,
+                output_file=ns.output_file,
+            )
+        case 'reduce':
+            return ReduceOpts(
+                smir_file=ns.smir_file,
+                roots=ns.roots,
                 output_file=ns.output_file,
             )
         case _:
