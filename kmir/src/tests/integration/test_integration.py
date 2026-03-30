@@ -41,6 +41,9 @@ PROVE_START_SYMBOLS = {
     'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
+PROVE_TERMINATE_ON_THUNK = [
+    'closure-staged',
+]
 PROVE_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
@@ -68,6 +71,9 @@ PROVE_SHOW_SPECS = [
     'volatile_store_static-fail',
     'volatile_load_static-fail',
     'box_heap_alloc-fail',
+    'ptr-cast-array-to-wrapper-fail',
+    'ptr-cast-array-to-nested-wrapper-fail',
+    'ptr-cast-array-to-singleton-wrapped-array-fail',
 ]
 
 
@@ -84,7 +90,8 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     if update_expected_output and not should_show:
         pytest.skip()
 
-    prove_opts = ProveOpts(rs_file, smir=is_smir)
+    should_terminate_on_thunk = rs_file.stem in PROVE_TERMINATE_ON_THUNK
+    prove_opts = ProveOpts(rs_file, smir=is_smir, terminate_on_thunk=should_terminate_on_thunk)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
