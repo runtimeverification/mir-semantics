@@ -183,6 +183,10 @@ module KMIR-SPL-TOKEN
   rule #isSPLRentGetFunc(_) => false [owise]
   rule #isSPLRentGetFunc("Rent::get") => true   // mock harness
   rule #isSPLRentGetFunc("solana_sysvar::rent::<impl Sysvar for solana_rent::Rent>::get") => true
+
+  syntax Bool ::= #isSPLSolMemsetFunc ( String ) [function, total]
+  rule #isSPLSolMemsetFunc(_) => false [owise]
+  rule #isSPLSolMemsetFunc("solana_program_memory::sol_memset") => true
 ```
 
 ## Slice metadata for SPL account buffers
@@ -600,6 +604,32 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
   syntax KItem ::= #splPack ( Evaluation , Operand ) [seqstrict(1)]
   rule <k> #splPack(VAL, operandCopy(DEST)) => #setLocalValue(DEST, SPLDataBuffer(VAL)) ... </k>
   rule <k> #splPack(VAL, operandMove(DEST)) => #setLocalValue(DEST, SPLDataBuffer(VAL)) ... </k>
+```
+
+## sol_memset on SPL data buffers
+
+`sol_memset` is used by `delete_account` to zero out account data. Rather than
+symbolically executing the byte-by-byte loop through `IterMut::next`, we
+intercept the call and directly replace the `SPLDataBuffer` content with a
+zeroed representation.
+
+```{.k .symbolic}
+  // sol_memset(buf, val, len) - intercept when target is SPLDataBuffer
+  rule [spl-sol-memset]:
+    <k> #execTerminatorCall(_, FUNC,
+          BUF:Operand _VAL:Operand _LEN:Operand .Operands,
+          _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+      => #splSolMemset(#withDeref(BUF), BUF) ~> #continueAt(TARGET)
+    </k>
+    requires #isSPLSolMemsetFunc(#functionName(FUNC))
+    [priority(30), preserves-definedness]
+
+  syntax KItem ::= #splSolMemset ( Evaluation , Operand ) [seqstrict(1)]
+
+  rule <k> #splSolMemset(SPLDataBuffer(_), operandCopy(DEST))
+        => #setLocalValue(DEST, SPLDataBuffer(Integer(0, 8, false))) ... </k>
+  rule <k> #splSolMemset(SPLDataBuffer(_), operandMove(DEST))
+        => #setLocalValue(DEST, SPLDataBuffer(Integer(0, 8, false))) ... </k>
 ```
 
 ## Rent sysvar handling
