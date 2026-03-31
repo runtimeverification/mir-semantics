@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import tempfile
-import time
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -75,17 +74,7 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         else:
             smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-        original_items = len(smir_info.items)
-        t0 = time.monotonic()
         smir_info = smir_info.reduce_to(opts.start_symbol)
-        reduction_ms = (time.monotonic() - t0) * 1000
-        reduced_items = len(smir_info.items)
-        pruned = original_items - reduced_items
-        pct = (pruned / original_items * 100) if original_items > 0 else 0
-        _LOGGER.info(
-            f'Symbol table reduction: {original_items} -> {reduced_items} items'
-            f' ({pruned} pruned, {pct:.1f}%), {reduction_ms:.1f}ms'
-        )
         # Report whether the reduced call graph includes any functions without MIR bodies
         missing_body_syms = [
             sym
