@@ -656,3 +656,40 @@ def test_schema_kapply_parse(
     json_data, expected_term, expected_sort = test_case
 
     assert parser.parse_mir_json(json_data, expected_sort.name) == (expected_term, expected_sort)
+
+
+ARITH_SMIR = PROVE_DIR / 'arith.smir.json'
+
+
+def test_reduce_standalone() -> None:
+    """Test that kmir reduce correctly prunes SMIR items by reachability."""
+    smir_data = json.loads(ARITH_SMIR.read_text())
+    info = SMIRInfo(smir_data)
+    assert len(info.items) == 11
+
+    # Single root 'add' — should keep 1 item
+    reduced_add = info.reduce_to('add')
+    assert len(reduced_add.items) == 1
+
+    # Single root 'mul' — should keep 1 item (independent from add)
+    reduced_mul = info.reduce_to('mul')
+    assert len(reduced_mul.items) == 1
+
+    # Multiple roots — should keep strictly more than either alone
+    reduced_multi = info.reduce_to(['add', 'mul'])
+    assert len(reduced_multi.items) == 2
+
+    # 'main' calls both add and mul — should keep all 3
+    reduced_main = info.reduce_to('main')
+    assert len(reduced_main.items) == 3
+
+    # Roundtrip: save reduced SMIR and reload it
+    with tempfile.NamedTemporaryFile(suffix='.smir.json', delete=False, mode='w') as f:
+        f.write(json.dumps(reduced_multi._smir))
+        reduced_path = Path(f.name)
+
+    try:
+        reloaded = SMIRInfo(json.loads(reduced_path.read_text()))
+        assert len(reloaded.items) == 2
+    finally:
+        reduced_path.unlink()
