@@ -45,3 +45,88 @@ def test_function_symbols_reverse(smir_file: Path, update_expected_output: bool)
 def test_function_tys(smir_file: Path, update_expected_output: bool) -> None:
     """Test function_tys using actual SMIR JSON data."""
     _test_smir_property(smir_file, 'function_tys', update_expected_output)
+
+
+def test_call_edges_preserve_drop_glue_for_downcast_field() -> None:
+    smir_info = SMIRInfo(
+        {
+            'name': 'drop-downcast-field',
+            'allocs': [],
+            'types': [
+                [
+                    1,
+                    {
+                        'EnumType': {
+                            'name': 'Wrapper',
+                            'adt_def': 1,
+                            'discriminants': [0],
+                            'fields': [[2]],
+                            'layout': None,
+                        }
+                    },
+                ],
+                [
+                    2,
+                    {
+                        'StructType': {
+                            'name': 'Inner',
+                            'adt_def': 2,
+                            'fields': [],
+                            'layout': None,
+                        }
+                    },
+                ],
+                [3, {'PtrType': {'pointee_type': 2}}],
+            ],
+            'functions': [
+                [10, {'NormalSym': 'caller'}],
+                [12, {'NormalSym': 'drop_inner'}],
+            ],
+            'items': [
+                {
+                    'symbol_name': 'caller',
+                    'mono_item_kind': {
+                        'MonoItemFn': {
+                            'name': 'caller',
+                            'body': {
+                                'arg_count': 0,
+                                'locals': [{'ty': 0}, {'ty': 1}],
+                                'blocks': [
+                                    {
+                                        'terminator': {
+                                            'kind': {
+                                                'Drop': {
+                                                    'place': {
+                                                        'local': 1,
+                                                        'projection': [{'Downcast': 0}, {'Field': [0, 2]}],
+                                                    },
+                                                    'target': 0,
+                                                    'unwind': 'Continue',
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                            },
+                        }
+                    },
+                },
+                {
+                    'symbol_name': 'drop_inner',
+                    'mono_item_kind': {
+                        'MonoItemFn': {
+                            'name': 'std::ptr::drop_in_place::<Inner>',
+                            'body': {
+                                'arg_count': 1,
+                                'locals': [{'ty': 0}, {'ty': 3}],
+                                'blocks': [],
+                            },
+                        }
+                    },
+                },
+            ],
+            'spans': [],
+        }
+    )
+
+    assert smir_info.call_edges == {10: {12}, 12: set()}

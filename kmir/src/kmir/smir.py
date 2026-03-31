@@ -327,7 +327,10 @@ class SMIRInfo:
             return None
 
         if 'Field' in projection:
-            index, _ = projection['Field']
+            index, field_ty = projection['Field']
+            if isinstance(field_ty, int):
+                return Ty(field_ty)
+
             if isinstance(type_info, (StructT, UnionT)):
                 fields = type_info.fields
             elif isinstance(type_info, TupleT):
