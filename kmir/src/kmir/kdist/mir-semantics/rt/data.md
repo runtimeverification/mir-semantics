@@ -1656,22 +1656,6 @@ stuck as a `thunk`) and passes as expected.
     [priority(45)]
 ```
 
-Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
-The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
-
-```k
-  rule <k> #cast(
-              thunk(#cast(DATA, castKindTransmute, TY_SRC_INNER, TY_DEST_INNER)),
-              castKindTransmute,
-              TY_SRC_OUTER,
-              TY_DEST_OUTER
-            ) => DATA
-          ...
-       </k>
-    requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
-     andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
-```
-
 Transmuting a value `T` into a single-field wrapper struct `G<T>` (or vice versa) is sound when the struct
 has its field at zero offset and `transmute` compiled (guaranteeing equal sizes).
 These are essentially `#[repr(transparent)]` but are `#[repr(rust)]` by default without the annotation and
