@@ -178,15 +178,11 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
 The `#setLocalValue` operation writes a `Value` value to a given `Place` within the `List` of local variables currently on top of the stack.
 If we are setting a value at a `Place` which has `Projection`s in it, then we must first traverse the projections before setting the value.
-A variant `#forceSetLocal` is provided for setting the local value without checking the mutability of the location.
 
 **Note on mutability:** The Rust compiler validates assignment legality and may reuse immutable locals in MIR (e.g., loop variables), so `#setLocalValue` does not guard on mutability.
 
-TODO: `#forceSetLocal` is now functionally identical to `#setLocalValue` and may be removed.
-
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
-                 | #forceSetLocal ( Local , Evaluation ) [strict(2)]
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
        <locals>
@@ -216,11 +212,6 @@ TODO: `#forceSetLocal` is now functionally identical to `#setLocalValue` and may
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
 
-  rule <k> #forceSetLocal(local(I), MBVAL:Value) => .K ... </k>
-       <locals> LOCALS => LOCALS[I <- typedValue(MBVAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))] </locals>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
 ```
 
 ### Traversing Projections for Reads and Writes
@@ -270,7 +261,7 @@ A `Deref` projection in the projections list changes the target of the write ope
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeMoved
-        => #forceSetLocal(local(I), #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
+        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
        ...
        </k>
      [preserves-definedness] // valid context ensured upon context construction
@@ -1238,8 +1229,8 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
 
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
-        => #forceSetLocal(
-              local(I),
+        => #setLocalValue(
+              place(local(I), .ProjectionElems),
               #decodeConstant(
                 constantKindZeroSized,
                 tyOfLocal(getLocal(LOCALS, I)),
@@ -1421,7 +1412,41 @@ Boolean values can also be cast to Integers (encoding `true` as `1`).
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
-Casts involving `Float` values are currently not implemented.
+Casts involving `Float` values: `IntToFloat`, `FloatToInt`, and `FloatToFloat`.
+
+```k
+  // IntToFloat: convert integer to float with the target float type's precision
+  rule <k> #cast(Integer(VAL, _WIDTH, _SIGNEDNESS), castKindIntToFloat, _, TY)
+          => Float(
+               Int2Float(VAL,
+                 #significandBits(#floatTypeOf(lookupTy(TY))),
+                 #exponentBits(#floatTypeOf(lookupTy(TY)))),
+               #bitWidth(#floatTypeOf(lookupTy(TY)))
+             )
+          ...
+        </k>
+      [preserves-definedness]
+
+  // FloatToInt: truncate float towards zero and convert to integer
+  rule <k> #cast(Float(VAL, _WIDTH), castKindFloatToInt, _, TY)
+          => #intAsType(Float2Int(VAL), 128, #intTypeOf(lookupTy(TY)))
+          ...
+        </k>
+      requires #isIntType(lookupTy(TY))
+      [preserves-definedness]
+
+  // FloatToFloat: round float to the target float type's precision
+  rule <k> #cast(Float(VAL, _WIDTH), castKindFloatToFloat, _, TY)
+          => Float(
+               roundFloat(VAL,
+                 #significandBits(#floatTypeOf(lookupTy(TY))),
+                 #exponentBits(#floatTypeOf(lookupTy(TY)))),
+               #bitWidth(#floatTypeOf(lookupTy(TY)))
+             )
+          ...
+        </k>
+      [preserves-definedness]
+```
 
 ### Casts between pointer types
 
@@ -1604,6 +1629,30 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
        </k>
     requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
      andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
+```
+
+Transmuting a value `T` into a single-field wrapper struct `G<T>` (or vice versa) is sound when the struct
+has its field at zero offset and `transmute` compiled (guaranteeing equal sizes).
+These are essentially `#[repr(transparent)]` but are `#[repr(rust)]` by default without the annotation and
+thus there are no compiler optimisations to remove the transmute (there would be otherwise for downcast).
+The layout is the same for the wrapped type and so the cast in either direction is sound.
+
+```k
+  // Up: T -> Wrapper(T)
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            Aggregate(variantIdx(0), ListItem(VAL))
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
+
+  // Down: Wrapper(T) -> T
+  rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            VAL
+          ...
+        </k>
+      requires {#transparentFieldTy(lookupTy(TY_SOURCE))}:>Ty ==K TY_TARGET
 ```
 
 Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.
@@ -1872,6 +1921,9 @@ Zero-sized types can be decoded trivially into their respective representation.
   // zero-sized array
   rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoArrayType(_, _))
         => Range(.List) ... </k>
+  // zero-sized function item (e.g., closures without captures)
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoFunType(_))
+        => Aggregate(variantIdx(0), .List) ... </k>
 ```
 
 Allocated constants of reference type with a single provenance map entry are decoded as references
@@ -1991,6 +2043,20 @@ are correct.
   rule onInt(binOpRem, X, Y)          => X %Int Y requires Y =/=Int 0 [preserves-definedness]
   // operation undefined otherwise
 
+  // performs the given operation on IEEE 754 floats
+  // Note: Rust's float % is truncating remainder: x - trunc(x/y) * y
+  // This differs from K's %Float which is IEEE 754 remainder (round to nearest).
+  syntax Float ::= onFloat( BinOp, Float, Float ) [function]
+  // -------------------------------------------------------
+  rule onFloat(binOpAdd, X, Y)          => X +Float Y [preserves-definedness]
+  rule onFloat(binOpAddUnchecked, X, Y) => X +Float Y [preserves-definedness]
+  rule onFloat(binOpSub, X, Y)          => X -Float Y [preserves-definedness]
+  rule onFloat(binOpSubUnchecked, X, Y) => X -Float Y [preserves-definedness]
+  rule onFloat(binOpMul, X, Y)          => X *Float Y [preserves-definedness]
+  rule onFloat(binOpMulUnchecked, X, Y) => X *Float Y [preserves-definedness]
+  rule onFloat(binOpDiv, X, Y)          => X /Float Y [preserves-definedness]
+  rule onFloat(binOpRem, X, Y)          => X -Float (Y *Float truncFloat(X /Float Y)) [preserves-definedness]
+
   // error cases for isArithmetic(BOP):
   // * arguments must be Numbers
 
@@ -2059,6 +2125,18 @@ are correct.
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
     [preserves-definedness]
+
+  // Float arithmetic: Rust never emits CheckedBinaryOp for floats (only BinaryOp),
+  // so the checked flag is always false here. See rustc_const_eval/src/interpret/operator.rs:
+  // binary_float_op returns a plain value, not a (value, overflow) pair.
+  rule #applyBinOp(
+          BOP,
+          Float(ARG1, WIDTH),
+          Float(ARG2, WIDTH),
+          false)
+    => Float(onFloat(BOP, ARG1, ARG2), WIDTH)
+    requires isArithmetic(BOP)
+    [preserves-definedness]
 ```
 
 #### Comparison operations
@@ -2095,6 +2173,14 @@ The argument types must be the same for all comparison operations, however this 
   rule cmpOpBool(binOpGe,  X, Y) => cmpOpBool(binOpLe, Y, X)
   rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
 
+  syntax Bool ::= cmpOpFloat ( BinOp, Float, Float ) [function]
+  rule cmpOpFloat(binOpEq,  X, Y) => X  ==Float Y
+  rule cmpOpFloat(binOpLt,  X, Y) => X   <Float Y
+  rule cmpOpFloat(binOpLe,  X, Y) => X  <=Float Y
+  rule cmpOpFloat(binOpNe,  X, Y) => X =/=Float Y
+  rule cmpOpFloat(binOpGe,  X, Y) => X  >=Float Y
+  rule cmpOpFloat(binOpGt,  X, Y) => X   >Float Y
+
   // error cases for isComparison and binOpCmp:
   // * arguments must be numbers or Bool
 
@@ -2122,9 +2208,19 @@ The argument types must be the same for all comparison operations, however this 
         BoolVal(cmpOpBool(OP, VAL1, VAL2))
     requires isComparison(OP)
     [priority(60), preserves-definedness] // OP known to be a comparison
+
+  rule #applyBinOp(OP, Float(VAL1, WIDTH), Float(VAL2, WIDTH), _)
+      =>
+        BoolVal(cmpOpFloat(OP, VAL1, VAL2))
+    requires isComparison(OP)
+    [preserves-definedness] // OP known to be a comparison
 ```
 
-The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`), indicating `LE`, `EQ`, or `GT`.
+Types that are equivlance relations can implement [Eq](https://doc.rust-lang.org/std/cmp/trait.Eq.html),
+and then they may implement [Ord](https://doc.rust-lang.org/std/cmp/trait.Ord.html) for a total ordering.
+For types that implement `Ord` the `cmp` method must be implemented which can compare any two elements respective to their total ordering.
+Here we provide the `binOpCmp` for `Bool` and `Int` operation which returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`),
+indicating `LE`, `EQ`, or `GT`.
 
 ```k
   syntax Int ::= cmpInt  ( Int , Int )  [function , total]
@@ -2159,7 +2255,11 @@ The semantics of the operation in this case is to wrap around (with the given bi
         ...
         </k>
 
-  // TODO add rule for Floats once they are supported.
+  rule <k> #applyUnOp(unOpNeg, Float(VAL, WIDTH))
+          =>
+            Float(--Float VAL, WIDTH)
+        ...
+        </k>
 ```
 
 The `unOpNot` operation works on boolean and integral values, with the usual semantics for booleans and a bitwise semantics for integral values (overflows cannot occur).
