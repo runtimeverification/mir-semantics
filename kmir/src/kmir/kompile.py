@@ -571,6 +571,15 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
                 'IntrinsicFunction',
                 [KApply('symbol(_)_LIB_Symbol_String', [stringToken(sym['IntrinsicSym'])])],
             )
+        elif 'NoOpSym' in sym:
+            functions[ty] = KApply(
+                'MonoItemKind::MonoItemFn',
+                (
+                    KApply('symbol(_)_LIB_Symbol_String', (stringToken(sym['NoOpSym']),)),
+                    KApply('defId(_)_BODY_DefId_Int', (intToken(ty),)),
+                    KApply('noBody_BODY_MaybeBody', ()),
+                ),
+            )
         elif isinstance(sym.get('NormalSym'), str):
             functions[ty] = KApply(
                 'MonoItemKind::MonoItemFn',
