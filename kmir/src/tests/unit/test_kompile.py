@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, cast
+from unittest.mock import Mock
+
+from pyk.kast.inner import KApply
+from pyk.kast.prelude.kint import intToken
+from pyk.kast.prelude.string import stringToken
 
 from pyk.kore.syntax import And, App, Axiom, EVar, Rewrites, SortApp, Top
 
-from kmir.kompile import _add_exists_quantifiers, _collect_evars, _load_extra_module_rules
+from kmir.kompile import _add_exists_quantifiers, _collect_evars, _functions, _load_extra_module_rules
+from kmir.smir import SMIRInfo
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -110,3 +116,31 @@ def test_load_extra_module_rules_uses_requested_haskell_target(monkeypatch: pyte
     assert captured['file_path'] == module_path
     assert captured['module_name'] == 'TEST'
     assert captured['include_dirs'] == ((tmp_path / 'custom-haskell-target'),)
+
+
+def test_functions_preserve_noop_symbols() -> None:
+    smir_info = SMIRInfo(
+        {
+            'name': 'noop-sym',
+            'allocs': [],
+            'functions': [[42, {'NoOpSym': ''}]],
+            'uneval_consts': [],
+            'items': [],
+            'types': [],
+            'spans': [],
+            'debug': None,
+            'machine': {},
+        }
+    )
+
+    kmir = Mock()
+    kmir.parser = Mock()
+
+    assert _functions(kmir, smir_info)[42] == KApply(
+        'MonoItemKind::MonoItemFn',
+        (
+            KApply('symbol(_)_LIB_Symbol_String', (stringToken(''),)),
+            KApply('defId(_)_BODY_DefId_Int', (intToken(42),)),
+            KApply('noBody_BODY_MaybeBody', ()),
+        ),
+    )

@@ -363,6 +363,17 @@ where the returned result should go.
     requires isIntrinsicFunction(FUNC)
      andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
+  syntax Bool ::= isNoOpFunction(MonoItemKind) [function]
+  rule isNoOpFunction(monoItemFn(symbol(""), _, noBody)) => true
+  rule isNoOpFunction(_) => false [owise]
+
+  // SMIR marks some semantically empty shims (e.g. drop glue for trivially droppable slices)
+  // as NoOpSym. They have no body and should continue immediately without switching frames.
+  rule [termCallNoOp]:
+       <k> #execTerminatorCall(_, monoItemFn(symbol(""), _, noBody), _ARGS, _DEST, TARGET, _UNWIND, _SPAN) ~> _
+        => #continueAt(TARGET)
+       </k>
+
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
        <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
@@ -379,6 +390,7 @@ where the returned result should go.
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
+     andBool notBool isNoOpFunction(FUNC)
      andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
@@ -397,6 +409,7 @@ where the returned result should go.
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
+     andBool notBool isNoOpFunction(FUNC)
      andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]

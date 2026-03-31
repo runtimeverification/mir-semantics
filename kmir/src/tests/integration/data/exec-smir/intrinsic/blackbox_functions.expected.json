@@ -33998,5 +33998,68 @@
     },
     "node": "KApply",
     "variable": false
+  },
+  "48": {
+    "args": [
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "String",
+              "node": "KSort"
+            },
+            "token": "\"\""
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "symbol(_)_LIB_Symbol_String",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [
+          {
+            "node": "KToken",
+            "sort": {
+              "name": "Int",
+              "node": "KSort"
+            },
+            "token": "48"
+          }
+        ],
+        "arity": 1,
+        "label": {
+          "name": "defId(_)_BODY_DefId_Int",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      },
+      {
+        "args": [],
+        "arity": 0,
+        "label": {
+          "name": "noBody_BODY_MaybeBody",
+          "node": "KLabel",
+          "params": []
+        },
+        "node": "KApply",
+        "variable": false
+      }
+    ],
+    "arity": 3,
+    "label": {
+      "name": "MonoItemKind::MonoItemFn",
+      "node": "KLabel",
+      "params": []
+    },
+    "node": "KApply",
+    "variable": false
   }
 }

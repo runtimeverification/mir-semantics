@@ -508,6 +508,15 @@ The following rule resolves this situation by using the head element.
            )
         => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
     [preserves-definedness, priority(100)]
+
+  rule <k> #traverseProjection(
+             DEST,
+             Range(ListItem(Union(_, _) #as VALUE) _REST:List),
+             projectionElemField(IDX, TY) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
+    [preserves-definedness, priority(100)]
 ```
 
 #### Unions
@@ -648,6 +657,23 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
      andBool 0 <=Int END andBool END <Int size(ELEMENTS)
      andBool START <=Int size(ELEMENTS) -Int END
     [preserves-definedness] // Indexes checked to be in range for ELEMENTS
+
+  rule <k> #traverseProjection(
+             DEST,
+             VAL,
+             PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             Range(ListItem(VAL)),
+             PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS,
+             CTXTS
+           )
+        ...
+        </k>
+    requires notBool isRange(VAL)
+    [preserves-definedness, priority(100)]
 
   rule <k> #traverseProjection(
              DEST,
