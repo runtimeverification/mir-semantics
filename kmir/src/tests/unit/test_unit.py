@@ -59,5 +59,5 @@ GRAPH_CLOSURE_TESTS = [
 def test_compute_closure(test_case: tuple[str, Ty, dict[Ty, set[Ty]], list[Ty]]) -> None:
     _, start, edges, expected = test_case
 
-    result = compute_closure(start, edges)
+    result = compute_closure([start], edges)
     assert result == expected
