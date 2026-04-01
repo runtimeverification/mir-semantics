@@ -509,7 +509,8 @@ The following rule resolves this situation by using the head element.
         => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
     [preserves-definedness, priority(100)]
 
-  // Temporary bridge rule for the current mixed bare-value/Range representation.
+  // Temporary bridge rule: after PointerOffset lifts a single value to Range(ListItem(...)),
+  // unwrap a Union head element so the existing Union + Field rules below can keep running.
   rule <k> #traverseProjection(
              DEST,
              Range(ListItem(Union(_, _) #as VALUE) _REST:List),
@@ -659,7 +660,8 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
      andBool START <=Int size(ELEMENTS) -Int END
     [preserves-definedness] // Indexes checked to be in range for ELEMENTS
 
-  // Temporary bridge rule for the current mixed bare-value/Range representation.
+  // Temporary bridge rule: PointerOffset is implemented below in terms of Range slicing, so
+  // lift a single non-Range value to Range(ListItem(...)) to reuse that shared path.
   rule <k> #traverseProjection(
              DEST,
              VAL,
