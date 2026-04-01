@@ -11,6 +11,7 @@ requires "intrinsics.md"
 requires "symbolic/p-token.md"
 requires "symbolic/spl-token.md"
 // requires "symbolic/inner_test_validate_owner.md"
+requires "symbolic/inner_test_validate_owner_spl.md"
 ```
 
 ## Syntax of MIR in K
@@ -722,5 +723,7 @@ module KMIR
   imports KMIR-SPL-TOKEN // SPL-specific cheat codes
   // imports EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
   // imports INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
+  imports EXPECTED-VALIDATE-OWNER-RESULT-SPL-TOKEN-LEMMA
+  // imports INNER-TEST-VALIDATE-OWNER-SPL-TOKEN-LEMMA  // disabled: result.clone() produces thunks that case rules can't match
 endmodule
 ```
