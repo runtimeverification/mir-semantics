@@ -323,3 +323,20 @@ class LinkOpts(KMirOpts):
     def __init__(self, smir_files: list[str], output_file: str | None = None) -> None:
         self.smir_files = [Path(f) for f in smir_files]
         self.output_file = Path(output_file) if output_file is not None else Path('linker_output.smir.json')
+
+
+@dataclass
+class ReduceOpts(KMirOpts):
+    smir_file: Path
+    output_file: Path
+    roots: list[str]
+
+    def __init__(self, smir_file: str, roots: str, output_file: str | None = None) -> None:
+        self.smir_file = Path(smir_file)
+        self.output_file = Path(output_file) if output_file is not None else Path('reduced.smir.json')
+        # Support @file syntax for reading roots from a file
+        if roots.startswith('@'):
+            roots_file = Path(roots[1:])
+            self.roots = list(filter(None, [r.strip() for r in roots_file.read_text().splitlines()]))
+        else:
+            self.roots = [r.strip() for r in roots.split(',') if r.strip()]
