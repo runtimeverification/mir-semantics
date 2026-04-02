@@ -19,12 +19,15 @@ requires "./value.md"
 module KMIR-CONFIGURATION
   imports INT-SYNTAX
   imports BOOL-SYNTAX
+  imports MAP
+  imports SET
   imports RT-VALUE-SYNTAX
 
   syntax RetVal ::= return( Value )
                   | "noReturn"
 
-  syntax StackFrame ::= StackFrame(caller:Ty,                 // index of caller function
+  syntax StackFrame ::= StackFrame(frameId:Int,               // stable id for this frame
+                                   caller:Ty,                 // index of caller function
                                    dest:Place,                // place to store return value
                                    target:MaybeBasicBlockIdx, // basic block to return to
                                    UnwindAction,              // action to perform on panic
@@ -36,6 +39,7 @@ module KMIR-CONFIGURATION
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
                   <currentFrame>
+                    <frameId> 0 </frameId>
                     <currentBody> .List </currentBody>
                     <caller> ty(-1) </caller>
                     <dest> place(local(-1), .ProjectionElems)</dest>
@@ -45,6 +49,11 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
+                  <nextFrameId> 1 </nextFrameId>
+                  // address allocation model for pointer-to-integer casts
+                  <addressMap> .Map </addressMap>
+                  <nextAddress> 4096 </nextAddress>
+                  <exposedSet> .Set </exposedSet>
                 </kmir>
 ```
 

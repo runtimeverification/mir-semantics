@@ -9,6 +9,9 @@
     ty ( -1 )
   </currentFunc>
   <currentFrame>
+    <frameId>
+      0
+    </frameId>
     <currentBody>
       .List
     </currentBody>
@@ -34,4 +37,16 @@
   <stack>
     .List
   </stack>
+  <nextFrameId>
+    1
+  </nextFrameId>
+  <addressMap>
+    .Map
+  </addressMap>
+  <nextAddress>
+    4096
+  </nextAddress>
+  <exposedSet>
+    .Set
+  </exposedSet>
 </kmir>
