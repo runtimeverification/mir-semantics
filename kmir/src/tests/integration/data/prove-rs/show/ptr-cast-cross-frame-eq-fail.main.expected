@@ -1,0 +1,21 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (35 steps)
+├─ 3
+│   #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: .ProjectionE
+│   function: main
+│   span: 95
+│
+│  (1 step)
+└─ 4 (leaf, terminal)
+    thunk ( #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: .Pro
+    function: main
+    span: 95
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
