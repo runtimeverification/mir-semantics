@@ -60,3 +60,53 @@ def test_load_extra_module_rules_accepts_path_json(monkeypatch: pytest.MonkeyPat
     monkeypatch.setattr('pyk.kast.outer.KFlatModule.from_dict', lambda module_dict: DummyModule())
 
     assert _load_extra_module_rules(cast('Any', DummyKMIR()), module_path) == []
+
+
+def test_load_extra_module_rules_uses_requested_haskell_target(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """K source modules should resolve includes from the active haskell target."""
+    module_path = tmp_path / 'module.k'
+    module_path.write_text('module TEST endmodule')
+
+    class DummyModule:
+        name = 'TEST'
+        sentences: list[object] = []
+
+    class DummyModuleList:
+        modules = [DummyModule()]
+
+    captured: dict[str, object] = {}
+
+    class DummyKMIR:
+        definition = object()
+
+        def parse_modules(
+            self, file_path: Path, *, module_name: str, include_dirs: tuple[Path, ...]
+        ) -> DummyModuleList:
+            captured['file_path'] = file_path
+            captured['module_name'] = module_name
+            captured['include_dirs'] = include_dirs
+            return DummyModuleList()
+
+    def fake_which(target: str) -> Path:
+        captured['haskell_target'] = target
+        return tmp_path / target / 'definition.kore'
+
+    class DummyKDist:
+        @staticmethod
+        def which(target: str) -> Path:
+            return fake_which(target)
+
+    monkeypatch.setattr('kmir.kompile.kdist', DummyKDist())
+
+    assert (
+        _load_extra_module_rules(
+            cast('Any', DummyKMIR()),
+            f'{module_path}:TEST',
+            haskell_target='custom-haskell-target',
+        )
+        == []
+    )
+    assert captured['haskell_target'] == 'custom-haskell-target'
+    assert captured['file_path'] == module_path
+    assert captured['module_name'] == 'TEST'
+    assert captured['include_dirs'] == ((tmp_path / 'custom-haskell-target'),)

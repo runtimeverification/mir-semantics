@@ -163,7 +163,9 @@ def _add_exists_quantifiers(axiom: Axiom) -> Axiom:
     return Axiom(vars=axiom.vars, pattern=new_pattern, attrs=axiom.attrs)
 
 
-def _load_extra_module_rules(kmir: KMIR, module_spec: Path | str) -> list[Sentence]:
+def _load_extra_module_rules(
+    kmir: KMIR, module_spec: Path | str, *, haskell_target: str = 'mir-semantics.haskell'
+) -> list[Sentence]:
     """Load a K module and convert rules to Kore axioms.
 
     Supports two formats:
@@ -173,6 +175,7 @@ def _load_extra_module_rules(kmir: KMIR, module_spec: Path | str) -> list[Senten
     Args:
         kmir: KMIR instance with the definition
         module_spec: Module specification string or JSON module path
+        haskell_target: Haskell definition target whose include root should be used for K source modules
 
     Returns:
         List of Kore axioms converted from the module rules
@@ -192,7 +195,7 @@ def _load_extra_module_rules(kmir: KMIR, module_spec: Path | str) -> list[Senten
         if file_path.suffix not in ('.k', '.md'):
             raise ValueError(f'K source module must be a .k or .md file, got: {file_path}')
 
-        include_dirs = (kdist.which('mir-semantics.haskell').parent,)
+        include_dirs = (kdist.which(haskell_target).parent,)
         module_list = kmir.parse_modules(file_path, module_name=module_name, include_dirs=include_dirs)
         k_module = single(module for module in module_list.modules if module.name == module_name)
     else:
@@ -277,7 +280,7 @@ def kompile_smir(
     # These are kept separate because LLVM backend doesn't support configuration rewrites
     extra_rules: list[Sentence] = []
     if extra_module is not None:
-        extra_rules = _load_extra_module_rules(kmir, extra_module)
+        extra_rules = _load_extra_module_rules(kmir, extra_module, haskell_target=haskell_target)
         _LOGGER.info(f'Added {len(extra_rules)} rules from extra module: {extra_module}')
 
     # Combined rules for Haskell backend (supports both function equations and rewrites)
