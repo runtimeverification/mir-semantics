@@ -9,6 +9,9 @@
     ty ( -1 )
   </currentFunc>
   <currentFrame>
+    <frameId>
+      1
+    </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 1 ) , projection: .ProjectionElems ) , rvalue: rvalueRepeat ( operandConstant ( constOperand (... span: span ( 62 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 28 ) , id: mirConstId ( 11 ) ) ) ) , tyConst (... kind: tyConstKindValue ( ty ( 31 ) , allocation (... bytes: b"\x04\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , id: tyConstId ( 0 ) ) ) ) , span: span ( 63 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 3 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandConstant ( constOperand (... span: span ( 64 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x03\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 31 ) , id: mirConstId ( 12 ) ) ) ) ) ) , span: span ( 65 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 4 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandConstant ( constOperand (... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x04\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 31 ) , id: mirConstId ( 13 ) ) ) ) ) ) , span: span ( 61 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 5 ) , projection: .ProjectionElems ) , rvalue: rvalueBinaryOp ( binOpLt , operandCopy ( place (... local: local ( 3 ) , projection: .ProjectionElems ) ) , operandCopy ( place (... local: local ( 4 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 61 ) )  .Statements , terminator: terminator (... kind: assert (... cond: operandMove ( place (... local: local ( 5 ) , projection: .ProjectionElems ) ) , expected: true , msg: assertMessageBoundsCheck (... len: operandMove ( place (... local: local ( 4 ) , projection: .ProjectionElems ) ) , index: operandCopy ( place (... local: local ( 3 ) , projection: .ProjectionElems ) ) ) , target: basicBlockIdx ( 1 ) , unwind: unwindActionContinue ) , span: span ( 61 ) ) ) )
       ListItem ( basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 2 ) , projection: .ProjectionElems ) , rvalue: rvalueRef ( region (... kind: regionKindReErased ) , borrowKindShared , place (... local: local ( 1 ) , projection: projectionElemIndex ( local ( 3 ) )  .ProjectionElems ) ) ) , span: span ( 68 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 6 ) , projection: .ProjectionElems ) , rvalue: rvalueAddressOf ( mutabilityNot , place (... local: local ( 2 ) , projection: projectionElemDeref  .ProjectionElems ) ) ) , span: span ( 69 ) )  .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 66 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 32 ) , id: mirConstId ( 14 ) ) ) ) , args: operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 7 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 2 ) ) , unwind: unwindActionContinue ) , span: span ( 67 ) ) ) )
@@ -43,6 +46,18 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <nextFrameId>
+    4
+  </nextFrameId>
+  <addressMap>
+    .Map
+  </addressMap>
+  <nextAddress>
+    4096
+  </nextAddress>
+  <exposedSet>
+    .Set
+  </exposedSet>
 </kmir>
