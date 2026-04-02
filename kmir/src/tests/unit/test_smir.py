@@ -48,6 +48,10 @@ def test_function_tys(smir_file: Path, update_expected_output: bool) -> None:
 
 
 def test_call_edges_preserve_drop_glue_for_downcast_field() -> None:
+    # This SMIR models:
+    #   local 1: Wrapper
+    #   Drop(local 1 . Downcast(0) . Field(0, Inner))
+    # so `call_edges` must keep the reachable `std::ptr::drop_in_place::<Inner>` callee.
     smir_info = SMIRInfo(
         {
             'name': 'drop-downcast-field',
