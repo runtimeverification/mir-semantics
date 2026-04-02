@@ -219,6 +219,9 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
 If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
+  // `place(local(-1), .ProjectionElems)` is a sentinel destination meaning that the caller
+  // ignores the callee's return value. Skip the normal writeback path in that case, because
+  // `#setLocalValue` only accepts real local indices and would get stuck on `local(-1)`.
   rule [termReturnIgnored]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
            #execBlockIdx(TARGET)
