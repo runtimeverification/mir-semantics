@@ -28,11 +28,15 @@ jobs:
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
           submodules: recursive
 
+      - name: 'Resolve Rust revision from stable-mir-json submodule'
+        id: stable_mir_json
+        run: echo "rust_ref=$(git rev-parse HEAD:deps/stable-mir-json)" >> "${GITHUB_OUTPUT}"
+
       - name: 'Check out Rust repo'
         uses: actions/checkout@v4
         with:
           repository: rust-lang/rust
-          ref: a2545fd6fc66b4323f555223a860c451885d1d2b
+          ref: ${{ steps.stable_mir_json.outputs.rust_ref }}
           path: rust
           fetch-depth: 1
 
