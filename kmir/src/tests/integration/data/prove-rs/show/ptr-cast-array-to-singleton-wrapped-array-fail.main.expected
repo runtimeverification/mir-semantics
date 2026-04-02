@@ -1,19 +1,14 @@
 
 ┌─ 1 (root, init)
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   function: main
 │   span: 0
 │
-│  (68 steps)
-├─ 3
-│   #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: projectionEl
-│   function: main
-│   span: 270
-│
-│  (1 step)
-└─ 4 (leaf, terminal)
-    thunk ( #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: proj
+│  (141 steps)
+└─ 3 (stuck, leaf)
+    #traverseProjection ( toLocal ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem (
     function: main
-    span: 270
+    span: 282
 
 
 ┌─ 2 (root, leaf, target, terminal)
