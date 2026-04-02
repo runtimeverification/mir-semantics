@@ -234,7 +234,7 @@ module VALIDATE-OWNER-COMMON
   //   Counts how many registered keys have a matching signed tx_signer.
   // =========================================================================
 
-  syntax KeyAndIsSigner ::= keyAndIsSigner( Value, Int )
+  syntax KeyAndIsSigner ::= keyAndIsSigner( List, Int )
 
   syntax List ::= firstN( Int, List ) [function, total]
   // -------------------------------------------------
@@ -244,35 +244,43 @@ module VALIDATE-OWNER-COMMON
 
   // --- #unsignedExists: outer over tx_signers, inner over registered keys ---
 
-  syntax Bool ::= #unsignedExists( List, List ) [function]
+  syntax Bool ::= #unsignedExists( List, List ) [function, total]
   // -----------------------------------------------------------
   rule #unsignedExists(.List, _REGS) => false
   rule #unsignedExists(ListItem(keyAndIsSigner(KEY, IS)) REST, REGS)
     => #unsignedExistsInner(KEY, IS, REGS)
     orBool #unsignedExists(REST, REGS)
+  rule #unsignedExists(ListItem(_) REST, REGS)
+    => #unsignedExists(REST, REGS) [owise] // to make the function total
 
-  syntax Bool ::= #unsignedExistsInner( Value, Int, List ) [function]
+  syntax Bool ::= #unsignedExistsInner( List, Int, List ) [function, total]
   // -----------------------------------------------------------------------
   rule #unsignedExistsInner(_KEY, _IS, .List) => false
-  rule #unsignedExistsInner(KEY, IS, ListItem(SKEY) REST)
-    => ( IS ==Int 0 andBool fromKey(SKEY) ==K KEY )
+  rule #unsignedExistsInner(KEY, IS, ListItem(Key(SKEY)) REST)
+    => ( IS ==Int 0 andBool SKEY ==K KEY )
     orBool #unsignedExistsInner(KEY, IS, REST)
+  rule #unsignedExistsInner(KEY, IS, ListItem(_) REST)
+    => #unsignedExistsInner(KEY, IS, REST) [owise] // to make the function total
 
   // --- #signersCount: outer over registered keys, inner over tx_signers ---
 
-  syntax Int ::= #signersCount( List, List ) [function]
+  syntax Int ::= #signersCount( List, List ) [function, total]
   // ---------------------------------------------------------
   rule #signersCount(_TXSIGNERS, .List) => 0
   rule #signersCount(TXSIGNERS, ListItem(SKEY) REST)
-    => #bool2Int(#signerMatchedInner(SKEY, TXSIGNERS))
-     +Int #signersCount(TXSIGNERS, REST)
+    => 1 +Int #signersCount(TXSIGNERS, REST)
+    requires #signerMatchedInner(SKEY, TXSIGNERS)
+  rule #signersCount(TXSIGNERS, ListItem(_) REST)
+    => #signersCount(TXSIGNERS, REST)
+    [owise]
 
-  syntax Bool ::= #signerMatchedInner( Key, List ) [function]
+  syntax Bool ::= #signerMatchedInner( Key, List ) [function, total]
   // ---------------------------------------------------------------
   rule #signerMatchedInner(_SKEY, .List) => false
   rule #signerMatchedInner(SKEY, ListItem(keyAndIsSigner(KEY, IS)) REST)
-    => ( fromKey(SKEY) ==K KEY andBool IS =/=Int 0 )
+    => ( SKEY ==K KEY andBool IS =/=Int 0 )
     orBool #signerMatchedInner(SKEY, REST)
+  rule #signerMatchedInner(_SKEY, ListItem(_OTHER) _REST) => false [owise] // to make the function total
 
   // =========================================================================
   // Extract key and is_signer from a list of evaluated tx_signer account
@@ -287,9 +295,10 @@ module VALIDATE-OWNER-COMMON
       ListItem(Aggregate(variantIdx(0),
           ListItem(_) ListItem(Integer(IS, 8, false))
           ListItem(_) ListItem(_) ListItem(_)
-          ListItem(KEY) ListItem(_) ListItem(_) ListItem(_)))
+          ListItem(Range(KEY)) ListItem(_) ListItem(_) ListItem(_)))
       REST)
     => ListItem(keyAndIsSigner(KEY, IS)) #toKeyAndIsSignerList(REST)
+    [preserves-definedness]
 
 endmodule
 ```
@@ -598,7 +607,10 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
 
   // Cool: collect the evaluated Value into the accumulator.
   rule [eval-tx-signer-expected-cool]:
-    <k> VAL:Value
+    <k> Aggregate(variantIdx(0),
+          ListItem(_) ListItem(Integer(_, 8, false))
+          ListItem(_) ListItem(_) ListItem(_)
+          ListItem(Range(_)) ListItem(_) ListItem(_) ListItem(_)) #as VAL:Value
       ~> #evalTxSignersExpectedCont(
             M, REGS,
             I, N,
@@ -627,7 +639,7 @@ module EXPECTED-VALIDATE-OWNER-RESULT-P-TOKEN-LEMMA
             DEST, TARGET)
       => #checkSignersExpected(M, REGS, #toKeyAndIsSignerList(ACC), DEST, TARGET)
     </k>
-    [priority(30)]
+    [priority(30), preserves-definedness] // ACC assumed to contain suitable values by construction
 
   // =========================================================================
   // Generic signer checking (cases 8-10) for expected_validate_owner_result.
@@ -1118,7 +1130,10 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
 
   // Cool: collect the evaluated Value into the accumulator.
   rule [eval-tx-signer-cool]:
-    <k> VAL:Value
+    <k> Aggregate(variantIdx(0),
+          ListItem(_) ListItem(Integer(_, 8, false))
+          ListItem(_) ListItem(_) ListItem(_)
+          ListItem(Range(_)) ListItem(_) ListItem(_) ListItem(_)) #as VAL:Value
       ~> #evalTxSignersCont(
             M, REGS,
             I, N,
@@ -1150,7 +1165,7 @@ module INNER-TEST-VALIDATE-OWNER-P-TOKEN-LEMMA
             DEST, TARGET)
       => #checkSigners(M, REGS, #toKeyAndIsSignerList(ACC), RESULT, DEST, TARGET)
     </k>
-    [priority(30)]
+    [priority(30), preserves-definedness] // ACC assumed to contain suitable values by construction
 
   // =========================================================================
   // Generic signer checking (cases 8-10) for inner_test_validate_owner.
