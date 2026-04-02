@@ -345,6 +345,9 @@ class SMIRInfo:
                 return Ty(fields[index])
             return None
 
+        if 'Index' in projection and isinstance(type_info, ArrayT):
+            return Ty(type_info.element_type)
+
         if 'ConstantIndex' in projection and isinstance(type_info, ArrayT):
             return Ty(type_info.element_type)
 

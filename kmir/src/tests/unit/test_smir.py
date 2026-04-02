@@ -134,3 +134,83 @@ def test_call_edges_preserve_drop_glue_for_downcast_field() -> None:
     )
 
     assert smir_info.call_edges == {10: {12}, 12: set()}
+
+
+def test_call_edges_preserve_drop_glue_for_index_projection() -> None:
+    # This SMIR models:
+    #   local 1: [Inner; 2]
+    #   local 2: usize
+    #   Drop(local 1 . Index(local 2))
+    # so `call_edges` must keep the reachable `std::ptr::drop_in_place::<Inner>` callee.
+    smir_info = SMIRInfo(
+        {
+            'name': 'drop-index-field',
+            'allocs': [],
+            'types': [
+                [1, {'ArrayType': {'elem_type': 2, 'size': None}}],
+                [
+                    2,
+                    {
+                        'StructType': {
+                            'name': 'Inner',
+                            'adt_def': 2,
+                            'fields': [],
+                            'layout': None,
+                        }
+                    },
+                ],
+                [3, {'PrimitiveType': {'Uint': 'Usize'}}],
+                [4, {'PtrType': {'pointee_type': 2}}],
+            ],
+            'functions': [
+                [10, {'NormalSym': 'caller'}],
+                [12, {'NormalSym': 'drop_inner'}],
+            ],
+            'items': [
+                {
+                    'symbol_name': 'caller',
+                    'mono_item_kind': {
+                        'MonoItemFn': {
+                            'name': 'caller',
+                            'body': {
+                                'arg_count': 0,
+                                'locals': [{'ty': 0}, {'ty': 1}, {'ty': 3}],
+                                'blocks': [
+                                    {
+                                        'terminator': {
+                                            'kind': {
+                                                'Drop': {
+                                                    'place': {
+                                                        'local': 1,
+                                                        'projection': [{'Index': 2}],
+                                                    },
+                                                    'target': 0,
+                                                    'unwind': 'Continue',
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                            },
+                        }
+                    },
+                },
+                {
+                    'symbol_name': 'drop_inner',
+                    'mono_item_kind': {
+                        'MonoItemFn': {
+                            'name': 'std::ptr::drop_in_place::<Inner>',
+                            'body': {
+                                'arg_count': 1,
+                                'locals': [{'ty': 0}, {'ty': 4}],
+                                'blocks': [],
+                            },
+                        }
+                    },
+                },
+            ],
+            'spans': [],
+        }
+    )
+
+    assert smir_info.call_edges == {10: {12}, 12: set()}
