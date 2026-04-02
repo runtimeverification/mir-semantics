@@ -12,6 +12,9 @@ module TEST-ADD-MODULE
              ( CURRENTFUNC_CELL => ty ( -1 ) )
            </currentFunc>
            <currentFrame>
+             <frameId>
+               0
+             </frameId>
              <currentBody>
                ( _CURRENTBODY_CELL => ListItem ( basicBlock ( ... statements: .Statements , terminator: terminator ( ... kind: terminatorKindReturn , span: span ( 50 ) ) ) ) )
              </currentBody>
@@ -32,8 +35,20 @@ module TEST-ADD-MODULE
              </locals>
            </currentFrame>
            <stack>
-             ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ) ) )
+             ( .List => ListItem ( StackFrame ( 0 , CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ) ) )
            </stack>
+           <nextFrameId>
+             1
+           </nextFrameId>
+           <addressMap>
+             .Map
+           </addressMap>
+           <nextAddress>
+             4096
+           </nextAddress>
+           <exposedSet>
+             .Set
+           </exposedSet>
          </kmir>
       [priority(20), label(BASIC-BLOCK-1-TO-3)]
 

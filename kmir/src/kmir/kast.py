@@ -215,8 +215,11 @@ def _make_symbolic_call_config(
     types: Mapping[Ty, TypeMetadata],
 ) -> tuple[KInner, list[KInner]]:
     locals, constraints = _symbolic_locals(fn_data.args, types)
+    init_config = definition.init_config(KSort('GeneratedTopCell'))
+    _, init_subst = split_config_from(init_config)
     subst = Subst(
         {
+            **init_subst,
             'K_CELL': fn_data.call_terminator,
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
