@@ -220,7 +220,6 @@ jobs:
           submodules: recursive
 
       - name: 'Install Nix'
-        if: ${{ matrix.runner != 'MacM1' }}
         uses: cachix/install-nix-action@v31.5.1
         with:
           install_url: https://releases.nixos.org/nix/nix-2.31.2/install
@@ -229,7 +228,6 @@ jobs:
             trusted-public-keys = cache.nixos.org
 
       - name: 'Install Cachix'
-        if: ${{ matrix.runner != 'MacM1' }}
         uses: cachix/cachix-action@v16
         with:
           name: k-framework
@@ -239,4 +237,3 @@ jobs:
           set -euxo pipefail
           nix --version
           nix flake check # build and run smoke test
-
