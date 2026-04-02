@@ -163,7 +163,7 @@ def _add_exists_quantifiers(axiom: Axiom) -> Axiom:
     return Axiom(vars=axiom.vars, pattern=new_pattern, attrs=axiom.attrs)
 
 
-def _load_extra_module_rules(kmir: KMIR, module_spec: str) -> list[Sentence]:
+def _load_extra_module_rules(kmir: KMIR, module_spec: Path | str) -> list[Sentence]:
     """Load a K module and convert rules to Kore axioms.
 
     Supports two formats:
@@ -172,7 +172,7 @@ def _load_extra_module_rules(kmir: KMIR, module_spec: str) -> list[Sentence]:
 
     Args:
         kmir: KMIR instance with the definition
-        module_spec: Module specification string
+        module_spec: Module specification string or JSON module path
 
     Returns:
         List of Kore axioms converted from the module rules
@@ -180,11 +180,12 @@ def _load_extra_module_rules(kmir: KMIR, module_spec: str) -> list[Sentence]:
     from pyk.kast.outer import KFlatModule, KRule
     from pyk.konvert import krule_to_kore
 
-    _LOGGER.info(f'Loading extra module rules: {module_spec}')
+    module_spec_str = str(module_spec)
+    _LOGGER.info(f'Loading extra module rules: {module_spec_str}')
 
-    if ':' in module_spec:
+    if ':' in module_spec_str:
         # K source format: file.k:MODULE_NAME or file.md:MODULE_NAME
-        file_str, module_name = module_spec.rsplit(':', 1)
+        file_str, module_name = module_spec_str.rsplit(':', 1)
         file_path = Path(file_str)
         if not file_path.is_file():
             raise ValueError(f'Supplied module path is not a file: {file_path}')
@@ -196,7 +197,7 @@ def _load_extra_module_rules(kmir: KMIR, module_spec: str) -> list[Sentence]:
         k_module = single(module for module in module_list.modules if module.name == module_name)
     else:
         # JSON format: path/to/module.json
-        file_path = Path(module_spec)
+        file_path = Path(module_spec_str)
         if not file_path.is_file():
             raise ValueError(f'Supplied module path is not a file: {file_path}')
         if file_path.suffix != '.json':
@@ -225,7 +226,7 @@ def kompile_smir(
     target_dir: Path,
     *,
     bug_report: Path | None = None,
-    extra_module: str | None = None,
+    extra_module: Path | str | None = None,
     symbolic: bool = True,
     llvm_target: str | None = None,
     llvm_lib_target: str | None = None,

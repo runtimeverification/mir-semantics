@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+
+import pytest
 from pyk.kore.syntax import And, App, Axiom, EVar, Rewrites, SortApp, Top
 
-from kmir.kompile import _add_exists_quantifiers, _collect_evars
+from kmir.kompile import _add_exists_quantifiers, _collect_evars, _load_extra_module_rules
 
 
 def test_collect_evars() -> None:
@@ -37,3 +40,19 @@ def test_add_exists_quantifiers() -> None:
     assert result.text.count(r'\exists') == 2
     assert 'VarA' in result.text
     assert 'VarB' in result.text
+
+
+def test_load_extra_module_rules_accepts_path_json(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Path inputs for JSON modules should still work for programmatic callers."""
+    module_path = tmp_path / 'module.json'
+    module_path.write_text('{"node":"KFlatModule","name":"TEST","sentences":[],"imports":[],"att":{}}')
+
+    class DummyModule:
+        sentences: list[object] = []
+
+    class DummyKMIR:
+        definition = object()
+
+    monkeypatch.setattr('pyk.kast.outer.KFlatModule.from_dict', lambda module_dict: DummyModule())
+
+    assert _load_extra_module_rules(DummyKMIR(), module_path) == []
