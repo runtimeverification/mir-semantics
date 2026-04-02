@@ -5,6 +5,7 @@ import logging
 import os
 import shutil
 import subprocess
+import tempfile
 from functools import cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -180,16 +181,20 @@ def cargo_get_smir_json(
     command.append(str(rs_file.resolve()))
 
     cwd = cwd or Path.cwd()
-    smir_json_result = cwd / rs_file.with_suffix('.smir.json').name
-    run_process_2(command, cwd=cwd)
-    json_smir = json.loads(smir_json_result.read_text())
-    _LOGGER.info(f'Loaded: {smir_json_result}')
-    if save_smir:
-        _LOGGER.info(f'SMIR JSON available at: {smir_json_result}')
-    else:
-        smir_json_result.unlink()
-        _LOGGER.info(f'Deleted: {smir_json_result}')
-    return json_smir
+    smir_name = rs_file.with_suffix('.smir.json').name
+    with tempfile.TemporaryDirectory(prefix=f'{rs_file.stem}.smir.', dir=cwd) as temp_dir:
+        workdir = Path(temp_dir)
+        smir_json_result = workdir / smir_name
+        run_process_2(command, cwd=workdir)
+        json_smir = json.loads(smir_json_result.read_text())
+        _LOGGER.info(f'Loaded: {smir_json_result}')
+        if save_smir:
+            saved_smir = cwd / smir_name
+            shutil.move(smir_json_result, saved_smir)
+            _LOGGER.info(f'SMIR JSON available at: {saved_smir}')
+        else:
+            _LOGGER.info(f'Deleted with temporary directory: {smir_json_result}')
+        return json_smir
 
 
 def stable_mir_json() -> Path:
