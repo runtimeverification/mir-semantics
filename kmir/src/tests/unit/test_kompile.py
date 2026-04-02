@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast
 
-import pytest
 from pyk.kore.syntax import And, App, Axiom, EVar, Rewrites, SortApp, Top
 
 from kmir.kompile import _add_exists_quantifiers, _collect_evars, _load_extra_module_rules
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    import pytest
 
 
 def test_collect_evars() -> None:
@@ -55,4 +59,4 @@ def test_load_extra_module_rules_accepts_path_json(monkeypatch: pytest.MonkeyPat
 
     monkeypatch.setattr('pyk.kast.outer.KFlatModule.from_dict', lambda module_dict: DummyModule())
 
-    assert _load_extra_module_rules(DummyKMIR(), module_path) == []
+    assert _load_extra_module_rules(cast('Any', DummyKMIR()), module_path) == []
