@@ -277,9 +277,9 @@ module VALIDATE-OWNER-COMMON
   syntax Bool ::= #signerMatchedInner( Key, List ) [function, total]
   // ---------------------------------------------------------------
   rule #signerMatchedInner(_SKEY, .List) => false
-  rule #signerMatchedInner(SKEY, ListItem(keyAndIsSigner(KEY, IS)) REST)
+  rule #signerMatchedInner(Key(SKEY), ListItem(keyAndIsSigner(KEY, IS)) REST)
     => ( SKEY ==K KEY andBool IS =/=Int 0 )
-    orBool #signerMatchedInner(SKEY, REST)
+    orBool #signerMatchedInner(Key(SKEY), REST)
   rule #signerMatchedInner(_SKEY, ListItem(_OTHER) _REST) => false [owise] // to make the function total
 
   // =========================================================================
