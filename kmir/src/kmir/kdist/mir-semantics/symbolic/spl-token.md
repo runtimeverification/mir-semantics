@@ -107,6 +107,10 @@ module KMIR-SPL-TOKEN
   syntax Bool ::= #isSplPubkey ( List ) [function, total]
   rule #isSplPubkey(KEY) => size(KEY) ==Int 32 andBool allBytes(KEY)
 
+  syntax Bool ::= #isZeroMemsetValue ( Value ) [function, total]
+  rule #isZeroMemsetValue(Integer(0, _, _)) => true
+  rule #isZeroMemsetValue(_) => false [owise]
+
   // Construct a 32-byte pubkey List from individual Int variables.
   // When used with existential variables (?Var:Int), this produces a concrete List structure
   // that ==K can decompose element-wise, avoiding opaque symbolic List equality in SMT.
@@ -258,6 +262,69 @@ module KMIR-SPL-TOKEN
        )
        => dynamicSize(99)
        [priority(30)]
+
+  syntax Int ::= #splBufferLen ( Value ) [function, total]
+
+  rule #splBufferLen(
+         SPLDataBuffer(
+         Aggregate(variantIdx(0),
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Integer(_, 64, false))
+           ListItem(_DELEG)
+           ListItem(STATE)
+           ListItem(_IS_NATIVE)
+           ListItem(Integer(_, 64, false))
+           ListItem(_CLOSE)
+         )
+       )
+      )
+       => 165
+       requires #isSplAccountStateVal(STATE)
+       [priority(30)]
+
+  rule #splBufferLen(
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(_AUTH)
+             ListItem(Integer(_, 64, false))
+             ListItem(Integer(_, 8, false))
+             ListItem(BoolVal(_))
+             ListItem(_FREEZE)
+           )
+         )
+       )
+       => 82
+       [priority(30)]
+
+  rule #splBufferLen(
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Integer(_, 64, false))
+             ListItem(Float(2.0, 64))
+             ListItem(Integer(_, 8, false))
+           )
+         )
+       )
+       => 17
+       [priority(30)]
+
+  rule #splBufferLen(
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Integer(_, 8, false))
+             ListItem(Integer(_, 8, false))
+             ListItem(BoolVal(_))
+             ListItem(Range(
+               ListItem(_) ListItem(_) ListItem(_)
+             ))
+           )
+         )
+       )
+       => 99
+       [priority(30)]
+
+  rule #splBufferLen(_) => 0 [owise]
 ```
 
 ## Cheatcode handling
@@ -617,19 +684,25 @@ zeroed representation.
   // sol_memset(buf, val, len) - intercept when target is SPLDataBuffer
   rule [spl-sol-memset]:
     <k> #execTerminatorCall(_, FUNC,
-          BUF:Operand _VAL:Operand _LEN:Operand .Operands,
+          BUF:Operand VAL:Operand LEN:Operand .Operands,
           _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
-      => #splSolMemset(#withDeref(BUF), BUF) ~> #continueAt(TARGET)
+      => #splSolMemset(#withDeref(BUF), #withDeref(VAL), #withDeref(LEN), BUF) ~> #continueAt(TARGET)
     </k>
     requires #isSPLSolMemsetFunc(#functionName(FUNC))
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #splSolMemset ( Evaluation , Operand ) [seqstrict(1)]
+  syntax KItem ::= #splSolMemset ( Evaluation , Evaluation , Evaluation , Operand ) [seqstrict(1,2,3)]
 
-  rule <k> #splSolMemset(SPLDataBuffer(_), operandCopy(DEST))
+  rule <k> #splSolMemset(SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandCopy(DEST))
         => #setLocalValue(DEST, SPLDataBuffer(Integer(0, 8, false))) ... </k>
-  rule <k> #splSolMemset(SPLDataBuffer(_), operandMove(DEST))
+    requires #isZeroMemsetValue(VAL)
+     andBool LEN ==Int #splBufferLen(BUF)
+     andBool 0 <Int #splBufferLen(BUF)
+  rule <k> #splSolMemset(SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandMove(DEST))
         => #setLocalValue(DEST, SPLDataBuffer(Integer(0, 8, false))) ... </k>
+    requires #isZeroMemsetValue(VAL)
+     andBool LEN ==Int #splBufferLen(BUF)
+     andBool 0 <Int #splBufferLen(BUF)
 ```
 
 ## Rent sysvar handling
