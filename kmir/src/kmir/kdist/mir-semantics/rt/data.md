@@ -492,6 +492,20 @@ The situation typically arises when the stored value is a pointer (`NonNull`) bu
            )
         => #traverseProjection(DEST, Aggregate(variantIdx(0), ListItem(VALUE)), PROJS, CtxWrapStruct CTXTS) ... </k>
     [preserves-definedness, priority(100)]
+
+  rule <k> #traverseProjection(
+             DEST,
+             Aggregate(variantIdx(0), ListItem(Range(ELEMS))),
+             projectionElemConstantIndex(I, MIN_LENGTH, FROM_END) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             Range(ELEMS),
+             projectionElemConstantIndex(I, MIN_LENGTH, FROM_END) PROJS,
+             CTXTS
+           ) ... </k>
+    [preserves-definedness, priority(100)]
 ```
 
 A somewhat dual case to this rule can occur when a pointer into an array of data elements has been offset and is then dereferenced.

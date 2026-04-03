@@ -113,10 +113,11 @@ the source should be wrapped rather than unwrapped (e.g., `*const [u8;2] → *co
         )
     requires #zeroFieldOffset(LAYOUT)
 
-  rule #pointeeProjection(SRC:TypeInfo, typeInfoStructType(NAME, ADTDEF, FIELD .Tys, LAYOUT))
-    => #pointeeProjectionTarget(SRC, typeInfoStructType(NAME, ADTDEF, FIELD .Tys, LAYOUT))
+  rule #pointeeProjection(SRC:TypeInfo, TGT)
+    => #pointeeProjectionTarget(SRC, TGT)
     requires #isArrayType(SRC)
-     andBool #zeroFieldOffset(LAYOUT)
+     andBool #wholeArrayTargetCompatible(SRC, TGT)
+     andBool SRC =/=K TGT
     [priority(42)]
 
   rule #pointeeProjection(typeInfoArrayType(TY1, _), TY2)
@@ -185,6 +186,20 @@ the source-first strategy.
   rule #layoutOffsets(someLayoutShape(layoutShape(fieldsShapeArbitrary(mk(OFFSETS)), _, _, _, _))) => OFFSETS
   rule #layoutOffsets(noLayoutShape) => .MachineSizes
   rule #layoutOffsets(_) => .MachineSizes [owise]
+
+  syntax Bool ::= #wholeArrayTargetCompatible ( TypeInfo , TypeInfo ) [function, total]
+  // ----------------------------------------------------------------------------
+  rule #wholeArrayTargetCompatible(SRC, SRC) => true
+
+  rule #wholeArrayTargetCompatible(SRC, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+    => #wholeArrayTargetCompatible(SRC, lookupTy(FIELD))
+    requires #zeroFieldOffset(LAYOUT)
+
+  rule #wholeArrayTargetCompatible(SRC, typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _))))
+    => #wholeArrayTargetCompatible(SRC, lookupTy(ELEM_TY))
+    requires readTyConstInt(KIND) ==Int 1
+
+  rule #wholeArrayTargetCompatible(_, _) => false [owise]
 ```
 
 --------------------------------------------------
