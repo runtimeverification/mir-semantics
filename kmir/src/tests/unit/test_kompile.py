@@ -6,7 +6,6 @@ from unittest.mock import Mock
 from pyk.kast.inner import KApply
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.string import stringToken
-
 from pyk.kore.syntax import And, App, Axiom, EVar, Rewrites, SortApp, Top
 
 from kmir.kompile import _add_exists_quantifiers, _collect_evars, _functions, _load_extra_module_rules
