@@ -374,22 +374,11 @@
                     },
                     "args": [
                       {
-                        "node": "KRewrite",
-                        "lhs": {
-                          "node": "KToken",
-                          "token": "0",
-                          "sort": {
-                            "node": "KSort",
-                            "name": "Int"
-                          }
-                        },
-                        "rhs": {
-                          "node": "KToken",
-                          "token": "1",
-                          "sort": {
-                            "node": "KSort",
-                            "name": "Int"
-                          }
+                        "node": "KToken",
+                        "token": "0",
+                        "sort": {
+                          "node": "KSort",
+                          "name": "Int"
                         }
                       }
                     ],
@@ -956,37 +945,6 @@
                 "node": "KApply",
                 "label": {
                   "node": "KLabel",
-                  "name": "<nextFrameId>",
-                  "params": []
-                },
-                "args": [
-                  {
-                    "node": "KRewrite",
-                    "lhs": {
-                      "node": "KToken",
-                      "token": "1",
-                      "sort": {
-                        "node": "KSort",
-                        "name": "Int"
-                      }
-                    },
-                    "rhs": {
-                      "node": "KToken",
-                      "token": "2",
-                      "sort": {
-                        "node": "KSort",
-                        "name": "Int"
-                      }
-                    }
-                  }
-                ],
-                "arity": 1,
-                "variable": false
-              },
-              {
-                "node": "KApply",
-                "label": {
-                  "node": "KLabel",
                   "name": "<addressMap>",
                   "params": []
                 },
@@ -1050,7 +1008,7 @@
                 "variable": false
               }
             ],
-            "arity": 9,
+            "arity": 8,
             "variable": false
           },
           {
@@ -1062,11 +1020,22 @@
             },
             "args": [
               {
-                "node": "KToken",
-                "token": "0",
-                "sort": {
-                  "node": "KSort",
-                  "name": "Int"
+                "node": "KRewrite",
+                "lhs": {
+                  "node": "KToken",
+                  "token": "0",
+                  "sort": {
+                    "node": "KSort",
+                    "name": "Int"
+                  }
+                },
+                "rhs": {
+                  "node": "KToken",
+                  "token": "1",
+                  "sort": {
+                    "node": "KSort",
+                    "name": "Int"
+                  }
                 }
               }
             ],

@@ -10,7 +10,7 @@
   </currentFunc>
   <currentFrame>
     <frameId>
-      1
+      0
     </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 1 ) , projection: .ProjectionElems ) , rvalue: rvalueAggregate ( aggregateKindArray ( ty ( 29 ) ) , operandConstant ( constOperand (... span: span ( 172 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x0b\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 29 ) , id: mirConstId ( 24 ) ) ) )  operandConstant ( constOperand (... span: span ( 173 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x16\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 29 ) , id: mirConstId ( 25 ) ) ) )  operandConstant ( constOperand (... span: span ( 174 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"!\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 29 ) , id: mirConstId ( 26 ) ) ) )  .Operands ) ) , span: span ( 175 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 4 ) , projection: .ProjectionElems ) , rvalue: rvalueRef ( region (... kind: regionKindReErased ) , borrowKindShared , place (... local: local ( 1 ) , projection: .ProjectionElems ) ) ) , span: span ( 176 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 5 ) , projection: .ProjectionElems ) , rvalue: rvalueAggregate ( aggregateKindAdt ( adtDef ( 16 ) , variantIdx ( 0 ) , genericArgKindType ( ty ( 3 ) )  .GenericArgs , noUserTypeAnnotationIndex , noFieldIdx ) , operandConstant ( constOperand (... span: span ( 177 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x01\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 3 ) , id: mirConstId ( 27 ) ) ) )  .Operands ) ) , span: span ( 178 ) )  .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 171 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 50 ) , id: mirConstId ( 23 ) ) ) ) , args: operandMove ( place (... local: local ( 4 ) , projection: .ProjectionElems ) )  operandMove ( place (... local: local ( 5 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 3 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 171 ) ) ) )
@@ -49,9 +49,6 @@
   <stack>
     ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
-  <nextFrameId>
-    8
-  </nextFrameId>
   <addressMap>
     .Map
   </addressMap>

@@ -10,7 +10,7 @@
   </currentFunc>
   <currentFrame>
     <frameId>
-      4
+      3
     </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) )
@@ -32,14 +32,11 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( 3 , ty ( 25 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
-    ListItem ( StackFrame ( 2 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
-    ListItem ( StackFrame ( 1 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( 2 , ty ( 25 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( 1 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
     ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
-  <nextFrameId>
-    5
-  </nextFrameId>
   <addressMap>
     .Map
   </addressMap>

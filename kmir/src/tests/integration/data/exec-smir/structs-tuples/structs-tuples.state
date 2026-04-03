@@ -10,7 +10,7 @@
   </currentFunc>
   <currentFrame>
     <frameId>
-      2
+      1
     </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 73 ) ) ) )
@@ -35,7 +35,7 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( 1 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
     ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 10 , 32 , true ) )
     ListItem ( BoolVal ( false ) )
     ListItem ( Float ( 0.10000000000000000e2 , 64 ) ) ) , ty ( 28 ) , mutabilityNot ) )
@@ -53,9 +53,6 @@
     ListItem ( newLocal ( ty ( 27 ) , mutabilityMut ) ) ) )
     ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
-  <nextFrameId>
-    3
-  </nextFrameId>
   <addressMap>
     .Map
   </addressMap>
