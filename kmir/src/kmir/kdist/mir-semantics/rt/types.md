@@ -113,14 +113,10 @@ the source should be wrapped rather than unwrapped (e.g., `*const [u8;2] → *co
         )
     requires #zeroFieldOffset(LAYOUT)
 
-  rule #pointeeProjection(SRC:TypeInfo, typeInfoStructType(_NAME, _ADTDEF, FIELD .Tys, LAYOUT))
-    => maybeConcatProj(
-          projectionElemWrapStruct,
-          #pointeeProjection(SRC, lookupTy(FIELD))
-        )
+  rule #pointeeProjection(SRC:TypeInfo, typeInfoStructType(NAME, ADTDEF, FIELD .Tys, LAYOUT))
+    => #pointeeProjectionTarget(SRC, typeInfoStructType(NAME, ADTDEF, FIELD .Tys, LAYOUT))
     requires #isArrayType(SRC)
-    andBool #zeroFieldOffset(LAYOUT)
-    andBool lookupTy(FIELD) ==K SRC
+     andBool #zeroFieldOffset(LAYOUT)
     [priority(42)]
 
   rule #pointeeProjection(typeInfoArrayType(TY1, _), TY2)
