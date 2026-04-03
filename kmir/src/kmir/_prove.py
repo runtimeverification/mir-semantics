@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import tempfile
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -17,7 +18,7 @@ from pyk.proof.reachability import APRProof, APRProver
 
 from .cargo import cargo_get_smir_json
 from .kast import SymbolicMode, make_call_config
-from .kmir import KMIR, KMIRSemantics
+from .kmir import KMIR, KMIRSemantics, kore_server_logging_args
 from .smir import SMIRInfo
 
 if TYPE_CHECKING:
@@ -163,6 +164,7 @@ def _prove_parallel(
             'bug_report': kmir.bug_report,
             'simplify_each': 30,
             'haskell_threads': opts.max_workers,
+            **kore_server_logging_args(label),
         }
     ) as server:
 
@@ -188,14 +190,19 @@ def _prove_parallel(
             )
             return prover
 
-        parallel_advance_proof(
-            proof,
-            create_prover=create_prover,
-            max_iterations=opts.max_iterations,
-            max_workers=opts.max_workers,
-            fail_fast=opts.fail_fast,
-            maintenance_rate=opts.maintenance_rate,
-        )
+        started_at = time.perf_counter()
+        try:
+            parallel_advance_proof(
+                proof,
+                create_prover=create_prover,
+                max_iterations=opts.max_iterations,
+                max_workers=opts.max_workers,
+                fail_fast=opts.fail_fast,
+                maintenance_rate=opts.maintenance_rate,
+            )
+        finally:
+            proof.add_exec_time(time.perf_counter() - started_at)
+            proof.write_proof_data()
 
 
 def _prove_sequential(
@@ -212,12 +219,17 @@ def _prove_sequential(
             execute_depth=opts.max_depth,
             cut_point_rules=cut_point_rules,
         )
-        prover.advance_proof(
-            proof,
-            max_iterations=opts.max_iterations,
-            fail_fast=opts.fail_fast,
-            maintenance_rate=opts.maintenance_rate,
-        )
+        started_at = time.perf_counter()
+        try:
+            prover.advance_proof(
+                proof,
+                max_iterations=opts.max_iterations,
+                fail_fast=opts.fail_fast,
+                maintenance_rate=opts.maintenance_rate,
+            )
+        finally:
+            proof.add_exec_time(time.perf_counter() - started_at)
+            proof.write_proof_data()
 
 
 def apr_proof_from_smir(

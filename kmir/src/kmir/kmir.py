@@ -1,15 +1,20 @@
 from __future__ import annotations
 
+import json
 import logging
+import os
 from contextlib import contextmanager
 from functools import cached_property
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
+from pyk.cterm.symbolic import CTermSymbolic
 from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
+from pyk.kore.rpc import BoosterServer, KoreClient, KoreExecLogFormat
 from pyk.kcfg.show import NodePrinter
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRun
@@ -38,6 +43,120 @@ if TYPE_CHECKING:
 
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+_BOOSTER_LOG_CONTEXT_PRESETS: dict[str, list[str]] = {
+    'Aborts': [
+        'request*,booster>rewrite*,detail.',
+        'request*,booster>rewrite*,match|definedness|constraint,abort.',
+        'request*,proxy.',
+        'request*,proxy,abort.',
+        'request*,booster>failure,abort',
+    ],
+    'Rewrite': [
+        'request*,booster|kore>rewrite*,success|failure|abort|detail',
+        'request*,booster|kore>rewrite*,match|definedness|constraint,failure|abort',
+    ],
+}
+
+
+def _parse_csv_env(name: str) -> list[str]:
+    raw = os.getenv(name, '')
+    return [item.strip() for item in raw.split(',') if item.strip()]
+
+
+def _parse_context_env(name: str) -> list[str]:
+    raw = os.getenv(name, '')
+    if not raw:
+        return []
+    lines = raw.replace('\n', ';').split(';')
+    return [item.strip() for item in lines if item.strip()]
+
+
+def _parse_kore_log_format(raw: str | None) -> KoreExecLogFormat:
+    if raw is None or not raw.strip():
+        return KoreExecLogFormat.STANDARD
+    normalized = raw.strip().lower()
+    for candidate in KoreExecLogFormat:
+        if candidate.value == normalized:
+            return candidate
+    _LOGGER.warning('Unknown KMIR_KORE_RPC_LOG_FORMAT=%s, defaulting to standard', raw)
+    return KoreExecLogFormat.STANDARD
+
+
+def kore_server_logging_args(label: str | None = None) -> dict[str, object]:
+    log_path_raw = os.getenv('KMIR_KORE_RPC_LOG')
+    if not log_path_raw:
+        return {}
+
+    log_path = Path(log_path_raw.replace('{label}', label or 'kmir'))
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    return {
+        'log_axioms_file': log_path,
+        'haskell_log_format': _parse_kore_log_format(os.getenv('KMIR_KORE_RPC_LOG_FORMAT')),
+        'haskell_log_entries': _parse_csv_env('KMIR_KORE_RPC_LOG_ENTRIES'),
+    }
+
+
+def booster_server_logging_args() -> dict[str, object]:
+    entries = _parse_csv_env('KMIR_BOOSTER_LOG_ENTRIES')
+    contexts = _parse_context_env('KMIR_BOOSTER_LOG_CONTEXTS')
+    not_contexts = _parse_context_env('KMIR_BOOSTER_NOT_LOG_CONTEXTS')
+    for entry in entries:
+        contexts.extend(_BOOSTER_LOG_CONTEXT_PRESETS.get(entry, [entry]))
+    if not contexts and not not_contexts:
+        return {}
+    return {
+        'log_context': contexts,
+        'not_log_context': not_contexts,
+    }
+
+
+@contextmanager
+def kmir_cterm_symbolic(
+    definition: 'KDefinition',
+    definition_dir: Path,
+    *,
+    id: str | None = None,
+    llvm_definition_dir: Path | None = None,
+    bug_report: 'BugReport | None' = None,
+    simplify_each: int | None = None,
+    log_succ_rewrites: bool = True,
+    log_fail_rewrites: bool = False,
+) -> Iterator['CTermSymbolic']:
+    booster_logging = booster_server_logging_args()
+    if llvm_definition_dir is not None and booster_logging:
+        with BoosterServer(
+            {
+                'kompiled_dir': definition_dir,
+                'llvm_kompiled_dir': llvm_definition_dir,
+                'module_name': definition.main_module_name,
+                'bug_report': bug_report,
+                'simplify_each': simplify_each,
+                **booster_logging,
+            }
+        ) as server:
+            with KoreClient('localhost', server.port, bug_report=bug_report, bug_report_id=id) as client:
+                yield CTermSymbolic(
+                    client,
+                    definition,
+                    log_succ_rewrites=log_succ_rewrites,
+                    log_fail_rewrites=log_fail_rewrites,
+                )
+        return
+
+    logging_args = kore_server_logging_args(id)
+    with cterm_symbolic(
+        definition,
+        definition_dir,
+        id=id,
+        llvm_definition_dir=llvm_definition_dir,
+        bug_report=bug_report,
+        simplify_each=simplify_each,
+        log_succ_rewrites=log_succ_rewrites,
+        log_fail_rewrites=log_fail_rewrites,
+        **logging_args,
+    ) as cts:
+        yield cts
 
 
 class KMIR(KProve, KRun, KParse):
@@ -91,12 +210,12 @@ class KMIR(KProve, KRun, KParse):
 
     @contextmanager
     def kcfg_explore(self, label: str | None = None, terminate_on_thunk: bool = False) -> Iterator[KCFGExplore]:
-        with cterm_symbolic(
+        with kmir_cterm_symbolic(
             self.definition,
             self.definition_dir,
+            id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
             llvm_definition_dir=self.llvm_library_dir,
             bug_report=self.bug_report,
-            id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
             simplify_each=30,
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics(terminate_on_thunk=terminate_on_thunk))
@@ -163,10 +282,84 @@ class KMIRCSESemantics(KMIRSemantics):
 
     _callee_proofs: dict[int, APRProof]  # function Ty -> completed proof
 
-    def __init__(self, callee_proofs: dict[int, APRProof] | None = None, terminate_on_thunk: bool = False) -> None:
+    def __init__(
+        self,
+        callee_proofs: dict[int, APRProof] | None = None,
+        terminate_on_thunk: bool = False,
+        *,
+        summary_dir: Path | None = None,
+        learn_observed_calls: bool = False,
+    ) -> None:
         super().__init__(terminate_on_thunk=terminate_on_thunk)
         self._callee_proofs = callee_proofs or {}
         self._failed_tys: set[int] = set()  # Track function Tys where CSE failed
+        self._summary_dir = summary_dir
+        self._learn_observed_calls = learn_observed_calls
+
+    @staticmethod
+    def _sanitize_observation_value(value: object) -> object:
+        if isinstance(value, dict):
+            return {str(key): KMIRCSESemantics._sanitize_observation_value(item) for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [KMIRCSESemantics._sanitize_observation_value(item) for item in value]
+        return value
+
+    def _observed_calls_dir(self) -> Path | None:
+        summary_dir = self._summary_dir
+        if summary_dir is None:
+            env_summary_dir = os.getenv('KMIR_CSE_SUMMARY_DIR')
+            if env_summary_dir:
+                summary_dir = Path(env_summary_dir)
+        if summary_dir is None:
+            return None
+        return summary_dir / 'observed-calls'
+
+    def _record_observed_call(
+        self,
+        *,
+        func_ty: int,
+        args_operand: KInner,
+        cterm: CTerm,
+        outcome: str,
+        target: KInner | None = None,
+        details: dict[str, object] | None = None,
+    ) -> None:
+        if not self._learn_observed_calls:
+            return
+        observed_dir = self._observed_calls_dir()
+        if observed_dir is None:
+            return
+        observed_dir.mkdir(parents=True, exist_ok=True)
+        observed_path = observed_dir / f'ty-{func_ty}.json'
+        cterm_path = observed_dir / f'ty-{func_ty}.cterm.json'
+        existing: dict[str, object] = {}
+        if observed_path.exists():
+            try:
+                loaded = json.loads(observed_path.read_text())
+            except json.JSONDecodeError:
+                loaded = None
+            if isinstance(loaded, dict):
+                existing = loaded
+        count = int(existing.get('count', 0)) + 1
+        outcomes = existing.get('outcomes', [])
+        if not isinstance(outcomes, list):
+            outcomes = []
+        outcomes.append(outcome)
+        payload: dict[str, object] = {
+            'func_ty': func_ty,
+            'count': count,
+            'outcomes': outcomes[-20:],
+            'latest_outcome': outcome,
+            'arg_local_indices': self._extract_arg_local_indices(args_operand),
+            'caller_var_names': sorted(self._cterm_var_names(cterm))[:50],
+            'k_cell_head': cterm.cell('K_CELL').label.name if isinstance(cterm.cell('K_CELL'), KApply) else type(cterm.cell('K_CELL')).__name__,
+            'target': str(target)[:400] if target is not None else None,
+        }
+        if details:
+            payload['details'] = self._sanitize_observation_value(details)
+        payload['cterm_path'] = str(cterm_path)
+        observed_path.write_text(json.dumps(payload, indent=2))
+        cterm_path.write_text(json.dumps(cterm.to_dict(), indent=2))
 
     def _extract_call_info(self, k_cell: KInner) -> tuple[int, KInner, KInner, KInner] | None:
         """Extract (function_ty, args_operand, dest, target) from a call.
@@ -238,15 +431,15 @@ class KMIRCSESemantics(KMIRSemantics):
         func_ty = call_info[0]
         # Only intercept functions that are known to match (not in failed set)
         # AND have Operand::Copy/Move args (not Operand::Constant which we can't match)
-        if func_ty in self._failed_tys:
-            return False
-        if func_ty not in self._callee_proofs:
-            return False
-        # Check if args have at least one local index (Operand::Copy/Move)
         _, args_operand, _, _ = call_info
         indices = self._extract_arg_local_indices(args_operand)
         if not any(idx >= 0 for idx in indices):
-            self._failed_tys.add(func_ty)
+            if func_ty in self._callee_proofs:
+                self._failed_tys.add(func_ty)
+            return False
+        if func_ty not in self._callee_proofs:
+            return False
+        if func_ty in self._failed_tys:
             return False
         return True
 
@@ -513,6 +706,17 @@ class KMIRCSESemantics(KMIRSemantics):
                 worklist.extend(t.items)
         return result
 
+    @classmethod
+    def _free_var_names(cls, term: KInner) -> set[str]:
+        return {name for name, _node in cls._extract_free_vars(term)}
+
+    @classmethod
+    def _cterm_var_names(cls, cterm: CTerm) -> set[str]:
+        names = cls._free_var_names(cterm.config)
+        for constraint in cterm.constraints:
+            names.update(cls._free_var_names(constraint))
+        return names
+
     @staticmethod
     def _extract_value_from_typed(typed_val: KInner) -> KInner | None:
         """Extract the Value from typedValue(Value, Ty, Mut)."""
@@ -547,6 +751,15 @@ class KMIRCSESemantics(KMIRSemantics):
             return retval_cell.args[0]
         return retval_cell
 
+    @staticmethod
+    def _frontier_nodes(callee_proof: APRProof) -> list[KCFG.Node]:
+        frontier_nodes = [node for node in callee_proof.kcfg.leaves if node.id != callee_proof.target]
+        if frontier_nodes:
+            return frontier_nodes
+        if callee_proof.init != callee_proof.target:
+            return [callee_proof.kcfg.node(callee_proof.init)]
+        return []
+
     def custom_step(self, c: CTerm, cs: CTermSymbolic) -> KCFGExtendResult | None:
         """Apply cached callee proof to skip function execution.
 
@@ -565,14 +778,26 @@ class KMIRCSESemantics(KMIRSemantics):
         func_ty, _args_operand, dest, target = call_info
         callee_proof = self._callee_proofs.get(func_ty)
         if callee_proof is None:
+            self._record_observed_call(
+                func_ty=func_ty,
+                args_operand=_args_operand,
+                cterm=c,
+                outcome='observed-no-cached-proof',
+                target=target,
+            )
             return None
 
         _LOGGER.info(f'CSE custom_step: applying cached proof for function ty({func_ty})')
 
         cover_nodes = [cover.source for cover in callee_proof.kcfg.covers() if cover.target.id == callee_proof.target]
-        if not cover_nodes:
-            _LOGGER.warning(f'CSE: no covers found for callee proof {callee_proof.id}')
-            return None
+        summary_mode = 'return'
+        summary_nodes: list[KCFG.Node] = cover_nodes
+        if not summary_nodes:
+            summary_mode = 'frontier'
+            summary_nodes = self._frontier_nodes(callee_proof)
+            if not summary_nodes:
+                _LOGGER.warning(f'CSE: no reusable frontier found for callee proof {callee_proof.id}')
+                return None
 
         # Determine caller continuation based on target
         is_entry_call = isinstance(target, KApply) and 'noBasicBlockIdx' in target.label.name
@@ -610,100 +835,181 @@ class KMIRCSESemantics(KMIRSemantics):
                     )
 
         subst = Subst(subst_map)
-        if not subst_map:
-            _LOGGER.info(f'CSE: no vars matched for ty({func_ty}), skipping CSE')
-            self._failed_tys.add(func_ty)
-            return None
-        _LOGGER.info(f'CSE: matched {len(subst_map)} vars for ty({func_ty}): {list(subst_map.keys())}')
-
-        # Check that ALL cover node RETVALs are fully concrete after substitution.
-        # If any RETVAL still has free vars, skip CSE (would cause stuck projections).
-        from pyk.kast.manip import free_vars as _fv
-
-        all_concrete = True
-        for cover_node in cover_nodes:
-            retval = cover_node.cterm.cell('RETVAL_CELL')
-            retval_subst = subst(retval)
-            remaining_fvs = _fv(retval_subst)
-            if remaining_fvs:
-                _LOGGER.info(f'CSE: RETVAL has {len(remaining_fvs)} unresolved vars for ty({func_ty}), skipping')
-                all_concrete = False
-                break
-        if not all_concrete:
-            self._failed_tys.add(func_ty)
-            return None
-
-        # Build post-return states for each callee cover path
-        post_return_cterms: list[CTerm] = []
-        for i, cover_node in enumerate(cover_nodes):
-            retval_cell = cover_node.cterm.cell('RETVAL_CELL')
-            ret_value = self._extract_return_value(retval_cell)
-
-            ret_value_subst = subst(ret_value)
-            retval_cell_subst = subst(retval_cell)
-            callee_constraints = tuple(subst(cst) for cst in cover_node.cterm.constraints)
-
-            if is_entry_call:
-                continuation = KSequence([KMIR.Symbols.END_PROGRAM])
+        caller_var_names = self._cterm_var_names(c)
+        required_var_names: set[str] = set()
+        for summary_node in summary_nodes:
+            if summary_mode == 'return':
+                retval = summary_node.cterm.cell('RETVAL_CELL')
+                retval_subst = subst(retval)
+                required_var_names.update(self._free_var_names(retval_subst))
             else:
-                assert target_bb is not None
-                continuation = KSequence(
-                    [
-                        KApply('#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation', (dest, ret_value_subst)),
-                        KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,)),
-                    ]
-                )
+                required_var_names.update(self._free_var_names(subst(summary_node.cterm.config)))
+            for constraint in summary_node.cterm.constraints:
+                required_var_names.update(self._free_var_names(subst(constraint)))
 
-            post_config = set_cell(c.config, 'K_CELL', continuation)
-            post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell_subst)
-            candidate = CTerm(post_config, c.constraints + callee_constraints)
+        missing_var_names = sorted(required_var_names - caller_var_names)
+        if missing_var_names:
+            self._record_observed_call(
+                func_ty=func_ty,
+                args_operand=_args_operand,
+                cterm=c,
+                outcome=f'{summary_mode}-summary-miss-missing-vars',
+                target=target,
+                details={'missing_var_names': missing_var_names[:20]},
+            )
+            _LOGGER.info(
+                'CSE: %s terms introduce %d vars not present in caller context for ty(%s), skipping: %s',
+                summary_mode,
+                len(missing_var_names),
+                func_ty,
+                missing_var_names[:20],
+            )
+            self._failed_tys.add(func_ty)
+            return None
+        if subst_map:
+            _LOGGER.info(f'CSE: matched {len(subst_map)} vars for ty({func_ty}): {list(subst_map.keys())}')
+        else:
+            _LOGGER.info(
+                'CSE: no direct substitutions for ty(%s), reusing %d shared caller vars from constraints/config',
+                func_ty,
+                len(required_var_names),
+            )
+
+        # Build summary result states for each selected callee node.
+        summary_cterms: list[CTerm] = []
+        for i, summary_node in enumerate(summary_nodes):
+            if summary_mode == 'return':
+                retval_cell = summary_node.cterm.cell('RETVAL_CELL')
+                ret_value = self._extract_return_value(retval_cell)
+
+                ret_value_subst = subst(ret_value)
+                retval_cell_subst = subst(retval_cell)
+                callee_constraints = tuple(subst(cst) for cst in summary_node.cterm.constraints)
+
+                if is_entry_call:
+                    continuation = KSequence([KMIR.Symbols.END_PROGRAM])
+                else:
+                    assert target_bb is not None
+                    continuation = KSequence(
+                        [
+                            KApply('#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation', (dest, ret_value_subst)),
+                            KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,)),
+                        ]
+                    )
+
+                post_config = set_cell(c.config, 'K_CELL', continuation)
+                post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell_subst)
+                candidate = CTerm(post_config, c.constraints + callee_constraints)
+            else:
+                candidate = CTerm(subst(summary_node.cterm.config), c.constraints + tuple(subst(cst) for cst in summary_node.cterm.constraints))
 
             try:
                 simplified, _logs = cs.simplify(candidate)
                 if _is_bottom(simplified):
-                    _LOGGER.info(f'CSE: branch {i} infeasible (simplified to bottom)')
+                    _LOGGER.info(f'CSE: {summary_mode} branch {i} infeasible (simplified to bottom)')
                     continue
-                post_return_cterms.append(simplified)
-                _LOGGER.info(f'CSE: branch {i} feasible after simplification')
+                summary_cterms.append(simplified)
+                _LOGGER.info(f'CSE: {summary_mode} branch {i} feasible after simplification')
             except Exception as e:
                 # Simplify failed (e.g., sort mismatch from unresolved symbolic vars).
                 # Don't use the broken candidate — skip this branch.
-                _LOGGER.warning(f'CSE: simplify failed for branch {i}, skipping: {e}')
+                _LOGGER.warning(f'CSE: simplify failed for {summary_mode} branch {i}, skipping: {e}')
                 continue
 
         # Only add stuck fallback if NO CSE paths are feasible.
         # If we have feasible CSE paths, the stuck paths are likely unreachable
         # from the caller's actual arguments. Adding fallback for stuck paths
         # when CSE paths exist causes proof tree explosion (NDBranch everywhere).
-        has_stuck_fallback = not post_return_cterms and any(
+        has_stuck_fallback = summary_mode == 'return' and not summary_cterms and any(
             callee_proof.kcfg.is_stuck(n.id) for n in callee_proof.kcfg.leaves
         )
 
-        if not post_return_cterms and not has_stuck_fallback:
-            _LOGGER.warning(f'CSE: all branches infeasible for ty({func_ty}), disabling CSE for this function')
+        if not summary_cterms and not has_stuck_fallback:
+            self._record_observed_call(
+                func_ty=func_ty,
+                args_operand=_args_operand,
+                cterm=c,
+                outcome=f'{summary_mode}-summary-miss-no-feasible-branches',
+                target=target,
+            )
+            _LOGGER.warning(
+                'CSE: all %s branches infeasible for ty(%s), disabling CSE for this function',
+                summary_mode,
+                func_ty,
+            )
             self._failed_tys.add(func_ty)
             return None
 
-        if not post_return_cterms:
-            _LOGGER.info(f'CSE: no cover paths feasible, falling back for ty({func_ty})')
+        # Different callee cover paths can simplify to equivalent post-return
+        # states under the caller's constraints. Collapse mutually implying
+        # branches here to avoid carrying redundant proof splits forward.
+        deduped_cterms: list[CTerm] = []
+        for candidate in summary_cterms:
+            merged = False
+            for idx, existing in enumerate(deduped_cterms):
+                cand_implies_existing = cs.implies(candidate, existing)
+                existing_implies_cand = cs.implies(existing, candidate)
+                equivalent = (
+                    not cand_implies_existing.failing_cells
+                    and cand_implies_existing.remaining_implication is None
+                    and not existing_implies_cand.failing_cells
+                    and existing_implies_cand.remaining_implication is None
+                )
+                if equivalent:
+                    chosen = candidate if len(candidate.constraints) < len(existing.constraints) else existing
+                    deduped_cterms[idx] = chosen
+                    _LOGGER.info(f'CSE: merged equivalent summary branches for ty({func_ty})')
+                    merged = True
+                    break
+            if not merged:
+                deduped_cterms.append(candidate)
+        summary_cterms = deduped_cterms
+
+        if not summary_cterms:
+            self._record_observed_call(
+                func_ty=func_ty,
+                args_operand=_args_operand,
+                cterm=c,
+                outcome=f'{summary_mode}-summary-miss-no-reusable-paths',
+                target=target,
+            )
+            _LOGGER.info(f'CSE: no {summary_mode} paths feasible, falling back for ty({func_ty})')
             self._failed_tys.add(func_ty)
             return None
 
         if has_stuck_fallback:
-            _LOGGER.info(f'CSE custom_step: {len(post_return_cterms)} CSE paths + 1 fallback for ty({func_ty})')
-            all_cterms = tuple(post_return_cterms) + (c,)
-            all_labels = ['CSE-SUMMARY'] * len(post_return_cterms) + ['CSE-FALLBACK']
+            _LOGGER.info(f'CSE custom_step: {len(summary_cterms)} CSE paths + 1 fallback for ty({func_ty})')
+            all_cterms = tuple(summary_cterms) + (c,)
+            all_labels = ['CSE-SUMMARY'] * len(summary_cterms) + ['CSE-FALLBACK']
             return NDBranch(cterms=all_cterms, logs=(), rule_labels=tuple(all_labels))
 
-        if len(post_return_cterms) == 1:
-            _LOGGER.info(f'CSE custom_step: single-path summary for ty({func_ty})')
-            return Step(cterm=post_return_cterms[0], depth=1, logs=(), rule_labels=['CSE-SUMMARY'], info='cse-summary')
+        if len(summary_cterms) == 1:
+            self._record_observed_call(
+                func_ty=func_ty,
+                args_operand=_args_operand,
+                cterm=c,
+                outcome=f'{summary_mode}-summary-hit-single-path',
+                target=target,
+            )
+            label = 'CSE-SUMMARY' if summary_mode == 'return' else 'CSE-FRONTIER'
+            info = 'cse-summary' if summary_mode == 'return' else 'cse-frontier'
+            _LOGGER.info(f'CSE custom_step: single-path {summary_mode} summary for ty({func_ty})')
+            return Step(cterm=summary_cterms[0], depth=1, logs=(), rule_labels=[label], info=info)
 
-        _LOGGER.info(f'CSE custom_step: {len(post_return_cterms)}-branch summary for ty({func_ty})')
+        self._record_observed_call(
+            func_ty=func_ty,
+            args_operand=_args_operand,
+            cterm=c,
+            outcome=f'{summary_mode}-summary-hit-branching',
+            target=target,
+            details={'branch_count': len(summary_cterms)},
+        )
+        _LOGGER.info(f'CSE custom_step: {len(summary_cterms)}-branch {summary_mode} summary for ty({func_ty})')
+        branch_label = 'CSE-SUMMARY' if summary_mode == 'return' else 'CSE-FRONTIER'
         return NDBranch(
-            cterms=tuple(post_return_cterms),
+            cterms=tuple(summary_cterms),
             logs=(),
-            rule_labels=tuple(['CSE-SUMMARY'] * len(post_return_cterms)),
+            rule_labels=tuple([branch_label] * len(summary_cterms)),
         )
 
 

@@ -30,6 +30,7 @@ PROVE_FILES = list(PROVE_DIR.glob('*.*'))
 PROVE_START_SYMBOLS = {
     'symbolic-args-fail': ['main', 'eats_all_args'],
     'symbolic-structs-fail': ['eats_struct_args'],
+    'cse-preserve-shape': ['main', 'caller'],
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
     'checked_arithmetic-fail': ['checked_add_i32'],
     'pointer-cast': ['main', 'test'],
@@ -130,6 +131,102 @@ def test_cse(kmir: KMIR, tmp_path: Path) -> None:
     reuse_opts = ProveOpts(rs_file, add_modules=summary_files, proof_dir=tmp_path / 'proofs2')
     proof = KMIR.prove_program(reuse_opts)
     assert proof.passed
+
+
+def test_cse_preserves_simple_branch_skeleton(kmir: KMIR, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from kmir._cse import cse_prove
+
+    rs_file = PROVE_DIR / 'cse-preserve-shape.rs'
+    summary_dir = tmp_path / 'summaries'
+    baseline_dir = tmp_path / 'baseline'
+    observe_dir = tmp_path / 'observe'
+    cse_dir = tmp_path / 'cse'
+    reuse_dir = tmp_path / 'reuse'
+
+    baseline_opts = ProveOpts(rs_file, start_symbol='caller', proof_dir=baseline_dir)
+    baseline_proof = kmir.prove_program(baseline_opts)
+    assert baseline_proof.passed
+
+    monkeypatch.setenv('KMIR_CSE_SUMMARY_GENERATION', '1')
+    monkeypatch.setenv('KMIR_CSE_OBSERVE_ONLY', '1')
+    observe_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=observe_dir, start_symbol='caller')
+    observe_result = cse_prove(observe_opts)
+    assert observe_result.final_proof is not None
+    assert observe_result.final_proof.passed
+    observed_dir = summary_dir / 'observed-calls'
+    observed_cterms = list(observed_dir.glob('*.cterm.json'))
+    assert observed_cterms, 'observe-only mode should record at least one runtime call-site cterm'
+    monkeypatch.delenv('KMIR_CSE_OBSERVE_ONLY')
+
+    monkeypatch.setenv('KMIR_CSE_GENERATE_ONLY', '1')
+    cse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=cse_dir, start_symbol='caller')
+    cse_result = cse_prove(cse_opts)
+    assert 'callee' in cse_result.summaries
+    summary_files = list(summary_dir.glob('*.json'))
+    assert summary_files
+    monkeypatch.delenv('KMIR_CSE_GENERATE_ONLY')
+    monkeypatch.delenv('KMIR_CSE_SUMMARY_GENERATION')
+
+    reuse_opts = ProveOpts(rs_file, add_modules=summary_files, proof_dir=reuse_dir, start_symbol='caller')
+    reuse_proof = KMIR.prove_program(reuse_opts)
+    assert reuse_proof.passed
+
+    baseline_kcfg_path = baseline_dir / baseline_proof.id / 'kcfg' / 'kcfg.json'
+    cse_kcfg_path = reuse_dir / reuse_proof.id / 'kcfg' / 'kcfg.json'
+    baseline_kcfg = json.loads(baseline_kcfg_path.read_text())
+    cse_kcfg = json.loads(cse_kcfg_path.read_text())
+    summary_module = json.loads((summary_dir / 'callee.json').read_text())
+
+    def _edge_map(kcfg: JSON) -> dict[tuple[int, int], JSON]:
+        return {(edge['source'], edge['target']): edge for edge in kcfg.get('edges', [])}
+
+    def _edge_depth_sum(kcfg: JSON) -> int:
+        return sum(edge.get('depth', 0) for edge in kcfg.get('edges', []))
+
+    def _kcfg_shape(kcfg: JSON, root: int = 1) -> tuple[object, ...]:
+        edge_next = {edge['source']: edge['target'] for edge in kcfg.get('edges', [])}
+        split_next = {
+            split['source']: [target['target'] for target in split.get('targets', [])] for split in kcfg.get('splits', [])
+        }
+        cover_sources = {cover['source'] for cover in kcfg.get('covers', [])}
+
+        def walk(node: int) -> tuple[object, ...]:
+            if node in cover_sources:
+                return ('cover',)
+            if node in split_next:
+                child_shapes = sorted((walk(target) for target in split_next[node]), key=repr)
+                return ('split', tuple(child_shapes))
+            if node in edge_next:
+                return ('edge', walk(edge_next[node]))
+            return ('leaf',)
+
+        return walk(root)
+
+    def _has_negative_guard(term: JSON) -> bool:
+        if isinstance(term, dict):
+            label = term.get('label')
+            if isinstance(label, dict) and label.get('name') == 'notBool_':
+                return True
+            return any(_has_negative_guard(value) for value in term.values())
+        if isinstance(term, list):
+            return any(_has_negative_guard(value) for value in term)
+        return False
+
+    summary_rules = summary_module.get('localSentences', [])
+    assert len(summary_rules) >= 4
+    assert any(_has_negative_guard(rule) for rule in summary_rules), 'callee summary should include a negative branch'
+
+    assert _kcfg_shape(baseline_kcfg) == _kcfg_shape(cse_kcfg)
+    assert len(baseline_kcfg.get('covers', [])) == len(cse_kcfg.get('covers', []))
+    assert _edge_depth_sum(cse_kcfg) < _edge_depth_sum(baseline_kcfg)
+
+    cse_edges = _edge_map(cse_kcfg)
+    summary_edges = [edge for edge in cse_edges.values() if any('BASIC-BLOCK-' in rule for rule in edge.get('rules', []))]
+    assert summary_edges, 'fresh reuse should consume exported summary rules'
+    assert cse_edges[(4, 6)]['depth'] == 1
+    assert cse_edges[(5, 7)]['depth'] == 1
+    assert any('BASIC-BLOCK-' in rule for rule in cse_edges[(4, 6)].get('rules', []))
+    assert any('BASIC-BLOCK-' in rule for rule in cse_edges[(5, 7)].get('rules', []))
 
 
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)

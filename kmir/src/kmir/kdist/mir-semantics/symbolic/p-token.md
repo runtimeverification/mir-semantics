@@ -115,6 +115,12 @@ The code uses some helper sorts for better readability.
   // We assume that the Key always contains valid data, because it is constructed via toKey.
   rule fromKey(KeyError(VAL)) => VAL
   rule fromKey(Key(VAL))      => Range(VAL) [preserves-definedness]
+  syntax Bool ::= #keyEq ( Key, Key ) [function, total]
+                | #keyNe ( Key, Key ) [function, total]
+  rule #keyEq(Key(LHS), Key(RHS)) => LHS ==K RHS [preserves-definedness]
+  rule #keyEq(_, _) => false [owise]
+  rule #keyNe(Key(LHS), Key(RHS)) => LHS =/=K RHS [preserves-definedness]
+  rule #keyNe(_, _) => true [owise]
 ```
 For lists that are already known to contain bytes, the following simplification removes the `#mapOffset` call
 This ensures that branches on the key value are not duplicated.
@@ -479,6 +485,15 @@ An `AccountInfo` reference is passed to the function.
   rule #functionName(monoItemStatic(symbol(NAME), _, _)) => NAME
   rule #functionName(monoItemGlobalAsm(_)) => "#ASM"
   rule #functionName(IntrinsicFunction(symbol(NAME))) => NAME
+
+  syntax Bool ::= #isPTokenFromRawPartsU8Func(String) [function, total]
+                | #isPTokenFromRawPartsMutU8Func(String) [function, total]
+  rule #isPTokenFromRawPartsU8Func("core::slice::from_raw_parts::<'_, u8>") => true
+  rule #isPTokenFromRawPartsU8Func("core::core::slice::from_raw_parts::<'_, u8>") => true
+  rule #isPTokenFromRawPartsU8Func(_) => false [owise]
+  rule #isPTokenFromRawPartsMutU8Func("core::slice::from_raw_parts_mut::<'_, u8>") => true
+  rule #isPTokenFromRawPartsMutU8Func("core::core::slice::from_raw_parts_mut::<'_, u8>") => true
+  rule #isPTokenFromRawPartsMutU8Func(_) => false [owise]
 ```
 
 ```k
@@ -771,7 +786,44 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
     requires #functionName(FUNC) ==String "pinocchio::account_info::AccountInfo::borrow_mut_data_unchecked"
     [priority(30), preserves-definedness]
 
+  // `borrow_[mut_]data_unchecked` may be inlined into `data_ptr` + `data_len` + `from_raw_parts[_mut]`.
+  // Route those lower-level helpers back into the same `PAccByteRef` channel.
+  rule [cheatcode-data-ptr]:
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))), mutabilityMut)
+      ~> #continueAt(TARGET)
+    </k>
+    requires #functionName(FUNC) ==String "pinocchio::account_info::AccountInfo::data_ptr"
+    [priority(30), preserves-definedness]
+
+  rule [cheatcode-data-len]:
+    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    => #mkPAccDataLen(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))))
+      ~> #continueAt(TARGET)
+    </k>
+    requires #functionName(FUNC) ==String "pinocchio::account_info::AccountInfo::data_len"
+    [priority(30), preserves-definedness]
+
+  rule [cheatcode-from-raw-parts]:
+    <k> #execTerminatorCall(_, FUNC, PTR LEN .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    => #mkPAccSliceRef(DEST, PTR, LEN, mutabilityNot)
+      ~> #continueAt(TARGET)
+    </k>
+    requires #isPTokenFromRawPartsU8Func(#functionName(FUNC))
+    [priority(30), preserves-definedness]
+
+  rule [cheatcode-from-raw-parts-mut]:
+    <k> #execTerminatorCall(_, FUNC, PTR LEN .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    => #mkPAccSliceRef(DEST, PTR, LEN, mutabilityMut)
+      ~> #continueAt(TARGET)
+    </k>
+    requires #isPTokenFromRawPartsMutU8Func(#functionName(FUNC))
+    [priority(30), preserves-definedness]
+
   syntax KItem ::= #mkPAccByteRef( Place , Evaluation , Mutability ) [seqstrict(2)]
+                 | #mkPAccDataLen( Place , Evaluation ) [seqstrict(2)]
+                 | #mkPAccSliceRef( Place , Evaluation , Evaluation , Mutability ) [seqstrict(2,3)]
+                 | #mkPAccDataLenVal( Place , Value )
 
   // TODO additional projections not supported at the moment, assumed ref is on stack not local
   rule <k> #mkPAccByteRef(DEST, PtrLocal(OFFSET, place(LOCAL, .ProjectionElems) #as PLACE, _MUT, _EMUL), MUT)
@@ -781,6 +833,21 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
        <stack> STACK </stack>
     requires 0 <Int OFFSET
      andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule <k> #mkPAccDataLen(DEST, PtrLocal(OFFSET, place(LOCAL, .ProjectionElems), _MUT, _EMUL))
+        => #mkPAccDataLenVal(DEST, #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET))
+        ...
+       </k>
+       <stack> STACK </stack>
+    requires 0 <Int OFFSET
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+
+  rule <k> #mkPAccSliceRef(DEST, PAccByteRef(OFFSET, PLACE, _PTR_MUT, LEN), Integer(LEN, 64, false), MUT)
+        => #setLocalValue(DEST, PAccByteRef(OFFSET, PLACE, MUT, LEN))
+        ...
+       </k>
     [preserves-definedness]
 ```
 
@@ -818,6 +885,30 @@ this field is expected to be constrained accordingly in the path condition.
       ...
      </k>
   requires DATA_LEN ==Int 17 // PRent length
+
+  rule <k> #mkPAccDataLenVal(DEST, PAccountAccount(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
+        => #setLocalValue(DEST, Integer(DATA_LEN, 64, false))
+        ...
+       </k>
+    requires DATA_LEN ==Int 165
+
+  rule <k> #mkPAccDataLenVal(DEST, PAccountMint(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
+        => #setLocalValue(DEST, Integer(DATA_LEN, 64, false))
+        ...
+       </k>
+    requires DATA_LEN ==Int 82
+
+  rule <k> #mkPAccDataLenVal(DEST, PAccountMultisig(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
+        => #setLocalValue(DEST, Integer(DATA_LEN, 64, false))
+        ...
+       </k>
+    requires DATA_LEN ==Int 99
+
+  rule <k> #mkPAccDataLenVal(DEST, PAccountRent(PAcc(_, _, _, _, _, _, _, _, U64(DATA_LEN)), _))
+        => #setLocalValue(DEST, Integer(DATA_LEN, 64, false))
+        ...
+       </k>
+    requires DATA_LEN ==Int 17
 
   // Handle PtrMetadata for PAccByteRef to return the stored length
   rule <k> #applyUnOp(unOpPtrMetadata, PAccByteRef(_, _, _, LEN)) => Integer(LEN, 64, false) ... </k>
@@ -879,7 +970,6 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
   // return a reference to the second component <Thing> within this PAccount data.
   // We could check the pointee and, if it is a different data structure, return an error (as the length check in the original code)
   syntax KItem ::= #mkPAccountRef ( Place , Evaluation , ProjectionElem , Bool ) [seqstrict(2)]
-
   rule <k> #mkPAccountRef(DEST, PAccByteRef(OFFSET, place(LOCAL, PROJS), MUT, _LEN), ACCESS_PROJ, true)
         => #setLocalValue(
               DEST,

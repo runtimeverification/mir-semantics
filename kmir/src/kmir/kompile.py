@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
+import os
 import shutil
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -27,6 +29,13 @@ if TYPE_CHECKING:
 
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+
+def _env_flag(name: str, *, default: bool = False) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.lower() in {'1', 'true', 'yes', 'on'}
 
 
 class KompiledSMIR(ABC):
@@ -66,6 +75,8 @@ class KompileDigest:
     llvm_lib_target: str
     haskell_target: str
     break_on_function: str
+    llvm_extra_modules: bool
+    extra_modules_digest: str
 
     @staticmethod
     def load(target_dir: Path) -> KompileDigest:
@@ -82,6 +93,8 @@ class KompileDigest:
             llvm_lib_target=data['llvm-lib-target'],
             haskell_target=data['haskell-target'],
             break_on_function=data.get('break-on-function', ''),
+            llvm_extra_modules=bool(data.get('llvm-extra-modules', False)),
+            extra_modules_digest=data.get('extra-modules-digest', ''),
         )
 
     def write(self, target_dir: Path) -> None:
@@ -94,6 +107,8 @@ class KompileDigest:
                     'llvm-lib-target': self.llvm_lib_target,
                     'haskell-target': self.haskell_target,
                     'break-on-function': self.break_on_function,
+                    'llvm-extra-modules': self.llvm_extra_modules,
+                    'extra-modules-digest': self.extra_modules_digest,
                 },
             ),
         )
@@ -198,6 +213,19 @@ def _load_extra_module_rules(kmir: KMIR, module_path: Path) -> list[Sentence]:
     return axioms
 
 
+def _extra_modules_digest(extra_modules: Sequence[Path] | None) -> str:
+    if not extra_modules:
+        return ''
+
+    digest = hashlib.sha256()
+    for module_path in extra_modules:
+        digest.update(str(module_path.resolve()).encode())
+        digest.update(b'\0')
+        digest.update(module_path.read_bytes())
+        digest.update(b'\0')
+    return digest.hexdigest()
+
+
 def kompile_smir(
     smir_info: SMIRInfo,
     target_dir: Path,
@@ -227,6 +255,8 @@ def kompile_smir(
         llvm_lib_target=llvm_lib_target,
         haskell_target=haskell_target,
         break_on_function=';'.join(break_on_function) if break_on_function else '',
+        llvm_extra_modules=_env_flag('KMIR_CSE_INCLUDE_EXTRA_MODULES_IN_LLVM', default=False),
+        extra_modules_digest=_extra_modules_digest(extra_modules),
     )
 
     target_hs_path = target_dir / 'haskell'
@@ -269,13 +299,15 @@ def kompile_smir(
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)
         target_hs_path.mkdir(parents=True, exist_ok=True)
 
-        # Process LLVM definition (only SMIR rules, not extra module rules)
-        # Extra module rules are configuration rewrites that LLVM backend doesn't support
+        # Process LLVM definition. Extra summary modules are excluded by
+        # default, but can be enabled experimentally to see whether they hit
+        # booster's fast path.
         _LOGGER.info('Writing LLVM definition file')
         llvm_lib_dir = kdist.which(llvm_lib_target)
         llvm_def_file = llvm_lib_dir / 'definition.kore'
         llvm_def_output = target_llvm_lib_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, smir_rules, llvm_def_output)
+        llvm_rules = all_rules if expected_digest.llvm_extra_modules else smir_rules
+        _insert_rules_and_write(llvm_def_file, llvm_rules, llvm_def_output)
 
         # Run llvm-kompile-matching and llvm-kompile for LLVM
         # TODO use pyk to do this if possible (subprocess wrapper, maybe llvm-kompile itself?)
