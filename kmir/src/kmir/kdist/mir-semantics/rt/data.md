@@ -1838,24 +1838,15 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
 ```k
   syntax MIRError ::= "#UBInvalidTransmuteMaybeUninit"
   rule <k>
-           #cast( _VAL:Value , castKindTransmute , TY_FROM , TY_TO )
+           #cast( VAL:Value , castKindTransmute , _TY_FROM , TY_TO )
         =>
-           #UBInvalidTransmuteMaybeUninit
+           Union(fieldIdx(1), Aggregate(variantIdx(0), ListItem(VAL) .List))
        ...
       </k>
       requires #isUnionType(lookupTy(TY_TO))
         andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
-
-  rule <k>
-           #cast( VAL:Value , castKindTransmute , TY_FROM , TY_TO )
-        =>
-           Union( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem(VAL) .List ))
-       ...
-      </k>
-      requires #isUnionType(lookupTy(TY_TO))
-        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+  // `MaybeUninit<T>` accepts arbitrary bit patterns, so any value can be
+  // reinterpreted into the union's initialized field.
 
   // Converting static or dynamic sized array of `T` to array of `std::mem::MaybeUninit<T>`.
   // FIXME: Might need to check sizes as this cast could come from transmute_unchecked
