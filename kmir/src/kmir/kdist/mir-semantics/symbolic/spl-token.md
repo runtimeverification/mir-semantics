@@ -681,28 +681,77 @@ intercept the call and directly replace the `SPLDataBuffer` content with a
 zeroed representation.
 
 ```{.k .symbolic}
-  // sol_memset(buf, val, len) - intercept when target is SPLDataBuffer
+  // sol_memset(buf, val, len) - fast-path full-buffer zeroization on recognized SPLDataBuffer values.
+  // Any other call shape falls back to the ordinary call semantics below.
   rule [spl-sol-memset]:
-    <k> #execTerminatorCall(_, FUNC,
+    <k> #execTerminatorCall(FTY, FUNC,
           BUF:Operand VAL:Operand LEN:Operand .Operands,
-          _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
-      => #splSolMemset(#withDeref(BUF), #withDeref(VAL), #withDeref(LEN), BUF) ~> #continueAt(TARGET)
+          DEST, TARGET, UNWIND, SPAN) ~> _CONT
+      => #execSPLSolMemset(FTY, FUNC, #withDeref(BUF), VAL, LEN, BUF, BUF VAL LEN .Operands, DEST, TARGET, UNWIND, SPAN)
     </k>
     requires #isSPLSolMemsetFunc(#functionName(FUNC))
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #splSolMemset ( Evaluation , Evaluation , Evaluation , Operand ) [seqstrict(1,2,3)]
+  syntax KItem ::= #execSPLSolMemset ( Ty, MonoItemKind, Evaluation , Evaluation , Evaluation , Operand, Operands, Place, MaybeBasicBlockIdx, UnwindAction, Span ) [seqstrict(3,4,5)]
 
-  rule <k> #splSolMemset(SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandCopy(DEST))
-        => #setLocalValue(DEST, SPLDataBuffer(Integer(0, 8, false))) ... </k>
+  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandCopy(DESTBUF), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
+        => #setLocalValue(DESTBUF, SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
     requires #isZeroMemsetValue(VAL)
      andBool LEN ==Int #splBufferLen(BUF)
      andBool 0 <Int #splBufferLen(BUF)
-  rule <k> #splSolMemset(SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandMove(DEST))
-        => #setLocalValue(DEST, SPLDataBuffer(Integer(0, 8, false))) ... </k>
+  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandMove(DESTBUF), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
+        => #setLocalValue(DESTBUF, SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
     requires #isZeroMemsetValue(VAL)
      andBool LEN ==Int #splBufferLen(BUF)
      andBool 0 <Int #splBufferLen(BUF)
+
+  rule [spl-sol-memset-fallback-intrinsic]:
+    <k> #execSPLSolMemset(_, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
+      => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+    </k>
+    requires isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  rule [spl-sol-memset-fallback-intrinsic-filter]:
+    <k> #execSPLSolMemset(_, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
+      => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+    </k>
+    requires isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  rule [spl-sol-memset-fallback]:
+    <k> #execSPLSolMemset(FTY, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+      => #setUpCalleeData(FUNC, ARGS, SPAN)
+    </k>
+    <currentFunc> CALLER => FTY </currentFunc>
+    <currentFrame>
+      <currentBody> _ </currentBody>
+      <caller> OLDCALLER => CALLER </caller>
+      <dest> OLDDEST => DEST </dest>
+      <target> OLDTARGET => TARGET </target>
+      <unwind> OLDUNWIND => UNWIND </unwind>
+      <locals> LOCALS </locals>
+    </currentFrame>
+    <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+    requires notBool isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  rule [spl-sol-memset-fallback-filter]:
+    <k> #execSPLSolMemset(FTY, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+      => #setUpCalleeData(FUNC, ARGS, SPAN)
+    </k>
+    <currentFunc> CALLER => FTY </currentFunc>
+    <currentFrame>
+      <currentBody> _ </currentBody>
+      <caller> OLDCALLER => CALLER </caller>
+      <dest> OLDDEST => DEST </dest>
+      <target> OLDTARGET => TARGET </target>
+      <unwind> OLDUNWIND => UNWIND </unwind>
+      <locals> LOCALS </locals>
+    </currentFrame>
+    <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+    requires notBool isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 ```
 
 ## Rent sysvar handling
