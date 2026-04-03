@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING
 import pytest
 
 from kmir._cse import _runtime_related_callees, _select_phase1_callees
+from kmir.kmir import _freshen_quantifier_binders
 from kmir.smir import compute_closure
+from pyk.kast.inner import KApply, KLabel, KSort, KVariable
 
 if TYPE_CHECKING:
     from kmir.smir import Ty
@@ -116,3 +118,34 @@ def test_select_phase1_callees_can_still_restrict_to_runtime_related_subset() ->
     )
 
     assert phase1 == [2, 4]
+
+
+def test_freshen_quantifier_binders_separates_same_generated_name_across_scopes() -> None:
+    term = KApply(
+        KLabel('#And', [KSort('GeneratedTopCell')]),
+        [
+            KApply(
+                KLabel('#Exists', [KSort('F64'), KSort('GeneratedTopCell')]),
+                [
+                    KVariable('_Gen1', KSort('F64')),
+                    KVariable('_Gen1', KSort('F64')),
+                ],
+            ),
+            KApply(
+                KLabel('#Exists', [KSort('List'), KSort('GeneratedTopCell')]),
+                [
+                    KVariable('_Gen1', KSort('List')),
+                    KVariable('_Gen1', KSort('List')),
+                ],
+            ),
+        ],
+    )
+
+    freshened = _freshen_quantifier_binders(term).to_dict()
+
+    left_name = freshened['args'][0]['args'][0]['name']
+    right_name = freshened['args'][1]['args'][0]['name']
+
+    assert left_name != right_name
+    assert freshened['args'][0]['args'][1]['name'] == left_name
+    assert freshened['args'][1]['args'][1]['name'] == right_name

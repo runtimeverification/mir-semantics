@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import CTerm, cterm_symbolic
 from pyk.cterm.symbolic import CTermSymbolic
-from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken
+from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken, KVariable
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kore.rpc import BoosterServer, KoreClient, KoreExecLogFormat
@@ -57,6 +57,60 @@ _BOOSTER_LOG_CONTEXT_PRESETS: dict[str, list[str]] = {
         'request*,booster|kore>rewrite*,match|definedness|constraint,failure|abort',
     ],
 }
+
+
+def _collect_variable_names(term: 'KInner') -> set[str]:
+    names: set[str] = set()
+
+    def _visit(node: 'KInner') -> None:
+        if isinstance(node, KVariable):
+            names.add(node.name)
+        for child in node.terms:
+            _visit(child)
+
+    _visit(term)
+    return names
+
+
+def _freshen_quantifier_binders(term: 'KInner') -> 'KInner':
+    used_names = _collect_variable_names(term)
+    counter = 0
+
+    def _fresh_name(base: str) -> str:
+        nonlocal counter
+        while True:
+            candidate = f'{base}__kmir_q_{counter}'
+            counter += 1
+            if candidate not in used_names:
+                used_names.add(candidate)
+                return candidate
+
+    def _visit(node: 'KInner', env: dict[str, KVariable]) -> 'KInner':
+        if isinstance(node, KVariable):
+            replacement = env.get(node.name)
+            return replacement if replacement is not None else node
+
+        if (
+            isinstance(node, KApply)
+            and node.label.name in ('#Exists', '#Forall')
+            and len(node.args) == 2
+            and isinstance(node.args[0], KVariable)
+        ):
+            binder = node.args[0]
+            fresh_binder = binder.let(name=_fresh_name(binder.name))
+            scoped_env = dict(env)
+            scoped_env[binder.name] = fresh_binder
+            fresh_body = _visit(node.args[1], scoped_env)
+            return node.let(args=(fresh_binder, fresh_body))
+
+        return node.map_inner(lambda child: _visit(child, env))
+
+    return _visit(term, {})
+
+
+class KMIRCTermSymbolic(CTermSymbolic):
+    def kast_to_kore(self, kinner: 'KInner') -> 'Pattern':
+        return super().kast_to_kore(_freshen_quantifier_binders(kinner))
 
 
 def _parse_csv_env(name: str) -> list[str]:
@@ -136,7 +190,7 @@ def kmir_cterm_symbolic(
             }
         ) as server:
             with KoreClient('localhost', server.port, bug_report=bug_report, bug_report_id=id) as client:
-                yield CTermSymbolic(
+                yield KMIRCTermSymbolic(
                     client,
                     definition,
                     log_succ_rewrites=log_succ_rewrites,
@@ -156,7 +210,12 @@ def kmir_cterm_symbolic(
         log_fail_rewrites=log_fail_rewrites,
         **logging_args,
     ) as cts:
-        yield cts
+        yield KMIRCTermSymbolic(
+            cts._kore_client,
+            definition,
+            log_succ_rewrites=log_succ_rewrites,
+            log_fail_rewrites=log_fail_rewrites,
+        )
 
 
 class KMIR(KProve, KRun, KParse):

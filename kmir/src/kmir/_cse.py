@@ -45,6 +45,11 @@ def _env_int(name: str, *, default: int) -> int:
         return default
 
 
+def _env_csv(name: str) -> list[str]:
+    value = os.getenv(name, '')
+    return [item.strip() for item in value.split(',') if item.strip()]
+
+
 @dataclass
 class CalleeResult:
     summary_path: Path | None = None
@@ -811,6 +816,15 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
         reuse_only_mode=reuse_only_mode,
         restrict_to_observed_runtime=restrict_phase1_to_observed_runtime,
     )
+    phase1_only_names = set(_env_csv('KMIR_CSE_PHASE1_ONLY_NAMES'))
+    if phase1_only_names:
+        phase1_callee_order = [
+            ty for ty in phase1_callee_order if (name := _ty_to_name(smir_info, ty)) is not None and name in phase1_only_names
+        ]
+        _LOGGER.info(
+            'CSE: filtered phase-1 to %d callees via KMIR_CSE_PHASE1_ONLY_NAMES',
+            len(phase1_callee_order),
+        )
     if observe_only_mode:
         _LOGGER.info('CSE: observe-only mode active, skipping phase-1 callee proving for %s', start_name)
     elif reuse_only_mode:
@@ -1004,7 +1018,7 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             # Step 4: Run the prover with a reasonable iteration limit for callees.
             # Complex callees (Result::map, etc.) can explode into thousands of nodes.
             # Limit to 100 iterations — if the callee can't be proved quickly, skip it.
-            cse_callee_max_iterations = 100
+            cse_callee_max_iterations = _env_int('KMIR_CSE_CALLEE_MAX_ITERATIONS', default=100)
             if not proof.passed:
                 from .options import ProveOpts as ProveOptsClass
 

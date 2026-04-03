@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cterm import CTerm
-from pyk.cterm.symbolic import CTermSymbolic
 from pyk.kast.inner import KSequence, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
@@ -18,7 +17,7 @@ from pyk.proof.reachability import APRProof, APRProver
 
 from .cargo import cargo_get_smir_json
 from .kast import SymbolicMode, make_call_config
-from .kmir import KMIR, KMIRSemantics, kore_server_logging_args
+from .kmir import KMIR, KMIRCTermSymbolic, KMIRSemantics, kore_server_logging_args
 from .smir import SMIRInfo
 
 if TYPE_CHECKING:
@@ -175,7 +174,7 @@ def _prove_parallel(
                 bug_report=kmir.bug_report,
                 bug_report_id=label if kmir.bug_report is not None else None,
             )
-            cterm_symbolic = CTermSymbolic(
+            cterm_symbolic = KMIRCTermSymbolic(
                 client,
                 kmir.definition,
             )
