@@ -527,6 +527,51 @@ def _reachable_from_roots(call_edges: dict[Ty, set[Ty]], roots: set[Ty]) -> set[
     return reachable
 
 
+def _reverse_reachable_to_targets(call_edges: dict[Ty, set[Ty]], targets: set[Ty]) -> set[Ty]:
+    reverse_edges: dict[Ty, set[Ty]] = {}
+    for caller, callees in call_edges.items():
+        reverse_edges.setdefault(caller, set())
+        for callee in callees:
+            reverse_edges.setdefault(callee, set()).add(caller)
+
+    reachable: set[Ty] = set()
+
+    def dfs(node: Ty) -> None:
+        if node in reachable:
+            return
+        reachable.add(node)
+        for caller in reverse_edges.get(node, set()):
+            dfs(caller)
+
+    for target in targets:
+        dfs(target)
+    return reachable
+
+
+def _runtime_related_callees(call_edges: dict[Ty, set[Ty]], observed_roots: set[Ty]) -> set[Ty]:
+    return _reachable_from_roots(call_edges, observed_roots) | _reverse_reachable_to_targets(call_edges, observed_roots)
+
+
+def _select_phase1_callees(
+    callee_order: list[Ty],
+    *,
+    call_edges: dict[Ty, set[Ty]],
+    observed_runtime_seen: set[int],
+    observe_only_mode: bool,
+    reuse_only_mode: bool,
+    restrict_to_observed_runtime: bool,
+) -> list[Ty]:
+    if observe_only_mode:
+        return []
+    if reuse_only_mode:
+        return callee_order
+    if observed_runtime_seen and restrict_to_observed_runtime:
+        observed_roots = {Ty(func_ty) for func_ty in observed_runtime_seen}
+        phase1_allowed = _runtime_related_callees(call_edges, observed_roots)
+        return [ty for ty in callee_order if ty in phase1_allowed]
+    return callee_order
+
+
 def _ty_to_name(smir_info: SMIRInfo, ty: Ty) -> str | None:
     """Map a Ty ID back to a human-readable function name."""
     sym = smir_info.function_symbols.get(int(ty))
@@ -727,6 +772,7 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     observed_runtime_promoted = {
         func_ty for func_ty, count in observed_runtime_counts.items() if count >= observed_min_count
     }
+    restrict_phase1_to_observed_runtime = _env_flag('KMIR_CSE_RESTRICT_PHASE1_TO_OBSERVED_RUNTIME', default=False)
     if observed_runtime_counts:
         _LOGGER.info(
             'CSE: loaded %d observed runtime callees from %s (%d eligible at threshold=%d)',
@@ -757,23 +803,29 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     # This ensures callee normalized entries match the main proof's call setup.
     main_smir = smir_info.reduce_to(start_name)
 
+    phase1_callee_order = _select_phase1_callees(
+        callee_order,
+        call_edges=smir_info.call_edges,
+        observed_runtime_seen=observed_runtime_seen,
+        observe_only_mode=observe_only_mode,
+        reuse_only_mode=reuse_only_mode,
+        restrict_to_observed_runtime=restrict_phase1_to_observed_runtime,
+    )
     if observe_only_mode:
         _LOGGER.info('CSE: observe-only mode active, skipping phase-1 callee proving for %s', start_name)
-        phase1_callee_order: list[Ty] = []
     elif reuse_only_mode:
         _LOGGER.info('CSE: reuse-only mode active, loading cached summaries/skips without new callee proving')
-        phase1_callee_order = callee_order
-    elif observed_runtime_seen:
-        observed_roots = {Ty(func_ty) for func_ty in observed_runtime_seen}
-        phase1_allowed = _reachable_from_roots(smir_info.call_edges, observed_roots)
-        phase1_callee_order = [ty for ty in callee_order if ty in phase1_allowed]
+    elif observed_runtime_seen and restrict_phase1_to_observed_runtime:
         _LOGGER.info(
-            'CSE: restricted phase-1 to %d/%d runtime-reachable callees',
+            'CSE: restricted phase-1 to %d/%d runtime-related callees',
             len(phase1_callee_order),
             len(callee_order),
         )
-    else:
-        phase1_callee_order = callee_order
+    elif observed_runtime_seen:
+        _LOGGER.info(
+            'CSE: keeping all %d phase-1 callees reachable from root; observed runtime calls only relax skip heuristics',
+            len(phase1_callee_order),
+        )
 
     for ty in phase1_callee_order:
         name = _ty_to_name(smir_info, ty)
