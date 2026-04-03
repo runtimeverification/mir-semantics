@@ -358,7 +358,7 @@ where the returned result should go.
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
        <currentFrame>
-         <frameId> OLDFRAMEID => NEWFRAMEID </frameId>
+         <frameId> OLDFRAMEID => !_NEWFRAMEID:Int </frameId>
          <currentBody> _ </currentBody>
          <caller> OLDCALLER => CALLER </caller>
          <dest> OLDDEST => DEST </dest>
@@ -367,7 +367,6 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDFRAMEID, OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <nextFrameId> NEWFRAMEID => NEWFRAMEID +Int 1 </nextFrameId>
     requires notBool isIntrinsicFunction(FUNC)
      andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
@@ -378,7 +377,7 @@ where the returned result should go.
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
        <currentFrame>
-         <frameId> OLDFRAMEID => NEWFRAMEID </frameId>
+         <frameId> OLDFRAMEID => !_NEWFRAMEID:Int </frameId>
          <currentBody> _ </currentBody>
          <caller> OLDCALLER => CALLER </caller>
          <dest> OLDDEST => DEST </dest>
@@ -387,7 +386,6 @@ where the returned result should go.
          <locals> LOCALS </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDFRAMEID, OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-       <nextFrameId> NEWFRAMEID => NEWFRAMEID +Int 1 </nextFrameId>
     requires notBool isIntrinsicFunction(FUNC)
      andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 

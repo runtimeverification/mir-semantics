@@ -49,7 +49,6 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
-                  <nextFrameId> 1 </nextFrameId>
                   // address allocation model for pointer-to-integer casts
                   <addressMap> .Map </addressMap>
                   <nextAddress> 4096 </nextAddress>

@@ -13,7 +13,7 @@ module ASSERT-TRUE-MAIN-SUMMARY
            </currentFunc>
            <currentFrame>
              <frameId>
-               ( 0 => 1 )
+               0
              </frameId>
              <currentBody>
                ( .List => ListItem ( basicBlock ( ... statements: .Statements , terminator: terminator ( ... kind: terminatorKindReturn , span: span ( 50 ) ) ) ) )
@@ -37,9 +37,6 @@ module ASSERT-TRUE-MAIN-SUMMARY
            <stack>
              ( .List => ListItem ( StackFrame ( 0 , ty ( -1 ) , place ( ... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ) ) )
            </stack>
-           <nextFrameId>
-             ( 1 => 2 )
-           </nextFrameId>
            <addressMap>
              .Map
            </addressMap>

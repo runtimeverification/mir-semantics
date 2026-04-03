@@ -37,9 +37,6 @@ module TEST-ADD-MODULE
            <stack>
              ( .List => ListItem ( StackFrame ( 0 , CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ) ) )
            </stack>
-           <nextFrameId>
-             1
-           </nextFrameId>
            <addressMap>
              .Map
            </addressMap>

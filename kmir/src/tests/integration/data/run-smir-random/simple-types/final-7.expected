@@ -10,7 +10,7 @@
   </currentFunc>
   <currentFrame>
     <frameId>
-      1
+      0
     </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 31 ) , userTy: someUserTypeAnnotationIndex ( userTypeAnnotationIndex ( 0 ) ) , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 15 ) , id: mirConstId ( 3 ) ) ) ) , args: operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 4 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 32 ) ) ) )
@@ -84,9 +84,6 @@
     ListItem ( typedValue ( Integer ( 77 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
     ListItem ( typedValue ( Integer ( -1940095024 , 32 , true ) , ty ( 8 ) , mutabilityNot ) ) ) )
   </stack>
-  <nextFrameId>
-    3
-  </nextFrameId>
   <addressMap>
     .Map
   </addressMap>

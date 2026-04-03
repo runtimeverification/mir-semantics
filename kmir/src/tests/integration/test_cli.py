@@ -126,6 +126,7 @@ def test_cli_show_statistics_and_leaves(
         PROVE_DIR / f'show/{src.stem}.{start_symbol}.cli-stats-leaves.expected',
         update=update_expected_output,
         path_replacements=_PATH_REPLACEMENTS,
+        normalize_optional_diagnostics=True,
     )
 
 

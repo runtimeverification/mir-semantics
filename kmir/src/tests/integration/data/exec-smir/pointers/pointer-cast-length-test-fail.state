@@ -13,7 +13,7 @@
   </currentFunc>
   <currentFrame>
     <frameId>
-      2
+      1
     </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 3 ) , projection: .ProjectionElems ) , rvalue: rvalueUnaryOp ( unOpPtrMetadata , operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 68 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 2 ) , projection: .ProjectionElems ) , rvalue: rvalueBinaryOp ( binOpGe , operandMove ( place (... local: local ( 3 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand (... span: span ( 69 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x04\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 29 ) , id: mirConstId ( 11 ) ) ) ) ) ) , span: span ( 67 ) )  .Statements , terminator: terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 2 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 2 ) )  .Branches , otherwise: basicBlockIdx ( 1 ) ) ) , span: span ( 67 ) ) ) )
@@ -79,7 +79,7 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( 1 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
     ListItem ( typedValue ( Range ( ListItem ( Integer ( 42 , 8 , false ) )
     ListItem ( Integer ( 41 , 8 , false ) )
     ListItem ( Integer ( 42 , 8 , false ) )
@@ -89,9 +89,6 @@
     ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( staticSize ( 8 ) , 0 , noMetadataSize ) ) , ty ( 31 ) , mutabilityNot ) ) ) )
     ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
-  <nextFrameId>
-    6
-  </nextFrameId>
   <addressMap>
     .Map
   </addressMap>

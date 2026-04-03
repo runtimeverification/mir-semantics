@@ -142,7 +142,7 @@ def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bo
         spans_removed = [line for line in shower.show(proof) if 'span: ' not in line]
         show_res = '\n'.join(spans_removed)
 
-        assert_or_update_show_output(show_res, file, update=update_expected_output)
+        assert_or_update_show_output(show_res, file, update=update_expected_output, normalize_steps=True)
     os.unlink(linked_file)
 
 

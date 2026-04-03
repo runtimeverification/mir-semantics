@@ -10,7 +10,7 @@
   </currentFunc>
   <currentFrame>
     <frameId>
-      1
+      0
     </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 5 ) , projection: .ProjectionElems ) , rvalue: rvalueDiscriminant ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) ) , span: span ( 331 ) )  .Statements , terminator: terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 5 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 16 ) )  branch ( 1 , basicBlockIdx ( 3 ) )  branch ( 2 , basicBlockIdx ( 1 ) )  .Branches , otherwise: basicBlockIdx ( 20 ) ) ) , span: span ( 330 ) ) ) )
@@ -148,9 +148,6 @@
     ListItem ( Integer ( 281121487 , 32 , true ) )
     ListItem ( Integer ( 1921781853 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) ) ) )
   </stack>
-  <nextFrameId>
-    2
-  </nextFrameId>
   <addressMap>
     .Map
   </addressMap>
