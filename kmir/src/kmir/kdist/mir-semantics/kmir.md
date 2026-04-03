@@ -434,6 +434,7 @@ where the returned result should go.
   syntax KItem ::= #continueAt(MaybeBasicBlockIdx)
   rule <k> #continueAt(someBasicBlockIdx(TARGET)) => #execBlockIdx(TARGET) ... </k>
   rule <k> #continueAt(noBasicBlockIdx) => .K ... </k>
+    [priority(50)]
 ```
 
 The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the old locals (`OLDLOCALS` below), and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references.
