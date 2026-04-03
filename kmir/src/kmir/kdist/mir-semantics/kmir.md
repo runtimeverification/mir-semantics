@@ -371,7 +371,7 @@ where the returned result should go.
   rule isNoOpFunction(_) => false [owise]
 
   syntax KItem ::= #consumeNoOpArgs(Operands, MaybeBasicBlockIdx)
-                 | #consumeNoOpArg(Operand) [strict(1)]
+                 | #consumeNoOpArg(Operand)
 
   // SMIR marks some semantically empty shims (e.g. drop glue for trivially droppable slices)
   // as NoOpSym. They have no body and should continue immediately without switching frames,
@@ -388,7 +388,24 @@ where the returned result should go.
         ...
        </k>
 
-  rule <k> #consumeNoOpArg(_:Value) => .K ... </k>
+  rule <k> #consumeNoOpArg(operandConstant(_)) => .K ... </k>
+
+  rule <k> #consumeNoOpArg(operandValue(_)) => .K ... </k>
+
+  rule <k> #consumeNoOpArg(operandCopy(place(local(I), .ProjectionElems))) => .K ... </k>
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+    requires 0 <=Int I
+     andBool I <Int size(CALLERLOCALS)
+     andBool isTypedValue(CALLERLOCALS[I])
+    [preserves-definedness]
+
+  rule <k> #consumeNoOpArg(operandMove(place(local(I), _))) => .K ... </k>
+       <stack> (ListItem(StackFrame(_, _, _, _, CALLERLOCALS) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
+        </stack>
+    requires 0 <=Int I
+     andBool I <Int size(CALLERLOCALS)
+     andBool isTypedValue(CALLERLOCALS[I])
+    [preserves-definedness]
 
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
