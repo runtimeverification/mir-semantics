@@ -214,3 +214,47 @@ def test_call_edges_preserve_drop_glue_for_index_projection() -> None:
     )
 
     assert smir_info.call_edges == {10: {12}, 12: set()}
+
+
+def test_drop_function_tys_accept_core_drop_in_place_names() -> None:
+    smir_info = SMIRInfo(
+        {
+            'name': 'core-drop-glue',
+            'allocs': [],
+            'types': [
+                [
+                    2,
+                    {
+                        'StructType': {
+                            'name': 'Inner',
+                            'adt_def': 2,
+                            'fields': [],
+                            'layout': None,
+                        }
+                    },
+                ],
+                [3, {'PtrType': {'pointee_type': 2}}],
+            ],
+            'functions': [
+                [12, {'NormalSym': 'drop_inner'}],
+            ],
+            'items': [
+                {
+                    'symbol_name': 'drop_inner',
+                    'mono_item_kind': {
+                        'MonoItemFn': {
+                            'name': 'core::ptr::drop_in_place::<Inner>',
+                            'body': {
+                                'arg_count': 1,
+                                'locals': [{'ty': 0}, {'ty': 3}],
+                                'blocks': [],
+                            },
+                        }
+                    },
+                },
+            ],
+            'spans': [],
+        }
+    )
+
+    assert smir_info.drop_function_tys == {2: 12}
