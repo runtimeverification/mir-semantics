@@ -68,6 +68,7 @@ error with `#AssertInhabitedFailure` if we see that following the intrinsic. Oth
         => AssertInhabitedFailure
        ...
       </k>
+    [priority(100)]
 
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("assert_inhabited")), .Operands, _DEST, _SPAN)
         => .K
