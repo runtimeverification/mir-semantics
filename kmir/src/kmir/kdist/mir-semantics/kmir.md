@@ -370,12 +370,25 @@ where the returned result should go.
   rule isNoOpFunction(monoItemFn(symbol(""), _, noBody)) => true
   rule isNoOpFunction(_) => false [owise]
 
+  syntax KItem ::= #consumeNoOpArgs(Operands, MaybeBasicBlockIdx)
+                 | #consumeNoOpArg(Operand) [strict(1)]
+
   // SMIR marks some semantically empty shims (e.g. drop glue for trivially droppable slices)
-  // as NoOpSym. They have no body and should continue immediately without switching frames.
+  // as NoOpSym. They have no body and should continue immediately without switching frames,
+  // but `Move` arguments must still invalidate the caller locals that were moved into the call.
   rule [termCallNoOp]:
-       <k> #execTerminatorCall(_, monoItemFn(symbol(""), _, noBody), _ARGS, _DEST, TARGET, _UNWIND, _SPAN) ~> _
-        => #continueAt(TARGET)
+       <k> #execTerminatorCall(_, monoItemFn(symbol(""), _, noBody), ARGS, _DEST, TARGET, _UNWIND, _SPAN) ~> _
+        => #consumeNoOpArgs(ARGS, TARGET)
        </k>
+
+  rule <k> #consumeNoOpArgs(.Operands, TARGET) => #continueAt(TARGET) ... </k>
+
+  rule <k> #consumeNoOpArgs(OP:Operand MORE:Operands, TARGET)
+        => #consumeNoOpArg(OP) ~> #consumeNoOpArgs(MORE, TARGET)
+        ...
+       </k>
+
+  rule <k> #consumeNoOpArg(_:Value) => .K ... </k>
 
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
@@ -505,6 +518,9 @@ An operand may be a `Reference` (the only way a function could access another fu
        ListItem(newLocal(TY, MUT)) #reserveFor(REST)
 
   syntax Operand ::= operandValue ( Value )
+
+  // Internal helper operand for already-evaluated runtime values.
+  rule <k> operandValue(VAL) => VAL ... </k>
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
