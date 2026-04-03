@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
+_DROP_IN_PLACE_PREFIXES: Final = ('std::ptr::drop_in_place::<', 'core::ptr::drop_in_place::<')
 
 
 AdtDef = NewType('AdtDef', int)
@@ -185,7 +186,7 @@ class SMIRInfo:
             if mono_item is None:
                 continue
 
-            if not mono_item['name'].startswith('std::ptr::drop_in_place::<'):
+            if not mono_item['name'].startswith(_DROP_IN_PLACE_PREFIXES):
                 continue
 
             body = mono_item.get('body')
