@@ -613,7 +613,7 @@ An `AccountInfo` reference is passed to the function.
 ```
 
 ```{.k .concrete}
-  rule #addAccount(Aggregate(variantIdx(0), ACCOUNT_FIELDS:List) #as P_ACC)
+  rule #addAccount(Aggregate(variantIdx(0), _ACCOUNT_FIELDS:List) #as P_ACC)
       => PAccountAccount(
            #toPAccWithDataLen(P_ACC, 165), // size_of(Account), see pinocchio_token_interface::state::Transmutable instance
            IAcc(#randKey(),                // mint
@@ -657,7 +657,7 @@ An `AccountInfo` reference is passed to the function.
 ```
 
 ```{.k .concrete}
-  rule #addMint(Aggregate(variantIdx(0), MINT_FIELDS:List) #as P_ACC)
+  rule #addMint(Aggregate(variantIdx(0), _MINT_FIELDS:List) #as P_ACC)
       => PAccountMint(
            #toPAccWithDataLen(P_ACC, 82), // size_of(Mint), see pinocchio_token_interface::state::Transmutable instance
            IMint(Flag(#randU1()),         // mint_auth_flag, only 0 or 1 allowed
@@ -698,7 +698,7 @@ An `AccountInfo` reference is passed to the function.
 ```{.k .concrete}
   // FIXME: The randomisation here is too naive, it allows for n < m, and there is no connection between the
   // Signers and n. It needs work to create sensible cases.
-  rule #addMultisig(Aggregate(variantIdx(0), MULTISIG_FIELDS:List) #as P_ACC)
+  rule #addMultisig(Aggregate(variantIdx(0), _MULTISIG_FIELDS:List) #as P_ACC)
       => PAccountMultisig(
            #toPAccWithDataLen(P_ACC, 99), // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
            IMulti(U8(#randU8()),           // m (number of signers required)
@@ -727,7 +727,7 @@ An `AccountInfo` reference is passed to the function.
 ```
 
 ```{.k .concrete}
-  rule #addRent(Aggregate(variantIdx(0), RENT_FIELDS:List) #as P_ACC)
+  rule #addRent(Aggregate(variantIdx(0), _RENT_FIELDS:List) #as P_ACC)
       => PAccountRent(
            #toPAccWithDataLen(P_ACC, 17), // size_of(Rent), see pinocchio::sysvars::rent::Rent::LEN
            PRent(
@@ -1097,7 +1097,7 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
   // NB Only applies when more projections follow.
   rule <k> #traverseProjection(
              DEST,
-             SysRent(PRent(RENT_LMP:U64, RENT_THRESHOLD:F64, RENT_BURN:U8) #as PRENT),
+             SysRent(PRent(_RENT_LMP:U64, _RENT_THRESHOLD:F64, _RENT_BURN:U8) #as PRENT),
              PROJ PROJS,
              CTXTS
            )
@@ -1175,10 +1175,10 @@ NB The projection rule must have higher priority than the one which auto-project
                    | CtxPAccountIMulti( PAcc )
                    | CtxPAccountPRent( PAcc )
 
-  rule #projectionsFor(CtxPAccountIAcc(PACC_CTX) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIAcc PROJS)
-  rule #projectionsFor(CtxPAccountIMint(PACC_CTX) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIMint PROJS)
-  rule #projectionsFor(CtxPAccountIMulti(PACC_CTX) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIMulti PROJS)
-  rule #projectionsFor(CtxPAccountPRent(PACC_CTX) CTXS, PROJS) => #projectionsFor(CTXS, PAccountPRent PROJS)
+  rule #projectionsFor(CtxPAccountIAcc(_PACC_CTX) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIAcc PROJS)
+  rule #projectionsFor(CtxPAccountIMint(_PACC_CTX) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIMint PROJS)
+  rule #projectionsFor(CtxPAccountIMulti(_PACC_CTX) CTXS, PROJS) => #projectionsFor(CTXS, PAccountIMulti PROJS)
+  rule #projectionsFor(CtxPAccountPRent(_PACC_CTX) CTXS, PROJS) => #projectionsFor(CTXS, PAccountPRent PROJS)
 
   rule #buildUpdate(VAL, CtxPAccountIAcc(PACC) CTXS) => #buildUpdate(PAccountAccount(PACC, #toIAcc(VAL)), CTXS)
     [preserves-definedness] // by construction, VAL has the right shape from introducing the context
