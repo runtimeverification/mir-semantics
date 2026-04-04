@@ -739,6 +739,43 @@ def _load_observed_call_cterm(summary_dir: Path, func_ty: int) -> CTerm | None:
         return None
 
 
+def _backfill_observed_calls_from_kcfg(summary_dir: Path, proof: APRProof, *, interesting_tys: set[int]) -> None:
+    if not interesting_tys:
+        return
+
+    from .kmir import KMIRCSESemantics
+
+    semantics = KMIRCSESemantics(callee_proofs={}, summary_dir=summary_dir, learn_observed_calls=True)
+    candidate_nodes_by_ty: dict[int, list[object]] = {}
+    for node in proof.kcfg.nodes:
+        try:
+            call_info = semantics._extract_call_info(node.cterm.cell('K_CELL'))
+        except Exception:
+            call_info = None
+        if call_info is None:
+            continue
+        func_ty = call_info[0]
+        if func_ty not in interesting_tys:
+            continue
+        candidate_nodes_by_ty.setdefault(func_ty, []).append(node)
+
+    if not candidate_nodes_by_ty:
+        return
+
+    for func_ty, nodes in candidate_nodes_by_ty.items():
+        # Record more constrained callsites first so the final stored cterm is
+        # the least-constrained runtime entry we actually saw.
+        ordered_nodes = sorted(nodes, key=lambda node: (len(node.cterm.constraints), node.id), reverse=True)
+        for node in ordered_nodes:
+            semantics.custom_step(node.cterm, None)
+
+    _LOGGER.info(
+        'CSE: backfilled observed callsites for %d callees from proof %s',
+        len(candidate_nodes_by_ty),
+        proof.id,
+    )
+
+
 def cse_prove(opts: ProveOpts) -> CSEResult:
     """Compositional Symbolic Execution pipeline.
 
@@ -1305,6 +1342,16 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             finally:
                 final_proof.add_exec_time(time.perf_counter() - started_at)
                 final_proof.write_proof_data()
+
+    if learn_observed_calls:
+        _backfill_observed_calls_from_kcfg(
+            summary_dir,
+            final_proof,
+            interesting_tys={int(ty) for ty in callee_order},
+        )
+        observed_runtime_counts = _load_observed_runtime_callee_counts(summary_dir)
+        observed_runtime_seen = set(observed_runtime_counts)
+        result.observed_runtime_callees = sorted(observed_runtime_seen)
 
     result.final_prove_time = time.time() - t0
     result.final_proof = final_proof
