@@ -457,7 +457,7 @@ When the booster hits `#cseFunctionEntry`, LLVM has no matching rule and falls b
 to the Haskell backend, which applies either a CSE summary rule (from extra modules)
 or this default pass-through rule.
 
-```k [symbolic]
+```{.k .symbolic}
   rule [cseFunctionEntryDefault]: <k> #cseFunctionEntry => .K ... </k> [owise]
 ```
 
