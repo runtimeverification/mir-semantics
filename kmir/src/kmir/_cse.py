@@ -1059,8 +1059,9 @@ def _generate_frontier_summary_rules(
         )
         rules.append(rule)
         _LOGGER.info(
-            'CSE rule gen: generated rule %s for ty(%d) frontier node %d (ret_value present)',
-            label,
+            'CSE rule gen: generated rule %s-branch-%d for ty(%d) frontier node %d',
+            rule_label_prefix,
+            branch_idx,
             func_ty,
             node_id,
         )
