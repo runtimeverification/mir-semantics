@@ -1198,37 +1198,7 @@ class KMIRCSESemantics(KMIRSemantics):
             details={'branch_count': len(summary_cterms)},
         )
         self._summary_hit_counts[func_ty] = self._summary_hit_counts.get(func_ty, 0) + 1
-
-        # Return Branch (produces Split) instead of NDBranch.  Extract the
-        # distinguishing constraints from frontier nodes.  After the Split,
-        # the prover re-calls custom_step on each constrained child.  With
-        # _is_trivially_bottom filtering infeasible branches, only ONE
-        # frontier path survives per child → Step.  No infinite loop.
-        if summary_mode == 'frontier' and callee_proof is not None:
-            from pyk.kcfg.kcfg import Branch
-            init_constraint_reprs = {repr(cc) for cc in callee_proof.kcfg.node(callee_proof.init).cterm.constraints}
-            branch_constraints: list[KInner] = []
-            for snode in summary_nodes:
-                extras = [cc for cc in snode.cterm.constraints if repr(cc) not in init_constraint_reprs]
-                if len(extras) >= 1:
-                    # Unwrap #Equals(true, EXPR) → EXPR for Branch constraint
-                    extra = extras[0]
-                    if isinstance(extra, KApply) and extra.label.name.startswith('#Equals') and len(extra.args) == 2:
-                        lhs_e, rhs_e = extra.args
-                        if isinstance(lhs_e, KToken) and lhs_e.token == 'true':
-                            branch_constraints.append(subst(rhs_e))
-                        elif isinstance(rhs_e, KToken) and rhs_e.token == 'true':
-                            branch_constraints.append(subst(lhs_e))
-                        else:
-                            branch_constraints.append(subst(extra))
-                    else:
-                        branch_constraints.append(subst(extra))
-
-            if len(branch_constraints) == len(summary_nodes):
-                _LOGGER.info(f'CSE custom_step: {len(branch_constraints)}-way Split for ty({func_ty})')
-                return Branch(constraints=branch_constraints, info='cse-frontier-split')
-
-        _LOGGER.info(f'CSE custom_step: {len(summary_cterms)}-branch {summary_mode} NDBranch for ty({func_ty})')
+        _LOGGER.info(f'CSE custom_step: {len(summary_cterms)}-branch {summary_mode} summary for ty({func_ty})')
         branch_label = 'CSE-SUMMARY' if summary_mode == 'return' else 'CSE-FRONTIER'
         return NDBranch(
             cterms=tuple(summary_cterms),
