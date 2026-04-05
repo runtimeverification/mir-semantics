@@ -1853,10 +1853,11 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             result.online_generated_summaries.append(name)
         return proof
 
-    # Determine whether to use dynamic (Python-level) interception or compiled rules.
-    # When summary-rules.json modules are available, prefer compiled rules (no overhead).
-    has_compiled_rules = bool(all_summary_paths)
-    use_dynamic_cse = (bool(callee_proofs) or learn_observed_calls) and not (reuse_only_mode and has_compiled_rules)
+    # Always use dynamic (Python-level) interception via custom_step.
+    # Compiled K rules approach doesn't work (booster ignores priority,
+    # causing NDBranch explosion).  Don't pass summary-rules.json as
+    # extra_modules to avoid re-kompile overhead.
+    use_dynamic_cse = bool(callee_proofs) or learn_observed_calls or reuse_only_mode
     observed_runtime_names = [name for func_ty in observed_runtime_seen if (name := _ty_to_name(smir_info, Ty(func_ty))) is not None]
     dynamic_break_targets = {*opts.break_on_function, *dynamic_summary_names, *observed_runtime_names}
     if observe_only_mode:
@@ -1867,15 +1868,10 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
         dynamic_break_targets.update(
             name for ty in callee_order if (name := _ty_to_name(smir_info, ty)) is not None
         )
-    if reuse_only_mode and has_compiled_rules:
-        # In reuse-only mode with compiled summary rules, no break targets needed.
-        # The booster applies rules natively during execution.
-        dynamic_break_targets = set(opts.break_on_function)
     dynamic_break_on_function = sorted(dynamic_break_targets)
-    # Keep exported summary modules available even when dynamic CSE is enabled.
-    # The rule-level summaries can still help simplification around the dynamic
-    # fast path, and empirical runs are worse without them.
-    main_extra_modules = user_modules + all_summary_paths
+    # Don't include summary-rules.json as extra_modules — they cause
+    # NDBranch explosion in the booster and trigger expensive re-kompile.
+    main_extra_modules = list(opts.add_modules)
 
     print(
         f'[CSE] Proving {start_name} with {len(callee_proofs)} dynamic summaries '
@@ -1971,24 +1967,7 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             finally:
                 final_proof.add_exec_time(time.perf_counter() - started_at)
                 final_proof.write_proof_data()
-    else:
-        # Compiled-rules path: summary rules are baked into the K definition
-        # via extra_modules. The booster applies them natively — no cut-points,
-        # no custom_step, no Python overhead.
-        from ._prove import _prove_sequential
-        from .kmir import KMIRSemantics
-
-        _LOGGER.info(
-            'CSE: using compiled-rules path with %d exported summary modules',
-            len(all_summary_paths),
-        )
-        _prove_sequential(
-            kmir,
-            final_proof,
-            opts=opts,
-            label=final_proof.id,
-            cut_point_rules=[],
-        )
+    # No else branch — always use dynamic CSE path above
 
     if learn_observed_calls:
         _backfill_observed_calls_from_kcfg(

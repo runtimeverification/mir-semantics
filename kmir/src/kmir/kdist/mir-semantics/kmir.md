@@ -446,22 +446,6 @@ An operand may be a `Reference` (the only way a function could access another fu
 ```k
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
 
-  // CSE entry point marker.  Inserted after argument setup, before the first
-  // basic block.  CSE summary rules match on this marker to intercept the
-  // function body.  If no CSE rule matches, the default rule below consumes it.
-  syntax KItem ::= "#cseFunctionEntry"
-```
-
-The default rule is `symbolic`-only so that the LLVM backend does NOT compile it.
-When the booster hits `#cseFunctionEntry`, LLVM has no matching rule and falls back
-to the Haskell backend, which applies either a CSE summary rule (from extra modules)
-or this default pass-through rule.
-
-```{.k .symbolic}
-  rule [cseFunctionEntryDefault]: <k> #cseFunctionEntry => .K ... </k> [priority(200)]
-```
-
-```k
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule [setupCalleeData]: <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
@@ -469,7 +453,7 @@ or this default pass-through rule.
               _SPAN
               )
          =>
-           #setArgsFromStack(1, ARGS) ~> #cseFunctionEntry ~> #execBlock(FIRST)
+           #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
          ...
        </k>
        //<currentFunc> CALLEE </currentFunc>
