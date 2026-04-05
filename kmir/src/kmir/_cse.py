@@ -1002,22 +1002,15 @@ def _generate_frontier_summary_rules(
 
         requires = KToken('true', KSort('Bool'))
 
-        # Build rule LHS: match #cseFunctionEntry ~> #execBlock(_) inside callee.
-        # #cseFunctionEntry is a marker inserted by setupCalleeData after argument
-        # setup, before the first basic block.  It only fires once per call.
-        block_var = KVariable('_CSE_BLOCK', sort=KSort('BasicBlock'))
-        rest_var = KVariable('_CSE_REST', sort=KSort('K'))
-
-        lhs_k = KSequence(
-            [
-                KApply('#cseFunctionEntry_KMIR-CONTROL-FLOW_KItem', ()),
-                KApply('#execBlock(_)_KMIR-CONTROL-FLOW_KItem_BasicBlock', (block_var,)),
-                rest_var,
-            ]
-        )
+        # Build rule LHS: match only #cseFunctionEntry (single K item).
+        # Must match the same length as the default rule (cseFunctionEntryDefault)
+        # so that [owise] on the default rule prevents it from competing.
+        # The `...` in the <k> cell keeps the rest (including #execBlock(BB)).
+        # After the CSE rule fires, terminatorKindReturn's `~> _` discards
+        # the remaining callee code.
+        lhs_k = KApply('#cseFunctionEntry_KMIR-CONTROL-FLOW_KItem', ())
 
         # Build rule RHS: set local[0] (return slot) and execute terminatorKindReturn.
-        # The standard K return mechanism pops the stack, writes dest, and jumps to target.
         return_place = KApply(
             'place',
             (
@@ -1040,7 +1033,6 @@ def _generate_frontier_summary_rules(
                         ),
                     ),
                 ),
-                rest_var,
             ]
         )
 
