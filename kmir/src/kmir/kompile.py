@@ -296,6 +296,10 @@ def kompile_smir(
         target_llvmdt_path = target_llvm_lib_path / 'dt'
 
         _LOGGER.info(f'Creating directories {target_llvmdt_path} and {target_hs_path}')
+        # Clear the dt directory to avoid stale matching tables from a previous
+        # incompatible definition.kore (mixing old and new dt files causes llvm-kompile SIGABRT).
+        if target_llvmdt_path.exists():
+            shutil.rmtree(target_llvmdt_path)
         target_llvmdt_path.mkdir(parents=True, exist_ok=True)
         target_hs_path.mkdir(parents=True, exist_ok=True)
 
