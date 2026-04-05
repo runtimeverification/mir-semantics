@@ -450,8 +450,18 @@ An operand may be a `Reference` (the only way a function could access another fu
   // basic block.  CSE summary rules match on this marker to intercept the
   // function body.  If no CSE rule matches, the default rule below consumes it.
   syntax KItem ::= "#cseFunctionEntry"
-  rule [cseFunctionEntryDefault]: <k> #cseFunctionEntry => .K ... </k> [owise]
+```
 
+The default rule is `symbolic`-only so that the LLVM backend does NOT compile it.
+When the booster hits `#cseFunctionEntry`, LLVM has no matching rule and falls back
+to the Haskell backend, which applies either a CSE summary rule (from extra modules)
+or this default pass-through rule.
+
+```k [symbolic]
+  rule [cseFunctionEntryDefault]: <k> #cseFunctionEntry => .K ... </k> [owise]
+```
+
+```k
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule [setupCalleeData]: <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
