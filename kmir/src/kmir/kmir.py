@@ -1198,7 +1198,34 @@ class KMIRCSESemantics(KMIRSemantics):
             details={'branch_count': len(summary_cterms)},
         )
         self._summary_hit_counts[func_ty] = self._summary_hit_counts.get(func_ty, 0) + 1
-        _LOGGER.info(f'CSE custom_step: {len(summary_cterms)}-branch {summary_mode} summary for ty({func_ty})')
+
+        # Produce Split via Branch when possible.  Extract distinguishing
+        # constraints from frontier nodes.  After Split, re-entry filters
+        # infeasible branches via _is_trivially_bottom (which now handles
+        # both #Equals and raw Bool constraints).
+        if summary_mode == 'frontier' and callee_proof is not None:
+            from pyk.kcfg.kcfg import Branch
+            init_constraint_reprs = {repr(cc) for cc in callee_proof.kcfg.node(callee_proof.init).cterm.constraints}
+            branch_constraints: list[KInner] = []
+            for snode in summary_nodes:
+                extras = [cc for cc in snode.cterm.constraints if repr(cc) not in init_constraint_reprs]
+                if extras:
+                    extra = extras[0]
+                    if isinstance(extra, KApply) and extra.label.name.startswith('#Equals') and len(extra.args) == 2:
+                        lhs_e, rhs_e = extra.args
+                        if isinstance(lhs_e, KToken) and lhs_e.token == 'true':
+                            branch_constraints.append(subst(rhs_e))
+                        elif isinstance(rhs_e, KToken) and rhs_e.token == 'true':
+                            branch_constraints.append(subst(lhs_e))
+                        else:
+                            branch_constraints.append(subst(extra))
+                    else:
+                        branch_constraints.append(subst(extra))
+            if len(branch_constraints) == len(summary_nodes):
+                _LOGGER.info(f'CSE custom_step: {len(branch_constraints)}-way Split for ty({func_ty})')
+                return Branch(constraints=branch_constraints, info='cse-frontier-split')
+
+        _LOGGER.info(f'CSE custom_step: {len(summary_cterms)}-branch {summary_mode} NDBranch for ty({func_ty})')
         branch_label = 'CSE-SUMMARY' if summary_mode == 'return' else 'CSE-FRONTIER'
         return NDBranch(
             cterms=tuple(summary_cterms),
@@ -1208,38 +1235,36 @@ class KMIRCSESemantics(KMIRSemantics):
 
 
 def _extract_bool_pos_neg(constraints: tuple[KInner, ...]) -> tuple[frozenset[KInner], frozenset[KInner]]:
-    """Extract positive and negative bool-typed subterms from #Equals constraints.
+    """Extract positive and negative bool-typed subterms from constraints.
 
-    Returns (positive, negative) where:
-    - positive: terms T such that #Equals(true, T) appears in constraints
-    - negative: terms T such that #Equals(true, notBool T) appears in constraints
+    Handles both:
+    - ML constraints: #Equals(true, T) and #Equals(true, notBool T)
+    - Raw Bool constraints: T and notBool T (from split_on_constraints)
 
-    If T appears in both sets, the constraint set contains P AND notBool P — a contradiction.
+    Returns (positive, negative) where P in both sets → contradiction.
     """
     positive: list[KInner] = []
     negative: list[KInner] = []
     for c in constraints:
         if not isinstance(c, KApply):
             continue
-        if not c.label.name.startswith('#Equals'):
-            continue
-        if len(c.args) != 2:
-            continue
-        lhs, rhs = c.args
-        # Normalize so lhs = KToken('true') if possible
-        if (
-            isinstance(rhs, KToken)
-            and rhs.token == 'true'
-            and not (isinstance(lhs, KToken) and lhs.token == 'true')
-        ):
-            lhs, rhs = rhs, lhs
-        if not (isinstance(lhs, KToken) and lhs.token == 'true'):
-            continue
-        # lhs is now KToken('true'), rhs is the bool expression
-        if isinstance(rhs, KApply) and 'notBool' in rhs.label.name and len(rhs.args) == 1:
-            negative.append(rhs.args[0])
+        if c.label.name.startswith('#Equals') and len(c.args) == 2:
+            # ML constraint: #Equals(true, EXPR) or #Equals(EXPR, true)
+            lhs, rhs = c.args
+            if isinstance(rhs, KToken) and rhs.token == 'true' and not (isinstance(lhs, KToken) and lhs.token == 'true'):
+                lhs, rhs = rhs, lhs
+            if not (isinstance(lhs, KToken) and lhs.token == 'true'):
+                continue
+            if isinstance(rhs, KApply) and 'notBool' in rhs.label.name and len(rhs.args) == 1:
+                negative.append(rhs.args[0])
+            else:
+                positive.append(rhs)
+        elif 'notBool' in c.label.name and len(c.args) == 1:
+            # Raw Bool: notBool T
+            negative.append(c.args[0])
         else:
-            positive.append(rhs)
+            # Raw Bool: T (any other KApply treated as positive)
+            positive.append(c)
     return (frozenset(positive), frozenset(negative))
 
 
