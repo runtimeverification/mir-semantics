@@ -912,67 +912,80 @@ def _generate_frontier_summary_rules(
             _LOGGER.warning('CSE rule gen: frontier node %d has no extractable return value, skipping', node_id)
             continue
 
-        # Substitute callee variables in the return value with getValue(LOCALS, idx).
-        # getValue returns Value sort, so if the variable appears inside a Value
-        # constructor (e.g., BoolVal(ARG_BOOL2)), replace the ENTIRE constructor
-        # with getValue to avoid sort mismatch.
-        locals_var = KVariable('LOCALS', sort=KSort('List'))
-        ret_free_vars = _free_vars(raw_ret_value)
-        if ret_free_vars:
-            # Check if ALL free vars map to locals — if so, use getValue for the
-            # entire return value when it's a simple Value constructor wrapper.
-            all_mapped = all(v in var_to_local_idx for v in ret_free_vars)
-            if all_mapped and len(ret_free_vars) == 1:
-                var_name = next(iter(ret_free_vars))
-                idx = var_to_local_idx[var_name]
-                # Use getValue(LOCALS, idx) as the entire return value.
-                # This is correct because the callee's local[idx] holds a Value
-                # that was passed as argument, and getValue extracts it.
-                ret_value = KApply(
-                    'getValue(_,_)_RT-DATA_Value_List_Int',
-                    (locals_var, KToken(str(idx), KSort('Int'))),
-                )
-            else:
-                # Multiple vars or unmapped vars — abstract to fresh symbolic vars
-                ret_subst: dict[str, KInner] = {}
-                for var_name in sorted(ret_free_vars):
-                    ret_subst[var_name] = KVariable(f'CSE_RET_{branch_idx}_{var_name}')
-                ret_value = _Subst(ret_subst)(raw_ret_value)
-        else:
-            ret_value = raw_ret_value
+        # Build the <locals> pattern and requires clause by comparing init vs
+        # frontier locals.  Instead of function calls like getLocal() in requires
+        # (which fall back to kore-rpc), we pattern-match the LOCALS list in the
+        # LHS to bind argument values directly.  The requires clause then uses
+        # only bound variables and builtin operations → booster fast path.
+        #
+        # Strategy:
+        # - For each argument local: compare init (symbolic) vs frontier (concrete)
+        # - If they differ: bind a fresh variable in the LHS pattern, add requires
+        # - Return value uses the same bound variables
 
-        # Build requires clause by comparing init locals with frontier locals.
-        # For each argument position where the frontier has a more specific
-        # (concrete) value than init, generate:
-        #   getLocal(LOCALS, idx) ==K frontier_typed_value
-        # Both sides have sort TypedLocal, so this passes sort checking.
+        # Build locals list pattern for LHS matching
+        locals_pattern_items: list[KInner] = []
         requires_terms: list[KInner] = []
+        # Map from callee var names to LHS-bound variable names
+        var_to_lhs_var: dict[str, KVariable] = {}
+
         try:
             frontier_locals = node.cterm.cell('LOCALS_CELL')
             frontier_local_items = KMIRCSESemantics._list_items(frontier_locals)
-            # Compare argument positions (skip local[0] = return slot)
-            for idx in range(1, min(len(init_local_items), len(frontier_local_items))):
+
+            for idx in range(min(len(init_local_items), len(frontier_local_items))):
                 init_item = init_local_items[idx]
                 frontier_item = frontier_local_items[idx]
-                if init_item != frontier_item:
-                    # This argument differs between init and frontier →
-                    # the branch condition constrains this argument.
-                    get_local = KApply(
-                        'getLocal(_,_)_RT-DATA_TypedLocal_List_Int',
-                        (locals_var, KToken(str(idx), KSort('Int'))),
-                    )
-                    requires_terms.append(
-                        KApply('_==K_', (get_local, frontier_item))
-                    )
-        except Exception as e:
-            _LOGGER.info('CSE rule gen: could not compare locals for branch %d: %s', branch_idx, e)
 
-        if requires_terms:
-            requires: KInner = requires_terms[0]
-            for rt in requires_terms[1:]:
-                requires = KApply('_andBool_', (requires, rt))
+                if idx == 0:
+                    # local[0] is return slot — match with wildcard
+                    locals_pattern_items.append(KVariable(f'_CSE_L0_{branch_idx}'))
+                elif init_item == frontier_item:
+                    # Same in init and frontier — match with wildcard
+                    locals_pattern_items.append(KVariable(f'_CSE_L{idx}_{branch_idx}'))
+                else:
+                    # Differs: this argument determines the branch.
+                    # Bind the concrete frontier value in the LHS pattern.
+                    locals_pattern_items.append(frontier_item)
+                    # Extract free vars from init_item to map them for return value
+                    for var_name, _var_node in KMIRCSESemantics._extract_free_vars(init_item):
+                        # Find the corresponding concrete value in frontier_item
+                        # by looking at the same position in the term structure
+                        var_to_lhs_var[var_name] = _find_concrete_value(init_item, frontier_item, var_name)
+        except Exception as e:
+            _LOGGER.info('CSE rule gen: could not build locals pattern for branch %d: %s', branch_idx, e)
+            # Fallback: wildcard locals, no requires
+            locals_pattern_items = []
+
+        # Build the locals cell content for the LHS
+        if locals_pattern_items:
+            # Build K List from items: ListItem(x1) ListItem(x2) ... REST
+            locals_rest = KVariable(f'_CSE_LREST_{branch_idx}', sort=KSort('List'))
+            locals_pattern: KInner = locals_rest
+            for item in reversed(locals_pattern_items):
+                locals_pattern = KApply('_List_', (KApply('ListItem', (item,)), locals_pattern))
         else:
-            requires = KToken('true', KSort('Bool'))
+            locals_pattern = KVariable('LOCALS', sort=KSort('List'))
+
+        # Build return value: substitute callee vars with concrete values from
+        # the frontier (already bound by LHS pattern matching).
+        ret_free_vars = _free_vars(raw_ret_value)
+        if ret_free_vars and var_to_lhs_var:
+            ret_subst: dict[str, KInner] = {}
+            for var_name in sorted(ret_free_vars):
+                if var_name in var_to_lhs_var:
+                    concrete_val = var_to_lhs_var[var_name]
+                    if concrete_val is not None:
+                        ret_subst[var_name] = concrete_val
+                    else:
+                        ret_subst[var_name] = KVariable(f'CSE_RET_{branch_idx}_{var_name}')
+                else:
+                    ret_subst[var_name] = KVariable(f'CSE_RET_{branch_idx}_{var_name}')
+            ret_value = _Subst(ret_subst)(raw_ret_value)
+        else:
+            ret_value = raw_ret_value
+
+        requires = KToken('true', KSort('Bool'))
 
         # Build rule LHS: match #execBlock(_) inside the callee function.
         # After the normal call mechanism pushes the stack frame and sets up
@@ -1014,7 +1027,7 @@ def _generate_frontier_summary_rules(
         # Build full configuration: <generatedTop>(<kmir>(<k>, <currentFunc>, <locals>, ...), ...)
         k_cell_rule = KApply('<k>', (KRewrite(lhs_k, rhs_k),))
         current_func_cell = KApply('<currentFunc>', (KApply('ty', (KToken(str(func_ty), KSort('Int')),)),))
-        locals_cell = KApply('<locals>', (locals_var,))
+        locals_cell = KApply('<locals>', (locals_pattern,))
 
         # <currentFrame> wraps <locals> and other cells
         current_frame = KApply(
@@ -1046,11 +1059,14 @@ def _generate_frontier_summary_rules(
             ),
         )
 
+        from pyk.kast.att import AttKey, NoneType
+
+        _PRESERVES_DEFINEDNESS = AttKey('preserves-definedness', type=NoneType())
         rule = KRule(
             body=body,
             requires=requires,
             ensures=KToken('true', KSort('Bool')),
-            att=EMPTY_ATT.update([Atts.PRIORITY(str(priority))]),
+            att=EMPTY_ATT.update([Atts.PRIORITY(str(priority)), _PRESERVES_DEFINEDNESS(None)]),
         )
         rules.append(rule)
         _LOGGER.info(
@@ -1062,6 +1078,28 @@ def _generate_frontier_summary_rules(
         )
 
     return rules
+
+
+def _find_concrete_value(init_term: KInner, frontier_term: KInner, var_name: str) -> KInner | None:
+    """Find the concrete value that replaced a variable in the frontier term.
+
+    Walks init_term and frontier_term in parallel. When init_term has KVariable
+    with the given name, returns the corresponding subtree from frontier_term.
+    """
+    if isinstance(init_term, KVariable) and init_term.name == var_name:
+        return frontier_term
+    if isinstance(init_term, KApply) and isinstance(frontier_term, KApply):
+        if init_term.label == frontier_term.label and len(init_term.args) == len(frontier_term.args):
+            for init_arg, frontier_arg in zip(init_term.args, frontier_term.args):
+                result = _find_concrete_value(init_arg, frontier_arg, var_name)
+                if result is not None:
+                    return result
+    if isinstance(init_term, KSequence) and isinstance(frontier_term, KSequence):
+        for init_item, frontier_item in zip(init_term.items, frontier_term.items):
+            result = _find_concrete_value(init_item, frontier_item, var_name)
+            if result is not None:
+                return result
+    return None
 
 
 def _extract_boundary_return_value_static(k_cell: KInner) -> KInner | None:
