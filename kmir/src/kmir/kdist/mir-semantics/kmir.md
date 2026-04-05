@@ -446,6 +446,12 @@ An operand may be a `Reference` (the only way a function could access another fu
 ```k
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
 
+  // CSE entry point marker.  Inserted after argument setup, before the first
+  // basic block.  CSE summary rules match on this marker to intercept the
+  // function body.  If no CSE rule matches, the default rule below consumes it.
+  syntax KItem ::= "#cseFunctionEntry" [function, total]
+  rule [cseFunctionEntryDefault]: <k> #cseFunctionEntry => .K ... </k>
+
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule [setupCalleeData]: <k> #setUpCalleeData(
               monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
@@ -453,7 +459,7 @@ An operand may be a `Reference` (the only way a function could access another fu
               _SPAN
               )
          =>
-           #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
+           #setArgsFromStack(1, ARGS) ~> #cseFunctionEntry ~> #execBlock(FIRST)
          ...
        </k>
        //<currentFunc> CALLEE </currentFunc>
