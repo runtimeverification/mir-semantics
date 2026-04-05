@@ -923,11 +923,20 @@ def _generate_frontier_summary_rules(
         # - If they differ: bind a fresh variable in the LHS pattern, add requires
         # - Return value uses the same bound variables
 
-        # Build locals list pattern for LHS matching
+        # Strategy: LHS always uses the INIT node's locals pattern (with symbolic
+        # variables).  The requires clause constrains those variables to the
+        # FRONTIER's concrete values using builtin equality (==K).
+        #
+        # Example for callee(flag: bool, other: bool):
+        #   LHS <locals>: ListItem(_) ListItem(typedValue(BoolVal(FLAG), ty(25), Mut::Not)) REST
+        #   requires: FLAG ==K false        (for branch 0)
+        #   requires: FLAG ==K true         (for branch 1)
+        #
+        # This works with both booster (concrete args) and Haskell backend
+        # (symbolic args → produces split on FLAG).
+
         locals_pattern_items: list[KInner] = []
         requires_terms: list[KInner] = []
-        # Map from callee var names to LHS-bound variable names
-        var_to_lhs_var: dict[str, KVariable] = {}
 
         try:
             frontier_locals = node.cterm.cell('LOCALS_CELL')
@@ -938,35 +947,27 @@ def _generate_frontier_summary_rules(
                 frontier_item = frontier_local_items[idx]
 
                 if idx == 0:
-                    # local[0] is return slot — match with wildcard
+                    # local[0] is return slot — wildcard
                     locals_pattern_items.append(KVariable(f'_CSE_L0_{branch_idx}'))
-                elif init_item == frontier_item:
-                    # Same in init and frontier.  If the return value references
-                    # variables from this local, use the init pattern (with its
-                    # symbolic vars) so the LHS binds them.  Otherwise wildcard.
-                    init_vars = {v for v, _ in KMIRCSESemantics._extract_free_vars(init_item)}
-                    if init_vars & _free_vars(raw_ret_value):
-                        # Return value references vars from this local → keep pattern
-                        locals_pattern_items.append(init_item)
-                    else:
-                        locals_pattern_items.append(KVariable(f'_CSE_L{idx}_{branch_idx}'))
                 else:
-                    # Differs: this argument determines the branch.
-                    # Bind the concrete frontier value in the LHS pattern.
-                    locals_pattern_items.append(frontier_item)
-                    # Extract free vars from init_item to map them for return value
-                    for var_name, _var_node in KMIRCSESemantics._extract_free_vars(init_item):
-                        # Find the corresponding concrete value in frontier_item
-                        # by looking at the same position in the term structure
-                        var_to_lhs_var[var_name] = _find_concrete_value(init_item, frontier_item, var_name)
+                    # Always use the init pattern (symbolic vars) in LHS.
+                    # This binds vars at their correct sort.
+                    locals_pattern_items.append(init_item)
+
+                    # If init and frontier differ, add requires constraint.
+                    if init_item != frontier_item:
+                        # Find each variable that changed and add equality constraint
+                        for var_name, _var_node in KMIRCSESemantics._extract_free_vars(init_item):
+                            concrete_val = _find_concrete_value(init_item, frontier_item, var_name)
+                            if concrete_val is not None:
+                                var = KVariable(var_name)
+                                requires_terms.append(KApply('_==K_', (var, concrete_val)))
         except Exception as e:
             _LOGGER.info('CSE rule gen: could not build locals pattern for branch %d: %s', branch_idx, e)
-            # Fallback: wildcard locals, no requires
             locals_pattern_items = []
 
         # Build the locals cell content for the LHS
         if locals_pattern_items:
-            # Build K List from items: ListItem(x1) ListItem(x2) ... REST
             locals_rest = KVariable(f'_CSE_LREST_{branch_idx}', sort=KSort('List'))
             locals_pattern: KInner = locals_rest
             for item in reversed(locals_pattern_items):
@@ -974,33 +975,17 @@ def _generate_frontier_summary_rules(
         else:
             locals_pattern = KVariable('LOCALS', sort=KSort('List'))
 
-        # Build return value.  Variables bound by the LHS locals pattern can be
-        # used directly in the RHS.  Variables from changed locals get their
-        # concrete frontier values.  Unmapped variables are abstracted.
-        ret_free_vars = _free_vars(raw_ret_value)
-        if ret_free_vars:
-            # Collect all vars bound by the LHS locals pattern
-            lhs_bound_vars: set[str] = set()
-            for item in locals_pattern_items:
-                lhs_bound_vars.update(v for v, _ in KMIRCSESemantics._extract_free_vars(item))
+        # Return value: variables are already bound by the LHS init locals pattern.
+        # No substitution needed — use raw_ret_value directly.
+        ret_value = raw_ret_value
 
-            ret_subst: dict[str, KInner] = {}
-            for var_name in sorted(ret_free_vars):
-                if var_name in lhs_bound_vars:
-                    pass  # Already bound by LHS — use as-is, no substitution needed
-                elif var_name in var_to_lhs_var and var_to_lhs_var[var_name] is not None:
-                    ret_subst[var_name] = var_to_lhs_var[var_name]
-                else:
-                    ret_subst[var_name] = KVariable(f'CSE_RET_{branch_idx}_{var_name}')
-
-            if ret_subst:
-                ret_value = _Subst(ret_subst)(raw_ret_value)
-            else:
-                ret_value = raw_ret_value
+        # Build requires clause
+        if requires_terms:
+            requires: KInner = requires_terms[0]
+            for rt in requires_terms[1:]:
+                requires = KApply('_andBool_', (requires, rt))
         else:
-            ret_value = raw_ret_value
-
-        requires = KToken('true', KSort('Bool'))
+            requires = KToken('true', KSort('Bool'))
 
         # Build rule LHS: match only #cseFunctionEntry (single K item).
         # Must match the same length as the default rule (cseFunctionEntryDefault)
