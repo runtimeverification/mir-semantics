@@ -941,8 +941,15 @@ def _generate_frontier_summary_rules(
                     # local[0] is return slot — match with wildcard
                     locals_pattern_items.append(KVariable(f'_CSE_L0_{branch_idx}'))
                 elif init_item == frontier_item:
-                    # Same in init and frontier — match with wildcard
-                    locals_pattern_items.append(KVariable(f'_CSE_L{idx}_{branch_idx}'))
+                    # Same in init and frontier.  If the return value references
+                    # variables from this local, use the init pattern (with its
+                    # symbolic vars) so the LHS binds them.  Otherwise wildcard.
+                    init_vars = {v for v, _ in KMIRCSESemantics._extract_free_vars(init_item)}
+                    if init_vars & _free_vars(raw_ret_value):
+                        # Return value references vars from this local → keep pattern
+                        locals_pattern_items.append(init_item)
+                    else:
+                        locals_pattern_items.append(KVariable(f'_CSE_L{idx}_{branch_idx}'))
                 else:
                     # Differs: this argument determines the branch.
                     # Bind the concrete frontier value in the LHS pattern.
@@ -967,21 +974,29 @@ def _generate_frontier_summary_rules(
         else:
             locals_pattern = KVariable('LOCALS', sort=KSort('List'))
 
-        # Build return value: substitute callee vars with concrete values from
-        # the frontier (already bound by LHS pattern matching).
+        # Build return value.  Variables bound by the LHS locals pattern can be
+        # used directly in the RHS.  Variables from changed locals get their
+        # concrete frontier values.  Unmapped variables are abstracted.
         ret_free_vars = _free_vars(raw_ret_value)
-        if ret_free_vars and var_to_lhs_var:
+        if ret_free_vars:
+            # Collect all vars bound by the LHS locals pattern
+            lhs_bound_vars: set[str] = set()
+            for item in locals_pattern_items:
+                lhs_bound_vars.update(v for v, _ in KMIRCSESemantics._extract_free_vars(item))
+
             ret_subst: dict[str, KInner] = {}
             for var_name in sorted(ret_free_vars):
-                if var_name in var_to_lhs_var:
-                    concrete_val = var_to_lhs_var[var_name]
-                    if concrete_val is not None:
-                        ret_subst[var_name] = concrete_val
-                    else:
-                        ret_subst[var_name] = KVariable(f'CSE_RET_{branch_idx}_{var_name}')
+                if var_name in lhs_bound_vars:
+                    pass  # Already bound by LHS — use as-is, no substitution needed
+                elif var_name in var_to_lhs_var and var_to_lhs_var[var_name] is not None:
+                    ret_subst[var_name] = var_to_lhs_var[var_name]
                 else:
                     ret_subst[var_name] = KVariable(f'CSE_RET_{branch_idx}_{var_name}')
-            ret_value = _Subst(ret_subst)(raw_ret_value)
+
+            if ret_subst:
+                ret_value = _Subst(ret_subst)(raw_ret_value)
+            else:
+                ret_value = raw_ret_value
         else:
             ret_value = raw_ret_value
 
@@ -1059,14 +1074,11 @@ def _generate_frontier_summary_rules(
             ),
         )
 
-        from pyk.kast.att import AttKey, NoneType
-
-        _PRESERVES_DEFINEDNESS = AttKey('preserves-definedness', type=NoneType())
         rule = KRule(
             body=body,
             requires=requires,
             ensures=KToken('true', KSort('Bool')),
-            att=EMPTY_ATT.update([Atts.PRIORITY(str(priority)), _PRESERVES_DEFINEDNESS(None)]),
+            att=EMPTY_ATT.update([Atts.PRIORITY(str(priority))]),
         )
         rules.append(rule)
         _LOGGER.info(
