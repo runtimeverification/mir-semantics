@@ -458,7 +458,7 @@ to the Haskell backend, which applies either a CSE summary rule (from extra modu
 or this default pass-through rule.
 
 ```{.k .symbolic}
-  rule [cseFunctionEntryDefault]: <k> #cseFunctionEntry => .K ... </k> [owise]
+  rule [cseFunctionEntryDefault]: <k> #cseFunctionEntry => .K ... </k> [priority(200)]
 ```
 
 ```k
