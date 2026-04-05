@@ -941,18 +941,38 @@ def _generate_frontier_summary_rules(
         else:
             ret_value = raw_ret_value
 
-        # Build requires clause from frontier node constraints.
-        # Translate callee variable constraints to Value-level comparisons
-        # using getValue(LOCALS, idx).
-        #
-        # E.g., constraint `notBool ARG_BOOL1` (where ARG_BOOL1 is at local[1])
-        # becomes: `getValue(LOCALS, 1) ==K Value::BoolVal(false)`
-        #
-        # For now, use `requires true` (no conditions) — multiple rules with
-        # different return values create NDBranch.  The booster explores all
-        # branches, which is correct for CSE.
-        # TODO: translate constraints to Value-level comparisons for Splits.
-        requires = KToken('true', KSort('Bool'))
+        # Build requires clause by comparing init locals with frontier locals.
+        # For each argument position where the frontier has a more specific
+        # (concrete) value than init, generate:
+        #   getLocal(LOCALS, idx) ==K frontier_typed_value
+        # Both sides have sort TypedLocal, so this passes sort checking.
+        requires_terms: list[KInner] = []
+        try:
+            frontier_locals = node.cterm.cell('LOCALS_CELL')
+            frontier_local_items = KMIRCSESemantics._list_items(frontier_locals)
+            # Compare argument positions (skip local[0] = return slot)
+            for idx in range(1, min(len(init_local_items), len(frontier_local_items))):
+                init_item = init_local_items[idx]
+                frontier_item = frontier_local_items[idx]
+                if init_item != frontier_item:
+                    # This argument differs between init and frontier →
+                    # the branch condition constrains this argument.
+                    get_local = KApply(
+                        'getLocal(_,_)_RT-DATA_TypedLocal_List_Int',
+                        (locals_var, KToken(str(idx), KSort('Int'))),
+                    )
+                    requires_terms.append(
+                        KApply('_==K_', (get_local, frontier_item))
+                    )
+        except Exception as e:
+            _LOGGER.info('CSE rule gen: could not compare locals for branch %d: %s', branch_idx, e)
+
+        if requires_terms:
+            requires: KInner = requires_terms[0]
+            for rt in requires_terms[1:]:
+                requires = KApply('_andBool_', (requires, rt))
+        else:
+            requires = KToken('true', KSort('Bool'))
 
         # Build rule LHS: match #execBlock(_) inside the callee function.
         # After the normal call mechanism pushes the stack frame and sets up
