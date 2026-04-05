@@ -912,24 +912,32 @@ def _generate_frontier_summary_rules(
             _LOGGER.warning('CSE rule gen: frontier node %d has no extractable return value, skipping', node_id)
             continue
 
-        # Substitute callee variables in the return value with valueOf(getLocal(LOCALS, idx)).
-        # This binds the return value to the callee's actual argument values.
+        # Substitute callee variables in the return value with getValue(LOCALS, idx).
+        # getValue returns Value sort, so if the variable appears inside a Value
+        # constructor (e.g., BoolVal(ARG_BOOL2)), replace the ENTIRE constructor
+        # with getValue to avoid sort mismatch.
         locals_var = KVariable('LOCALS', sort=KSort('List'))
         ret_free_vars = _free_vars(raw_ret_value)
         if ret_free_vars:
-            ret_subst: dict[str, KInner] = {}
-            for var_name in sorted(ret_free_vars):
-                if var_name in var_to_local_idx:
-                    idx = var_to_local_idx[var_name]
-                    # valueOf({getLocal(LOCALS, idx)}:>TypedValue)
-                    ret_subst[var_name] = KApply(
-                        'getValue(_,_)_RT-DATA_Value_List_Int',
-                        (locals_var, KToken(str(idx), KSort('Int'))),
-                    )
-                else:
-                    # Variable not in init locals — abstract to fresh symbolic var
+            # Check if ALL free vars map to locals — if so, use getValue for the
+            # entire return value when it's a simple Value constructor wrapper.
+            all_mapped = all(v in var_to_local_idx for v in ret_free_vars)
+            if all_mapped and len(ret_free_vars) == 1:
+                var_name = next(iter(ret_free_vars))
+                idx = var_to_local_idx[var_name]
+                # Use getValue(LOCALS, idx) as the entire return value.
+                # This is correct because the callee's local[idx] holds a Value
+                # that was passed as argument, and getValue extracts it.
+                ret_value = KApply(
+                    'getValue(_,_)_RT-DATA_Value_List_Int',
+                    (locals_var, KToken(str(idx), KSort('Int'))),
+                )
+            else:
+                # Multiple vars or unmapped vars — abstract to fresh symbolic vars
+                ret_subst: dict[str, KInner] = {}
+                for var_name in sorted(ret_free_vars):
                     ret_subst[var_name] = KVariable(f'CSE_RET_{branch_idx}_{var_name}')
-            ret_value = _Subst(ret_subst)(raw_ret_value)
+                ret_value = _Subst(ret_subst)(raw_ret_value)
         else:
             ret_value = raw_ret_value
 
