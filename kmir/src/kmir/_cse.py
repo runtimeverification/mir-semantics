@@ -956,11 +956,12 @@ def _generate_frontier_summary_rules(
 
                     # If init and frontier differ, add requires constraint.
                     if init_item != frontier_item:
-                        # Find each variable that changed and add equality constraint
-                        for var_name, _var_node in KMIRCSESemantics._extract_free_vars(init_item):
+                        for var_name, var_node in KMIRCSESemantics._extract_free_vars(init_item):
                             concrete_val = _find_concrete_value(init_item, frontier_item, var_name)
                             if concrete_val is not None:
-                                var = KVariable(var_name)
+                                # Preserve sort from the LHS-bound variable
+                                var_sort = var_node.sort if isinstance(var_node, KVariable) else None
+                                var = KVariable(var_name, sort=var_sort)
                                 requires_terms.append(KApply('_==K_', (var, concrete_val)))
         except Exception as e:
             _LOGGER.info('CSE rule gen: could not build locals pattern for branch %d: %s', branch_idx, e)
