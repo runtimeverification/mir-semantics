@@ -934,40 +934,17 @@ def _generate_frontier_summary_rules(
             ret_value = raw_ret_value
 
         # Build requires clause from frontier node constraints.
-        # Substitute callee variables with valueOf(getLocal(LOCALS, idx)) so the
-        # booster can evaluate them against the callee's actual argument values.
-        requires_terms: list[KInner] = []
-        for constraint in node.cterm.constraints:
-            constraint_vars = _free_vars(constraint)
-            # Only include constraints where ALL variables can be mapped to locals
-            if constraint_vars and all(v in var_to_local_idx for v in constraint_vars):
-                subst_map: dict[str, KInner] = {}
-                for v in constraint_vars:
-                    idx = var_to_local_idx[v]
-                    subst_map[v] = KApply(
-                        'getValue(_,_)_RT-DATA_Value_List_Int',
-                        (locals_var, KToken(str(idx), KSort('Int'))),
-                    )
-                substituted = _Subst(subst_map)(constraint)
-                # Unwrap #Equals(true, EXPR) → EXPR
-                if isinstance(substituted, KApply) and substituted.label.name == '#Equals' and len(substituted.args) == 2:
-                    lhs_c, rhs_c = substituted.args
-                    if isinstance(lhs_c, KToken) and lhs_c.token == 'true' and lhs_c.sort.name == 'Bool':
-                        requires_terms.append(rhs_c)
-                    elif isinstance(rhs_c, KToken) and rhs_c.token == 'true' and rhs_c.sort.name == 'Bool':
-                        requires_terms.append(lhs_c)
-                    # Skip #Equals with non-Bool args
-                elif isinstance(substituted, KApply) and substituted.label.name == '#Ceil':
-                    pass  # Skip #Ceil constraints
-                else:
-                    requires_terms.append(substituted)
-
-        if requires_terms:
-            requires: KInner = requires_terms[0]
-            for rt in requires_terms[1:]:
-                requires = KApply('_andBool_', (requires, rt))
-        else:
-            requires = KToken('true', KSort('Bool'))
+        # Translate callee variable constraints to Value-level comparisons
+        # using getValue(LOCALS, idx).
+        #
+        # E.g., constraint `notBool ARG_BOOL1` (where ARG_BOOL1 is at local[1])
+        # becomes: `getValue(LOCALS, 1) ==K Value::BoolVal(false)`
+        #
+        # For now, use `requires true` (no conditions) — multiple rules with
+        # different return values create NDBranch.  The booster explores all
+        # branches, which is correct for CSE.
+        # TODO: translate constraints to Value-level comparisons for Splits.
+        requires = KToken('true', KSort('Bool'))
 
         # Build rule LHS: match #execBlock(_) inside the callee function.
         # After the normal call mechanism pushes the stack frame and sets up
