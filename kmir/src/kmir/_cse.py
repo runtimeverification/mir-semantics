@@ -962,7 +962,15 @@ def _generate_frontier_summary_rules(
                                 # Preserve sort from the LHS-bound variable
                                 var_sort = var_node.sort if isinstance(var_node, KVariable) else None
                                 var = KVariable(var_name, sort=var_sort)
-                                requires_terms.append(KApply('_==K_', (var, concrete_val)))
+                                # Use sort-specific equality when possible for booster compat
+                                sort_name = var_sort.name if var_sort else None
+                                if sort_name == 'Bool':
+                                    eq_label = '_==Bool_'
+                                elif sort_name == 'Int':
+                                    eq_label = '_==Int_'
+                                else:
+                                    eq_label = '_==K_'
+                                requires_terms.append(KApply(eq_label, (var, concrete_val)))
         except Exception as e:
             _LOGGER.info('CSE rule gen: could not build locals pattern for branch %d: %s', branch_idx, e)
             locals_pattern_items = []
