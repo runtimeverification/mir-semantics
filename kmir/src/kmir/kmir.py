@@ -1195,7 +1195,52 @@ class KMIRCSESemantics(KMIRSemantics):
             details={'branch_count': len(summary_cterms)},
         )
         self._summary_hit_counts[func_ty] = self._summary_hit_counts.get(func_ty, 0) + 1
-        _LOGGER.info(f'CSE custom_step: {len(summary_cterms)}-branch {summary_mode} summary for ty({func_ty})')
+
+        # Try to produce a Split (Branch) instead of NDBranch by extracting
+        # the distinguishing constraints from frontier nodes.  Each frontier
+        # node has "extra" constraints vs the callee init node.  If we can
+        # extract a clean Bool constraint per branch, return Branch so the
+        # prover creates a Split.  On re-entry, custom_step sees the added
+        # constraint and only one frontier branch is feasible → Step.
+        if summary_mode == 'frontier' and callee_proof is not None:
+            from pyk.kcfg.kcfg import Branch
+            init_constraint_reprs = {repr(cc) for cc in callee_proof.kcfg.node(callee_proof.init).cterm.constraints}
+            branch_constraints: list[KInner] = []
+            for snode in summary_nodes:
+                extras = [cc for cc in snode.cterm.constraints if repr(cc) not in init_constraint_reprs]
+                if len(extras) == 1:
+                    extra = extras[0]
+                    # Unwrap #Equals(true, EXPR) → EXPR
+                    if (
+                        isinstance(extra, KApply)
+                        and extra.label.name == '#Equals'
+                        and len(extra.args) == 2
+                    ):
+                        lhs_e, rhs_e = extra.args
+                        if isinstance(lhs_e, KToken) and lhs_e.token == 'true':
+                            branch_constraints.append(subst(rhs_e))
+                        elif isinstance(rhs_e, KToken) and rhs_e.token == 'true':
+                            branch_constraints.append(subst(lhs_e))
+                        else:
+                            branch_constraints.append(subst(extra))
+                    else:
+                        branch_constraints.append(subst(extra))
+                elif extras:
+                    # Multiple extra constraints — combine with andBool
+                    combined: KInner = extras[0]
+                    for ex in extras[1:]:
+                        combined = KApply('_andBool_', (combined, ex))
+                    branch_constraints.append(subst(combined))
+
+            if len(branch_constraints) == len(summary_nodes):
+                _LOGGER.info(
+                    f'CSE custom_step: {len(branch_constraints)}-way Split for ty({func_ty}) '
+                    f'with constraints: {[str(bc)[:60] for bc in branch_constraints]}'
+                )
+                return Branch(constraints=branch_constraints, info='cse-frontier-split')
+
+        # Fallback: NDBranch if we couldn't extract clean constraints
+        _LOGGER.info(f'CSE custom_step: {len(summary_cterms)}-branch {summary_mode} NDBranch for ty({func_ty})')
         branch_label = 'CSE-SUMMARY' if summary_mode == 'return' else 'CSE-FRONTIER'
         return NDBranch(
             cterms=tuple(summary_cterms),
