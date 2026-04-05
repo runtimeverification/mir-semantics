@@ -648,8 +648,9 @@ class KMIRCSESemantics(KMIRSemantics):
             else:
                 result.append(current)
                 break
-        # Operands::append builds right-to-left, so reverse
-        result.reverse()
+        # NOTE: Do NOT reverse. Operands::append(first, append(second, empty))
+        # builds left-to-right.  Extracting args[0] from each cons cell
+        # yields operands in argument order.
         return result
 
     @staticmethod
@@ -746,7 +747,9 @@ class KMIRCSESemantics(KMIRSemantics):
                 break
             else:
                 break
-        operands.reverse()  # append builds right-to-left
+        # NOTE: Do NOT reverse. Operands::append(first, append(second, empty))
+        # builds left-to-right. Extracting first_arg from each cons cell
+        # yields operands in argument order: [first, second, ...].
 
         # Extract local indices from Move/Copy operands
         indices: list[int] = []
