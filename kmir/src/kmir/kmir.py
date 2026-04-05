@@ -1222,8 +1222,11 @@ class KMIRCSESemantics(KMIRSemantics):
                     else:
                         branch_constraints.append(subst(extra))
             if len(branch_constraints) == len(summary_nodes):
-                _LOGGER.info(f'CSE custom_step: {len(branch_constraints)}-way Split for ty({func_ty})')
-                return Branch(constraints=branch_constraints, info='cse-frontier-split')
+                # Wrap in mlEqualsTrue for sort-correct ML predicates
+                from pyk.kast.prelude.ml import mlEqualsTrue
+                ml_constraints = [mlEqualsTrue(bc) for bc in branch_constraints]
+                _LOGGER.info(f'CSE custom_step: {len(ml_constraints)}-way Split for ty({func_ty})')
+                return Branch(constraints=ml_constraints, info='cse-frontier-split')
 
         _LOGGER.info(f'CSE custom_step: {len(summary_cterms)}-branch {summary_mode} NDBranch for ty({func_ty})')
         branch_label = 'CSE-SUMMARY' if summary_mode == 'return' else 'CSE-FRONTIER'
