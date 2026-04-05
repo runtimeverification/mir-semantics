@@ -1249,7 +1249,9 @@ def _is_trivially_bottom(cterm: CTerm) -> bool:
     Returns True if:
     - Any constraint is literally KToken('false') or a #Bottom apply, OR
     - Constraints contain both #Equals(true, P) and #Equals(true, notBool P)
-      for the same term P (structural equality via KInner.__eq__/__hash__).
+      for the same term P, OR
+    - Constraints contain #Equals(true, false) — direct contradiction, OR
+    - Constraints contain #Equals(true, notBool true) — direct contradiction
     """
     for c in cterm.constraints:
         if isinstance(c, KToken) and c.token == 'false':
@@ -1257,6 +1259,11 @@ def _is_trivially_bottom(cterm: CTerm) -> bool:
         if isinstance(c, KApply) and '#Bottom' in c.label.name:
             return True
     pos, neg = _extract_bool_pos_neg(cterm.constraints)
+    # Direct contradictions: pos contains false, or neg contains true
+    _false = KToken('false', KSort('Bool'))
+    _true = KToken('true', KSort('Bool'))
+    if _false in pos or _true in neg:
+        return True
     return bool(pos & neg)
 
 
