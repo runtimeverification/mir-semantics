@@ -1072,6 +1072,19 @@ class KMIRCSESemantics(KMIRSemantics):
             else:
                 candidate = CTerm(subst(summary_node.cterm.config), c.constraints + tuple(subst(cst) for cst in summary_node.cterm.constraints))
 
+            # Fast path: cheap structural contradiction check before any backend call
+            if _is_trivially_bottom(candidate):
+                _LOGGER.info(f'CSE: {summary_mode} branch {i} trivially infeasible (structural contradiction)')
+                continue
+
+            # For frontier summaries, skip expensive backend simplify — the trivial check above
+            # handles the common vacuous cases (flag AND notBool flag), and the backend will
+            # detect true vacuous nodes when it executes them.
+            if summary_mode == 'frontier':
+                summary_cterms.append(candidate)
+                _LOGGER.info(f'CSE: {summary_mode} branch {i} added (skipping backend simplify)')
+                continue
+
             try:
                 simplified, _logs = cs.simplify(candidate)
                 if _is_bottom(simplified):
@@ -1189,6 +1202,59 @@ class KMIRCSESemantics(KMIRSemantics):
             logs=(),
             rule_labels=tuple([branch_label] * len(summary_cterms)),
         )
+
+
+def _extract_bool_pos_neg(constraints: tuple[KInner, ...]) -> tuple[frozenset[KInner], frozenset[KInner]]:
+    """Extract positive and negative bool-typed subterms from #Equals constraints.
+
+    Returns (positive, negative) where:
+    - positive: terms T such that #Equals(true, T) appears in constraints
+    - negative: terms T such that #Equals(true, notBool T) appears in constraints
+
+    If T appears in both sets, the constraint set contains P AND notBool P — a contradiction.
+    """
+    positive: list[KInner] = []
+    negative: list[KInner] = []
+    for c in constraints:
+        if not isinstance(c, KApply):
+            continue
+        if not c.label.name.startswith('#Equals'):
+            continue
+        if len(c.args) != 2:
+            continue
+        lhs, rhs = c.args
+        # Normalize so lhs = KToken('true') if possible
+        if (
+            isinstance(rhs, KToken)
+            and rhs.token == 'true'
+            and not (isinstance(lhs, KToken) and lhs.token == 'true')
+        ):
+            lhs, rhs = rhs, lhs
+        if not (isinstance(lhs, KToken) and lhs.token == 'true'):
+            continue
+        # lhs is now KToken('true'), rhs is the bool expression
+        if isinstance(rhs, KApply) and 'notBool' in rhs.label.name and len(rhs.args) == 1:
+            negative.append(rhs.args[0])
+        else:
+            positive.append(rhs)
+    return (frozenset(positive), frozenset(negative))
+
+
+def _is_trivially_bottom(cterm: CTerm) -> bool:
+    """Cheap syntactic check for unsatisfiable constraints — no backend call.
+
+    Returns True if:
+    - Any constraint is literally KToken('false') or a #Bottom apply, OR
+    - Constraints contain both #Equals(true, P) and #Equals(true, notBool P)
+      for the same term P (structural equality via KInner.__eq__/__hash__).
+    """
+    for c in cterm.constraints:
+        if isinstance(c, KToken) and c.token == 'false':
+            return True
+        if isinstance(c, KApply) and '#Bottom' in c.label.name:
+            return True
+    pos, neg = _extract_bool_pos_neg(cterm.constraints)
+    return bool(pos & neg)
 
 
 def _is_bottom(cterm: CTerm) -> bool:
