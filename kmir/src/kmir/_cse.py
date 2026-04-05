@@ -1000,9 +1000,12 @@ def _generate_frontier_summary_rules(
         # Must match the same length as the default rule (cseFunctionEntryDefault)
         # so that [owise] on the default rule prevents it from competing.
         # The `...` in the <k> cell keeps the rest (including #execBlock(BB)).
-        # After the CSE rule fires, terminatorKindReturn's `~> _` discards
-        # the remaining callee code.
-        lhs_k = KApply('#cseFunctionEntry_KMIR-CONTROL-FLOW_KItem', ())
+        # LHS matches #cseFunctionEntry at the top of the K cell with a frame
+        # variable for the continuation (... in K syntax).  Without the frame
+        # variable, pyk generates kseq(#cseFunctionEntry, dotk()) which requires
+        # the K cell to be empty after the marker — never matching.
+        k_rest = KVariable(f'_DotVar2', sort=KSort('K'))
+        lhs_k = KSequence([KApply('#cseFunctionEntry_KMIR-CONTROL-FLOW_KItem', ()), k_rest])
 
         # Build rule RHS: set local[0] (return slot) and execute terminatorKindReturn.
         return_place = KApply(
