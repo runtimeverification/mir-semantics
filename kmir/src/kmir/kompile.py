@@ -255,7 +255,7 @@ def kompile_smir(
         llvm_lib_target=llvm_lib_target,
         haskell_target=haskell_target,
         break_on_function=';'.join(break_on_function) if break_on_function else '',
-        llvm_extra_modules=_env_flag('KMIR_CSE_INCLUDE_EXTRA_MODULES_IN_LLVM', default=bool(extra_modules)),
+        llvm_extra_modules=_env_flag('KMIR_CSE_INCLUDE_EXTRA_MODULES_IN_LLVM', default=False),
         extra_modules_digest=_extra_modules_digest(extra_modules),
     )
 
