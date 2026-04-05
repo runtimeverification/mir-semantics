@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 import tempfile
 import time
 from pathlib import Path
@@ -29,6 +30,24 @@ if TYPE_CHECKING:
 
 
 _LOGGER: Final = logging.getLogger(__name__)
+_SUMMARY_TARGET_VAR_RE = re.compile(r'^(?P<base>[A-Z][A-Z0-9_]*?)_[0-9a-f]{8}(?:__kmir_q_\d+)?$')
+
+
+def _canonicalize_summary_target_var_name(name: str) -> str:
+    match = _SUMMARY_TARGET_VAR_RE.match(name)
+    if match is None:
+        return name
+    return match.group('base')
+
+
+def _make_stable_target_var(base_name: str, existing_names: set[str]) -> KVariable:
+    name = base_name
+    counter = 0
+    while name in existing_names:
+        counter += 1
+        name = f'{base_name}_{counter}'
+    existing_names.add(name)
+    return KVariable(name)
 
 
 def prove(opts: ProveOpts) -> APRProof:
@@ -239,6 +258,7 @@ def apr_proof_from_smir(
     start_symbol: str = 'main',
     proof_dir: Path | None = None,
     init_cterm: CTerm | None = None,
+    target_k_cell: KInner | None = None,
 ) -> APRProof:
     """Create an APRProof for a KMIR function.
 
@@ -258,10 +278,17 @@ def apr_proof_from_smir(
         lhs = CTerm(lhs_config, constraints)
 
     var_config, var_subst = split_config_from(lhs_config)
-    _rhs_subst: dict[str, KInner] = {
-        v_name: abstract_term_safely(KVariable('_'), base_name=v_name) for v_name in var_subst
-    }
-    _rhs_subst['K_CELL'] = KSequence([KMIR.Symbols.END_PROGRAM])
+    existing_rhs_var_names: set[str] = set()
+    _rhs_subst: dict[str, KInner] = {}
+    for v_name in var_subst:
+        if target_k_cell is None:
+            rhs_var = abstract_term_safely(KVariable('_'), base_name=v_name, existing_var_names=existing_rhs_var_names)
+            existing_rhs_var_names.add(rhs_var.name)
+        else:
+            base_name = _canonicalize_summary_target_var_name(v_name)
+            rhs_var = _make_stable_target_var(base_name, existing_rhs_var_names)
+        _rhs_subst[v_name] = rhs_var
+    _rhs_subst['K_CELL'] = target_k_cell if target_k_cell is not None else KSequence([KMIR.Symbols.END_PROGRAM])
     rhs = CTerm(Subst(_rhs_subst)(var_config))
     kcfg = KCFG()
     init_node = kcfg.create_node(lhs)
