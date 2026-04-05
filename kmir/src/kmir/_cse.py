@@ -922,17 +922,9 @@ def _generate_frontier_summary_rules(
                 if var_name in var_to_local_idx:
                     idx = var_to_local_idx[var_name]
                     # valueOf({getLocal(LOCALS, idx)}:>TypedValue)
-                    get_local = KApply(
-                        'getLocal(_,_)_RT-DATA_TypedLocal_List_Int',
-                        (locals_var, KToken(str(idx), KSort('Int'))),
-                    )
-                    cast_to_typed = KApply(
-                        '#SemanticCastToTypedValue',
-                        (get_local,),
-                    )
                     ret_subst[var_name] = KApply(
-                        'valueOf(_)_RT-VALUE_Value_TypedValue',
-                        (cast_to_typed,),
+                        'getValue(_,_)_RT-DATA_Value_List_Int',
+                        (locals_var, KToken(str(idx), KSort('Int'))),
                     )
                 else:
                     # Variable not in init locals — abstract to fresh symbolic var
@@ -952,12 +944,10 @@ def _generate_frontier_summary_rules(
                 subst_map: dict[str, KInner] = {}
                 for v in constraint_vars:
                     idx = var_to_local_idx[v]
-                    get_local = KApply(
-                        'getLocal(_,_)_RT-DATA_TypedLocal_List_Int',
+                    subst_map[v] = KApply(
+                        'getValue(_,_)_RT-DATA_Value_List_Int',
                         (locals_var, KToken(str(idx), KSort('Int'))),
                     )
-                    cast_to_typed = KApply('#SemanticCastToTypedValue', (get_local,))
-                    subst_map[v] = KApply('valueOf(_)_RT-VALUE_Value_TypedValue', (cast_to_typed,))
                 substituted = _Subst(subst_map)(constraint)
                 # Unwrap #Equals(true, EXPR) → EXPR
                 if isinstance(substituted, KApply) and substituted.label.name == '#Equals' and len(substituted.args) == 2:
