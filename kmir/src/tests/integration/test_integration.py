@@ -383,6 +383,42 @@ EXEC_DATA = [
         EXEC_DATA_DIR / 'allocs' / 'option_consts.state',
         None,
     ),
+    (
+        'float_arith',
+        EXEC_DATA_DIR / 'floats' / 'float_arith.smir.json',
+        EXEC_DATA_DIR / 'floats' / 'float_arith.state',
+        None,
+    ),
+    (
+        'float_cast',
+        EXEC_DATA_DIR / 'floats' / 'float_cast.smir.json',
+        EXEC_DATA_DIR / 'floats' / 'float_cast.state',
+        None,
+    ),
+    (
+        'float_cmp',
+        EXEC_DATA_DIR / 'floats' / 'float_cmp.smir.json',
+        EXEC_DATA_DIR / 'floats' / 'float_cmp.state',
+        None,
+    ),
+    (
+        'float_eq',
+        EXEC_DATA_DIR / 'floats' / 'float_eq.smir.json',
+        EXEC_DATA_DIR / 'floats' / 'float_eq.state',
+        None,
+    ),
+    (
+        'float_neg',
+        EXEC_DATA_DIR / 'floats' / 'float_neg.smir.json',
+        EXEC_DATA_DIR / 'floats' / 'float_neg.state',
+        None,
+    ),
+    (
+        'float_special',
+        EXEC_DATA_DIR / 'floats' / 'float_special.smir.json',
+        EXEC_DATA_DIR / 'floats' / 'float_special.state',
+        None,
+    ),
 ]
 
 
@@ -394,6 +430,12 @@ EXEC_DATA = [
 EXEC_SMIR_SKIP_HASKELL = {
     'structs-tuples',
     'struct-field-update',
+    'float_arith',
+    'float_cast',
+    'float_cmp',
+    'float_eq',
+    'float_neg',
+    'float_special',
 }
 
 
