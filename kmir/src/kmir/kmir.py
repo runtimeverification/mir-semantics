@@ -1199,35 +1199,9 @@ class KMIRCSESemantics(KMIRSemantics):
         )
         self._summary_hit_counts[func_ty] = self._summary_hit_counts.get(func_ty, 0) + 1
 
-        # Produce Split via Branch when possible.  Extract distinguishing
-        # constraints from frontier nodes.  After Split, re-entry filters
-        # infeasible branches via _is_trivially_bottom (which now handles
-        # both #Equals and raw Bool constraints).
-        if summary_mode == 'frontier' and callee_proof is not None:
-            from pyk.kcfg.kcfg import Branch
-            init_constraint_reprs = {repr(cc) for cc in callee_proof.kcfg.node(callee_proof.init).cterm.constraints}
-            branch_constraints: list[KInner] = []
-            for snode in summary_nodes:
-                extras = [cc for cc in snode.cterm.constraints if repr(cc) not in init_constraint_reprs]
-                if extras:
-                    extra = extras[0]
-                    if isinstance(extra, KApply) and extra.label.name.startswith('#Equals') and len(extra.args) == 2:
-                        lhs_e, rhs_e = extra.args
-                        if isinstance(lhs_e, KToken) and lhs_e.token == 'true':
-                            branch_constraints.append(subst(rhs_e))
-                        elif isinstance(rhs_e, KToken) and rhs_e.token == 'true':
-                            branch_constraints.append(subst(lhs_e))
-                        else:
-                            branch_constraints.append(subst(extra))
-                    else:
-                        branch_constraints.append(subst(extra))
-            if len(branch_constraints) == len(summary_nodes):
-                # Wrap in mlEqualsTrue for sort-correct ML predicates
-                from pyk.kast.prelude.ml import mlEqualsTrue
-                ml_constraints = [mlEqualsTrue(bc) for bc in branch_constraints]
-                _LOGGER.info(f'CSE custom_step: {len(ml_constraints)}-way Split for ty({func_ty})')
-                return Branch(constraints=ml_constraints, info='cse-frontier-split')
-
+        # NOTE: Branch(constraints) approach causes infinite splits on complex
+        # callees (solana-token) because _is_trivially_bottom can't detect all
+        # contradictions.  Use NDBranch which provides complete cterms.
         _LOGGER.info(f'CSE custom_step: {len(summary_cterms)}-branch {summary_mode} NDBranch for ty({func_ty})')
         branch_label = 'CSE-SUMMARY' if summary_mode == 'return' else 'CSE-FRONTIER'
         return NDBranch(
