@@ -7,9 +7,6 @@ requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
 requires "cheatcodes.md"
 requires "intrinsics.md"
-
-requires "symbolic/p-token.md"
-requires "symbolic/spl-token.md"
 ```
 
 ## Syntax of MIR in K
@@ -716,8 +713,4 @@ module KMIR
   imports KMIR-CHEATCODES
   imports KMIR-INTRINSICS
   imports KMIR-LEMMAS
-
-  imports KMIR-P-TOKEN // cheat codes
-  imports KMIR-SPL-TOKEN // SPL-specific cheat codes
 endmodule
-```
