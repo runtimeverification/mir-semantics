@@ -694,13 +694,13 @@ zeroed representation.
 
   syntax KItem ::= #execSPLSolMemset ( Ty, MonoItemKind, Evaluation , Evaluation , Evaluation , Operand, Operands, Place, MaybeBasicBlockIdx, UnwindAction, Span ) [seqstrict(3,4,5)]
 
-  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandCopy(DESTBUF), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
-        => #setLocalValue(DESTBUF, SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
+  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandCopy(place(LOCAL, PROJS)), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
+        => #setLocalValue(place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)), SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
     requires #isZeroMemsetValue(VAL)
      andBool LEN ==Int #splBufferLen(BUF)
      andBool 0 <Int #splBufferLen(BUF)
-  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandMove(DESTBUF), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
-        => #setLocalValue(DESTBUF, SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
+  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandMove(place(LOCAL, PROJS)), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
+        => #setLocalValue(place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)), SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
     requires #isZeroMemsetValue(VAL)
      andBool LEN ==Int #splBufferLen(BUF)
      andBool 0 <Int #splBufferLen(BUF)
