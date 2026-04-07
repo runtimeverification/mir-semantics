@@ -9,6 +9,9 @@
     ty ( -1 )
   </currentFunc>
   <currentFrame>
+    <frameId>
+      0
+    </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 50 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 25 ) , id: mirConstId ( 9 ) ) ) ) , args: .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 51 ) ) ) )
       ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 52 ) ) ) )
@@ -30,6 +33,6 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
 </kmir>

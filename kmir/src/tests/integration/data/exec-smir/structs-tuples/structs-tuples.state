@@ -9,6 +9,9 @@
     ty ( 25 )
   </currentFunc>
   <currentFrame>
+    <frameId>
+      1
+    </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 73 ) ) ) )
     </currentBody>
@@ -32,7 +35,7 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
     ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 10 , 32 , true ) )
     ListItem ( BoolVal ( false ) )
     ListItem ( Float ( 0.10000000000000000e2 , 64 ) ) ) , ty ( 28 ) , mutabilityNot ) )
@@ -48,6 +51,6 @@
     ListItem ( newLocal ( ty ( 16 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 26 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 27 ) , mutabilityMut ) ) ) )
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
 </kmir>

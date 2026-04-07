@@ -77,6 +77,7 @@ KORE_TEMPLATE: Final = Template(dedent(r"""
             Lbl'-LT-'retVal'-GT-'{}(LblnoReturn'Unds'KMIR-CONFIGURATION'Unds'RetVal{}()),
             Lbl'-LT-'currentFunc'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
             Lbl'-LT-'currentFrame'-GT-'{}(
+                Lbl'-LT-'frameId'-GT-'{}(\dv{SortInt{}}("0")),
                 Lbl'-LT-'currentBody'-GT-'{}(Lbl'Stop'List{}()),
                 Lbl'-LT-'caller'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
                 Lbl'-LT-'dest'-GT-'{}(Lblplace{}(Lbllocal{}(\dv{SortInt{}}("-1")),LblProjectionElems'ColnColn'empty{}())),

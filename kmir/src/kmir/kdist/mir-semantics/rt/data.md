@@ -362,8 +362,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
 
-  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
-      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)])
+  rule #updateStackLocal(StackFrame(FRAMEID, CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
+      => StackFrame(FRAMEID, CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)])
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
