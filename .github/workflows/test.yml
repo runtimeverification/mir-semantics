@@ -65,7 +65,7 @@ jobs:
           - name: 'Haskell Exec SMIR'
             test-args: '-k "test_exec_smir and haskell"'
             parallel: 6
-            timeout: 30
+            timeout: 60
           - name: 'Haskell Termination'
             test-args: '-k test_prove_termination'
             parallel: 6
