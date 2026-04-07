@@ -321,7 +321,7 @@ module KMIR-SPL-TOKEN
            )
          )
        )
-       => 99
+       => 99 // Multisig layout: m (1) + n (1) + is_initialized (1) + 3 * 32 signer bytes (MAX_SIGNERS = 3)
        [priority(30)]
 
   rule #splBufferLen(_) => 0 [owise]
@@ -704,20 +704,6 @@ zeroed representation.
     requires #isZeroMemsetValue(VAL)
      andBool LEN ==Int #splBufferLen(BUF)
      andBool 0 <Int #splBufferLen(BUF)
-
-  rule [spl-sol-memset-fallback-intrinsic]:
-    <k> #execSPLSolMemset(_, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
-      => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
-    </k>
-    requires isIntrinsicFunction(FUNC)
-     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
-
-  rule [spl-sol-memset-fallback-intrinsic-filter]:
-    <k> #execSPLSolMemset(_, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
-      => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
-    </k>
-    requires isIntrinsicFunction(FUNC)
-     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   rule [spl-sol-memset-fallback]:
     <k> #execSPLSolMemset(FTY, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
