@@ -107,6 +107,10 @@ module KMIR-SPL-TOKEN
   syntax Bool ::= #isSplPubkey ( List ) [function, total]
   rule #isSplPubkey(KEY) => size(KEY) ==Int 32 andBool allBytes(KEY)
 
+  syntax Bool ::= #isZeroMemsetValue ( Value ) [function, total]
+  rule #isZeroMemsetValue(Integer(0, _, _)) => true
+  rule #isZeroMemsetValue(_) => false [owise]
+
   // Construct a 32-byte pubkey List from individual Int variables.
   // When used with existential variables (?Var:Int), this produces a concrete List structure
   // that ==K can decompose element-wise, avoiding opaque symbolic List equality in SMT.
@@ -183,6 +187,10 @@ module KMIR-SPL-TOKEN
   rule #isSPLRentGetFunc(_) => false [owise]
   rule #isSPLRentGetFunc("Rent::get") => true   // mock harness
   rule #isSPLRentGetFunc("solana_sysvar::rent::<impl Sysvar for solana_rent::Rent>::get") => true
+
+  syntax Bool ::= #isSPLSolMemsetFunc ( String ) [function, total]
+  rule #isSPLSolMemsetFunc(_) => false [owise]
+  rule #isSPLSolMemsetFunc("solana_program_memory::sol_memset") => true
 ```
 
 ## Slice metadata for SPL account buffers
@@ -254,6 +262,69 @@ module KMIR-SPL-TOKEN
        )
        => dynamicSize(99)
        [priority(30)]
+
+  syntax Int ::= #splBufferLen ( Value ) [function, total]
+
+  rule #splBufferLen(
+         SPLDataBuffer(
+         Aggregate(variantIdx(0),
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Aggregate(variantIdx(0), ListItem(Range(_))))
+           ListItem(Integer(_, 64, false))
+           ListItem(_DELEG)
+           ListItem(STATE)
+           ListItem(_IS_NATIVE)
+           ListItem(Integer(_, 64, false))
+           ListItem(_CLOSE)
+         )
+       )
+      )
+       => 165
+       requires #isSplAccountStateVal(STATE)
+       [priority(30)]
+
+  rule #splBufferLen(
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(_AUTH)
+             ListItem(Integer(_, 64, false))
+             ListItem(Integer(_, 8, false))
+             ListItem(BoolVal(_))
+             ListItem(_FREEZE)
+           )
+         )
+       )
+       => 82
+       [priority(30)]
+
+  rule #splBufferLen(
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Integer(_, 64, false))
+             ListItem(Float(2.0, 64))
+             ListItem(Integer(_, 8, false))
+           )
+         )
+       )
+       => 17
+       [priority(30)]
+
+  rule #splBufferLen(
+         SPLDataBuffer(
+           Aggregate(variantIdx(0),
+             ListItem(Integer(_, 8, false))
+             ListItem(Integer(_, 8, false))
+             ListItem(BoolVal(_))
+             ListItem(Range(
+               ListItem(_) ListItem(_) ListItem(_)
+             ))
+           )
+         )
+       )
+       => 99 // Multisig layout: m (1) + n (1) + is_initialized (1) + 3 * 32 signer bytes (MAX_SIGNERS = 3)
+       [priority(30)]
+
+  rule #splBufferLen(_) => 0 [owise]
 ```
 
 ## Cheatcode handling
@@ -600,6 +671,55 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
   syntax KItem ::= #splPack ( Evaluation , Operand ) [seqstrict(1)]
   rule <k> #splPack(VAL, operandCopy(DEST)) => #setLocalValue(DEST, SPLDataBuffer(VAL)) ... </k>
   rule <k> #splPack(VAL, operandMove(DEST)) => #setLocalValue(DEST, SPLDataBuffer(VAL)) ... </k>
+```
+
+## sol_memset on SPL data buffers
+
+`sol_memset` is used by `delete_account` to zero out account data. Rather than
+symbolically executing the byte-by-byte loop through `IterMut::next`, we
+intercept the call and directly replace the `SPLDataBuffer` content with a
+zeroed representation.
+
+```{.k .symbolic}
+  // sol_memset(buf, val, len) - fast-path full-buffer zeroization on recognized SPLDataBuffer values.
+  // Any other call shape falls back to the ordinary call semantics below.
+  rule [spl-sol-memset]:
+    <k> #execTerminatorCall(FTY, FUNC,
+          BUF:Operand VAL:Operand LEN:Operand .Operands,
+          DEST, TARGET, UNWIND, SPAN) ~> _CONT
+      => #execSPLSolMemset(FTY, FUNC, #withDeref(BUF), VAL, LEN, BUF, BUF VAL LEN .Operands, DEST, TARGET, UNWIND, SPAN)
+    </k>
+    requires #isSPLSolMemsetFunc(#functionName(FUNC))
+    [priority(30), preserves-definedness]
+
+  syntax KItem ::= #execSPLSolMemset ( Ty, MonoItemKind, Evaluation , Evaluation , Evaluation , Operand, Operands, Place, MaybeBasicBlockIdx, UnwindAction, Span ) [seqstrict(3,4,5)]
+
+  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandCopy(place(LOCAL, PROJS)), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
+        => #setLocalValue(place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)), SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
+    requires #isZeroMemsetValue(VAL)
+     andBool LEN ==Int #splBufferLen(BUF)
+     andBool 0 <Int #splBufferLen(BUF)
+  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandMove(place(LOCAL, PROJS)), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
+        => #setLocalValue(place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)), SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
+    requires #isZeroMemsetValue(VAL)
+     andBool LEN ==Int #splBufferLen(BUF)
+     andBool 0 <Int #splBufferLen(BUF)
+
+  rule [spl-sol-memset-fallback]:
+    <k> #execSPLSolMemset(FTY, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+      => #setUpCalleeData(FUNC, ARGS, SPAN)
+    </k>
+    <currentFunc> CALLER => FTY </currentFunc>
+    <currentFrame>
+      <currentBody> _ </currentBody>
+      <caller> OLDCALLER => CALLER </caller>
+      <dest> OLDDEST => DEST </dest>
+      <target> OLDTARGET => TARGET </target>
+      <unwind> OLDUNWIND => UNWIND </unwind>
+      <locals> LOCALS </locals>
+    </currentFrame>
+    <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+    [owise]
 ```
 
 ## Rent sysvar handling
