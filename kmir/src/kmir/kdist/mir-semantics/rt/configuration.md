@@ -19,6 +19,8 @@ requires "./value.md"
 module KMIR-CONFIGURATION
   imports INT-SYNTAX
   imports BOOL-SYNTAX
+  imports MAP
+  imports SET
   imports RT-VALUE-SYNTAX
 
   syntax RetVal ::= return( Value )
@@ -47,6 +49,10 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
+                  // address allocation model for pointer-to-integer casts
+                  <addressMap> .Map </addressMap>
+                  <nextAddress> 4096 </nextAddress>
+                  <exposedSet> .Set </exposedSet>
                 </kmir>
 ```
 

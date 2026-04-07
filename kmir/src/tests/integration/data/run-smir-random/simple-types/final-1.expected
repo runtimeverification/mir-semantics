@@ -84,4 +84,13 @@
     ListItem ( typedValue ( Integer ( 32 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
     ListItem ( typedValue ( Integer ( -1051970500 , 32 , true ) , ty ( 8 ) , mutabilityNot ) ) ) )
   </stack>
+  <addressMap>
+    .Map
+  </addressMap>
+  <nextAddress>
+    4096
+  </nextAddress>
+  <exposedSet>
+    .Set
+  </exposedSet>
 </kmir>

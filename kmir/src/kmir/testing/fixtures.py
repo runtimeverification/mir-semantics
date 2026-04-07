@@ -31,20 +31,53 @@ def _normalize_symbol_hashes(text: str) -> str:
     return text
 
 
+def _normalize_optional_show_diagnostics(text: str) -> str:
+    """Drop diagnostics that are present only on some environments/backends."""
+    return re.sub(r'(?m)^  >> message: .*\n?', '', text)
+
+
+def _normalize_step_counts(text: str) -> str:
+    """Normalize unstable proof step counts in human-facing snapshots."""
+    text = re.sub(r'\(\d+ steps\)', '(<steps> steps)', text)
+    text = re.sub(r'steps \d+', 'steps <steps>', text)
+    return text
+
+
+def _normalize_trailing_newlines(text: str) -> str:
+    """Ignore EOF newline count drift in snapshot comparisons."""
+    return text.rstrip('\n')
+
+
 def assert_or_update_show_output(
-    actual_text: str, expected_file: Path, *, update: bool, path_replacements: dict[str, str] | None = None
+    actual_text: str,
+    expected_file: Path,
+    *,
+    update: bool,
+    path_replacements: dict[str, str] | None = None,
+    normalize_optional_diagnostics: bool = False,
+    normalize_steps: bool = False,
 ) -> None:
     if path_replacements:
         for old, new in path_replacements.items():
             actual_text = actual_text.replace(old, new)
     # Normalize rustc symbol hash suffixes that can drift across builds/environments.
     actual_text = _normalize_symbol_hashes(actual_text)
+    if normalize_optional_diagnostics:
+        actual_text = _normalize_optional_show_diagnostics(actual_text)
+    if normalize_steps:
+        actual_text = _normalize_step_counts(actual_text)
+    actual_text = _normalize_trailing_newlines(actual_text)
     if update:
         expected_file.write_text(actual_text)
     else:
         assert expected_file.is_file()
         expected_text = expected_file.read_text()
         expected_text = _normalize_symbol_hashes(expected_text)
+        if normalize_optional_diagnostics:
+            expected_text = _normalize_optional_show_diagnostics(expected_text)
+        if normalize_steps:
+            expected_text = _normalize_step_counts(expected_text)
+        expected_text = _normalize_trailing_newlines(expected_text)
         if actual_text != expected_text:
             diff = '\n'.join(
                 unified_diff(

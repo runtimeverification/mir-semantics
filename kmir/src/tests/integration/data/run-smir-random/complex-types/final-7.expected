@@ -148,4 +148,13 @@
     ListItem ( Integer ( 281121487 , 32 , true ) )
     ListItem ( Integer ( 1921781853 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) ) ) )
   </stack>
+  <addressMap>
+    .Map
+  </addressMap>
+  <nextAddress>
+    4096
+  </nextAddress>
+  <exposedSet>
+    .Set
+  </exposedSet>
 </kmir>

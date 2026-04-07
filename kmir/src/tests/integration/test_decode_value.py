@@ -86,6 +86,9 @@ KORE_TEMPLATE: Final = Template(dedent(r"""
                 Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
             ),
             Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
+            Lbl'-LT-'addressMap'-GT-'{}(Lbl'Stop'Map{}()),
+            Lbl'-LT-'nextAddress'-GT-'{}(\dv{SortInt{}}("4096")),
+            Lbl'-LT-'exposedSet'-GT-'{}(Lbl'Stop'Set{}()),
         ),
         Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
     )
