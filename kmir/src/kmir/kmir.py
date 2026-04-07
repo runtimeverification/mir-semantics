@@ -857,7 +857,13 @@ class KMIRCSESemantics(KMIRSemantics):
         explicit_frontier_ids = getattr(callee_proof, '_cse_frontier_node_ids', None)
         if explicit_frontier_ids:
             return [callee_proof.kcfg.node(node_id) for node_id in explicit_frontier_ids]
-        frontier_nodes = [node for node in callee_proof.kcfg.leaves if node.id != callee_proof.target]
+        # Exclude stuck nodes: applying a stuck callee state to the caller
+        # creates a stuck state in the main proof.  Only use non-stuck leaves.
+        stuck_ids = {n.id for n in callee_proof.kcfg.stuck}
+        frontier_nodes = [
+            node for node in callee_proof.kcfg.leaves
+            if node.id != callee_proof.target and node.id not in stuck_ids
+        ]
         if frontier_nodes:
             return frontier_nodes
         if callee_proof.init != callee_proof.target:
