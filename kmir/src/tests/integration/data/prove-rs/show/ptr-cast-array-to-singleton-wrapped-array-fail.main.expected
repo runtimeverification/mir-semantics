@@ -3,34 +3,17 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (128 steps)
+│  (68 steps)
 ├─ 3
-│   #expect ( thunk ( #applyBinOp ( binOpEq , thunk ( #applyBinOp ( binOpBitAnd , th
+│   #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: projectionEl
 │   function: main
-┃
-┃ (1 step)
-┣━━┓
-┃  │
-┃  ├─ 4
-┃  │   AssertError ( assertMessageMisalignedPointerDereference ( ... required: operandC
-┃  │   function: main
-┃  │
-┃  │  (1 step)
-┃  └─ 6 (stuck, leaf)
-┃      #ProgramError ( AssertError ( assertMessageMisalignedPointerDereference ( ... re
-┃      function: main
-┃
-┗━━┓
-   │
-   ├─ 5
-   │   #execBlockIdx ( basicBlockIdx ( 4 ) ) ~> .K
-   │   function: main
-   │
-   │  (10 steps)
-   └─ 7 (stuck, leaf)
-       #traverseProjection ( toLocal ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem (
-       function: main
-       span: 282
+│   span: 270
+│
+│  (1 step)
+└─ 4 (leaf, terminal)
+    thunk ( #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: proj
+    function: main
+    span: 270
 
 
 ┌─ 2 (root, leaf, target, terminal)

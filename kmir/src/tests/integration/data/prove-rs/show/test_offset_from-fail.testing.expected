@@ -112,10 +112,15 @@
             ┃  ├─ 20
             ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 4 , basicBlockIdx ( 4 ) )
             ┃  │
-            ┃  │  (70 steps)
-            ┃  └─ 22 (stuck, leaf)
-            ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
-            ┃      span: 32
+            ┃  │  (18 steps)
+            ┃  ├─ 22
+            ┃  │   #mkPtr ( toAlloc ( allocId ( 2 ) ) , .ProjectionElems , mutabilityNot , metadata
+            ┃  │   span: 136
+            ┃  │
+            ┃  │  (1 step)
+            ┃  └─ 24 (leaf, terminal)
+            ┃      thunk ( #mkPtr ( toAlloc ( allocId ( 2 ) ) , .ProjectionElems , mutabilityNot ,
+            ┃      span: 136
             ┃
             ┗━━┓ subst: .Subst
                ┃ constraint:
