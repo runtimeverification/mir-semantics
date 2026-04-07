@@ -838,6 +838,18 @@ class KMIRCSESemantics(KMIRSemantics):
             return None
         if not isinstance(second, KApply) or '#execBlockIdx' not in second.label.name:
             return None
+        # Validate that the place is local(0) — the MIR return place.
+        # A frontier node may be captured inside a nested call (e.g. a closure),
+        # where `place` refers to a local in the inner callee, NOT the return
+        # value of the function being summarized.  Accepting such a value
+        # produces a wrong return, causing assertion failures and stuck nodes.
+        place = first.args[0]
+        if isinstance(place, KApply) and 'place' in place.label.name and len(place.args) >= 1:
+            local = place.args[0]
+            if isinstance(local, KApply) and 'local' in local.label.name and len(local.args) >= 1:
+                idx = local.args[0]
+                if isinstance(idx, KToken) and idx.token != '0':
+                    return None
         return first.args[1]
 
     @staticmethod
