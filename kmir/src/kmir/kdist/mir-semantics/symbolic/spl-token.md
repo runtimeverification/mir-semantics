@@ -719,25 +719,7 @@ zeroed representation.
       <locals> LOCALS </locals>
     </currentFrame>
     <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-    requires notBool isIntrinsicFunction(FUNC)
-     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
-
-  rule [spl-sol-memset-fallback-filter]:
-    <k> #execSPLSolMemset(FTY, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
-      => #setUpCalleeData(FUNC, ARGS, SPAN)
-    </k>
-    <currentFunc> CALLER => FTY </currentFunc>
-    <currentFrame>
-      <currentBody> _ </currentBody>
-      <caller> OLDCALLER => CALLER </caller>
-      <dest> OLDDEST => DEST </dest>
-      <target> OLDTARGET => TARGET </target>
-      <unwind> OLDUNWIND => UNWIND </unwind>
-      <locals> LOCALS </locals>
-    </currentFrame>
-    <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-    requires notBool isIntrinsicFunction(FUNC)
-     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
+    [owise]
 ```
 
 ## Rent sysvar handling
