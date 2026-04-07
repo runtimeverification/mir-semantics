@@ -110,6 +110,39 @@ The code uses some helper sorts for better readability.
   rule allBytes( ListItem(Integer(_, 8, false)) REST:List) => allBytes(REST)
   rule allBytes( ListItem(_OTHER) _:List) => false [owise]
 
+  // Construct a 32-byte pubkey List from individual Int variables.
+  // When used with existential variables (?Var:Int), this produces a concrete List structure
+  // that ==K can decompose element-wise, avoiding opaque symbolic List equality in SMT.
+  syntax List ::= #mkPubkey (
+    Int , Int , Int , Int , Int , Int , Int , Int ,
+    Int , Int , Int , Int , Int , Int , Int , Int ,
+    Int , Int , Int , Int , Int , Int , Int , Int ,
+    Int , Int , Int , Int , Int , Int , Int , Int ) [macro]
+  rule #mkPubkey(
+    B0,  B1,  B2,  B3,  B4,  B5,  B6,  B7,
+    B8,  B9,  B10, B11, B12, B13, B14, B15,
+    B16, B17, B18, B19, B20, B21, B22, B23,
+    B24, B25, B26, B27, B28, B29, B30, B31 ) =>
+      ListItem(Integer(B0,  8, false)) ListItem(Integer(B1,  8, false))
+      ListItem(Integer(B2,  8, false)) ListItem(Integer(B3,  8, false))
+      ListItem(Integer(B4,  8, false)) ListItem(Integer(B5,  8, false))
+      ListItem(Integer(B6,  8, false)) ListItem(Integer(B7,  8, false))
+      ListItem(Integer(B8,  8, false)) ListItem(Integer(B9,  8, false))
+      ListItem(Integer(B10, 8, false)) ListItem(Integer(B11, 8, false))
+      ListItem(Integer(B12, 8, false)) ListItem(Integer(B13, 8, false))
+      ListItem(Integer(B14, 8, false)) ListItem(Integer(B15, 8, false))
+      ListItem(Integer(B16, 8, false)) ListItem(Integer(B17, 8, false))
+      ListItem(Integer(B18, 8, false)) ListItem(Integer(B19, 8, false))
+      ListItem(Integer(B20, 8, false)) ListItem(Integer(B21, 8, false))
+      ListItem(Integer(B22, 8, false)) ListItem(Integer(B23, 8, false))
+      ListItem(Integer(B24, 8, false)) ListItem(Integer(B25, 8, false))
+      ListItem(Integer(B26, 8, false)) ListItem(Integer(B27, 8, false))
+      ListItem(Integer(B28, 8, false)) ListItem(Integer(B29, 8, false))
+      ListItem(Integer(B30, 8, false)) ListItem(Integer(B31, 8, false))
+
+  syntax Bool ::= #isPByte ( Int ) [macro]
+  rule #isPByte(X) => 0 <=Int X andBool X <Int 256
+
   syntax Value ::= fromKey ( Key ) [function, total]
   // -----------------------------------------------
   // We assume that the Key always contains valid data, because it is constructed via toKey.
@@ -659,24 +692,74 @@ An `AccountInfo` reference is passed to the function.
 #### `#addMultisig`
 
 ```{.k .symbolic}
+  // Multisig cheatcode: decompose signer pubkeys into individual byte variables.
+  // Each ?SiNBj:Int is a single byte (0..255), giving 32 concrete ListItems per signer.
+  // This allows ==K on pubkey Lists to decompose into integer equalities (fast for SMT),
+  // instead of opaque symbolic List equality (causes Z3 timeout at scale).
   rule #addMultisig(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountMultisig(
            #toPAcc(P_ACC),
            IMulti(U8(?M),
                   U8(?N),
                   U8(?INITIALISED),
-                  Signers( ListItem(Key(?Signer0))
-                           ListItem(Key(?Signer1))
-                           ListItem(Key(?Signer2))
+                  Signers( ListItem(Key(#mkPubkey(
+                    ?Si0B0:Int,  ?Si0B1:Int,  ?Si0B2:Int,  ?Si0B3:Int,
+                    ?Si0B4:Int,  ?Si0B5:Int,  ?Si0B6:Int,  ?Si0B7:Int,
+                    ?Si0B8:Int,  ?Si0B9:Int,  ?Si0B10:Int, ?Si0B11:Int,
+                    ?Si0B12:Int, ?Si0B13:Int, ?Si0B14:Int, ?Si0B15:Int,
+                    ?Si0B16:Int, ?Si0B17:Int, ?Si0B18:Int, ?Si0B19:Int,
+                    ?Si0B20:Int, ?Si0B21:Int, ?Si0B22:Int, ?Si0B23:Int,
+                    ?Si0B24:Int, ?Si0B25:Int, ?Si0B26:Int, ?Si0B27:Int,
+                    ?Si0B28:Int, ?Si0B29:Int, ?Si0B30:Int, ?Si0B31:Int)))
+                           ListItem(Key(#mkPubkey(
+                    ?Si1B0:Int,  ?Si1B1:Int,  ?Si1B2:Int,  ?Si1B3:Int,
+                    ?Si1B4:Int,  ?Si1B5:Int,  ?Si1B6:Int,  ?Si1B7:Int,
+                    ?Si1B8:Int,  ?Si1B9:Int,  ?Si1B10:Int, ?Si1B11:Int,
+                    ?Si1B12:Int, ?Si1B13:Int, ?Si1B14:Int, ?Si1B15:Int,
+                    ?Si1B16:Int, ?Si1B17:Int, ?Si1B18:Int, ?Si1B19:Int,
+                    ?Si1B20:Int, ?Si1B21:Int, ?Si1B22:Int, ?Si1B23:Int,
+                    ?Si1B24:Int, ?Si1B25:Int, ?Si1B26:Int, ?Si1B27:Int,
+                    ?Si1B28:Int, ?Si1B29:Int, ?Si1B30:Int, ?Si1B31:Int)))
+                           ListItem(Key(#mkPubkey(
+                    ?Si2B0:Int,  ?Si2B1:Int,  ?Si2B2:Int,  ?Si2B3:Int,
+                    ?Si2B4:Int,  ?Si2B5:Int,  ?Si2B6:Int,  ?Si2B7:Int,
+                    ?Si2B8:Int,  ?Si2B9:Int,  ?Si2B10:Int, ?Si2B11:Int,
+                    ?Si2B12:Int, ?Si2B13:Int, ?Si2B14:Int, ?Si2B15:Int,
+                    ?Si2B16:Int, ?Si2B17:Int, ?Si2B18:Int, ?Si2B19:Int,
+                    ?Si2B20:Int, ?Si2B21:Int, ?Si2B22:Int, ?Si2B23:Int,
+                    ?Si2B24:Int, ?Si2B25:Int, ?Si2B26:Int, ?Si2B27:Int,
+                    ?Si2B28:Int, ?Si2B29:Int, ?Si2B30:Int, ?Si2B31:Int)))
                   )
            )
          )
-    ensures 0 <=Int ?M andBool ?M <=Int 256
-    andBool 0 <=Int ?N andBool ?N <=Int 256
-    andBool 0 <=Int ?INITIALISED andBool ?INITIALISED <=Int 256
-    andBool size(?Signer0)  ==Int 32 andBool allBytes(?Signer0)
-    andBool size(?Signer1)  ==Int 32 andBool allBytes(?Signer1)
-    andBool size(?Signer2)  ==Int 32 andBool allBytes(?Signer2)
+    ensures #isPByte(?M) andBool #isPByte(?N) andBool #isPByte(?INITIALISED)
+      // signer 0
+      andBool #isPByte(?Si0B0)  andBool #isPByte(?Si0B1)  andBool #isPByte(?Si0B2)  andBool #isPByte(?Si0B3)
+      andBool #isPByte(?Si0B4)  andBool #isPByte(?Si0B5)  andBool #isPByte(?Si0B6)  andBool #isPByte(?Si0B7)
+      andBool #isPByte(?Si0B8)  andBool #isPByte(?Si0B9)  andBool #isPByte(?Si0B10) andBool #isPByte(?Si0B11)
+      andBool #isPByte(?Si0B12) andBool #isPByte(?Si0B13) andBool #isPByte(?Si0B14) andBool #isPByte(?Si0B15)
+      andBool #isPByte(?Si0B16) andBool #isPByte(?Si0B17) andBool #isPByte(?Si0B18) andBool #isPByte(?Si0B19)
+      andBool #isPByte(?Si0B20) andBool #isPByte(?Si0B21) andBool #isPByte(?Si0B22) andBool #isPByte(?Si0B23)
+      andBool #isPByte(?Si0B24) andBool #isPByte(?Si0B25) andBool #isPByte(?Si0B26) andBool #isPByte(?Si0B27)
+      andBool #isPByte(?Si0B28) andBool #isPByte(?Si0B29) andBool #isPByte(?Si0B30) andBool #isPByte(?Si0B31)
+      // signer 1
+      andBool #isPByte(?Si1B0)  andBool #isPByte(?Si1B1)  andBool #isPByte(?Si1B2)  andBool #isPByte(?Si1B3)
+      andBool #isPByte(?Si1B4)  andBool #isPByte(?Si1B5)  andBool #isPByte(?Si1B6)  andBool #isPByte(?Si1B7)
+      andBool #isPByte(?Si1B8)  andBool #isPByte(?Si1B9)  andBool #isPByte(?Si1B10) andBool #isPByte(?Si1B11)
+      andBool #isPByte(?Si1B12) andBool #isPByte(?Si1B13) andBool #isPByte(?Si1B14) andBool #isPByte(?Si1B15)
+      andBool #isPByte(?Si1B16) andBool #isPByte(?Si1B17) andBool #isPByte(?Si1B18) andBool #isPByte(?Si1B19)
+      andBool #isPByte(?Si1B20) andBool #isPByte(?Si1B21) andBool #isPByte(?Si1B22) andBool #isPByte(?Si1B23)
+      andBool #isPByte(?Si1B24) andBool #isPByte(?Si1B25) andBool #isPByte(?Si1B26) andBool #isPByte(?Si1B27)
+      andBool #isPByte(?Si1B28) andBool #isPByte(?Si1B29) andBool #isPByte(?Si1B30) andBool #isPByte(?Si1B31)
+      // signer 2
+      andBool #isPByte(?Si2B0)  andBool #isPByte(?Si2B1)  andBool #isPByte(?Si2B2)  andBool #isPByte(?Si2B3)
+      andBool #isPByte(?Si2B4)  andBool #isPByte(?Si2B5)  andBool #isPByte(?Si2B6)  andBool #isPByte(?Si2B7)
+      andBool #isPByte(?Si2B8)  andBool #isPByte(?Si2B9)  andBool #isPByte(?Si2B10) andBool #isPByte(?Si2B11)
+      andBool #isPByte(?Si2B12) andBool #isPByte(?Si2B13) andBool #isPByte(?Si2B14) andBool #isPByte(?Si2B15)
+      andBool #isPByte(?Si2B16) andBool #isPByte(?Si2B17) andBool #isPByte(?Si2B18) andBool #isPByte(?Si2B19)
+      andBool #isPByte(?Si2B20) andBool #isPByte(?Si2B21) andBool #isPByte(?Si2B22) andBool #isPByte(?Si2B23)
+      andBool #isPByte(?Si2B24) andBool #isPByte(?Si2B25) andBool #isPByte(?Si2B26) andBool #isPByte(?Si2B27)
+      andBool #isPByte(?Si2B28) andBool #isPByte(?Si2B29) andBool #isPByte(?Si2B30) andBool #isPByte(?Si2B31)
     andBool DATA_LEN ==Int 99 // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
 ```
 
