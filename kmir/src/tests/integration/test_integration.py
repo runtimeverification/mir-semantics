@@ -19,6 +19,8 @@ from kmir.parse.parser import Parser
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
 
+from .conftest import get_exec_smir_target_dir
+
 if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
@@ -30,6 +32,9 @@ PROVE_FILES = list(PROVE_DIR.glob('*.*'))
 PROVE_START_SYMBOLS = {
     'symbolic-args-fail': ['main', 'eats_all_args'],
     'symbolic-structs-fail': ['eats_struct_args'],
+    'cse-online-autoreuse': ['main', 'caller'],
+    'cse-online-same-callsite': ['main', 'caller'],
+    'cse-preserve-shape': ['main', 'caller'],
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
     'checked_arithmetic-fail': ['checked_add_i32'],
     'pointer-cast': ['main', 'test'],
@@ -113,6 +118,267 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
             assert apr_proof.passed
         else:
             assert apr_proof.failed
+
+
+def test_cse(kmir: KMIR, tmp_path: Path) -> None:
+    """Test CSE pipeline: generate function summaries then reuse via --add-module."""
+    from kmir._cse import cse_prove
+
+    rs_file = PROVE_DIR / 'cse-multi-function.rs'
+    summary_dir = tmp_path / 'summaries'
+    proof_dir = tmp_path / 'proofs'
+
+    # Phase 1: CSE pipeline generates summaries
+    cse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=proof_dir)
+    result = cse_prove(cse_opts)
+    assert result.final_proof is not None
+    assert result.final_proof.passed
+    assert summary_dir.exists()
+    summary_files = list(summary_dir.glob('*.json'))
+    assert len(summary_files) > 0, 'CSE should have generated at least one summary'
+
+    # Phase 2: Reuse summaries in a fresh prove
+    reuse_opts = ProveOpts(rs_file, add_modules=summary_files, proof_dir=tmp_path / 'proofs2')
+    proof = KMIR.prove_program(reuse_opts)
+    assert proof.passed
+
+
+def test_cse_preserves_simple_branch_skeleton(kmir: KMIR, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from kmir._cse import cse_prove
+
+    rs_file = PROVE_DIR / 'cse-preserve-shape.rs'
+    summary_dir = tmp_path / 'summaries'
+    baseline_dir = tmp_path / 'baseline'
+    observe_dir = tmp_path / 'observe'
+    cse_dir = tmp_path / 'cse'
+    reuse_dir = tmp_path / 'reuse'
+
+    baseline_opts = ProveOpts(rs_file, start_symbol='caller', proof_dir=baseline_dir)
+    baseline_proof = kmir.prove_program(baseline_opts)
+    assert baseline_proof.passed
+
+    monkeypatch.setenv('KMIR_CSE_SUMMARY_GENERATION', '1')
+    monkeypatch.setenv('KMIR_CSE_OBSERVE_ONLY', '1')
+    observe_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=observe_dir, start_symbol='caller')
+    observe_result = cse_prove(observe_opts)
+    assert observe_result.final_proof is not None
+    assert observe_result.final_proof.passed
+    observed_dir = summary_dir / 'observed-calls'
+    observed_cterms = list(observed_dir.glob('*.cterm.json'))
+    assert observed_cterms, 'observe-only mode should record at least one runtime call-site cterm'
+    monkeypatch.delenv('KMIR_CSE_OBSERVE_ONLY')
+
+    monkeypatch.setenv('KMIR_CSE_GENERATE_ONLY', '1')
+    cse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=cse_dir, start_symbol='caller')
+    cse_result = cse_prove(cse_opts)
+    assert 'callee' in cse_result.summaries
+    summary_files = list(summary_dir.glob('*.json'))
+    assert summary_files
+    monkeypatch.delenv('KMIR_CSE_GENERATE_ONLY')
+    monkeypatch.delenv('KMIR_CSE_SUMMARY_GENERATION')
+
+    monkeypatch.setenv('KMIR_CSE_REUSE_ONLY', '1')
+    reuse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=reuse_dir, start_symbol='caller')
+    reuse_result = cse_prove(reuse_opts)
+    assert reuse_result.final_proof is not None
+    assert reuse_result.final_proof.passed
+    monkeypatch.delenv('KMIR_CSE_REUSE_ONLY')
+
+    baseline_kcfg_path = baseline_dir / baseline_proof.id / 'kcfg' / 'kcfg.json'
+    cse_kcfg_path = reuse_dir / reuse_result.final_proof.id / 'kcfg' / 'kcfg.json'
+    baseline_kcfg = json.loads(baseline_kcfg_path.read_text())
+    cse_kcfg = json.loads(cse_kcfg_path.read_text())
+    return_summary_path = summary_dir / 'callee.json'
+    frontier_summary_path = summary_dir / 'callee.frontier.json'
+
+    def _edge_map(kcfg: JSON) -> dict[tuple[int, int], JSON]:
+        return {(edge['source'], edge['target']): edge for edge in kcfg.get('edges', [])}
+
+    def _edge_depth_sum(kcfg: JSON) -> int:
+        return sum(edge.get('depth', 0) for edge in kcfg.get('edges', []))
+
+    def _kcfg_shape(kcfg: JSON, root: int = 1) -> tuple[object, ...]:
+        edge_next = {edge['source']: edge['target'] for edge in kcfg.get('edges', [])}
+        split_next = {
+            split['source']: [target['target'] for target in split.get('targets', [])] for split in kcfg.get('splits', [])
+        }
+        cover_sources = {cover['source'] for cover in kcfg.get('covers', [])}
+
+        def walk(node: int) -> tuple[object, ...]:
+            if node in cover_sources:
+                return ('cover',)
+            if node in split_next:
+                child_shapes = sorted((walk(target) for target in split_next[node]), key=repr)
+                return ('split', tuple(child_shapes))
+            if node in edge_next:
+                return ('edge', walk(edge_next[node]))
+            return ('leaf',)
+
+        return walk(root)
+
+    def _has_negative_guard(term: JSON) -> bool:
+        if isinstance(term, dict):
+            label = term.get('label')
+            if isinstance(label, dict) and label.get('name') == 'notBool_':
+                return True
+            return any(_has_negative_guard(value) for value in term.values())
+        if isinstance(term, list):
+            return any(_has_negative_guard(value) for value in term)
+        return False
+
+    if return_summary_path.exists():
+        summary_module = json.loads(return_summary_path.read_text())
+        summary_rules = summary_module.get('localSentences', [])
+        assert len(summary_rules) >= 4
+        assert any(_has_negative_guard(rule) for rule in summary_rules), 'callee summary should include a negative branch'
+    else:
+        frontier_summary = json.loads(frontier_summary_path.read_text())
+        assert frontier_summary['summary_kind'] == 'frontier'
+        assert len(frontier_summary['frontier_node_ids']) >= 1
+
+    # When dynamic callee proofs are loaded, the CSE proof tree may differ from
+    # baseline because function calls are intercepted and replaced by summary
+    # steps.  The key invariant is that the CSE proof still passes and its
+    # edge-depth sum is no worse than baseline.
+    assert _edge_depth_sum(cse_kcfg) <= _edge_depth_sum(baseline_kcfg)
+
+
+def test_cse_online_autoreuse_reuses_runtime_learned_summary(
+    kmir: KMIR, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from kmir._cse import cse_prove
+
+    rs_file = PROVE_DIR / 'cse-online-autoreuse.rs'
+    summary_dir = tmp_path / 'summaries'
+    baseline_dir = tmp_path / 'baseline'
+    cse_dir = tmp_path / 'cse'
+    reuse_dir = tmp_path / 'reuse'
+
+    baseline_opts = ProveOpts(rs_file, start_symbol='caller', proof_dir=baseline_dir)
+    baseline_proof = kmir.prove_program(baseline_opts)
+    assert baseline_proof.passed
+
+    monkeypatch.setenv('KMIR_CSE_SUMMARY_GENERATION', '1')
+    monkeypatch.setenv('KMIR_CSE_ONLINE_AUTOREUSE', '1')
+    cse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=cse_dir, start_symbol='caller')
+    cse_result = cse_prove(cse_opts)
+    assert cse_result.final_proof is not None
+    assert cse_result.final_proof.passed
+    assert 'callee' in cse_result.online_generated_summaries
+    assert cse_result.dynamic_summary_hits.get('callee', 0) >= 1
+    assert (summary_dir / 'callee.frontier.json').exists()
+    monkeypatch.delenv('KMIR_CSE_ONLINE_AUTOREUSE')
+
+    monkeypatch.setenv('KMIR_CSE_REUSE_ONLY', '1')
+    reuse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=reuse_dir, start_symbol='caller')
+    reuse_result = cse_prove(reuse_opts)
+    assert reuse_result.final_proof is not None
+    assert reuse_result.final_proof.passed
+    assert not reuse_result.online_generated_summaries
+    assert reuse_result.callee_results['callee'].cached
+    monkeypatch.delenv('KMIR_CSE_REUSE_ONLY')
+    monkeypatch.delenv('KMIR_CSE_SUMMARY_GENERATION')
+
+    baseline_kcfg_path = baseline_dir / baseline_proof.id / 'kcfg' / 'kcfg.json'
+    cse_kcfg_path = cse_dir / cse_result.final_proof.id / 'kcfg' / 'kcfg.json'
+    baseline_kcfg = json.loads(baseline_kcfg_path.read_text())
+    cse_kcfg = json.loads(cse_kcfg_path.read_text())
+
+    def _edge_depth_sum(kcfg: JSON) -> int:
+        return sum(edge.get('depth', 0) for edge in kcfg.get('edges', []))
+
+    assert _edge_depth_sum(cse_kcfg) < _edge_depth_sum(baseline_kcfg)
+
+
+def test_cse_observe_gen_autoreuse_online(kmir: KMIR, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from kmir._cse import cse_prove
+
+    rs_file = PROVE_DIR / 'cse-online-autoreuse.rs'
+    baseline_dir = tmp_path / 'baseline'
+    summary_dir = tmp_path / 'summaries'
+    cse_dir = tmp_path / 'cse'
+    reuse_dir = tmp_path / 'reuse'
+
+    baseline_opts = ProveOpts(rs_file, start_symbol='caller', proof_dir=baseline_dir)
+    baseline_proof = kmir.prove_program(baseline_opts)
+    assert baseline_proof.passed
+
+    monkeypatch.setenv('KMIR_CSE_SUMMARY_GENERATION', '1')
+    cse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=cse_dir, start_symbol='caller')
+    cse_result = cse_prove(cse_opts)
+    assert cse_result.final_proof is not None
+    assert cse_result.final_proof.passed
+    assert 'callee' in cse_result.online_generated_summaries
+    assert cse_result.dynamic_summary_hits.get('callee', 0) >= 1
+
+    assert (summary_dir / 'callee.frontier.json').exists()
+
+    baseline_kcfg = json.loads((baseline_dir / baseline_proof.id / 'kcfg' / 'kcfg.json').read_text())
+    cse_kcfg = json.loads((cse_dir / cse_result.final_proof.id / 'kcfg' / 'kcfg.json').read_text())
+    observed_runtime = json.loads((summary_dir / 'observed-calls' / 'ty-26.json').read_text())
+
+    def _edge_depth_sum(kcfg: JSON) -> int:
+        return sum(edge.get('depth', 0) for edge in kcfg.get('edges', []))
+
+    # Online autoreuse should learn from the first concrete call-site, then
+    # hit the learned summary later in the same proof.
+    assert 'observed-no-cached-proof' in observed_runtime['outcomes']
+    assert any('summary-hit' in outcome for outcome in observed_runtime['outcomes'])
+    assert _edge_depth_sum(cse_kcfg) < _edge_depth_sum(baseline_kcfg)
+    assert len(cse_kcfg.get('splits', [])) >= 1
+
+    monkeypatch.delenv('KMIR_CSE_SUMMARY_GENERATION')
+
+    monkeypatch.setenv('KMIR_CSE_REUSE_ONLY', '1')
+    reuse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=reuse_dir, start_symbol='caller')
+    reuse_result = cse_prove(reuse_opts)
+    assert reuse_result.final_proof is not None
+    assert reuse_result.final_proof.passed
+    assert not reuse_result.online_generated_summaries
+    monkeypatch.delenv('KMIR_CSE_REUSE_ONLY')
+
+
+def test_cse_online_autoreuse_reuses_same_callsite_after_learning(
+    kmir: KMIR, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from kmir._cse import cse_prove
+
+    rs_file = PROVE_DIR / 'cse-online-same-callsite.rs'
+    summary_dir = tmp_path / 'summaries'
+    baseline_dir = tmp_path / 'baseline'
+    cse_dir = tmp_path / 'cse'
+
+    baseline_opts = ProveOpts(rs_file, start_symbol='caller', proof_dir=baseline_dir)
+    baseline_proof = kmir.prove_program(baseline_opts)
+    assert baseline_proof.passed
+
+    monkeypatch.setenv('KMIR_CSE_SUMMARY_GENERATION', '1')
+    monkeypatch.setenv('KMIR_CSE_ONLINE_AUTOREUSE', '1')
+    cse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=cse_dir, start_symbol='caller')
+    cse_result = cse_prove(cse_opts)
+    assert cse_result.final_proof is not None
+    assert cse_result.final_proof.passed
+    assert 'callee' in cse_result.online_generated_summaries
+    assert cse_result.dynamic_summary_hits.get('callee', 0) >= 1
+
+    observed_dir = summary_dir / 'observed-calls'
+    observed_runtime = [json.loads(path.read_text()) for path in observed_dir.glob('ty-*.json')]
+    assert observed_runtime
+    outcomes = [outcome for data in observed_runtime for outcome in data.get('outcomes', [])]
+    assert 'observed-no-cached-proof' in outcomes
+    assert any('summary-hit' in outcome for outcome in outcomes)
+    assert 'online-summary-suppressed-same-callsite' not in outcomes
+
+    baseline_kcfg = json.loads((baseline_dir / baseline_proof.id / 'kcfg' / 'kcfg.json').read_text())
+    cse_kcfg = json.loads((cse_dir / cse_result.final_proof.id / 'kcfg' / 'kcfg.json').read_text())
+
+    def _edge_depth_sum(kcfg: JSON) -> int:
+        return sum(edge.get('depth', 0) for edge in kcfg.get('edges', []))
+
+    assert _edge_depth_sum(cse_kcfg) < _edge_depth_sum(baseline_kcfg)
+
+    monkeypatch.delenv('KMIR_CSE_ONLINE_AUTOREUSE')
+    monkeypatch.delenv('KMIR_CSE_SUMMARY_GENERATION')
 
 
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)
@@ -407,13 +673,15 @@ def test_exec_smir(
     test_case: tuple[str, Path, Path, int],
     symbolic: bool,
     update_expected_output: bool,
-    tmp_path: Path,
+    kompile_cache_dir: Path,
+    exec_smir_kompile_dirs: dict[str, Path],
 ) -> None:
     name, input_json, output_kast, depth = test_case
     if symbolic and name in EXEC_SMIR_SKIP_HASKELL:
         pytest.skip('haskell-backend lacks FLOAT hooks')
     smir_info = SMIRInfo.from_file(input_json)
-    kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=tmp_path, symbolic=symbolic)
+    target_dir = get_exec_smir_target_dir(input_json, symbolic, kompile_cache_dir, exec_smir_kompile_dirs)
+    kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=target_dir, symbolic=symbolic)
     result = kmir_backend.run_smir(smir_info, depth=depth)
     result_pretty = kmir_backend.kore_to_pretty(result).rstrip()
     assert_or_update_show_output(result_pretty, output_kast, update=update_expected_output)

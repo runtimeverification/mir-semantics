@@ -294,7 +294,7 @@ def test_cli_prove_add_module(kmir: KMIR, tmp_path: Path) -> None:
         smir=False,
         start_symbol=start_symbol,
         max_depth=1,
-        add_module=str(stored_module_json),
+        add_modules=[stored_module_json],
     )
     proof_with_module = KMIR.prove_program(opts_with_module)
 
@@ -318,7 +318,7 @@ def test_cli_prove_add_module_k(kmir: KMIR, tmp_path: Path) -> None:
         smir=False,
         start_symbol=start_symbol,
         max_depth=1,
-        add_module=f'{module_file}:TEST-ADD-MODULE',
+        add_modules=[f'{module_file}:TEST-ADD-MODULE'],
     )
     proof = KMIR.prove_program(opts)
 
@@ -342,7 +342,7 @@ def test_cli_prove_add_module_md(kmir: KMIR, tmp_path: Path) -> None:
         smir=False,
         start_symbol=start_symbol,
         max_depth=1,
-        add_module=f'{module_file}:TEST-ADD-MODULE',
+        add_modules=[f'{module_file}:TEST-ADD-MODULE'],
     )
     proof = KMIR.prove_program(opts)
 
@@ -366,7 +366,7 @@ def test_cli_prove_add_module_select_from_multiple(kmir: KMIR, tmp_path: Path) -
         smir=False,
         start_symbol=start_symbol,
         max_depth=1,
-        add_module=f'{module_file}:TEST-ADD-MODULE',
+        add_modules=[f'{module_file}:TEST-ADD-MODULE'],
     )
     proof = KMIR.prove_program(opts)
 

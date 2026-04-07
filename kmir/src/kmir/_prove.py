@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import logging
+import re
 import tempfile
+import time
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pyk.cterm import CTerm
-from pyk.cterm.symbolic import CTermSymbolic
 from pyk.kast.inner import KSequence, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
@@ -17,7 +18,7 @@ from pyk.proof.reachability import APRProof, APRProver
 
 from .cargo import cargo_get_smir_json
 from .kast import SymbolicMode, make_call_config
-from .kmir import KMIR, KMIRSemantics
+from .kmir import KMIR, KMIRCTermSymbolic, KMIRSemantics, kore_server_logging_args
 from .smir import SMIRInfo
 
 if TYPE_CHECKING:
@@ -29,6 +30,24 @@ if TYPE_CHECKING:
 
 
 _LOGGER: Final = logging.getLogger(__name__)
+_SUMMARY_TARGET_VAR_RE = re.compile(r'^(?P<base>[A-Z][A-Z0-9_]*?)_[0-9a-f]{8}(?:__kmir_q_\d+)?$')
+
+
+def _canonicalize_summary_target_var_name(name: str) -> str:
+    match = _SUMMARY_TARGET_VAR_RE.match(name)
+    if match is None:
+        return name
+    return match.group('base')
+
+
+def _make_stable_target_var(base_name: str, existing_names: set[str]) -> KVariable:
+    name = base_name
+    counter = 0
+    while name in existing_names:
+        counter += 1
+        name = f'{base_name}_{counter}'
+    existing_names.add(name)
+    return KVariable(name)
 
 
 def prove(opts: ProveOpts) -> APRProof:
@@ -38,7 +57,15 @@ def prove(opts: ProveOpts) -> APRProof:
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
 
-    label = f'{opts.rs_file.stem}.{opts.start_symbol}'
+    # Sanitize label: K module names only allow alphanumeric + hyphen + underscore + dot.
+    # Also truncate to avoid filesystem path length limits.
+    import hashlib
+
+    raw_label = f'{opts.rs_file.stem}.{opts.start_symbol}'
+    label = ''.join(c if c.isalnum() or c in '._-' else '_' for c in raw_label)
+    if len(label) > 200:
+        digest = hashlib.sha256(raw_label.encode()).hexdigest()[:12]
+        label = label[:200] + '_' + digest
 
     if opts.proof_dir is not None:
         target_path = opts.proof_dir / label
@@ -58,7 +85,7 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         kmir = KMIR.from_kompiled_kore(
             smir_info,
             target_dir=target_path,
-            extra_module=opts.add_module,
+            extra_modules=opts.add_modules or None,
             bug_report=opts.bug_report,
             symbolic=True,
             haskell_target=opts.haskell_target,
@@ -89,7 +116,7 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         kmir = KMIR.from_kompiled_kore(
             smir_info,
             target_dir=target_path,
-            extra_module=opts.add_module,
+            extra_modules=opts.add_modules or None,
             bug_report=opts.bug_report,
             symbolic=True,
             haskell_target=opts.haskell_target,
@@ -154,6 +181,7 @@ def _prove_parallel(
             'bug_report': kmir.bug_report,
             'simplify_each': 30,
             'haskell_threads': opts.max_workers,
+            **kore_server_logging_args(label),
         }
     ) as server:
 
@@ -164,7 +192,7 @@ def _prove_parallel(
                 bug_report=kmir.bug_report,
                 bug_report_id=label if kmir.bug_report is not None else None,
             )
-            cterm_symbolic = CTermSymbolic(
+            cterm_symbolic = KMIRCTermSymbolic(
                 client,
                 kmir.definition,
             )
@@ -179,14 +207,19 @@ def _prove_parallel(
             )
             return prover
 
-        parallel_advance_proof(
-            proof,
-            create_prover=create_prover,
-            max_iterations=opts.max_iterations,
-            max_workers=opts.max_workers,
-            fail_fast=opts.fail_fast,
-            maintenance_rate=opts.maintenance_rate,
-        )
+        started_at = time.perf_counter()
+        try:
+            parallel_advance_proof(
+                proof,
+                create_prover=create_prover,
+                max_iterations=opts.max_iterations,
+                max_workers=opts.max_workers,
+                fail_fast=opts.fail_fast,
+                maintenance_rate=opts.maintenance_rate,
+            )
+        finally:
+            proof.add_exec_time(time.perf_counter() - started_at)
+            proof.write_proof_data()
 
 
 def _prove_sequential(
@@ -203,12 +236,17 @@ def _prove_sequential(
             execute_depth=opts.max_depth,
             cut_point_rules=cut_point_rules,
         )
-        prover.advance_proof(
-            proof,
-            max_iterations=opts.max_iterations,
-            fail_fast=opts.fail_fast,
-            maintenance_rate=opts.maintenance_rate,
-        )
+        started_at = time.perf_counter()
+        try:
+            prover.advance_proof(
+                proof,
+                max_iterations=opts.max_iterations,
+                fail_fast=opts.fail_fast,
+                maintenance_rate=opts.maintenance_rate,
+            )
+        finally:
+            proof.add_exec_time(time.perf_counter() - started_at)
+            proof.write_proof_data()
 
 
 def apr_proof_from_smir(
@@ -218,20 +256,38 @@ def apr_proof_from_smir(
     *,
     start_symbol: str = 'main',
     proof_dir: Path | None = None,
+    init_cterm: CTerm | None = None,
+    target_k_cell: KInner | None = None,
 ) -> APRProof:
-    lhs_config, constraints = make_call_config(
-        kmir.definition,
-        smir_info=smir_info,
-        start_symbol=start_symbol,
-        mode=SymbolicMode(),
-    )
-    lhs = CTerm(lhs_config, constraints)
+    """Create an APRProof for a KMIR function.
+
+    If init_cterm is provided, use it as the initial state (for CSE normalized entry).
+    Otherwise, construct from make_call_config (standard mode).
+    """
+    if init_cterm is not None:
+        lhs = init_cterm
+        lhs_config = init_cterm.config
+    else:
+        lhs_config, constraints = make_call_config(
+            kmir.definition,
+            smir_info=smir_info,
+            start_symbol=start_symbol,
+            mode=SymbolicMode(),
+        )
+        lhs = CTerm(lhs_config, constraints)
 
     var_config, var_subst = split_config_from(lhs_config)
-    _rhs_subst: dict[str, KInner] = {
-        v_name: abstract_term_safely(KVariable('_'), base_name=v_name) for v_name in var_subst
-    }
-    _rhs_subst['K_CELL'] = KSequence([KMIR.Symbols.END_PROGRAM])
+    existing_rhs_var_names: set[str] = set()
+    _rhs_subst: dict[str, KInner] = {}
+    for v_name in var_subst:
+        if target_k_cell is None:
+            rhs_var = abstract_term_safely(KVariable('_'), base_name=v_name, existing_var_names=existing_rhs_var_names)
+            existing_rhs_var_names.add(rhs_var.name)
+        else:
+            base_name = _canonicalize_summary_target_var_name(v_name)
+            rhs_var = _make_stable_target_var(base_name, existing_rhs_var_names)
+        _rhs_subst[v_name] = rhs_var
+    _rhs_subst['K_CELL'] = target_k_cell if target_k_cell is not None else KSequence([KMIR.Symbols.END_PROGRAM])
     rhs = CTerm(Subst(_rhs_subst)(var_config))
     kcfg = KCFG()
     init_node = kcfg.create_node(lhs)

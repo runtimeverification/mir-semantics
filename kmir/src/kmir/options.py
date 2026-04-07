@@ -76,7 +76,9 @@ class ProveOpts(KMirOpts):
     smir: bool
     parsed_smir: dict | None
     start_symbol: str
-    add_module: Path | str | None
+    add_modules: list[Path]
+    cse: bool
+    summary_dir: Path | None
     break_on_calls: bool
     break_on_function_calls: bool
     break_on_intrinsic_calls: bool
@@ -127,7 +129,9 @@ class ProveOpts(KMirOpts):
         break_every_terminator: bool = False,
         break_every_step: bool = False,
         terminate_on_thunk: bool = False,
-        add_module: Path | str | None = None,
+        add_modules: list[Path] | None = None,
+        cse: bool = False,
+        summary_dir: Path | str | None = None,
         break_on_function: list[str] | None = None,
     ) -> None:
         self.rs_file = rs_file
@@ -160,7 +164,9 @@ class ProveOpts(KMirOpts):
         self.break_every_terminator = break_every_terminator
         self.break_every_step = break_every_step
         self.terminate_on_thunk = terminate_on_thunk
-        self.add_module = add_module
+        self.add_modules = add_modules if add_modules is not None else []
+        self.cse = cse
+        self.summary_dir = Path(summary_dir).resolve() if summary_dir is not None else None
         self.break_on_function = break_on_function if break_on_function is not None else []
 
 

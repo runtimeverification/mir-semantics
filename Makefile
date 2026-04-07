@@ -56,6 +56,16 @@ test-integration: stable-mir-json build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
 			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
 
+test-integration-llvm: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
+		--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal \
+		-k "llvm or test_decode_value or test_run_smir_random or test_python_decode_value" $(TEST_ARGS)
+
+test-integration-haskell: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
+		--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal \
+		-k "haskell or test_prove or test_crate_examples or test_schema_parse or test_schema_kapply_parse or test_prove_termination or test_functions or test_cli" $(TEST_ARGS)
+
 .PHONY: test-stable-mir-ui
 test-stable-mir-ui: stable-mir-json build
 	@test -n "$(RUST_DIR_ROOT)" || (echo "RUST_DIR_ROOT is required. Example: RUST_DIR_ROOT=/path/to/rust make test-stable-mir-ui"; exit 2)

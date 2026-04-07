@@ -74,10 +74,18 @@ def _kmir_run(opts: RunOpts) -> None:
 
 
 def _kmir_prove(opts: ProveOpts) -> None:
-    proof = KMIR.prove_program(opts)
-    print(str(proof.summary))
-    if not proof.passed:
-        sys.exit(1)
+    if opts.cse:
+        from ._cse import cse_prove
+
+        result = cse_prove(opts)
+        print(result.summary_report())
+        if result.final_proof is None or not result.final_proof.passed:
+            sys.exit(1)
+    else:
+        proof = KMIR.prove_program(opts)
+        print(str(proof.summary))
+        if not proof.passed:
+            sys.exit(1)
 
 
 def _kmir_view(opts: ViewOpts) -> None:
@@ -97,31 +105,9 @@ def _kmir_view(opts: ViewOpts) -> None:
 
 def _write_to_module(kmir: KMIR, proof: APRProof, to_module_path: Path) -> None:
     """Write proof KCFG as a K module to the specified path."""
-    import json
+    from ._cse import write_to_module
 
-    from pyk.kast.manip import remove_generated_cells
-    from pyk.kast.outer import KRule
-
-    # Generate K module using KCFG.to_module with defunc_with for proper function inlining
-    module_name = proof.id.upper().replace('.', '-').replace('_', '-') + '-SUMMARY'
-    k_module = proof.kcfg.to_module(module_name=module_name, defunc_with=kmir.definition)
-
-    if to_module_path.suffix == '.json':
-        # JSON format for --add-module: keep <generatedTop> for Kore conversion
-        # Note: We don't use minimize_rule_like here because it creates partial configs
-        # with dots that cannot be converted back to Kore
-        to_module_path.write_text(json.dumps(k_module.to_dict(), indent=2))
-    else:
-        # K text format for human readability: remove <generatedTop> and <generatedCounter>
-        def _process_sentence(sent):  # type: ignore[no-untyped-def]
-            if isinstance(sent, KRule):
-                sent = sent.let(body=remove_generated_cells(sent.body))
-            return sent
-
-        k_module_readable = k_module.let(sentences=[_process_sentence(sent) for sent in k_module.sentences])
-        k_module_text = kmir.pretty_print(k_module_readable)
-        to_module_path.write_text(k_module_text)
-    _LOGGER.info(f'Module written to: {to_module_path}')
+    write_to_module(kmir, proof, to_module_path)
 
 
 def _kmir_show(opts: ShowOpts) -> None:
@@ -569,9 +555,24 @@ def _arg_parser() -> ArgumentParser:
     )
     prove_parser.add_argument(
         '--add-module',
-        type=str,
-        metavar='MODULE',
-        help='K module to include. Formats: FILE.k:MODULE or FILE.md:MODULE (K source), FILE.json (from --to-module). See docs/add-module.md for details.',
+        type=Path,
+        action='append',
+        dest='add_modules',
+        default=[],
+        metavar='FILE',
+        help='K module file to include (.json format from --to-module). Repeatable.',
+    )
+    prove_parser.add_argument(
+        '--cse',
+        action='store_true',
+        default=False,
+        help='Enable Compositional Symbolic Execution: generate function summaries then prove with them.',
+    )
+    prove_parser.add_argument(
+        '--summary-dir',
+        type=Path,
+        metavar='DIR',
+        help='Directory for storing/loading CSE function summaries (default: proof-dir/summaries)',
     )
     prove_parser.add_argument(
         '--max-workers', metavar='N', type=int, help='Maximum number of workers for parallel exploration'
@@ -704,7 +705,9 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 break_every_terminator=ns.break_every_terminator,
                 break_every_step=ns.break_every_step,
                 terminate_on_thunk=ns.terminate_on_thunk,
-                add_module=ns.add_module,
+                add_modules=ns.add_modules or [],
+                cse=ns.cse,
+                summary_dir=ns.summary_dir,
                 break_on_function=ns.break_on_function or [],
             )
         case 'link':
