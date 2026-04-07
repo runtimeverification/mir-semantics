@@ -9,6 +9,9 @@
     ty ( -4 )
   </currentFunc>
   <currentFrame>
+    <frameId>
+      0
+    </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 31 ) , userTy: someUserTypeAnnotationIndex ( userTypeAnnotationIndex ( 0 ) ) , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 15 ) , id: mirConstId ( 3 ) ) ) ) , args: operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 4 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 32 ) ) ) )
       ListItem ( basicBlock (... statements: statement (... kind: statementKindAssign (... place: place (... local: local ( 5 ) , projection: .ProjectionElems ) , rvalue: rvalueBinaryOp ( binOpGe , operandCopy ( place (... local: local ( 4 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand (... span: span ( 34 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 4 ) , mutability: mutabilityMut ) ) , ty: ty ( 8 ) , id: mirConstId ( 4 ) ) ) ) ) ) , span: span ( 33 ) )  .Statements , terminator: terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 5 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 3 ) )  .Branches , otherwise: basicBlockIdx ( 2 ) ) ) , span: span ( 33 ) ) ) )
@@ -76,7 +79,7 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
     ListItem ( typedValue ( BoolVal ( false ) , ty ( 18 ) , mutabilityNot ) )
     ListItem ( typedValue ( Integer ( 191 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
     ListItem ( typedValue ( Integer ( -1000150020 , 32 , true ) , ty ( 8 ) , mutabilityNot ) ) ) )

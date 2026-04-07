@@ -24,7 +24,8 @@ module KMIR-CONFIGURATION
   syntax RetVal ::= return( Value )
                   | "noReturn"
 
-  syntax StackFrame ::= StackFrame(caller:Ty,                 // index of caller function
+  syntax StackFrame ::= StackFrame(frameId:Int,               // stable id for this frame
+                                   caller:Ty,                 // index of caller function
                                    dest:Place,                // place to store return value
                                    target:MaybeBasicBlockIdx, // basic block to return to
                                    UnwindAction,              // action to perform on panic
@@ -36,6 +37,7 @@ module KMIR-CONFIGURATION
                   <currentFunc> ty(-1) </currentFunc> // to retrieve caller
                   // unpacking the top frame to avoid frequent stack read/write operations
                   <currentFrame>
+                    <frameId> 0 </frameId>
                     <currentBody> .List </currentBody>
                     <caller> ty(-1) </caller>
                     <dest> place(local(-1), .ProjectionElems)</dest>
