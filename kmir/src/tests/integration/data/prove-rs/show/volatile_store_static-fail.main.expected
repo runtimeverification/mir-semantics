@@ -3,17 +3,17 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (64 steps)
+│  (10 steps)
 ├─ 3
-│   #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: projectionEl
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00
 │   function: main
-│   span: 50
+│   span: 57
 │
 │  (1 step)
 └─ 4 (leaf, terminal)
-    thunk ( #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: proj
+    thunk ( #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00
     function: main
-    span: 50
+    span: 57
 
 
 ┌─ 2 (root, leaf, target, terminal)

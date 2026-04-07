@@ -67,6 +67,12 @@ PROVE_SHOW_SPECS = [
     'ref-ptr-cast-elem-fail',
     'ref-ptr-cast-elem-offset-fail',
     'spl-multisig-iter-eq-copied-next-fail',
+    'volatile_store_static-fail',
+    'volatile_load_static-fail',
+    'box_heap_alloc-fail',
+    'ptr-cast-array-to-wrapper-fail',
+    'ptr-cast-array-to-nested-wrapper-fail',
+    'ptr-cast-array-to-singleton-wrapped-array-fail',
 ]
 
 
@@ -83,7 +89,7 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     if update_expected_output and not should_show:
         pytest.skip()
 
-    prove_opts = ProveOpts(rs_file, smir=is_smir)
+    prove_opts = ProveOpts(rs_file, smir=is_smir, terminate_on_thunk=True)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
@@ -382,6 +388,17 @@ EXEC_DATA = [
 ]
 
 
+# Tests containing float values that the pure kore-exec haskell backend cannot handle.
+# The haskell backend has no Float builtins (no Float.hs in kore/src/Kore/Builtin/),
+# so kore-exec crashes with "missing hook FLOAT.int2float" at Evaluator.hs:377.
+# The booster avoids this by delegating Float evaluation to the LLVM shared library
+# via simplifyTerm in booster/library/Booster/LLVM.hs.
+EXEC_SMIR_SKIP_HASKELL = {
+    'structs-tuples',
+    'struct-field-update',
+}
+
+
 @pytest.mark.parametrize('symbolic', [False, True], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
@@ -394,7 +411,9 @@ def test_exec_smir(
     update_expected_output: bool,
     tmp_path: Path,
 ) -> None:
-    _, input_json, output_kast, depth = test_case
+    name, input_json, output_kast, depth = test_case
+    if symbolic and name in EXEC_SMIR_SKIP_HASKELL:
+        pytest.skip('haskell-backend lacks FLOAT hooks')
     smir_info = SMIRInfo.from_file(input_json)
     kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=tmp_path, symbolic=symbolic)
     result = kmir_backend.run_smir(smir_info, depth=depth)
@@ -635,3 +654,40 @@ def test_schema_kapply_parse(
     json_data, expected_term, expected_sort = test_case
 
     assert parser.parse_mir_json(json_data, expected_sort.name) == (expected_term, expected_sort)
+
+
+ARITH_SMIR = PROVE_DIR / 'arith.smir.json'
+
+
+def test_reduce_standalone() -> None:
+    """Test that kmir reduce correctly prunes SMIR items by reachability."""
+    smir_data = json.loads(ARITH_SMIR.read_text())
+    info = SMIRInfo(smir_data)
+    assert len(info.items) == 11
+
+    # Single root 'add' — should keep 1 item
+    reduced_add = info.reduce_to('add')
+    assert len(reduced_add.items) == 1
+
+    # Single root 'mul' — should keep 1 item (independent from add)
+    reduced_mul = info.reduce_to('mul')
+    assert len(reduced_mul.items) == 1
+
+    # Multiple roots — should keep strictly more than either alone
+    reduced_multi = info.reduce_to(['add', 'mul'])
+    assert len(reduced_multi.items) == 2
+
+    # 'main' calls both add and mul — should keep all 3
+    reduced_main = info.reduce_to('main')
+    assert len(reduced_main.items) == 3
+
+    # Roundtrip: save reduced SMIR and reload it
+    with tempfile.NamedTemporaryFile(suffix='.smir.json', delete=False, mode='w') as f:
+        f.write(json.dumps(reduced_multi._smir))
+        reduced_path = Path(f.name)
+
+    try:
+        reloaded = SMIRInfo(json.loads(reduced_path.read_text()))
+        assert len(reloaded.items) == 2
+    finally:
+        reduced_path.unlink()

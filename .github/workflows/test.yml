@@ -47,12 +47,37 @@ jobs:
         with:
           version: ${{ steps.uv_release.outputs.uv_version }}
       - name: 'Run unit tests'
-        run: make test-unit
+        run: make test-unit PARALLEL=12
 
   integration-tests:
     needs: code-quality-checks
-    name: 'Integration Tests'
+    name: 'Integration Tests ${{ matrix.name }}'
     runs-on: [self-hosted, linux, normal]
+    timeout-minutes: ${{ matrix.timeout }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: 'LLVM Concrete Tests'
+            test-args: '-k "llvm or test_run_smir_random"'
+            parallel: 12
+            timeout: 30
+          - name: 'Haskell Exec SMIR'
+            test-args: '-k "test_exec_smir and haskell"'
+            parallel: 6
+            timeout: 20
+          - name: 'Haskell Termination'
+            test-args: '-k test_prove_termination'
+            parallel: 6
+            timeout: 20
+          - name: 'Haskell Proofs'
+            test-args: '-k "test_prove and not test_prove_termination"'
+            parallel: 6
+            timeout: 120
+          - name: 'Remainder'
+            test-args: '-k "not llvm and not test_run_smir_random and not test_exec_smir and not test_prove_termination and not test_prove"'
+            parallel: 6
+            timeout: 20
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
@@ -66,7 +91,9 @@ jobs:
       - name: 'Build stable-mir-json and kmir'
         run: docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make build
       - name: 'Run integration tests'
-        run: docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make test-integration
+        run: |
+          docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make test-integration \
+            TEST_ARGS='${{ matrix.test-args }}' PARALLEL=${{ matrix.parallel }}
       - name: 'Tear down Docker'
         if: always()
         run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}

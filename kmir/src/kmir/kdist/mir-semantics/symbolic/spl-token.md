@@ -63,7 +63,7 @@ module KMIR-SPL-TOKEN
 
   rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjectionForce(NEW)
-        => #forceSetLocal(local(I), #buildUpdate(NEW, CONTEXTS))
+        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
        ...
        </k>
        <locals> LOCALS </locals>

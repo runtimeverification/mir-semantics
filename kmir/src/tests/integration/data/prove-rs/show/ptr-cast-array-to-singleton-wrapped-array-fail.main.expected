@@ -3,17 +3,17 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (64 steps)
+│  (68 steps)
 ├─ 3
 │   #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: projectionEl
 │   function: main
-│   span: 50
+│   span: 270
 │
 │  (1 step)
 └─ 4 (leaf, terminal)
     thunk ( #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: proj
     function: main
-    span: 50
+    span: 270
 
 
 ┌─ 2 (root, leaf, target, terminal)
