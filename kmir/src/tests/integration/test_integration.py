@@ -422,20 +422,22 @@ EXEC_DATA = [
 ]
 
 
-# Tests containing float values that the pure kore-exec haskell backend cannot handle.
-# The haskell backend has no Float builtins (no Float.hs in kore/src/Kore/Builtin/),
-# so kore-exec crashes with "missing hook FLOAT.int2float" at Evaluator.hs:377.
-# The booster avoids this by delegating Float evaluation to the LLVM shared library
-# via simplifyTerm in booster/library/Booster/LLVM.hs.
+# Tests that crash kore-exec (haskell without booster) because they invoke FLOAT hooks
+# directly in cast rules (Int2Float, Float2Int, roundFloat). However concrete floats
+# are supported and can be cast via the LLVM backend or Booster when it calls evaluation
+# on a concrete argument. Furthermore, a cast that calls an unsupported hook could
+# originate from an `IntToFloat`, and thus crash the backend. Since there is partial
+# support (unlike for transmutes) we want to stop haskell evaluation of casts (which
+# will crash on the hooks), but keep concrete evaluation via either backend (booster or
+# LLVM). `[symbolic(_)]` was considered but does not seem fine-grained enough to allow
+# and prohibit the cases as described above.
+#
+# This test skips the haskell backend, but it should be impossible to have a symbolic
+# float for this to happen in the wild as it should also decode to #UnableToDecode. So
+# in our typical proof workflow this should be impossible to happen. If I am wrong, it
+# will crash the backend.
 EXEC_SMIR_SKIP_HASKELL = {
-    'structs-tuples',
-    'struct-field-update',
-    'float_arith',
     'float_cast',
-    'float_cmp',
-    'float_eq',
-    'float_neg',
-    'float_special',
 }
 
 
@@ -453,7 +455,15 @@ def test_exec_smir(
 ) -> None:
     name, input_json, output_kast, depth = test_case
     if symbolic and name in EXEC_SMIR_SKIP_HASKELL:
-        pytest.skip('haskell-backend lacks FLOAT hooks')
+        pytest.skip('kore-exec lacks FLOAT hooks needed for float casts')
+    # When running on haskell, use a backend-specific expected output file if it exists.
+    # Tests involving floats produce different output on haskell (UnableToDecode) vs LLVM (Float values)
+    # because float decoding rules are concrete-only (LLVM). The haskell backend falls through to the
+    # UnableToDecode default rule for float constants.
+    if symbolic:
+        haskell_output = output_kast.with_suffix('.state.haskell')
+        if haskell_output.is_file() or update_expected_output:
+            output_kast = haskell_output
     smir_info = SMIRInfo.from_file(input_json)
     kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=tmp_path, symbolic=symbolic)
     result = kmir_backend.run_smir(smir_info, depth=depth)
