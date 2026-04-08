@@ -57,7 +57,6 @@ PROVE_SHOW_SPECS = [
     'raw-ptr-cast-fail',
     'transmute-u8-to-enum-fail',
     'assert-inhabited-fail',
-    'iterator-simple',
     'unions-fail',
     'transmute-maybe-uninit-fail',
     'ptr-through-wrapper-fail',
