@@ -1357,7 +1357,7 @@ def _prove_callee_summary(
         if callee_proof_dir:
             main_smir.dump(callee_proof_dir / callee_label / 'smir.json')
 
-        cse_callee_max_iterations = _env_int('KMIR_CSE_CALLEE_MAX_ITERATIONS', default=100)
+        cse_callee_max_iterations = _env_int('KMIR_CSE_CALLEE_MAX_ITERATIONS', default=10000)
         if not proof.passed:
             from .options import ProveOpts as ProveOptsClass
 
