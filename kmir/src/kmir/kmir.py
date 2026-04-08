@@ -853,16 +853,49 @@ class KMIRCSESemantics(KMIRSemantics):
         return first.args[1]
 
     @staticmethod
+    def _is_reusable_frontier_node(node: KCFG.Node) -> bool:
+        """Check if a frontier node is at a clean callee return boundary.
+
+        Only frontier nodes whose K_CELL starts with
+        ``#setLocalValue(local(0), VALUE) ~> #execBlockIdx(BB)``
+        (or ``#EndProgram``) can be safely mapped back to the caller.
+        Frontier nodes captured deep inside nested calls (closures, etc.)
+        would replace the entire caller config and lead to execution
+        paths that baseline never reaches (e.g. assertion failures
+        calling noBody functions).
+        """
+        k_cell = node.cterm.cell('K_CELL')
+        # Accept #EndProgram
+        if isinstance(k_cell, KApply) and 'EndProgram' in k_cell.label.name:
+            return True
+        if isinstance(k_cell, KSequence) and k_cell.arity >= 1:
+            first = k_cell.items[0]
+            if isinstance(first, KApply) and 'EndProgram' in first.label.name:
+                return True
+        # Accept #setLocalValue(local(0), ...) ~> #execBlockIdx(...)
+        return KMIRCSESemantics._extract_boundary_return_value(k_cell) is not None
+
+    @staticmethod
     def _frontier_nodes(callee_proof: APRProof) -> list[KCFG.Node]:
         explicit_frontier_ids = getattr(callee_proof, '_cse_frontier_node_ids', None)
         if explicit_frontier_ids:
-            return [callee_proof.kcfg.node(node_id) for node_id in explicit_frontier_ids]
-        # Exclude stuck nodes: applying a stuck callee state to the caller
-        # creates a stuck state in the main proof.  Only use non-stuck leaves.
+            return [
+                node
+                for node_id in explicit_frontier_ids
+                for node in [callee_proof.kcfg.node(node_id)]
+                if KMIRCSESemantics._is_reusable_frontier_node(node)
+            ]
+        # Exclude stuck nodes and nodes not at a clean return boundary.
+        # Stuck nodes propagate stuck to the caller; deep nested nodes
+        # lead to paths baseline never explores.
         stuck_ids = {n.id for n in callee_proof.kcfg.stuck}
         frontier_nodes = [
             node for node in callee_proof.kcfg.leaves
-            if node.id != callee_proof.target and node.id not in stuck_ids
+            if (
+                node.id != callee_proof.target
+                and node.id not in stuck_ids
+                and KMIRCSESemantics._is_reusable_frontier_node(node)
+            )
         ]
         if frontier_nodes:
             return frontier_nodes
