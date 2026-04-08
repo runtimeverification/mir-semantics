@@ -220,7 +220,12 @@ The bytes are first converted to a raw integer, then the sign, biased exponent, 
 are extracted. The value is reconstructed using K's `Int2Float` and float arithmetic, with a
 high-precision intermediate to avoid overflow when reconstructing subnormals and small normal values.
 
-```k
+Float decoding uses FLOAT hooks (`Int2Float`, `Rat2Float`, `--Float`) which are not implemented
+in the haskell backend. These rules are placed in a `concrete` block so they are only included
+in the LLVM definition. For the haskell definition, `#decodeFloat` will not reduce and
+the `#decodeValue` fallback rule will produce `UnableToDecode`.
+
+```{.k .concrete}
   syntax Value ::= #decodeFloat ( Bytes, FloatTy ) [function]
   // --------------------------------------------------------
   rule #decodeFloat(BYTES, FLOATTY) => #decodeFloatRaw(Bytes2Int(BYTES, LE, Unsigned), FLOATTY)
@@ -290,7 +295,7 @@ For positive exponents, shift the significand left and convert directly.
 For negative exponents, use `Rat2Float` to convert the exact rational
 `SIG / 2^|AEXP|` to the target float precision.
 
-```k
+```{.k .concrete}
   syntax Float ::= #reconstructFloat ( sig: Int, adjExp: Int, FloatTy ) [function]
   // -------------------------------------------------------------------------------
   rule #reconstructFloat(SIG, AEXP, FLOATTY)

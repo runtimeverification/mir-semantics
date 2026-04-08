@@ -51,12 +51,17 @@ and arrays (where layout is trivial).
   rule #decodeValue(BYTES, TYPEINFO) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
     requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO)
      [preserves-definedness]
+```
 
-  // Float: handled in separate module for numeric operations
+Float decoding dispatches to `#decodeFloat` in `numbers.md` which uses FLOAT hooks (concrete only).
+
+```{.k .concrete}
   rule #decodeValue(BYTES, TYPEINFO) => #decodeFloat(BYTES, #floatTypeOf(TYPEINFO))
     requires #isFloatType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO)
     [preserves-definedness]
+```
 
+```k
   // TODO Char type
   // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
 ```
