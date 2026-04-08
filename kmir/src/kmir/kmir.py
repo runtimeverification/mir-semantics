@@ -927,6 +927,8 @@ class KMIRCSESemantics(KMIRSemantics):
             return None
 
         func_ty, _args_operand, dest, target = call_info
+        if func_ty in self._failed_tys:
+            return None
         callee_proof = self._callee_proofs.get(func_ty)
         if callee_proof is None:
             self._record_observed_call(
@@ -971,6 +973,18 @@ class KMIRCSESemantics(KMIRSemantics):
             summary_edges = []
             if not summary_nodes:
                 _LOGGER.warning(f'CSE: no reusable frontier found for callee proof {callee_proof.id}')
+                self._failed_tys.add(func_ty)
+                # Remove from callee_proofs so subsequent calls to the same
+                # function won't be intercepted.  This is critical: if the
+                # function is in break_on_function, the cut-point rule stops
+                # backend execution at depth 0.  custom_step returning None
+                # while the backend also returns 0 results causes an
+                # IndexError in pyk's step_proof.  By removing the proof,
+                # custom_step returns None early (callee_proof is None check)
+                # and does not record an observed call, so the backend
+                # extends past the function call without hitting the
+                # cut-point / custom_step interaction bug.
+                self._callee_proofs.pop(func_ty, None)
                 return None
         frontier_boundary_returns: list[KInner | None] = []
         use_frontier_boundary_poststates = False

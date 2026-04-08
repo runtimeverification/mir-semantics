@@ -1964,6 +1964,12 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
                     fail_fast=opts.fail_fast,
                     maintenance_rate=opts.maintenance_rate,
                 )
+            except IndexError:
+                # pyk's step_proof crashes with IndexError when extend_cterm
+                # returns an empty list (e.g. backend can't extend a node
+                # that custom_step also couldn't handle).  Treat as proof
+                # failure rather than crashing the entire pipeline.
+                _LOGGER.warning('CSE: advance_proof hit IndexError (empty extend_results), treating as failed')
             finally:
                 final_proof.add_exec_time(time.perf_counter() - started_at)
                 final_proof.write_proof_data()
