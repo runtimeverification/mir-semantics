@@ -219,9 +219,10 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
 If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
-  // `place(local(-1), .ProjectionElems)` is a sentinel destination meaning that the caller
-  // ignores the callee's return value. Skip the normal writeback path in that case, because
-  // `#setLocalValue` only accepts real local indices and would get stuck on `local(-1)`.
+  // `place(local(-1), .ProjectionElems)` is the sentinel destination for calls whose
+  // return should not be written back. Without this rule, the return path would fall
+  // through to `#setLocalValue`, which only accepts real local indices and would get
+  // stuck on `local(-1)`.
   rule [termReturnIgnored]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
            #execBlockIdx(TARGET)
@@ -390,21 +391,18 @@ where the returned result should go.
 
   rule <k> #consumeNoOpArg(operandConstant(_)) => .K ... </k>
 
-  rule <k> #consumeNoOpArg(operandValue(_)) => .K ... </k>
-
   rule <k> #consumeNoOpArg(operandCopy(place(local(I), .ProjectionElems))) => .K ... </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+       <locals> LOCALS </locals>
     requires 0 <=Int I
-     andBool I <Int size(CALLERLOCALS)
-     andBool isTypedValue(CALLERLOCALS[I])
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
     [preserves-definedness]
 
   rule <k> #consumeNoOpArg(operandMove(place(local(I), _))) => .K ... </k>
-       <stack> (ListItem(StackFrame(_, _, _, _, CALLERLOCALS) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
-        </stack>
+       <locals> LOCALS => LOCALS[I <- typedValue(Moved, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)] </locals>
     requires 0 <=Int I
-     andBool I <Int size(CALLERLOCALS)
-     andBool isTypedValue(CALLERLOCALS[I])
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
     [preserves-definedness]
 
   // Regular function call - full state switching and stack setup
@@ -502,6 +500,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
 ```k
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
+                 | #setUpDropGlueData(MonoItemKind, Value, Span)
 
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule [setupCalleeData]: <k> #setUpCalleeData(
@@ -526,6 +525,21 @@ An operand may be a `Reference` (the only way a function could access another fu
        </currentFrame>
   // TODO: Haven't handled "noBody" case
 
+  rule [setupDropGlueData]: <k> #setUpDropGlueData(
+              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
+              PTR,
+              _SPAN
+              )
+         =>
+           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(PTR)) ~> #execBlock(FIRST)
+         ...
+       </k>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <locals> _ => #reserveFor(NEWLOCALS) </locals>
+         ...
+       </currentFrame>
+
   syntax List ::= #reserveFor( LocalDecls ) [function, total]
 
   rule #reserveFor(.LocalDecls) => .List
@@ -533,11 +547,6 @@ An operand may be a `Reference` (the only way a function could access another fu
   rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
       =>
        ListItem(newLocal(TY, MUT)) #reserveFor(REST)
-
-  syntax Operand ::= operandValue ( Value )
-
-  // Internal helper operand for already-evaluated runtime values.
-  rule <k> operandValue(VAL) => VAL ... </k>
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
@@ -555,12 +564,6 @@ An operand may be a `Reference` (the only way a function could access another fu
   rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
         =>
            #setLocalValue(place(local(IDX), .ProjectionElems), CONSTOPERAND)
-        ...
-       </k>
-
-  rule <k> #setArgFromStack(IDX, operandValue(VAL))
-        =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(VAL))
         ...
        </k>
 
@@ -772,19 +775,20 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
         ...
        </k>
 
-  rule <k> PTR:Value ~> #callDropGlue(FTY, TARGET, UNWIND, SPAN)
-         =>
-           #execTerminatorCall(
-             FTY,
-             lookupFunction(FTY),
-             operandValue(PTR) .Operands,
-             place(local(-1), .ProjectionElems),
-             someBasicBlockIdx(TARGET),
-             UNWIND,
-             SPAN
-           )
-        ...
+  rule [termCallDropGlue]:
+       <k> PTR:Value ~> #callDropGlue(FTY, TARGET, UNWIND, SPAN) ~> _
+        => #setUpDropGlueData(lookupFunction(FTY), PTR, SPAN)
        </k>
+       <currentFunc> CALLER => FTY </currentFunc>
+       <currentFrame>
+         <currentBody> _ </currentBody>
+         <caller> OLDCALLER => CALLER </caller>
+         <dest> OLDDEST => place(local(-1), .ProjectionElems) </dest>
+         <target> OLDTARGET => someBasicBlockIdx(TARGET) </target>
+         <unwind> OLDUNWIND => UNWIND </unwind>
+         <locals> LOCALS </locals>
+       </currentFrame>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
 
   syntax MIRError ::= "ReachedUnreachable"
 
