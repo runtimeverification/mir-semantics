@@ -1414,6 +1414,11 @@ Boolean values can also be cast to Integers (encoding `true` as `1`).
 
 Casts involving `Float` values: `IntToFloat`, `FloatToInt`, and `FloatToFloat`.
 
+These rules use FLOAT hooks (`Int2Float`, `Float2Int`, `roundFloat`) which are not implemented
+in the haskell backend directly. However, the booster delegates FLOAT hook evaluation to the LLVM
+shared library, so these rules must be present in both definitions. The FLOAT hooks inside are
+evaluated by the LLVM library when the booster encounters them.
+
 ```k
   // IntToFloat: convert integer to float with the target float type's precision
   rule <k> #cast(Integer(VAL, _WIDTH, _SIGNEDNESS), castKindIntToFloat, _, TY)
@@ -1603,6 +1608,45 @@ representations of the source and target types are somewhat relatable (or else, 
 
 Support for `castKindTransmute` in this semantics is very limited because of the high-level data model applied.
 What can be supported without additional layout consideration is trivial casts between the same underlying type (mutable or not).
+
+#### Float transmute guard
+
+The semantics does not support byte-level reinterpretation of float values (e.g. `transmute::<f16, u16>()`).
+Without these guard rules, a `castKindTransmute` involving a float type would cause non-deterministic
+branching on the symbolic value's constructor. These rules intercept at the `rvalueCast` level,
+before `#cast` is created, and produce an error that stops the branch cleanly. This applies to both concrete
+and symbolic operands on all backends currently.
+
+```k
+  syntax MIRError ::= "#UnsupportedFloatTransmute"
+
+  // Target type is float
+  rule <k> rvalueCast(castKindTransmute, _OP:Operand, TY) ~> _REST
+          => #UnsupportedFloatTransmute
+       </k>
+    requires #isFloatType(lookupTy(TY))
+    [priority(40)]
+
+  // Source type is float (operandCopy)
+  rule <k> rvalueCast(castKindTransmute, operandCopy(place(local(I), PROJS)), _TY) ~> _REST
+          => #UnsupportedFloatTransmute
+       </k>
+     <locals> LOCALS </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+     andBool #isFloatType(lookupTy({getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)}:>Ty))
+    [priority(40), preserves-definedness]
+
+  // Source type is float (operandMove)
+  rule <k> rvalueCast(castKindTransmute, operandMove(place(local(I), PROJS)), _TY) ~> _REST
+          => #UnsupportedFloatTransmute
+       </k>
+     <locals> LOCALS </locals>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+     andBool #isFloatType(lookupTy({getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)}:>Ty))
+    [priority(40), preserves-definedness]
+```
 
 ```k
   rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
