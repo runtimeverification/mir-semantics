@@ -753,7 +753,7 @@ Drops are elaborated to Noops but still define the continuing control flow. Unre
   syntax KItem ::= #execDropCall ( MaybeTy, Place, BasicBlockIdx, UnwindAction, Span )
                  | #callDropGlue ( Ty, BasicBlockIdx, UnwindAction, Span )
 
-  rule [termDropGlue]: <k> #execTerminator(terminator(terminatorKindDrop(PLACE, TARGET, UNWIND), SPAN))
+  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(PLACE, TARGET, UNWIND), SPAN))
          =>
            #execDropCall(#lookupDropFunctionTy(#dropPlaceTy(PLACE, LOCALS)), PLACE, TARGET, UNWIND, SPAN)
         ...
