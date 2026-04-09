@@ -55,6 +55,10 @@ Ownership:
   `test_clone_to_uninit` symbol and the new challenge-local
   `test_clone_to_uninit_exact_bytes` symbol; both now reduce to the same
   concrete `core::ffi::CStr::from_bytes_with_nul` body frontier.
+- 2026-04-09: Prototyped a donor-link body-supply path for
+  `core::ffi::CStr::from_bytes_with_nul`, confirmed that a donor SMIR can
+  export a body-bearing item for the stripped target symbol, then reverted the
+  prototype after it broke `start_symbol` resolution before proof execution.
 
 ## Files Touched
 
@@ -188,6 +192,29 @@ Ownership:
     The standalone `#decodeConstant` thunk on `c"hello"` no longer appears in
     the local proof path.
 
+16. Prototype command:
+    `python3 - <<'PY' ... augment_missing_symbol_bodies(SMIRInfo.from_file(Path("kmir/cstr.smir.json"))) ...`
+    Result:
+    the donor-link prototype produced a linked SMIR containing a body-bearing
+    donor item for
+    `_ZN4core3ffi5c_str4CStr19from_bytes_with_nul17h0000000000000000E`,
+    alongside the original linked fixture items.
+
+17. Prototype command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/cstr.smir.json --smir --start-symbol test_clone_to_uninit --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-cstr-smir-clone-donor3 --fail-fast`
+    Result:
+    the prototype did not reach the constructor body. After donor linking,
+    proof setup failed in `make_call_config` with
+    `ValueError: test_clone_to_uninit not found in program`.
+
+18. Prototype command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs --start-symbol test_clone_to_uninit_exact_bytes --terminate-on-thunk --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-clone-to-uninit-donor3 --fail-fast`
+    Result:
+    the same setup blocker appeared on the challenge-local path:
+    `ValueError: test_clone_to_uninit_exact_bytes not found in program`.
+    The donor link rewrote item names through `link()` qualification before
+    `make_call_config` resolved the unqualified start symbol.
+
 ## Commit Inventory
 
 - `80244466` — `feat(linker): port cross-crate body resolution for cstr`
@@ -204,6 +231,15 @@ Ownership:
   challenge-local `test_clone_to_uninit_exact_bytes` reduce to that same
   frontier, so the remaining gap is specific to CStr construction/body support
   on this branch rather than to missing exact-byte harness logic.
+- A prototype donor-link fix can materialize a body-bearing donor item for the
+  stripped `from_bytes_with_nul` symbol, but the current `link()` pipeline
+  qualifies item names in the linked SMIR. That breaks later unqualified
+  `start_symbol` lookup in `make_call_config`, so the proof never reaches the
+  donated constructor body.
+- The next focused action is therefore not another donor body experiment. It is
+  a narrow plumbing fix that preserves or aliases original root item names
+  across donor linking, or a link-mode variant that avoids qualifying the base
+  crate's root items while still allowing the stripped-symbol body fallback.
 - Core Challenge 0013 coverage remains incomplete beyond this narrowed slice:
   - `strlen` still lacks a dedicated contract artifact
   - the broader CStr method/invariant harness set is still missing

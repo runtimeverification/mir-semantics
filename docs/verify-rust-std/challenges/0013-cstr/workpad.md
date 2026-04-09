@@ -75,6 +75,43 @@
 - After the edition-2024 compile fix, the standalone exact-byte path now stops
   one step earlier at a local `#decodeConstant` thunk on the `c"hello"` literal
   in `clone_to_uninit.rs`.
+- A donor-link prototype successfully materialized a body-bearing synthetic
+  item for the stripped `core::ffi::CStr::from_bytes_with_nul` symbol, but the
+  linked SMIR then qualified item names before proof setup.
+- After that donor link, both `kmir prove-rs ... --start-symbol test_clone_to_uninit`
+  and `kmir prove-rs ... --start-symbol test_clone_to_uninit_exact_bytes`
+  failed earlier in `make_call_config` with `ValueError: <start-symbol> not
+  found in program`, so the prototype did not materially move the frontier.
+
+## Donor-Link Checkpoint (2026-04-09)
+
+### What Was Confirmed
+
+- The existing shared frontier is unchanged on the branch state that remains
+  committed: both the linked-SMIR and challenge-local `CloneToUninit` paths
+  still meet at `core::ffi::CStr::from_bytes_with_nul`.
+- A synthetic donor body is technically feasible: the prototype could compile a
+  donor SMIR item for the stripped `from_bytes_with_nul` symbol and link it
+  into the active SMIR.
+
+### Exact Blocker
+
+- The blocker is now one layer earlier than the constructor body itself:
+  donor-linked SMIR currently rewrites item names through `link()` item
+  qualification.
+- That qualification loses the original unqualified roots
+  `test_clone_to_uninit` and `test_clone_to_uninit_exact_bytes` that
+  `make_call_config` expects, so proof setup aborts before it can execute the
+  donated constructor body.
+
+### Next Action
+
+- Keep this slice closed as a checkpoint, not a code landing.
+- The next minimal technical move is a plumbing fix that preserves or aliases
+  original root item names across donor linking, or limits qualification to the
+  donor side only.
+- Do not widen into the safe-method matrix or `strlen` until that root-name
+  preservation issue is resolved.
 
 ## Shared-Frontier Slice Result (2026-04-09)
 
