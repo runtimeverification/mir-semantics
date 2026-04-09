@@ -9,9 +9,9 @@ challenge_id	slug	state	batch_slot	note
 0008	smallsort	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0009	duration	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0010	string	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
-0011	floats-ints	IN PROGRESS	active	planner completed; generator runtime stalled; restart at integer-slice execution then float frontier isolation
-0012	nonzero	IN PROGRESS	active	planner completed; generator runtime stalled; restart at reviewed baseline reconstruction with stronger semantic assertions
-0013	cstr	IN PROGRESS	active	planner completed; generator runtime stalled; restart at CloneToUninit and Index<RangeFrom> core slice
+0011	floats-ints	IN PROGRESS	active	two integer proof slices pass; float path still structurally blocked; next action is broader integer coverage
+0012	nonzero	IN PROGRESS	active	part1 artifacts exist; narrowed cast frontiers in NonZero::new and from_mut; next action is minimal semantic-fix or blocker reduction
+0013	cstr	IN PROGRESS	active	from_ptr/index/from_bytes_with_nul_unchecked artifacts exist; remaining coverage is strlen and exact-byte CloneToUninit plus frontier reduction
 0014	convert-num	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0015	intrinsics-simd	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0016	iter	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch

@@ -15,29 +15,38 @@ The portfolio is complete only when every published challenge is in one of:
 
 ## Current Batch
 
-- `0011-floats-ints` -> `IN PROGRESS`
-- `0012-nonzero` -> `IN PROGRESS`
-- `0013-cstr` -> `IN PROGRESS`
+- `0011-floats-ints` -> `IN PROGRESS` (`2.4 / 3`)
+- `0012-nonzero` -> `IN PROGRESS` (`1.8 / 3`)
+- `0013-cstr` -> `IN PROGRESS` (`1.9 / 3`)
 
-## Current Run Constraint
+## Current Active State
 
-- Dedicated generator threads were launched for all three active challenges.
-- During the available polling windows in this run, none of those generator
-  threads produced branch commits or generator-record updates.
-- This is treated as an external runtime/tool constraint for this run, not as a
-  challenge-level terminal verdict.
-- Each active branch now has an interruption-checkpoint `evaluation_result.md`
-  recording the current `IN PROGRESS` state and the exact next technical action.
+- `0011-floats-ints`: historical artifact set ported; two distinct integer
+  proof slices pass (`unchecked_add_u8`, `unchecked_neg_i8`); float path
+  remains structurally blocked by backend float intrinsic support; next action
+  is broader integer coverage.
+- `0012-nonzero`: prerequisite semantic baseline is ported and validated;
+  challenge-local Part 1 artifacts exist; current narrowed frontiers are
+  `castKindTransmute` in `NonZero::new` and `castKindPtrToPtr` in
+  `NonZero::from_mut`; next action is a minimal semantic-fix or sharper blocker
+  reduction on one of those cast frontiers.
+- `0013-cstr`: prerequisite cross-crate support is ported; challenge-local
+  artifacts exist for `from_ptr`, `Index<RangeFrom<usize>>`, and
+  `from_bytes_with_nul_unchecked`; remaining required coverage includes
+  `strlen` and exact-byte `CloneToUninit`; next action is remaining coverage
+  plus proof-frontier reduction.
 
 ## Exact Restart Point If The Run Stops Now
 
 - Resume the current batch: `0011-floats-ints`, `0012-nonzero`,
   `0013-cstr`.
-- Restart each challenge at generator phase using the already committed
-  `plan.md`, `workpad.md`, and interruption-checkpoint `evaluation_result.md`.
-- Keep the evaluator step after the first real generator checkpoint, so the next
-  evaluator pass can score technical evidence rather than only the stalled
-  runtime state.
+- Restart priority inside the current batch:
+  1. `0012-nonzero`: continue the interrupted semantic-fix attempt on the
+     `NonZero::new` / `NonZero::from_mut` cast frontier.
+  2. `0013-cstr`: add remaining `CStr` coverage (`strlen`, exact-byte
+     `CloneToUninit`) or discharge one of the current proof frontiers.
+  3. `0011-floats-ints`: run another narrow integer proof slice to broaden
+     coverage beyond the two completed proofs.
 - Do not reseat the batch until these three leave `IN PROGRESS`.
 
 ## Batch Selection Rationale
@@ -63,6 +72,13 @@ Rationale:
 - Challenge draft PRs opened: `29`
 - Dedicated challenge branches created: `29`
 - Observed agent thread cap: `6`
+
+## Current Run Constraint
+
+- One additional semantic-fix attempt on `0012-nonzero` remained live after a
+  full wait window and was stopped to preserve a clean interruption checkpoint.
+- This is treated as an external runtime/tool constraint for this turn, not as
+  a challenge-level terminal verdict.
 
 ## Challenge State Index
 
