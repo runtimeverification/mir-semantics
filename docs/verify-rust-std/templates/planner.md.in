@@ -1,0 +1,47 @@
+# Planner Record: Challenge {{CHALLENGE_ID}}
+
+Ownership:
+
+- Planner owns this file.
+- Planner must not implement code, proofs, or evaluation.
+- Planner may update challenge-local checklists only if the change is purely
+  organizational and clearly documented here.
+
+## Inputs
+
+- Challenge page: {{CHALLENGE_DOC_URL}}
+- Tracking issue: {{TRACKING_ISSUE_URL}}
+- Challenge artifact directory: `{{CHALLENGE_ARTIFACT_DIR}}`
+- Generator record: `{{CHALLENGE_DOC_DIR}}/generator.md`
+- Evaluator record: `{{CHALLENGE_DOC_DIR}}/evaluator.md`
+
+## Requirements Extraction
+
+- Published goal:
+- Published success criteria:
+- Challenge-specific UB obligations:
+- Additional safety conditions from source docs or SAFETY comments:
+
+## Scope Contract
+
+- In scope for current branch:
+- Out of scope unless later justified:
+- Exceptional dependency escalation policy:
+
+## Sprint Contracts
+
+| Sprint | Intended slice | Acceptance check | Status |
+| --- | --- | --- | --- |
+| 0 | Bootstrap challenge understanding | Requirements and blockers recorded | pending |
+
+## Dependencies And Blockers
+
+- None recorded yet.
+
+## Cross-Challenge Notes
+
+- No reuse candidates recorded yet.
+
+## History
+
+- Bootstrap record created by orchestrator.

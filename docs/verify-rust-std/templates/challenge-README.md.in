@@ -1,0 +1,32 @@
+# Challenge {{CHALLENGE_ID}}: {{CHALLENGE_TITLE}}
+
+Reference inputs:
+
+- Challenge page: {{CHALLENGE_DOC_URL}}
+- Tracking issue: {{TRACKING_ISSUE_URL}}
+- Tracking issue state at bootstrap: `{{TRACKING_ISSUE_STATE}}`
+
+Execution context:
+
+- Branch: `{{BRANCH_NAME}}`
+- Worktree: `{{WORKTREE_PATH}}`
+- Planner record: `{{CHALLENGE_DOC_DIR}}/planner.md`
+- Generator record: `{{CHALLENGE_DOC_DIR}}/generator.md`
+- Evaluator record: `{{CHALLENGE_DOC_DIR}}/evaluator.md`
+- Branch-local rubric: `{{CHALLENGE_DOC_DIR}}/rubric.md`
+
+Challenge-local artifact contract:
+
+- Place harnesses, tests, expected output, and supporting files in this
+  directory.
+- Keep changes organized so proof or semantic commits can be cherry-picked
+  cleanly later.
+- Record any exceptional dependency change in the generator and evaluator logs
+  before landing it.
+
+Status board:
+
+- Planner: not started
+- Generator: waiting for planner and evaluator baselines
+- Evaluator: not started
+- Draft PR: not created
