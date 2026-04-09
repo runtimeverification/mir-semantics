@@ -4,7 +4,7 @@
 
 - Branch: `verify-rust-std/reexec-0028-flt2dec`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec`
-- Status at planner handoff: bootstrap docs existed only; no challenge-local implementation, proof, or evaluator evidence has been produced by this planner.
+- Status at planner handoff: the first `digits_to_dec_str` probe has already run and produced a concrete wrapper-artifact blocker; no code, proof, or evaluator changes are in scope for this planner.
 
 ## Evidence gathered
 
@@ -27,12 +27,13 @@
   `thunk ( #applyBinOp ( binOpOffset , ... ) )`.
 - This first result is therefore distinct from Challenge 0011: it did not
   reproduce the earlier float-value/backend gap.
+- The highest-leverage next slice is to remove the wrapper's range indexing and rerun a narrower `digits_to_dec_str` probe so the next failure point is attributable to `flt2dec` itself, if one exists.
 
 ## Planning decisions
 
 - Keep the first generator task to one representative probe instead of the full function list.
-- Favor `digits_to_dec_str` as the initial signal source so the evaluator can classify backend support versus artifact wiring quickly.
-- Do not expand scope into backend work unless the first probe shows a distinct, challenge-local artifact problem.
+- Favor `digits_to_dec_str` as the initial signal source, but strip the wrapper indexing so the evaluator can classify backend support versus harness artifact cleanly.
+- Do not expand scope into backend work unless the follow-up probe shows a distinct, challenge-local float limitation.
 
 ## Reusable rubric patterns for evaluator
 
@@ -53,10 +54,8 @@
 
 ## Next handoff
 
-- Generator completed the planner-selected first probe and should stop here.
+- Generator should next produce a narrower `digits_to_dec_str` probe that bypasses the wrapper's slice-index path.
 - Evaluator can now classify Sprint 1 against concrete evidence:
   the first `digits_to_dec_str` probe did run, and its first meaningful result
   was a slice-index/pointer-offset stuck leaf rather than a float backend crash.
-- Any follow-up generator work should stay narrow and focus on removing the
-  wrapper's slice-index artifact if more direct `digits_to_dec_str` evidence is
-  needed; backend float escalation is not yet justified from this record.
+- Any follow-up generator work should stay narrow and treat the wrapper artifact as the immediate blocker until a direct `flt2dec` boundary is observed.

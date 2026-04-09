@@ -26,25 +26,25 @@ Ownership:
 
 - In scope for current branch: planning artifacts only, challenge-local evidence capture, and a single narrow delegation target for the generator.
 - Out of scope unless later justified: implementation in `library/*`, proof edits, backend changes, or cross-repo dependency work.
-- Exceptional dependency escalation policy: if the next probe reproduces the float backend gap already seen on challenge 0011, record the exact failing operation and only escalate after confirming it is a structural backend limitation rather than a missing artifact.
+- Exceptional dependency escalation policy: if the next probe reaches the float backend gap already seen on challenge 0011, record the exact failing operation and only escalate after confirming it is a structural backend limitation rather than a wrapper artifact.
 
 ## Sprint Contracts
 
 | Sprint | Intended slice | Acceptance check | Status |
 | --- | --- | --- | --- |
 | 0 | Bootstrap challenge understanding | Requirements and blockers recorded | done |
-| 1 | Isolate the first float-capable probe | One minimal challenge-local probe target and its rerun evidence are written down | pending |
+| 1 | Remove the wrapper slice-index artifact from the first probe path | One narrower `digits_to_dec_str` follow-up probe target and its rerun evidence are written down | in progress |
 
 ## Dependencies And Blockers
 
-- Reused blocker signal from challenge 0011: the float path previously stalled on missing KMIR / haskell-backend float-value support, so the first delegation should test whether 0028 hits the same backend boundary before any broader decomposition.
-- No challenge-local artifacts beyond the bootstrap README are present yet in the artifact directory.
+- Reused blocker signal from challenge 0011 remains relevant, but the first 0028 run did not reproduce it; the immediate blocker is now the wrapper's `SliceIndex::index` leaf rooted at `#applyBinOp ( binOpOffset , ... )`.
+- No challenge-local artifacts beyond the probe harness and its evidence are present yet in the artifact directory.
 
 ## Cross-Challenge Notes
 
 - Challenge 0011 provides the strongest reuse pattern: keep integer/safe-path reasoning separate from the float-sensitive path, and record the exact backend limitation instead of labeling the challenge generically blocked.
 - The current challenge is narrower in name but broader in unsafe surface: it combines float formatting, `assume_init()`, and lifetime laundering, so the plan should stay anchored to one representative probe rather than the full function set.
-- The first probe should target `digits_to_dec_str`, since it is the simplest named top-level safe entry point in the published success criteria.
+- The first probe already targeted `digits_to_dec_str`; the next highest-leverage slice is to remove the probe wrapper's range indexing so the follow-up result can distinguish a true `flt2dec` blocker from a harness artifact.
 
 ## History
 
