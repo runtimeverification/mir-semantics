@@ -1,32 +1,40 @@
-# Challenge 0011: Challenge 11: Safety of Methods for Numeric Primitive Types
+# Challenge 0011: Safety of Methods for Numeric Primitive Types
 
-Reference inputs:
+Tests for [verify-rust-std challenge 0011](https://model-checking.github.io/verify-rust-std/challenges/0011-floats-ints.html), which verifies the safety of public unsafe methods for floats and integers in `core::num`.
 
-- Challenge page: https://github.com/model-checking/verify-rust-std/blob/main/doc/src/challenges/0011-floats-ints.md
-- Tracking issue: [#59](https://github.com/model-checking/verify-rust-std/issues/59)
-- Tracking issue state at bootstrap: `CLOSED`
+## Part 1: Unsafe Integer Methods
 
-Execution context:
+All types: i8, i16, i32, i64, i128, u8, u16, u32, u64, u128
 
-- Branch: `verify-rust-std/reexec-0011-floats-ints`
-- Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
-- Planner record: `docs/verify-rust-std/challenges/0011-floats-ints/planner.md`
-- Generator record: `docs/verify-rust-std/challenges/0011-floats-ints/generator.md`
-- Evaluator record: `docs/verify-rust-std/challenges/0011-floats-ints/evaluator.md`
-- Branch-local rubric: `docs/verify-rust-std/challenges/0011-floats-ints/rubric.md`
+- [x] `unchecked_add`
+- [x] `unchecked_sub`
+- [x] `unchecked_mul`
+- [x] `unchecked_shl`
+- [x] `unchecked_shr`
 
-Challenge-local artifact contract:
+Signed only: i8, i16, i32, i64, i128
 
-- Place harnesses, tests, expected output, and supporting files in this
-  directory.
-- Keep changes organized so proof or semantic commits can be cherry-picked
-  cleanly later.
-- Record any exceptional dependency change in the generator and evaluator logs
-  before landing it.
+- [x] `unchecked_neg`
 
-Status board:
+## Part 2: Safe API Verification
 
-- Planner: not started
-- Generator: waiting for planner and evaluator baselines
-- Evaluator: not started
-- Draft PR: not created
+All types: i8, i16, i32, i64, i128, u8, u16, u32, u64, u128
+
+- [x] `wrapping_shl`
+- [x] `wrapping_shr`
+
+Unsigned only: u8, u16, u32, u64
+
+- [x] `widening_mul`
+- [x] `carrying_mul`
+
+## Part 3: Float to Integer Conversion
+
+TODO: Currently floats are unsupported. However there the required harnesses are
+added to `to_int_unchecked-fail.rs`, once they are passing this file should be
+renamed to `to_int_unchecked.rs` and tests that demonstrate KMIR catching `UB`
+should be added to `to_int_unchecked-fail.rs`.
+
+Types: f16, f32, f64, f128
+
+- [ ] `to_int_unchecked`

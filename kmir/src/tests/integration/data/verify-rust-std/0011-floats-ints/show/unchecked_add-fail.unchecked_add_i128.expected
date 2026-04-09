@@ -1,0 +1,34 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (56 steps)
+├─ 3
+│   #applyBinOp ( binOpAddUnchecked , Integer ( ARG_INT1:Int , 128 , true ) , Intege
+│   span: 301
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   Integer ( truncate ( ARG_INT1:Int +Int ARG_INT2:Int , 128 , Signed ) , 128 , tru
+┃  │   span: 301
+┃  │
+┃  │  (70 steps)
+┃  ├─ 6 (terminal)
+┃  │   #EndProgram ~> .K
+┃  │
+┃  ┊  constraint: true
+┃  ┊  subst: ...
+┃  └─ 2 (leaf, target, terminal)
+┃      #EndProgram ~> .K
+┃
+┗━━┓
+   │
+   └─ 5 (leaf, terminal)
+       thunk ( #applyBinOp ( binOpAddUnchecked , Integer ( ARG_INT1:Int , 128 , true )
+       span: 301
+
+
+

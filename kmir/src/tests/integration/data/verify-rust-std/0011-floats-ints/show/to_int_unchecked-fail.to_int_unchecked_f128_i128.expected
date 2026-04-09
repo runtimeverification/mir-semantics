@@ -1,0 +1,38 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (31 steps)
+├─ 3
+│   #cast ( #adjustRef ( ARG1:Value , 2 ) , castKindTransmute , ty ( 38 ) , ty ( 39
+│   span: 32
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   Integer ( #littleEndianFromBytes ( ELEMS:List ) &Int 340282366920938463463374607
+┃  │   span: 32
+┃  │
+┃  │  (29 steps)
+┃  ├─ 6
+┃  │   #cast ( Integer ( #littleEndianFromBytes ( ELEMS:List ) &Int 3402823669209384634
+┃  │   span: 115
+┃  │
+┃  │  (1 step)
+┃  └─ 7 (leaf, terminal)
+┃      thunk ( #cast ( Integer ( #littleEndianFromBytes ( ELEMS:List ) &Int 34028236692
+┃      span: 115
+┃
+┗━━┓
+   │
+   └─ 5 (leaf, terminal)
+       thunk ( #cast ( #adjustRef ( ARG1:Value , 2 ) , castKindTransmute , ty ( 38 ) ,
+       span: 32
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
