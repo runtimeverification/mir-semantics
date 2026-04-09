@@ -169,6 +169,10 @@ Ownership:
   on the `if exp < buf.len()` branch, with the active path `1 -> 3 -> 4 -> 7`.
   This is an inference from the leaf shape and the source location around
   `dec/digits_to_dec_str_probe.rs:58`.
+- Current-turn checkpoint: the probe compiled again, and a new proof rerun was
+  started, but it was intentionally interrupted before a fresh leaf summary was
+  captured. No new frontier was established this turn; the last validated
+  boundary remains the copied `if exp < buf.len()` branch select.
 
 ## Commit Inventory
 

@@ -126,3 +126,7 @@
 - The next exact narrowing step, if continued, is to focus on the copied
   `digits_to_dec_str` branch select at `if exp < buf.len()` rather than
   reopening the already-bypassed wrapper preconditions.
+- Current-turn checkpoint: the probe compiled again, but the follow-up proof
+  rerun was interrupted before a new leaf summary was captured. No new frontier
+  was introduced, and the last established boundary remains the copied
+  `if exp < buf.len()` select at `dec/digits_to_dec_str_probe.rs:58`.
