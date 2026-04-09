@@ -55,7 +55,7 @@ Ownership:
 ## Commit Inventory
 
 - `87a669dc` `docs(verify-rust-std): map challenge 0026 rc contracts`
-- `TBD` `test(verify-rust-std): seed rc from_raw_in root harness`
+- `7abe7dcd` `test(verify-rust-std): seed rc from_raw_in root harness`
 
 ## Blockers
 
