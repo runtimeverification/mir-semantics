@@ -56,19 +56,19 @@ Ownership:
   - `test_from_ptr` fails
   - `test_index_range_from_exact_bytes` fails
   - `test_from_bytes_with_nul_unchecked_ok` fails at a thunk frontier
-  - the linked-SMIR `test_clone_to_uninit` still reduces to the shared
+  - the linked-SMIR `test_clone_to_uninit` reduces to the shared
     `core::ffi::CStr::from_bytes_with_nul` frontier
-  - `test_clone_to_uninit_exact_bytes` now stops earlier at a local
-    `#decodeConstant` thunk on the `c"hello"` literal
+  - `test_clone_to_uninit_exact_bytes` now reaches the same shared
+    `core::ffi::CStr::from_bytes_with_nul` frontier
 - Missing challenge slices:
   - dedicated `strlen` artifact
   - the nine-method invariant harness set
 
-The exact current frontier that should be delegated next is the standalone
-`#decodeConstant` thunk in `clone_to_uninit.rs`. It is the tightest lever now
-because it prevents the exact-byte `CloneToUninit` slice from reaching the
-shared `CStr::from_bytes_with_nul` frontier that already blocks the linked-SMIR
-path.
+The exact current frontier that should be delegated next is the shared
+`core::ffi::CStr::from_bytes_with_nul` constructor/body gap itself. It is the
+tightest lever now because both the linked-SMIR and challenge-local
+`CloneToUninit` paths already converge there, so progress on that shared body
+benefits both evidence paths at once.
 
 ## Scope Contract
 
@@ -103,11 +103,10 @@ path.
 - Likely risk: `CloneToUninit` verification may need a stronger destination
   validity contract than a non-null precondition, based on prior review
   comments.
-- Current actionability risk: if the shared constructor frontier is not reduced,
-  the branch will remain in frontier-reduction mode even though the exact-byte
-  `CloneToUninit` harness is already present. The immediate risk is that the
-  standalone proof never reaches that shared frontier because of the local
-  constant-decoding thunk.
+- Current actionability risk: if the shared constructor frontier is not
+  reduced, the branch will remain in frontier-reduction mode even though the
+  exact-byte `CloneToUninit` harness is already present and both proof paths
+  now stop at the same constructor/body gap.
 
 ## Cross-Challenge Notes
 
@@ -123,14 +122,12 @@ path.
   contract requires".
 - Evaluator should also distinguish "constructor/body frontier remains shared"
   from "a missing harness", because the current blocker is now common to both
-  linked-SMIR and challenge-local `CloneToUninit` runs once the literal
-  decoding thunk is removed.
+  linked-SMIR and challenge-local `CloneToUninit` runs.
 
 ## History
 
 - Bootstrap record created by orchestrator.
 - Planner checkpoint: extracted the published challenge bar, confirmed the
   current challenge-local frontiers, and narrowed the next generator task to
-  removing the standalone `#decodeConstant` thunk so the exact-byte
-  `CloneToUninit` slice can reach the shared `core::ffi::CStr::from_bytes_with_nul`
-  frontier.
+  advancing the shared `core::ffi::CStr::from_bytes_with_nul` frontier now
+  exercised by both `CloneToUninit` paths.

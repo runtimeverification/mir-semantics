@@ -8,33 +8,31 @@ exact-byte `CloneToUninit` slice, but those proofs are still failing or
 incomplete. `strlen` and the broader safe-method matrix are still missing as
 dedicated challenge slices.
 
-The highest-leverage next technical subtask is now to eliminate the standalone
-`#decodeConstant` thunk on the `c"hello"` literal in the challenge-local exact-
-byte `CloneToUninit` slice so that both proof paths can reach the same shared
-`core::ffi::CStr::from_bytes_with_nul` frontier. That is the narrowest change
-that restores a comparable proof shape across the linked-SMIR and
-challenge-local evidence.
+The highest-leverage next technical subtask is now to reduce the shared
+`core::ffi::CStr::from_bytes_with_nul` constructor/body frontier itself. Both
+the linked-SMIR and challenge-local exact-byte `CloneToUninit` paths already
+meet at that same frontier, so the next slice should focus on whichever shared
+body-resolution or constructor support is needed to push that common edge
+forward.
 
 ## Next Generator Task
 
-Remove the standalone `#decodeConstant` thunk from the exact-byte
-`CloneToUninit` slice:
+Advance the shared `CStr::from_bytes_with_nul` frontier:
 
-1. Make `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs`
-   reach the shared `CStr::from_bytes_with_nul` frontier without stopping at a
-   local constant-decoding thunk.
-2. Keep the change scoped to the exact-byte harness shape; do not widen it into
-   the nine safe-method matrix or `strlen`.
-3. Re-run the linked-SMIR and challenge-local `CloneToUninit` proofs so the
-   next log entry shows whether both paths now share the same constructor/body
-   frontier or whether a second frontier remains.
+1. Reconfirm the exact frontier with the linked-SMIR and challenge-local
+   `CloneToUninit` proofs so the branch record stays grounded in the current
+   shared stopping point.
+2. Make the smallest shared-side change needed to move
+   `core::ffi::CStr::from_bytes_with_nul` past the current body gap.
+3. Keep the work scoped to that single constructor frontier; do not widen it
+   into the nine safe-method matrix or `strlen`.
 
 ## Evidence Expected
 
 - file path(s) for the exact-byte harness adjustment and any contract update
-- the exact harness change used to remove the local `#decodeConstant` thunk
+- the exact shared-side change used to advance `core::ffi::CStr::from_bytes_with_nul`
 - evidence that both the linked-SMIR and challenge-local `CloneToUninit`
-  harnesses now reach the same `CStr::from_bytes_with_nul` frontier, or a
+  harnesses still meet at the same frontier before and after the change, or a
   precise statement of the remaining stuck point
 - the proof commands and resulting status for the narrowed slice
 

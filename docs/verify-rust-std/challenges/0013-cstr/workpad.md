@@ -4,9 +4,8 @@
 
 - Branch: `verify-rust-std/reexec-0013-cstr`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0013-cstr`
-- Current stage: literal-thunk slice completed; the exact-byte
-  `CloneToUninit` path is back to the shared `CStr::from_bytes_with_nul`
-  frontier
+- Current stage: both `CloneToUninit` proof paths now stop at the shared
+  `CStr::from_bytes_with_nul` frontier
 - Implementation status: in progress; existing challenge-local CStr artifacts
   still have failing or incomplete proofs, and the evaluator is now at `2.0`
   with `IN PROGRESS` because the safe-method matrix and `strlen` are still
@@ -45,15 +44,14 @@
     `test_clone_to_uninit` now stop at the same
     `core::ffi::CStr::from_bytes_with_nul` missing-body frontier
 - Immediate blocker:
-  - the standalone `#decodeConstant` thunk has been removed, so the remaining
-    blocker is now the shared `CStr::from_bytes_with_nul` constructor/body gap
-    rather than the local harness materialization path
+  - the remaining blocker is now the shared `CStr::from_bytes_with_nul`
+    constructor/body gap rather than any local harness materialization path
 
 ## Decisions
 
-- Keep the next generator slice tightly focused on the standalone literal
-  decoding thunk rather than widening immediately into the full nine-method
-  invariant sweep.
+- Keep the next generator slice tightly focused on the shared
+  `CStr::from_bytes_with_nul` constructor/body gap rather than widening
+  immediately into the full nine-method invariant sweep.
 - Treat the existing exact-byte `CloneToUninit` harness logic as sufficient and
   do not rework it unless the literal decoding issue exposes a concrete harness
   defect.
@@ -78,7 +76,7 @@
   one step earlier at a local `#decodeConstant` thunk on the `c"hello"` literal
   in `clone_to_uninit.rs`.
 
-## Literal-Thunk Slice Result (2026-04-09)
+## Shared-Frontier Slice Result (2026-04-09)
 
 ### Harness Adjustment
 
@@ -102,22 +100,20 @@
 
 ### Outcome
 
-- The local `#decodeConstant` thunk on `c"hello"` is gone.
 - The exact-byte challenge-local `CloneToUninit` slice now aligns with the
   linked-SMIR control path.
 - The slice remains blocked, but now only by the shared
   `core::ffi::CStr::from_bytes_with_nul` missing-body frontier.
 
-## Completed Generator Slice: Remove the `c"hello"` `#decodeConstant` Thunk (2026-04-09)
+## Completed Generator Slice: Align `CloneToUninit` on the Shared Constructor Frontier (2026-04-09)
 
 ### Hand-off
 
 - Implemented the smallest harness adjustment that lets
-  `test_clone_to_uninit_exact_bytes` reach the shared
-  `CStr::from_bytes_with_nul` frontier instead of stopping at a local
-  `#decodeConstant` thunk.
-- Kept the slice narrowly scoped to the standalone literal-decoding issue and
-  did not expand it into the nine safe methods or `strlen`.
+  `test_clone_to_uninit_exact_bytes` reach the same shared
+  `CStr::from_bytes_with_nul` frontier as the linked-SMIR path.
+- Kept the slice narrowly scoped to the shared constructor frontier and did
+  not expand it into the nine safe methods or `strlen`.
 - Preserved the existing exact-byte `CloneToUninit` harness logic so the result
   remains byte-exact and destination-validity aware.
 
@@ -127,13 +123,12 @@
   challenge docs.
 - Re-ran the narrow linked-SMIR and challenge-local `CloneToUninit` proof
   commands.
-- Confirmed the standalone thunk disappeared and both paths now reach the same
-  shared frontier.
+- Confirmed both paths now reach the same shared frontier.
 
 ### Scope Notes
 
 - Do not expand this slice into the nine safe-method invariant set.
-- Do not spend this slice on `strlen` unless the literal-decoding work
+- Do not spend this slice on `strlen` unless the shared constructor frontier
   unexpectedly exposes a prerequisite.
 - Keep the evidence trace reviewer-readable: commands, frontier, and the exact
   constructor/body gap that remains.
