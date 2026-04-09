@@ -5,8 +5,9 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, three direct proof slices pass on the branch, and the latest evaluator
-  refresh still leaves the challenge `IN PROGRESS` at `2.6 / 3`.
+  exist, four direct proof slices pass on the branch, and the latest evaluator
+  refresh still leaves the challenge `IN PROGRESS` at `2.6 / 3` pending a
+  broader reassessment.
 
 ## Evidence gathered
 
@@ -16,6 +17,9 @@
 - PR #985’s file list confirms that `wrapping_shl` relied on the already-ported
   shift-mask simplification lemmas; this branch-local re-execution therefore
   tests whether that support is sufficient here without importing new logic.
+- `unchecked_sub_u8` now passes directly on this branch with the existing
+  runner and harness support, so the current Part 1 frontier moved from
+  "proof exists for add/neg only" to "proof exists across add/sub/neg".
 - The refreshed evaluator result stays at `IN PROGRESS` with score `2.6 / 3`,
   so the branch still needs more integer breadth before any terminal state can
   be justified.
@@ -53,6 +57,12 @@
 - 2026-04-09: Direct proof follow-up run completed with
   `ProofStatus.PASSED` for `wrapping_shl_u8` using:
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/wrapping_shl.rs --start-symbol wrapping_shl_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-wrapping-shl-u8 --reload --fail-fast --max-workers 1`.
+- 2026-04-09: Scoped discovery check for the delegated Part 1 slice collected
+  exactly `test_verify_rust_std[unchecked_sub]` using:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_sub and not fail" -q`.
+- 2026-04-09: Direct proof follow-up run completed with
+  `ProofStatus.PASSED` for `unchecked_sub_u8` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_sub.rs --start-symbol unchecked_sub_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-sub-u8 --reload --fail-fast --max-workers 1`.
 
 ## Generator retry execution log
 
@@ -73,6 +83,12 @@
 - Re-executed the branch-local Part 2 slice directly with `kmir prove-rs`;
   `wrapping_shl_u8` passed without any new support changes, so the prior
   shift-mask lemma port was already sufficient on this branch.
+- Confirmed the delegated unchecked-sub case is wired through the same runner:
+  `test_verify_rust_std[unchecked_sub]` is selected by
+  `-k "unchecked_sub and not fail"`.
+- Re-executed the delegated Part 1 slice directly with `kmir prove-rs`;
+  `unchecked_sub_u8` passed without any new support changes, broadening the
+  integer-side evidence while keeping the float blocker isolated.
 
 ## Evidence for next evaluator step
 
@@ -81,22 +97,22 @@
   `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints`.
 - Validation now includes branch-local passing proof evidence in two published
   requirement families:
-  `unchecked_add_u8` and `unchecked_neg_i8` pass in Part 1, and
-  `wrapping_shl_u8` passes in Part 2.
+  `unchecked_add_u8`, `unchecked_neg_i8`, and `unchecked_sub_u8` pass in
+  Part 1, and `wrapping_shl_u8` passes in Part 2.
 - Float blocker signal remains present in ported evidence:
   `to_int_unchecked-fail` expected outputs include stuck float intrinsic hooks.
 
 ## Next handoff
 
-- Generator should next run `unchecked_sub_u8` end-to-end and record the
-  command, proof outcome, and any exact missing support if the slice does not
-  pass.
-- Remaining generator work, if any, should stay scoped to documenting or
-  confirming the already-recorded float blocker rather than widening back into
-  unrelated integer symbols.
+- Generator completed the delegated `unchecked_sub_u8` slice end-to-end and
+  recorded the exact command and proof outcome.
+- Remaining branch work should stay scoped to planner-selected follow-up slices
+  or to documenting the already-recorded float blocker; this turn should not be
+  widened beyond the completed `unchecked_sub_u8` evidence.
 
 ## Evaluator Note
 
 - 2026-04-09: `wrapping_shl_u8` is strong evidence, but the remaining
-  unverified integer and safe-API surface is still broad, so the strongest
-  justified verdict remains `IN PROGRESS` rather than `CONDITIONALLY READY`.
+  unverified integer and safe-API surface is still broad; `unchecked_sub_u8`
+  improves the Part 1 evidence, but the strongest justified verdict remains
+  `IN PROGRESS` rather than `CONDITIONALLY READY`.

@@ -41,6 +41,9 @@ Ownership:
 - 2026-04-09: Completed the first scoped Part 2 proof slice end-to-end with
   `kmir prove-rs` for `wrapping_shl_u8`; no additional harness or support
   changes were required on this branch.
+- 2026-04-09: Completed another scoped Part 1 proof slice end-to-end with
+  `kmir prove-rs` for `unchecked_sub_u8`; the existing harness and runner
+  support were already sufficient on this branch.
 
 ## Files Touched
 
@@ -104,6 +107,18 @@ Ownership:
    passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
    `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
 
+9. Command:
+   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_sub and not fail" -q`
+   Result:
+   passed; exactly `test_verify_rust_std[unchecked_sub]` collected
+   (`1/17 collected, 16 deselected`).
+
+10. Command:
+    `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_sub.rs --start-symbol unchecked_sub_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-sub-u8 --reload --fail-fast --max-workers 1`
+    Result:
+    passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
+    `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
+
 ## Commit Inventory
 
 - `2e09185c` — `feat(verify-rust-std): port challenge 0011 harnesses and runner`
@@ -112,9 +127,10 @@ Ownership:
 
 - Full proof execution across the full integer matrix is still runtime-heavy in
   this environment, but the prior "no completed proof" blocker is reduced:
-  `unchecked_add_u8`, `unchecked_neg_i8`, and now `wrapping_shl_u8` all pass
-  end-to-end on this branch, with `wrapping_shl_u8` providing the first
-  branch-local Part 2 pass.
+  `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`, and
+  `wrapping_shl_u8` all pass end-to-end on this branch, with
+  `unchecked_sub_u8` broadening the Part 1 arithmetic evidence without any new
+  support changes.
 - Float-to-int path still appears blocked by backend capability in the current
   stack; the ported expected outputs still include stuck frontiers on float
   intrinsics (e.g., `fabsf32`, `fabsf64`) in
