@@ -19,6 +19,22 @@ The portfolio is complete only when every published challenge is in one of:
 - `0012-nonzero` -> `IN PROGRESS`
 - `0013-cstr` -> `IN PROGRESS`
 
+## Current Run Constraint
+
+- Dedicated generator threads were launched for all three active challenges.
+- During the available polling windows in this run, none of those generator
+  threads produced branch commits or generator-record updates.
+- This is treated as an external runtime/tool constraint for this run, not as a
+  challenge-level terminal verdict.
+
+## Exact Restart Point If The Run Stops Now
+
+- Resume the current batch: `0011-floats-ints`, `0012-nonzero`,
+  `0013-cstr`.
+- Restart each challenge at generator phase using the already committed
+  `plan.md`, `workpad.md`, and `evaluation_result.md`.
+- Do not reseat the batch until these three leave `IN PROGRESS`.
+
 ## Batch Selection Rationale
 
 - `0011-floats-ints`: direct `mir-semantics` reference PR exists in [#985](https://github.com/runtimeverification/mir-semantics/pull/985); likely to yield either a precise float-capability blocker or a near-terminal readiness assessment quickly.

@@ -9,9 +9,9 @@ challenge_id	slug	state	batch_slot	note
 0008	smallsort	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0009	duration	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0010	string	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
-0011	floats-ints	IN PROGRESS	active	planner launched; reference PR #985 and float support evidence under review
-0012	nonzero	IN PROGRESS	active	planner launched; public solution reuse and local historical branch under review
-0013	cstr	IN PROGRESS	active	planner launched; public solution reuse and local linker branch under review
+0011	floats-ints	IN PROGRESS	active	planner completed; generator runtime stalled; restart at integer-slice execution then float frontier isolation
+0012	nonzero	IN PROGRESS	active	planner completed; generator runtime stalled; restart at reviewed baseline reconstruction with stronger semantic assertions
+0013	cstr	IN PROGRESS	active	planner completed; generator runtime stalled; restart at CloneToUninit and Index<RangeFrom> core slice
 0014	convert-num	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0015	intrinsics-simd	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0016	iter	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
