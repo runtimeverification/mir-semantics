@@ -4,7 +4,7 @@
 
 - Branch: `verify-rust-std/reexec-0026-rc`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
-- Local status: first audit slice committed in `87a669dc`; no code or proof artifacts touched.
+- Local status: first audit slice committed in `87a669dc`; first root harness added for `Rc::from_raw_in`, with proof-frontier evidence captured in `/tmp/rc-from-raw-in-proof`.
 
 ## Confirmed Inputs
 
@@ -15,7 +15,7 @@
 
 ## Next Action
 
-- Turn the selected raw-pointer/refcount tranche into proof or harness seeds rooted at `Rc::from_raw_in`.
+- Remove the unrelated `Rc::new_in`/`Box::try_new_uninit_in` dependency from the root harness so `Rc::from_raw_in` can be exercised directly against a raw-pointer/allocator witness.
 
 ## What Needs To Be Captured
 
@@ -28,6 +28,8 @@
 - Keep the plan narrowed to one tranche only.
 - Do not expand into code or proof implementation from this file.
 - Use this workpad to record the chosen tranche before any generator work starts.
+- The first root harness currently stalls in `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`, at the `castKindTransmute` thunk in `core/src/alloc/layout.rs:140`.
+- This is a precise blocker on the current harness shape, not on the `Rc::from_raw_in` body itself.
 
 ## Audit Result
 
@@ -38,6 +40,13 @@
   - initialization transition: 2 APIs
   - aliasing and type identity: 1 API
   - dynamic type recovery: 1 API
+
+## Proof Frontier
+
+- Harness: `kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs`
+- Validation command: `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs --proof-dir /tmp/rc-from-raw-in-proof --verbose --terminate-on-thunk`
+- Frontier evidence: `uv --project kmir run kmir show rc-from-raw-in.main --proof-dir /tmp/rc-from-raw-in-proof --leaves --statistics`
+- Leaf 4 reaches `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` and stops at `core/src/alloc/layout.rs:140` in a `castKindTransmute` thunk.
 
 ## Selected First Tranche
 
