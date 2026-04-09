@@ -4,8 +4,9 @@
 
 - Branch: `verify-rust-std/reexec-0013-cstr`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0013-cstr`
-- Current stage: planner-only bootstrap refinement
-- Implementation status: not started
+- Current stage: generator slice with first challenge-local `0013-cstr` artifacts
+- Implementation status: in progress (initial `from_ptr` and exact-byte index
+  artifact added; proofs not closed yet)
 
 ## Evidence Gathered
 
@@ -34,6 +35,55 @@
 ## Failed Attempts
 
 - None. This is still the initial planning pass.
+
+## Generator NEXT SLICE: Challenge-Local Artifact Seed (2026-04-09)
+
+### Implemented Artifacts
+
+- Added
+  `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_ptr.rs`
+  with:
+  - `test_from_ptr` (`CStr::from_ptr` safety/shape repro target)
+  - `test_index_range_from_exact_bytes` (exact-byte checks for
+    `Index<RangeFrom<usize>>`)
+
+### Validation Commands and Outcomes
+
+1. Command:
+   `uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_ptr.rs --start-symbol test_index_range_from_exact_bytes --terminate-on-thunk --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-index-range --fail-fast`
+   Outcome:
+   failed before proof with path-resolution error:
+   `FileNotFoundError` on
+   `/home/zhaoji/projs/mir-semantics-vrs/challenges/0013-cstr/from_ptr.smir.json`
+   (relative path resolved to wrong stem).
+
+2. Command:
+   `uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_ptr.rs --start-symbol test_from_ptr --terminate-on-thunk --max-depth 120 --max-iterations 60 --proof-dir /tmp/kmir-0013-from-ptr --fail-fast`
+   Outcome:
+   `APRProof: from_ptr.test_from_ptr`, `ProofStatus.FAILED`,
+   `nodes: 4`, `failing: 1`, `terminal: 2` (exit code 1).
+
+3. Command:
+   `uv --project kmir run -- kmir prove-rs /home/zhaoji/projs/mir-semantics-vrs/challenges/0013-cstr/kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_ptr.rs --start-symbol test_index_range_from_exact_bytes --terminate-on-thunk --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-index-range --fail-fast`
+   Outcome:
+   `APRProof: from_ptr.test_index_range_from_exact_bytes`,
+   `ProofStatus.FAILED`, `nodes: 3`, `failing: 1`, `stuck: 1`, `terminal: 1`
+   (exit code 1).
+
+### Scope Notes
+
+- No challenge-external support file changes were required for this slice.
+- This slice is intentionally narrow: first challenge-local CStr artifacts plus
+  proof/repro evidence.
+
+### Remaining Gap After This Slice
+
+- Add dedicated challenge-local artifacts for:
+  - `from_bytes_with_nul_unchecked` contract
+  - `strlen` contract
+  - exact-byte `CloneToUninit`
+- Refine current artifacts/lemmas/contracts until targeted proofs can close or
+  reach evaluator-acceptable constrained states with clear blockers.
 
 ## Generator Retry Execution Log
 

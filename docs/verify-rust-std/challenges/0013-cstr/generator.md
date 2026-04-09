@@ -30,6 +30,11 @@ Ownership:
   the prerequisite validation path.
 - 2026-04-09: Ran narrow validation for linker body resolution and linked-SMIR
   prove entry on `test_from_ptr`.
+- 2026-04-09: Added first challenge-local Challenge 0013 artifact file
+  `from_ptr.rs` with a `CStr::from_ptr` proof/repro target and an exact-byte
+  `Index<RangeFrom<usize>>` target.
+- 2026-04-09: Ran narrow scoped `prove-rs` validation on the new challenge-local
+  start symbols and recorded concrete failing/stuck proof states.
 
 ## Files Touched
 
@@ -37,6 +42,7 @@ Ownership:
 - `kmir/src/kmir/kompile.py`
 - `kmir/src/kmir/linker.py`
 - `kmir/src/kmir/smir.py`
+- `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_ptr.rs`
 - `docs/verify-rust-std/challenges/0013-cstr/generator.md`
 - `docs/verify-rust-std/challenges/0013-cstr/workpad.md`
 
@@ -60,6 +66,20 @@ Ownership:
    `APRProof: cstr.smir.test_from_ptr`, status `PENDING`, `nodes: 3`,
    `pending: 1`, `terminal: 1` (exit code 1 due non-terminal proof state).
 
+3. Command:
+   `uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_ptr.rs --start-symbol test_from_ptr --terminate-on-thunk --max-depth 120 --max-iterations 60 --proof-dir /tmp/kmir-0013-from-ptr --fail-fast`
+   Result:
+   command executed and reached APR summary:
+   `APRProof: from_ptr.test_from_ptr`, status `FAILED`, `nodes: 4`,
+   `failing: 1`, `terminal: 2` (exit code 1).
+
+4. Command:
+   `uv --project kmir run -- kmir prove-rs /home/zhaoji/projs/mir-semantics-vrs/challenges/0013-cstr/kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_ptr.rs --start-symbol test_index_range_from_exact_bytes --terminate-on-thunk --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-index-range --fail-fast`
+   Result:
+   command executed and reached APR summary:
+   `APRProof: from_ptr.test_index_range_from_exact_bytes`, status `FAILED`,
+   `nodes: 3`, `failing: 1`, `stuck: 1`, `terminal: 1` (exit code 1).
+
 ## Commit Inventory
 
 - `80244466` — `feat(linker): port cross-crate body resolution for cstr`
@@ -67,6 +87,10 @@ Ownership:
 ## Blockers
 
 - This retry only ports prerequisite linker/SMIR infrastructure.
-- Challenge 0013 still lacks challenge-specific `CStr` harness/contract
-  artifacts on this branch, so readiness cannot advance past `IN PROGRESS`
-  yet.
+- First challenge-local artifact file now exists, but core Challenge 0013
+  coverage is still incomplete:
+  - missing dedicated `from_bytes_with_nul_unchecked` and `strlen` contract
+    artifacts
+  - missing exact-byte `CloneToUninit` artifact
+  - missing broader CStr method/invariant artifact set expected by
+    verify-rust-std reviewers
