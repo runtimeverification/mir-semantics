@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from itertools import chain
 from math import ceil, log10
 from typing import TYPE_CHECKING
@@ -12,6 +13,65 @@ if TYPE_CHECKING:
     from typing import Final
 
 _LOGGER: Final = logging.getLogger(__name__)
+_RUST_HASH_SUFFIX_RE: Final = re.compile(r'17h[0-9a-f]{16}E$')
+
+
+def _strip_hash(symbol: str) -> str:
+    """Strip the Rust hash suffix (17h[0-9a-f]{16}E) from a mangled symbol name."""
+    return _RUST_HASH_SUFFIX_RE.sub('', symbol)
+
+
+def _is_missing_body(body: object) -> bool:
+    if body is None or body == 'noBody':
+        return True
+    if isinstance(body, dict):
+        return set(body) in ({'noBody'}, {'NoBody'})
+    return False
+
+
+def resolve_bodies(items: list[dict]) -> list[dict]:
+    """Replace noBody items with matching function bodies from other crates.
+
+    When linking multiple SMIR files, a function called cross-crate appears
+    in the caller's SMIR with ``body: noBody``. The callee's SMIR has the
+    actual body. This pass matches them by mangled symbol name (minus hash)
+    and fills in the missing bodies.
+    """
+    body_map: dict[str, dict] = {}
+    for item in items:
+        mono_item_fn = item.get('mono_item_kind', {}).get('MonoItemFn')
+        if mono_item_fn is None:
+            continue
+        body = mono_item_fn.get('body')
+        if _is_missing_body(body):
+            continue
+
+        key = _strip_hash(item.get('symbol_name', ''))
+        if not key:
+            continue
+        body_map.setdefault(key, mono_item_fn)
+
+    resolved = 0
+    for item in items:
+        mono_item_fn = item.get('mono_item_kind', {}).get('MonoItemFn')
+        if mono_item_fn is None:
+            continue
+
+        if not _is_missing_body(mono_item_fn.get('body')):
+            continue
+
+        key = _strip_hash(item.get('symbol_name', ''))
+        donor = body_map.get(key)
+        if donor is None:
+            continue
+
+        mono_item_fn['body'] = donor['body']
+        resolved += 1
+        _LOGGER.info(f"Resolved noBody for {mono_item_fn.get('name', '<unknown>')} via {donor.get('name', '<unknown>')}")
+
+    if resolved:
+        _LOGGER.info(f'Resolved {resolved} noBody item(s) via cross-crate body matching')
+    return items
 
 
 def link(smirs: list[SMIRInfo]) -> SMIRInfo:
@@ -28,12 +88,15 @@ def link(smirs: list[SMIRInfo]) -> SMIRInfo:
         _LOGGER.debug(f'Offset {smir_offset} for smir {smir._smir["name"]}')
         apply_offset(smir, smir_offset)
 
+    linked_items = [i for smir in smirs for i in smir._smir['items']]
+    linked_items = resolve_bodies(linked_items)
+
     result_dict = {
         'name': ','.join(smir._smir['name'] for smir in smirs),
         'crate_id': 0,  # HACK
         'allocs': [a for smir in smirs for a in smir._smir['allocs']],
         'functions': [f for smir in smirs for f in smir._smir['functions']],
-        'items': [i for smir in smirs for i in smir._smir['items']],
+        'items': linked_items,
         'types': [t for smir in smirs for t in smir._smir['types']],
         'spans': [s for smir in smirs for s in smir._smir['spans']],
         'machine': smirs[0]._smir['machine'],
