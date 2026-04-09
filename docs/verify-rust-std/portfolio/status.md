@@ -32,7 +32,9 @@ The portfolio is complete only when every published challenge is in one of:
 - Resume the current batch: `0011-floats-ints`, `0012-nonzero`,
   `0013-cstr`.
 - Restart each challenge at generator phase using the already committed
-  `plan.md`, `workpad.md`, and `evaluation_result.md`.
+  `plan.md` and `workpad.md`.
+- After the first generator checkpoint lands on each branch, launch the
+  corresponding evaluator to create `evaluation_result.md`.
 - Do not reseat the batch until these three leave `IN PROGRESS`.
 
 ## Batch Selection Rationale
