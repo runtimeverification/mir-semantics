@@ -123,3 +123,15 @@
 - The slice is materially advanced but not closed: the remaining blocker is a
   specific shared frontier at `core::ffi::CStr::from_bytes_with_nul`, not a
   missing destination-validity or exact-byte comparison check in the harness.
+
+## Evaluator Refresh (2026-04-09)
+
+- Re-ran the narrow proofs on commit `c93bbe4a`, which compiles standalone
+  prove targets as edition 2024.
+- `kmir prove-rs kmir/cstr.smir.json --smir --start-symbol test_clone_to_uninit`
+  still stops at the shared `core::ffi::CStr::from_bytes_with_nul` body
+  frontier.
+- `kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs --start-symbol test_clone_to_uninit_exact_bytes --terminate-on-thunk`
+  now fails on a local `#decodeConstant` thunk for the `c"hello"` literal at
+  `clone_to_uninit.rs:19`, so the standalone path has moved past the old
+  frontend issue but is not yet a closed proof.
