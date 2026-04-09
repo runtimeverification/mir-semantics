@@ -15,14 +15,15 @@ Turn the published `Rc`/`Weak` challenge requirements into one concrete proof-or
 
 ## Single Next Technical Subtask
 
-Rewrite the `Rc::from_raw_in` root harness so it no longer constructs the witness through `Rc::new_in` and `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`; instead, feed `from_raw_in` the smallest direct raw-pointer/allocator witness that preserves the current `System` provenance and stays inside the raw-pointer/refcount tranche.
+Shrink the rewritten `Rc::from_raw_in` root harness one step further by replacing the current `Box::new_in`-backed `RcInnerWitness<u32>` setup with the smallest direct `System`-provenance raw-memory witness that does not introduce the committed `#cast(..., CastKind::Transmute, ...)` leaf, while still feeding `from_raw_in` the same allocator/raw-pointer pair.
 
 ## Why This Comes First
 
-The current proof frontier is not a `Rc::from_raw_in` semantic failure. It is a harness-shape failure caused by the `Rc::new_in` detour into `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`, which stalls at `castKindTransmute` in `core/src/alloc/layout.rs:140`. Removing that detour is the narrowest change most likely to unblock the existing root without widening scope.
+The old `Rc::new_in` / `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` detour is already gone. The remaining blocker is now the witness-construction path itself, which terminates in a `#cast(..., CastKind::Transmute, ...)` leaf, so the narrowest useful follow-up is to simplify that witness shape instead of widening into `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in`.
 
 ## Exit Criteria
 
-- The `Rc::from_raw_in` harness takes a direct raw-pointer/allocator witness and no longer depends on `Rc::new_in` or `Box::try_new_uninit_in`.
+- The `Rc::from_raw_in` harness no longer needs the `Box::new_in` witness wrapper to establish the raw pointer.
+- The witness setup no longer introduces the committed `CastKind::Transmute` leaf.
 - The existing `System` provenance is preserved in the root harness.
 - Any remaining blocker is recorded as a precise backend dependency or semantic gap, not as a widened Rc API search.
