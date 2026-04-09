@@ -26,7 +26,7 @@ Challenge-local artifact contract:
 
 Status board:
 
-- Planner: not started
+- Planner: complete
 - Generator: waiting for planner and evaluator baselines
 - Evaluator: not started
 - Draft PR: not created
