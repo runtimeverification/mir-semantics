@@ -1,8 +1,10 @@
 # Evaluation Result: Challenge 0012
 
-Checkpoint type: orchestrator interruption checkpoint due generator-runtime stall in
-this run. No independent technical evaluator pass has been completed yet on this
-re-execution branch.
+Checkpoint date: 2026-04-09 UTC
+
+This evaluation pass counts the prerequisite semantic baseline as real progress,
+but it does not count as challenge completion because the branch still lacks the
+actual `NonZero` harness and contract layer.
 
 ## Verdict
 
@@ -10,43 +12,46 @@ re-execution branch.
 
 ## Score
 
-`0.22`
+`1.0 / 3`
 
 ## Satisfied Criteria
 
 - Dedicated branch, worktree, and draft PR exist.
-- Challenge-local planner artifacts exist and were updated in this run.
-- Planner/workpad artifacts capture the main readiness risk from public review:
-  semantic specificity matters, not just API coverage.
+- The branch now contains a validated prerequisite semantic baseline ported from
+  `verify-rust-std/challenge-0012`.
+- The prerequisite slice was rerun with concrete evidence:
+  `transmute-maybe-uninit-i128` and `unions` collected, built, and passed.
+- Branch-local docs now distinguish prerequisite baseline progress from actual
+  Challenge 12 work.
 
 ## Missing Criteria
 
-- No challenge-local NonZero proof/harness implementation has been added yet on
-  this re-execution branch.
-- No validation evidence has been recorded for any Part 1 or Part 2 API.
-- No branch-local answer exists yet to the public-review concerns about thin
-  harnesses, `isqrt`, or wide integer bounds.
+- No branch-local `NonZero` harnesses or contracts have been added yet.
+- No Part 1 proof of `new` / `new_unchecked` correctness exists on this branch.
+- No Part 2 API coverage exists for the published `NonZero` surface.
+- No branch-local coverage map exists for the `isqrt` wide-type question or any
+  bounded `128-bit` proof strategy.
+- No scoped `nonzero` proof/test run has been recorded yet.
 
 ## Blocking Issues
 
-- The dedicated generator threads for the active batch were launched in this
-  run but produced no branch changes or generator-record updates during the
-  polling window.
-- The reviewed public baselines (`#544`, `#565`) have not yet been translated
-  into current branch-local mir-semantics artifacts.
+- None. The remaining work is actionable challenge-specific implementation, not
+  an unresolved prerequisite semantic problem.
 
 ## Evidence
 
-- Branch head is planner commit `30efa9e8`.
-- `workpad.md` records the public-review requirement to strengthen assertions
-  beyond `get() != 0`.
-- `generator.md` remains at bootstrap state with no files touched and no
-  validation evidence.
+- Branch head: `d8e723b5` before this evaluator pass.
+- The branch diff contains only the prerequisite baseline port plus generator
+  evidence updates, not `core::num::nonzero` artifacts.
+- `generator.md` records successful reruns of
+  `transmute-maybe-uninit-i128` and `unions` after `make build`.
+- `workpad.md` records the review-driven distinction between baseline readiness
+  and challenge-specific `NonZero` work.
 
 ## Next Action Required To Improve State
 
-- Relaunch the dedicated generator on
-  `verify-rust-std/reexec-0012-nonzero`.
-- Reconstruct the reviewed baseline from public guidance.
-- Strengthen each selected API harness so the semantic relation is asserted
-  explicitly and validation commands/results are recorded.
+- Implement the challenge-specific `NonZero` harness and contract layer on
+  `verify-rust-std/reexec-0012-nonzero`, starting with the published Part 1
+  semantics for `new` and `new_unchecked`, then expand into the Part 2 API
+  matrix with explicit semantic assertions and validation evidence.
+

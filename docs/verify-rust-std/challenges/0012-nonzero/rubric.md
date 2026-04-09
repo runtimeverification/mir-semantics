@@ -27,6 +27,22 @@ submission-ready.
 | Review feedback patterns are incorporated | no | Prior review comments on similar work are reflected in naming, test organization, and explanation quality. |
 | Residual risk is explicit | no | Open blockers, solver limitations, unsupported hooks, or dependency escalations are called out precisely. |
 
+## Challenge 12 Reusable Patterns
+
+- A prerequisite semantic-baseline port is supporting evidence only. It may
+  justify the environment and reduce later risk, but it does not satisfy the
+  Challenge 12 success criteria by itself.
+- If a NonZero harness only proves "nonzero-ness" or absence of UB, that is not
+  enough unless the published API has no stronger semantic relation to assert.
+- For `isqrt`, any omission of wider unsigned types must be explicitly bounded
+  or justified with a documented performance rationale.
+- For `checked_pow` / `saturating_pow` on 128-bit types, bounded exponents are
+  acceptable only when the bound and its verification rationale are explicit.
+- Evaluator scoring should separate:
+  - prerequisite semantic baseline readiness
+  - challenge-specific `core::num::nonzero` artifact readiness
+  - reproducible proof/test evidence for the published API list
+
 ## Required Evaluator Updates
 
 Each evaluator must append challenge-specific criteria for:
