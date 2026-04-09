@@ -61,3 +61,42 @@
   artifacts on this re-execution branch.
 - Evaluator should keep status at `IN PROGRESS` until branch-local NonZero
   verification work is implemented and validated.
+
+## Generator Next Slice Execution Log
+
+- Added first challenge-local `0012-nonzero` artifacts:
+  `new.rs`, `new_unchecked.rs`, `from_mut.rs`.
+- Added one low-risk Part 2 seed artifact:
+  `count_ones.rs` (explicit semantic assertions on returned count value).
+- Updated challenge-local artifact README status board to reflect active
+  planner/generator/evaluator and initial artifact coverage.
+
+## New Validation Snapshot
+
+- Compile checks (stable-mir-json release driver):
+  - `new.rs`: success
+  - `new_unchecked.rs`: success
+  - `from_mut.rs`: success
+  - `count_ones.rs`: initial compile failed due unstable
+    `non_zero_count_ones` and type mismatch; succeeded after adding feature
+    gate and using `.get()` for comparisons.
+- Proof checks (direct `kmir prove-rs`):
+  - `new.part1_new_u8` with `--terminate-on-thunk`: `FAILED` (`failing: 1`)
+  - `new_unchecked.part1_new_unchecked_u8` with `--terminate-on-thunk`:
+    `FAILED` (`failing: 1`)
+  - `new.part1_new_u8` without `--terminate-on-thunk`: `FAILED` with
+    `pending: 6`, `failing: 1`, `stuck: 1`
+  - `count_ones.part2_count_ones_u8`: `FAILED` with
+    `pending: 1`, `failing: 1`, `stuck: 1`
+- Leaf inspection:
+  - `kmir show new.main --proof-dir /tmp/kmir-0012-new-main --leaves` shows a
+    thunk frontier at `std::num::NonZero::<u8>::new` transmute cast path.
+
+## Updated Remaining Gap
+
+- Challenge-local artifacts now exist, but none of the new symbolic proofs are
+  closing yet under current semantics.
+- Next highest-value step is to reduce one failing Part 1 frontier
+  (`new` or `new_unchecked`) to a minimal semantic issue and either:
+  - fix it locally if low-risk and reusable, or
+  - record it as a precise blocker candidate for evaluator classification.
