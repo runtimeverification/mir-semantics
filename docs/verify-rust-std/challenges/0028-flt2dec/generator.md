@@ -58,6 +58,19 @@ Ownership:
   `std::slice::from_raw_parts::<'_, u8>` at `library/core/src/slice/raw.rs:138`
   after entering `split_at_raw`, so the probe still has not reached a
   `flt2dec`-owned failure.
+- This slice removed the follow-up probe's remaining raw-slice artifact by
+  deleting `split_at_raw`, replacing the decimal-point split with a
+  challenge-local concrete-case helper for the single exercised input
+  `b"1234", exp = 2`, and switching the initialized-parts return path to
+  `MaybeUninit::slice_assume_init_ref`, matching the std body more closely.
+- The local toolchain still gates `MaybeUninit::slice_assume_init_ref`, so the
+  probe needed `#![feature(maybe_uninit_slice)]` before the narrowed harness
+  would compile.
+- The rerun removed `std::slice::from_raw_parts` from the active path, but it
+  still did not reach `flt2dec`-owned logic or a backend float limit. The new
+  first leaf is the helper's `assert!(buf == b\"1234\")`, which enters
+  `std::array::equality::<impl std::cmp::PartialEq<[u8; 4]> for [u8]>::eq` at
+  `library/core/src/slice/mod.rs:871` from `probe_decimal_point_case`.
 
 ## Files Touched
 
@@ -95,11 +108,27 @@ Ownership:
   function `std::slice::from_raw_parts::<'_, u8>`, span
   `library/core/src/slice/raw.rs:138`, reached from the challenge-local
   `split_at_raw` helper at `dec/digits_to_dec_str_probe.rs:9`.
+- `rustc kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs -o /tmp/digits_to_dec_str_probe_0028_followup2`
+  initially failed with `E0658` because
+  `MaybeUninit::slice_assume_init_ref` requires the crate feature
+  `maybe_uninit_slice` on this nightly; the probe compiled successfully after
+  adding that feature.
+- `/tmp/digits_to_dec_str_probe_0028_followup2` exited successfully.
+- `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-followup2-proof --max-depth 200 --reload`
+  ended with `ProofStatus.FAILED`, `nodes: 5`, `failing: 1`, `stuck: 1`,
+  `terminal: 1`.
+- `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-followup2-proof --statistics --leaves`
+  showed the new first concrete leaf:
+  function `std::array::equality::<impl std::cmp::PartialEq<[u8; 4]> for [u8]>::eq`,
+  span `/library/core/src/slice/mod.rs:871`, reached from the
+  challenge-local `probe_decimal_point_case` assertion at
+  `dec/digits_to_dec_str_probe.rs:9`.
 
 ## Commit Inventory
 
 - `1499bc9f` `test(verify-rust-std): add 0028 digits_to_dec_str probe`
 - `44813fb9` `test(verify-rust-std): narrow 0028 digits_to_dec_str probe`
+- `7f898c54` `test(verify-rust-std): narrow 0028 probe past raw slices`
 
 ## Blockers
 
@@ -110,3 +139,7 @@ Ownership:
   reaches a stuck raw-slice construction leaf before any float-specific
   `flt2dec` limitation.
 - No backend escalation is justified yet from this follow-up probe alone.
+- After removing raw-slice construction, the next blocker is still
+  challenge-local: the helper that hard-codes the single concrete split case
+  now gets stuck in slice/array equality before the copied `digits_to_dec_str`
+  path reaches a `flt2dec`-owned frontier.

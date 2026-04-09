@@ -4,7 +4,7 @@
 
 - Branch: `verify-rust-std/reexec-0028-flt2dec`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec`
-- Status at planner handoff: the first `digits_to_dec_str` probe has already run and the follow-up has moved the blocker from wrapper slice indexing to raw-slice construction; no code, proof, or evaluator changes are in scope for this planner.
+- Status at planner handoff: the first `digits_to_dec_str` probe has already run, the first follow-up moved the blocker from wrapper slice indexing to raw-slice construction, and this slice removes that raw-slice path to expose the next concrete boundary.
 
 ## Evidence gathered
 
@@ -35,9 +35,21 @@
   new stuck leaf is `std::slice::from_raw_parts::<'_, u8>` at
   `library/core/src/slice/raw.rs:138`, reached from `split_at_raw` at
   `dec/digits_to_dec_str_probe.rs:9`.
-- The current evidence therefore says the next boundary is still harness-level,
-  but it is now a narrower raw-slice artifact rather than the original
-  slice-index/pointer-offset artifact.
+- This slice removed both `split_at_raw` and `std::slice::from_raw_parts` from
+  the narrowed probe path by replacing the decimal-point split with a single
+  concrete-case helper for `b"1234", exp = 2` and by switching the initialized
+  parts return path to `MaybeUninit::slice_assume_init_ref`.
+- The probe needed one local setup adjustment after that change:
+  `MaybeUninit::slice_assume_init_ref` is still feature-gated on this nightly,
+  so the challenge-local crate now declares `#![feature(maybe_uninit_slice)]`.
+- The newest rerun still does not reach a `flt2dec`-owned boundary or a float
+  backend limit. Its first new stuck leaf is
+  `std::array::equality::<impl std::cmp::PartialEq<[u8; 4]> for [u8]>::eq` at
+  `/library/core/src/slice/mod.rs:871`, reached from the helper assertion
+  `buf == b"1234"` inside `probe_decimal_point_case`.
+- The current evidence therefore says the next boundary remains harness-level,
+  but it has moved past raw-slice construction to the helper's concrete-case
+  equality check.
 
 ## Planning decisions
 
@@ -67,15 +79,19 @@
   `std::slice::from_raw_parts::<'_, u8>` from the challenge-local
   `split_at_raw` helper, so it still does not expose a real `flt2dec`
   frontier.
+- The raw-slice-removal rerun bypassed `std::slice::from_raw_parts`, but the
+  concrete-case helper now fails earlier in
+  `std::array::equality::<impl std::cmp::PartialEq<[u8; 4]> for [u8]>::eq`,
+  so the path is still stuck in challenge scaffolding.
 
 ## Next handoff
 
-- Generator has now produced the narrower `digits_to_dec_str` probe and rerun
-  it.
-- Evaluator can now classify Sprint 1 against concrete evidence:
-  the original slice-index artifact is gone, but the next meaningful result is
-  still harness-level at raw-slice construction rather than a float backend
-  crash.
+- Generator has now completed the planner-selected raw-slice-removal slice and
+  rerun it.
+- Evaluator can classify the new outcome against concrete evidence:
+  `split_at_raw` / `from_raw_parts` are gone from the active path, but the next
+  meaningful result is still harness-level at the helper's array/slice equality
+  check rather than a `flt2dec` boundary or float backend crash.
 - Any further generator work should stay narrow and only target the
-  `split_at_raw` / `from_raw_parts` artifact if another follow-up slice is
+  `probe_decimal_point_case` equality artifact if another follow-up slice is
   explicitly requested.
