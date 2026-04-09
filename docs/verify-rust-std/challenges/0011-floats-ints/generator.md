@@ -70,6 +70,9 @@ Ownership:
 - 2026-04-09: Completed the next Part 1 proof slice end-to-end with
   `kmir prove-rs` for `unchecked_mul_u16`; the existing harness and
   multiplication support were already sufficient on this branch.
+- 2026-04-09: Completed the next Part 1 proof slice end-to-end with
+  `kmir prove-rs` for `unchecked_mul_u32`; the existing harness and
+  multiplication support were already sufficient on this branch.
 
 ## Files Touched
 
@@ -200,6 +203,12 @@ Ownership:
     passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
     `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
 
+20. Command:
+    `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_mul.rs --start-symbol unchecked_mul_u32 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-mul-u32 --reload --fail-fast --max-workers 1`
+    Result:
+    passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
+    `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
+
 ## Commit Inventory
 
 - `2e09185c` — `feat(verify-rust-std): port challenge 0011 harnesses and runner`
@@ -210,10 +219,10 @@ Ownership:
   this environment, but the prior "no completed proof" blocker is reduced:
   `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
-  `carrying_mul_u8`, `unchecked_mul_u8`, and `unchecked_mul_u16` all pass
-  end-to-end on this branch, with `carrying_mul_u8` broadening the Part 2
-  safe-API evidence to the remaining carrying-mul family without any new
-  support changes.
+  `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`, and
+  `unchecked_mul_u32` all pass end-to-end on this branch, with
+  `carrying_mul_u8` broadening the Part 2 safe-API evidence to the remaining
+  carrying-mul family without any new support changes.
 - Float-to-int path still appears blocked by backend capability in the current
   stack; the ported expected outputs still include stuck frontiers on float
   intrinsics (e.g., `fabsf32`, `fabsf64`) in
