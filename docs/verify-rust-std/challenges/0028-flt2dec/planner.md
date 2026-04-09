@@ -33,18 +33,18 @@ Ownership:
 | Sprint | Intended slice | Acceptance check | Status |
 | --- | --- | --- | --- |
 | 0 | Bootstrap challenge understanding | Requirements and blockers recorded | done |
-| 1 | Remove the wrapper slice-index artifact from the first probe path | One narrower `digits_to_dec_str` follow-up probe target and its rerun evidence are written down | in progress |
+| 1 | Remove raw-slice construction from the narrowed probe path | One narrower `digits_to_dec_str` follow-up probe target and its rerun evidence are written down | in progress |
 
 ## Dependencies And Blockers
 
-- Reused blocker signal from challenge 0011 remains relevant, but the first 0028 run did not reproduce it; the immediate blocker is now the wrapper's `SliceIndex::index` leaf rooted at `#applyBinOp ( binOpOffset , ... )`.
+- Reused blocker signal from challenge 0011 remains relevant, but the first 0028 run did not reproduce it; the blocker moved from wrapper slice indexing to challenge-local raw-slice construction through `split_at_raw`.
 - No challenge-local artifacts beyond the probe harness and its evidence are present yet in the artifact directory.
 
 ## Cross-Challenge Notes
 
 - Challenge 0011 provides the strongest reuse pattern: keep integer/safe-path reasoning separate from the float-sensitive path, and record the exact backend limitation instead of labeling the challenge generically blocked.
 - The current challenge is narrower in name but broader in unsafe surface: it combines float formatting, `assume_init()`, and lifetime laundering, so the plan should stay anchored to one representative probe rather than the full function set.
-- The first probe already targeted `digits_to_dec_str`; the next highest-leverage slice is to remove the probe wrapper's range indexing so the follow-up result can distinguish a true `flt2dec` blocker from a harness artifact.
+- The first probe already targeted `digits_to_dec_str`; the next highest-leverage slice is to remove raw-slice construction from the probe path so the follow-up result can distinguish a true `flt2dec` blocker from a harness artifact.
 
 ## History
 

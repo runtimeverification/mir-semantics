@@ -4,7 +4,7 @@
 
 - Branch: `verify-rust-std/reexec-0028-flt2dec`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec`
-- Status at planner handoff: the first `digits_to_dec_str` probe has already run and produced a concrete wrapper-artifact blocker; no code, proof, or evaluator changes are in scope for this planner.
+- Status at planner handoff: the first `digits_to_dec_str` probe has already run and the follow-up has moved the blocker from wrapper slice indexing to raw-slice construction; no code, proof, or evaluator changes are in scope for this planner.
 
 ## Evidence gathered
 
@@ -42,9 +42,9 @@
 ## Planning decisions
 
 - Keep the first generator task to one representative probe instead of the full function list.
-- Favor `digits_to_dec_str` as the initial signal source, but strip the wrapper
-  indexing so the evaluator can classify backend support versus harness artifact
-  cleanly.
+- Favor `digits_to_dec_str` as the initial signal source, but strip raw-slice
+  construction so the evaluator can classify backend support versus harness
+  artifact cleanly.
 - Do not expand scope into backend work unless the follow-up probe shows a distinct, challenge-local float limitation.
 
 ## Reusable rubric patterns for evaluator
