@@ -902,9 +902,18 @@ def _generate_frontier_summary_rules(
         node = proof.kcfg.node(node_id)
         k_cell = node.cterm.cell('K_CELL')
 
-        # Extract return value from frontier node's K_CELL:
-        # Expected: KSequence([#setLocalValue(dest, ret_value), #execBlockIdx(bb), ...])
+        # Extract return value from frontier node.
+        # Case 1 (legacy): K_CELL = #setLocalValue(dest, ret_value) ~> #execBlockIdx(bb)
+        # Case 2 (callee-local): K_CELL = #execTerminator(terminator(terminatorKindReturn, ...))
+        #   → return value is in locals[0]: typedValue(VAL, TY, MUT) → VAL
         raw_ret_value = _extract_boundary_return_value_static(k_cell)
+        if raw_ret_value is None:
+            # Check for callee-local return-terminator: extract return from locals[0]
+            check_k = k_cell.items[0] if isinstance(k_cell, KSequence) and k_cell.items else k_cell
+            if _is_return_terminator_k(check_k):
+                val, has_ret = KMIRCSESemantics._extract_return_from_locals(node)
+                if has_ret and val is not None:
+                    raw_ret_value = val
         if raw_ret_value is None:
             _LOGGER.warning('CSE rule gen: frontier node %d has no extractable return value, skipping', node_id)
             continue
@@ -1138,24 +1147,50 @@ def _is_end_program_k(k_cell: KInner) -> bool:
 
 
 def _call_boundary_frontier_node_ids(proof: APRProof, target_k_cell: KInner | None) -> list[int]:
-    if not isinstance(target_k_cell, KSequence) or len(target_k_cell.items) < 2:
+    if not isinstance(target_k_cell, KSequence) or not target_k_cell.items:
         return []
 
-    target_first = target_k_cell.items[0]
-    target_second = target_k_cell.items[1]
-    if not isinstance(target_first, KApply) or '#setLocalValue' not in target_first.label.name:
-        return []
-    if not isinstance(target_second, KApply) or '#execBlockIdx' not in target_second.label.name:
-        return []
-
-    target_dest = target_first.args[0]
-    target_bb = target_second.args[0]
-
-    # When target uses symbolic variables, match structurally (any dest/bb)
+    from pyk.kast.inner import KApply as _KA
     from pyk.kast.inner import KVariable
 
-    dest_is_symbolic = isinstance(target_dest, KVariable)
-    bb_is_symbolic = isinstance(target_bb, KVariable)
+    target_first = target_k_cell.items[0]
+
+    # Detect target pattern: callee-local return target
+    # #execTerminator(terminator(terminatorKindReturn, ?SPAN))
+    is_return_target = (
+        isinstance(target_first, _KA)
+        and '#execTerminator' in target_first.label.name
+        and len(target_first.args) >= 1
+        and isinstance(target_first.args[0], _KA)
+        and 'terminator' in target_first.args[0].label.name
+        and len(target_first.args[0].args) >= 1
+        and isinstance(target_first.args[0].args[0], _KA)
+        and 'Return' in target_first.args[0].args[0].label.name
+    )
+
+    # Legacy target pattern: post-return state
+    # #setLocalValue(DEST, VAL) ~> #execBlockIdx(BB)
+    is_post_return_target = False
+    target_dest = None
+    target_bb = None
+    dest_is_symbolic = False
+    bb_is_symbolic = False
+    if len(target_k_cell.items) >= 2:
+        target_second = target_k_cell.items[1]
+        if (
+            isinstance(target_first, _KA)
+            and '#setLocalValue' in target_first.label.name
+            and isinstance(target_second, _KA)
+            and '#execBlockIdx' in target_second.label.name
+        ):
+            is_post_return_target = True
+            target_dest = target_first.args[0]
+            target_bb = target_second.args[0]
+            dest_is_symbolic = isinstance(target_dest, KVariable)
+            bb_is_symbolic = isinstance(target_bb, KVariable)
+
+    if not is_return_target and not is_post_return_target:
+        return []
 
     predecessor_ids: dict[int, set[int]] = {node.id: set() for node in proof.kcfg.nodes}
     for edge in proof.kcfg.edges():
@@ -1171,27 +1206,38 @@ def _call_boundary_frontier_node_ids(proof: APRProof, target_k_cell: KInner | No
             continue
         k_cell = node.cterm.cell('K_CELL')
         if not isinstance(k_cell, KSequence) or not k_cell.items:
+            if isinstance(k_cell, _KA) and '#execTerminator' in k_cell.label.name:
+                if _is_return_terminator_k(k_cell):
+                    matching_ids.add(node.id)
             continue
 
         node_first = k_cell.items[0]
 
-        # termReturnSome: #setLocalValue(DEST, VAL) ~> #execBlockIdx(TARGET)
-        if len(k_cell.items) >= 2 and isinstance(node_first, KApply) and '#setLocalValue' in node_first.label.name:
-            node_second = k_cell.items[1]
-            if (
-                isinstance(node_second, KApply)
-                and '#execBlockIdx' in node_second.label.name
-                and (dest_is_symbolic or node_first.args[0] == target_dest)
-                and (bb_is_symbolic or node_second.args[0] == target_bb)
-            ):
-                matching_ids.add(node.id)
-                continue
+        if is_return_target:
+            # Match #execTerminator(terminator(terminatorKindReturn, SPAN))
+            if isinstance(node_first, _KA) and '#execTerminator' in node_first.label.name:
+                if _is_return_terminator_k(node_first):
+                    matching_ids.add(node.id)
+                    continue
 
-        # termReturnNone: #execBlockIdx(TARGET) (no #setLocalValue)
-        if isinstance(node_first, KApply) and '#execBlockIdx' in node_first.label.name:
-            if bb_is_symbolic or node_first.args[0] == target_bb:
-                matching_ids.add(node.id)
-                continue
+        if is_post_return_target:
+            # termReturnSome: #setLocalValue(DEST, VAL) ~> #execBlockIdx(TARGET)
+            if len(k_cell.items) >= 2 and isinstance(node_first, _KA) and '#setLocalValue' in node_first.label.name:
+                node_second = k_cell.items[1]
+                if (
+                    isinstance(node_second, _KA)
+                    and '#execBlockIdx' in node_second.label.name
+                    and (dest_is_symbolic or node_first.args[0] == target_dest)
+                    and (bb_is_symbolic or node_second.args[0] == target_bb)
+                ):
+                    matching_ids.add(node.id)
+                    continue
+
+            # termReturnNone: #execBlockIdx(TARGET) (no #setLocalValue)
+            if isinstance(node_first, _KA) and '#execBlockIdx' in node_first.label.name:
+                if bb_is_symbolic or node_first.args[0] == target_bb:
+                    matching_ids.add(node.id)
+                    continue
 
     if not matching_ids:
         return []
@@ -1210,6 +1256,23 @@ def _call_boundary_frontier_node_ids(proof: APRProof, target_k_cell: KInner | No
         return False
 
     return [node_id for node_id in sorted(matching_ids) if not has_matching_ancestor(node_id)]
+
+
+def _is_return_terminator_k(k: KInner) -> bool:
+    """Check if a KInner is #execTerminator(terminator(terminatorKindReturn, ...))."""
+    from pyk.kast.inner import KApply as _KA
+
+    if not isinstance(k, _KA) or '#execTerminator' not in k.label.name:
+        return False
+    if len(k.args) < 1:
+        return False
+    term = k.args[0]
+    if not isinstance(term, _KA) or 'terminator' not in term.label.name:
+        return False
+    if len(term.args) < 1:
+        return False
+    kind = term.args[0]
+    return isinstance(kind, _KA) and 'Return' in kind.label.name
 
 
 def _backfill_observed_calls_from_kcfg(summary_dir: Path, proof: APRProof, *, interesting_tys: set[int]) -> None:
@@ -1298,36 +1361,36 @@ def _prove_callee_summary(
                 init_cterm = observed_call_cterm
                 _LOGGER.info('CSE: using observed call-site cterm for %s', name)
             else:
-                from .kast import make_cse_call_config
+                from .kast import SymbolicMode, make_call_config
 
-                cse_call = make_cse_call_config(
+                call_cfg = make_call_config(
                     kmir_callee.definition,
                     smir_info=main_smir,
                     start_symbol=name,
+                    mode=SymbolicMode(),
                 )
-                init_cterm = CTerm(cse_call.config, list(cse_call.constraints))
+                init_cterm = CTerm(call_cfg.config, list(call_cfg.constraints))
 
-        # Callee proofs use make_cse_call_config which sets up:
-        #   - someBasicBlockIdx(TARGET_BB) in the call terminator
-        #   - a synthetic caller StackFrame on the stack
-        # When the callee returns, termReturnSome/termReturnNone fires
-        # (not endprogram-return), popping the synthetic frame and producing:
-        #   K_CELL = #setLocalValue(DEST, ...) ~> #execBlockIdx(TARGET)
-        # The target K_CELL must match this post-return state.
+        # Callee proofs use make_call_config (standard symbolic mode) which sets up
+        # noBasicBlockIdx as the target — a top-level entry call with no caller frame.
+        # The callee proof stops AT the return terminator, BEFORE any return rule fires.
+        # This keeps the proof purely callee-local.  The return-to-caller semantics
+        # are handled by custom_step during reuse (extracting return value from locals[0]).
         from pyk.kast.inner import KApply, KSequence, KSort, KVariable
 
         target_k_cell = KSequence(
             [
                 KApply(
-                    '#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation',
-                    (
-                        KVariable('CSE_TARGET_DEST', sort=KSort('Place')),
-                        KVariable('CSE_TARGET_RETVAL', sort=KSort('Evaluation')),
-                    ),
-                ),
-                KApply(
-                    '#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx',
-                    (KVariable('CSE_TARGET_BB', sort=KSort('BasicBlockIdx')),),
+                    '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator',
+                    [
+                        KApply(
+                            'terminator(_,_)_BODY_Terminator_TerminatorKind_Span',
+                            [
+                                KApply('TerminatorKind::Return', []),
+                                KVariable('CSE_RETURN_SPAN', sort=KSort('Span')),
+                            ],
+                        ),
+                    ],
                 ),
             ]
         )

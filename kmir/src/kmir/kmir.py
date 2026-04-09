@@ -856,9 +856,12 @@ class KMIRCSESemantics(KMIRSemantics):
     def _is_reusable_frontier_node(node: KCFG.Node) -> bool:
         """Check if a frontier node is at a clean callee return boundary.
 
-        Only frontier nodes whose K_CELL starts with
-        ``#setLocalValue(local(0), VALUE) ~> #execBlockIdx(BB)``
-        (or ``#EndProgram``) can be safely mapped back to the caller.
+        Accepts:
+        - ``#EndProgram``
+        - ``#setLocalValue(local(0), VALUE) ~> #execBlockIdx(BB)``
+        - ``#execTerminator(terminator(terminatorKindReturn, SPAN))``
+          (callee-local return target: proof stopped before return rule fires)
+
         Frontier nodes captured deep inside nested calls (closures, etc.)
         would replace the entire caller config and lead to execution
         paths that baseline never reaches (e.g. assertion failures
@@ -873,7 +876,54 @@ class KMIRCSESemantics(KMIRSemantics):
             if isinstance(first, KApply) and 'EndProgram' in first.label.name:
                 return True
         # Accept #setLocalValue(local(0), ...) ~> #execBlockIdx(...)
-        return KMIRCSESemantics._extract_boundary_return_value(k_cell) is not None
+        if KMIRCSESemantics._extract_boundary_return_value(k_cell) is not None:
+            return True
+        # Accept #execTerminator(terminator(terminatorKindReturn, SPAN))
+        if KMIRCSESemantics._is_return_terminator_node(k_cell):
+            return True
+        return False
+
+    @staticmethod
+    def _is_return_terminator_node(k_cell: KInner) -> bool:
+        """Check if K_CELL is at #execTerminator(terminator(terminatorKindReturn, ...))."""
+        # May be a bare KApply or KSequence with first item being the terminator
+        term = k_cell
+        if isinstance(k_cell, KSequence) and k_cell.arity >= 1:
+            term = k_cell.items[0]
+        if not isinstance(term, KApply) or '#execTerminator' not in term.label.name:
+            return False
+        if len(term.args) < 1:
+            return False
+        inner = term.args[0]
+        if not isinstance(inner, KApply) or 'terminator' not in inner.label.name:
+            return False
+        if len(inner.args) < 1:
+            return False
+        kind = inner.args[0]
+        return isinstance(kind, KApply) and 'Return' in kind.label.name
+
+    @staticmethod
+    def _extract_return_from_locals(node: KCFG.Node) -> tuple[KInner | None, bool]:
+        """Extract return value from locals[0] of a callee-local return-terminator node.
+
+        Returns (value, has_return_value):
+        - (VAL, True)  if locals[0] is typedValue(VAL, TY, MUT)  — termReturnSome case
+        - (None, False) if locals[0] is newLocal(TY, MUT)         — termReturnNone case
+        - (None, False) if locals cannot be parsed
+        """
+        locals_cell = node.cterm.cell('LOCALS_CELL')
+        items = KMIRCSESemantics._list_items(locals_cell)
+        if not items:
+            return None, False
+
+        first_item = items[0]
+        # typedValue(VAL, TY, MUT) -> has return value
+        if isinstance(first_item, KApply) and 'typedValue' in first_item.label.name:
+            return first_item.args[0], True
+        # newLocal(TY, MUT) -> no return value (unit return)
+        if isinstance(first_item, KApply) and 'newLocal' in first_item.label.name:
+            return None, False
+        return None, False
 
     @staticmethod
     def _frontier_nodes(callee_proof: APRProof) -> list[KCFG.Node]:
@@ -987,10 +1037,30 @@ class KMIRCSESemantics(KMIRSemantics):
                 self._callee_proofs.pop(func_ty, None)
                 return None
         frontier_boundary_returns: list[KInner | None] = []
+        frontier_has_return: list[bool] = []
         use_frontier_boundary_poststates = False
         if summary_mode == 'frontier':
-            frontier_boundary_returns = [self._extract_boundary_return_value(node.cterm.cell('K_CELL')) for node in summary_nodes]
-            use_frontier_boundary_poststates = all(ret_value is not None for ret_value in frontier_boundary_returns)
+            for node in summary_nodes:
+                k_cell = node.cterm.cell('K_CELL')
+                # First try legacy post-return pattern: #setLocalValue(...) ~> #execBlockIdx(...)
+                ret_val = self._extract_boundary_return_value(k_cell)
+                if ret_val is not None:
+                    frontier_boundary_returns.append(ret_val)
+                    frontier_has_return.append(True)
+                    continue
+                # Try callee-local return-terminator pattern: extract from locals[0]
+                if self._is_return_terminator_node(k_cell):
+                    val, has_ret = self._extract_return_from_locals(node)
+                    frontier_boundary_returns.append(val)
+                    frontier_has_return.append(has_ret)
+                    continue
+                frontier_boundary_returns.append(None)
+                frontier_has_return.append(False)
+            # All nodes must be at a return boundary for optimized poststates
+            use_frontier_boundary_poststates = all(
+                ret_value is not None or (not has_ret)
+                for ret_value, has_ret in zip(frontier_boundary_returns, frontier_has_return)
+            ) and any(self._is_return_terminator_node(node.cterm.cell('K_CELL')) or self._extract_boundary_return_value(node.cterm.cell('K_CELL')) is not None for node in summary_nodes)
 
         # Determine caller continuation based on target
         is_entry_call = isinstance(target, KApply) and 'noBasicBlockIdx' in target.label.name
@@ -1044,10 +1114,15 @@ class KMIRCSESemantics(KMIRSemantics):
                     required_var_names.update(self._free_var_names(subst(constraint)))
             elif summary_mode == 'frontier' and use_frontier_boundary_poststates:
                 ret_value = frontier_boundary_returns[i]
-                assert ret_value is not None
-                required_var_names.update(self._free_var_names(subst(ret_value)))
-                retval_subst = subst(summary_node.cterm.cell('RETVAL_CELL'))
-                required_var_names.update(self._free_var_names(retval_subst))
+                has_ret = frontier_has_return[i]
+                if has_ret and ret_value is not None:
+                    required_var_names.update(self._free_var_names(subst(ret_value)))
+                # For callee-local return nodes, RETVAL_CELL may not be set yet
+                try:
+                    retval_subst = subst(summary_node.cterm.cell('RETVAL_CELL'))
+                    required_var_names.update(self._free_var_names(retval_subst))
+                except Exception:
+                    pass
                 for constraint in summary_node.cterm.constraints:
                     required_var_names.update(self._free_var_names(subst(constraint)))
             else:
@@ -1115,27 +1190,40 @@ class KMIRCSESemantics(KMIRSemantics):
                 post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell_subst)
                 candidate = CTerm(post_config, c.constraints + callee_constraints)
             elif summary_mode == 'frontier' and use_frontier_boundary_poststates:
-                retval_cell = summary_node.cterm.cell('RETVAL_CELL')
                 ret_value = frontier_boundary_returns[i]
-                assert ret_value is not None
-
-                ret_value_subst = subst(ret_value)
-                retval_cell_subst = subst(retval_cell)
+                has_ret = frontier_has_return[i]
                 callee_constraints = tuple(subst(cst) for cst in summary_node.cterm.constraints)
 
-                if is_entry_call:
-                    continuation = KSequence([KMIR.Symbols.END_PROGRAM])
+                if has_ret and ret_value is not None:
+                    ret_value_subst = subst(ret_value)
+                    if is_entry_call:
+                        continuation = KSequence([KMIR.Symbols.END_PROGRAM])
+                    else:
+                        assert target_bb is not None
+                        continuation = KSequence(
+                            [
+                                KApply('#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation', (dest, ret_value_subst)),
+                                KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,)),
+                            ]
+                        )
                 else:
-                    assert target_bb is not None
-                    continuation = KSequence(
-                        [
-                            KApply('#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation', (dest, ret_value_subst)),
-                            KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,)),
-                        ]
-                    )
+                    # No return value (unit return / termReturnNone case)
+                    if is_entry_call:
+                        continuation = KSequence([KMIR.Symbols.END_PROGRAM])
+                    else:
+                        assert target_bb is not None
+                        continuation = KSequence(
+                            [KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (target_bb,))]
+                        )
 
                 post_config = set_cell(c.config, 'K_CELL', continuation)
-                post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell_subst)
+                # For callee-local return nodes, update RETVAL_CELL from callee if available
+                try:
+                    retval_cell = summary_node.cterm.cell('RETVAL_CELL')
+                    retval_cell_subst = subst(retval_cell)
+                    post_config = set_cell(post_config, 'RETVAL_CELL', retval_cell_subst)
+                except Exception:
+                    pass
                 candidate = CTerm(post_config, c.constraints + callee_constraints)
             else:
                 candidate = CTerm(subst(summary_node.cterm.config), c.constraints + tuple(subst(cst) for cst in summary_node.cterm.constraints))

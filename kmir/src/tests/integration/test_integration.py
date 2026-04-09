@@ -138,7 +138,14 @@ def test_cse(kmir: KMIR, tmp_path: Path) -> None:
     assert len(summary_files) > 0, 'CSE should have generated at least one summary'
 
     # Phase 2: Reuse summaries in a fresh prove
-    reuse_opts = ProveOpts(rs_file, add_modules=summary_files, proof_dir=tmp_path / 'proofs2')
+    # Filter out non-module JSON files (frontier, skip, observed-call metadata)
+    module_files = [
+        p for p in summary_files
+        if not p.name.endswith('.frontier.json')
+        and not p.name.endswith('.skip.json')
+        and 'observed-calls' not in str(p)
+    ]
+    reuse_opts = ProveOpts(rs_file, add_modules=module_files, proof_dir=tmp_path / 'proofs2')
     proof = KMIR.prove_program(reuse_opts)
     assert proof.passed
 
