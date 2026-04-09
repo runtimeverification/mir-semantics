@@ -24,6 +24,16 @@ Ownership:
 
 ## Work Log
 
+- 2026-04-09: Re-generated SMIR JSON for the exact
+  `transmute_wrapper_u8.rs` repro to inspect the branch-local
+  `Option<NonZeroU8>` layout directly instead of inferring from the failing
+  leaf alone.
+- 2026-04-09: Confirmed from branch-local SMIR JSON that
+  `Option<NonZeroU8>` is a one-byte niche enum with `None` encoded as zero and
+  `Some(NonZeroU8)` reusing the same one-byte payload.
+- 2026-04-09: Tried two minimal `castKindTransmute` matcher variants for that
+  zero-niche enum shape, re-ran the narrowed repro, and then reverted both
+  matcher attempts after the exact same top-level thunk remained unchanged.
 - 2026-04-09: Ported the prerequisite semantic-fix slice from local branch
   `verify-rust-std/challenge-0012` via six ordered cherry-picks.
 - 2026-04-09: Ran narrow collection and execution for the affected `prove-rs`
@@ -186,6 +196,47 @@ Ownership:
     `part1_transmute_option_nonzero_u8`, which matches the concrete
     integer-to-niche transmute shape used by `std::num::NonZero::<u8>::new`.
 
+21. Command:
+    `STABLE_MIR_OPTS=--json /home/zhaoji/.stable-mir-json/release.sh -Zno-codegen /home/zhaoji/projs/mir-semantics-vrs/challenges/0012-nonzero/kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs`
+    Result:
+    regenerated `/tmp/kmir-0012-smir/transmute_wrapper_u8.smir.json`; the
+    branch-local SMIR for `ty(27)` confirms
+    `std::option::Option<std::num::NonZero<u8>>` has one-byte size,
+    discriminants `[0, 1]`, zero-niche tag metadata, and payload variant
+    `Some(NonZeroU8)` reusing the same one-byte scalar layout.
+
+22. Command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs --start-symbol part1_transmute_wrapper_u8 --terminate-on-thunk --max-depth 200 --max-iterations 300 --proof-dir /tmp/kmir-0012-transmute-wrapper-u8-wrapper-after-fix --fail-fast`
+    Result:
+    `APRProof: transmute_wrapper_u8.part1_transmute_wrapper_u8`, status
+    `PASSED`. The transparent-wrapper control remained green after recompiling
+    the semantics cache.
+
+23. Command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs --start-symbol part1_transmute_option_nonzero_u8 --terminate-on-thunk --max-depth 200 --max-iterations 300 --proof-dir /tmp/kmir-0012-transmute-wrapper-u8-option-nonzero-after-fix --fail-fast`
+    Result:
+    `APRProof: transmute_wrapper_u8.part1_transmute_option_nonzero_u8`, status
+    `FAILED`, `failing: 1`.
+
+24. Command:
+    `uv --project kmir run -- kmir show transmute_wrapper_u8.part1_transmute_option_nonzero_u8 --proof-dir /tmp/kmir-0012-transmute-wrapper-u8-option-nonzero-after-fix --leaves`
+    Result:
+    the leaf remained the identical top-level thunk at
+    `#cast ( Integer ( 1 , 8 , false ) , castKindTransmute , ty ( 9 ) , ty ( 27 ) )`.
+
+25. Command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs --start-symbol part1_transmute_option_nonzero_u8 --terminate-on-thunk --max-depth 200 --max-iterations 300 --proof-dir /tmp/kmir-0012-transmute-wrapper-u8-option-nonzero-after-fix-v2 --fail-fast`
+    Result:
+    a second matcher variant still produced
+    `APRProof: transmute_wrapper_u8.part1_transmute_option_nonzero_u8`,
+    status `FAILED`, `failing: 1`.
+
+26. Command:
+    `uv --project kmir run -- kmir show transmute_wrapper_u8.part1_transmute_option_nonzero_u8 --proof-dir /tmp/kmir-0012-transmute-wrapper-u8-option-nonzero-after-fix-v2 --leaves`
+    Result:
+    the frontier was unchanged again: the same `ty(9) -> ty(27)`
+    `castKindTransmute` thunk remained.
+
 ## Commit Inventory
 
 - `a52729d7` — `fix(transmute): accept MaybeUninit reinterpretation`
@@ -212,3 +263,14 @@ Ownership:
   - therefore the generic same-size transmute story is not sufficient on this
     branch; the remaining blocker is specifically integer-to-niche / NonZero
     transmute semantics, not plain transparent-wrapper support
+- New blocker detail from this checkpoint:
+  - branch-local SMIR JSON now confirms the exact zero-niche layout for
+    `Option<NonZeroU8>`
+  - two minimal `rt/data.md` matcher attempts keyed to that layout were
+    recompiled and re-run, but the proof leaf remained the identical top-level
+    `#cast(Integer(1, 8, false), castKindTransmute, ty(9), ty(27))` thunk
+  - inference: the remaining issue is not merely identifying the niche layout
+    from SMIR JSON; either the runtime `lookupTy(TY_TO)` shape seen by the K
+    matcher differs from the JSON-level structure in a way the current rules do
+    not observe, or `castKindTransmute` needs a lower-level byte/layout-driven
+    path instead of more structural enum matching

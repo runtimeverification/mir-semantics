@@ -2,6 +2,10 @@
 
 ## Decision Log
 
+- 2026-04-09 UTC: This narrowed slice ends as a blocker checkpoint, not a
+  semantic fix. Two minimal `castKindTransmute` matcher attempts were
+  recompiled and rerun, but the exact `u8 -> Option<NonZeroU8>` repro stayed on
+  the identical top-level thunk.
 - 2026-04-09 UTC: Chosen as the next active batch candidate because the public solution history is rich and the review feedback already points to the exact weakness to fix.
 - 2026-04-09 UTC: The branch-local planning target is to convert the public NonZero baseline into a stricter semantic proof set, not to invent a new proof strategy.
 - 2026-04-09 UTC: The next delegated slice is narrowed to the `NonZero::new` `castKindTransmute` frontier, with the untracked transparent-wrapper probe as the smallest evidence-bearing reproduction.
@@ -11,6 +15,17 @@
 
 ## Evidence Collected
 
+- Branch-local SMIR JSON for `transmute_wrapper_u8.rs` confirms that
+  `Option<NonZeroU8>` is a one-byte niche enum: zero encodes `None`, and
+  `Some(NonZeroU8)` reuses the same one-byte scalar payload with nonzero valid
+  range.
+- Recompiling after two minimal `rt/data.md` matcher attempts did not change
+  the exact proof leaf: `part1_transmute_option_nonzero_u8` still terminates at
+  `#cast ( Integer ( 1 , 8 , false ) , castKindTransmute , ty ( 9 ) , ty ( 27 ) )`.
+- This strengthens the blocker: the remaining issue is not just recognizing the
+  niche layout at the JSON level. Either the runtime type shape visible to
+  `lookupTy(TY_TO)` differs from the SMIR structure in a way the current matcher
+  does not observe, or this cast needs a lower-level byte/layout-driven path.
 - Upstream challenge page confirms the goal, the Part 1 correctness requirements, the full Part 2 API list, and the UB obligations.
 - PR `#565` review feedback says the prior solution is "a solid first submission" but still too thin because most Part 2 harnesses only prove non-UB.
 - PR `#544` review feedback points out that `isqrt` coverage is incomplete unless wider unsigned types are added or a bound/rationale is documented.
@@ -154,3 +169,15 @@
     wrapper control, so it is not the next question
   - Part 1 remains blocked on the precise `castKindTransmute` niche-cast
     semantics for `NonZero::new`
+
+## Final Checkpoint For This Slice
+
+- The control still passes:
+  `u8 -> #[repr(transparent)] WrapU8`.
+- The exact target still fails unchanged:
+  `u8 -> Option<NonZeroU8>` stays on the same top-level `castKindTransmute`
+  thunk after recompilation.
+- Finish condition for this slice:
+  - experimental runtime edit reverted
+  - docs updated with the precise blocker
+  - no widening to `from_mut` or Part 2
