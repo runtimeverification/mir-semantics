@@ -6,7 +6,7 @@
 
 ## Score
 
-`2.7 / 3`
+`2.8 / 3`
 
 ## Satisfied Criteria
 
@@ -19,11 +19,12 @@
   `to_int_unchecked-fail` harness.
 - Reproducible commands and their outcomes are recorded in `generator.md`
   and `workpad.md`.
-- Four direct proof slices now complete end-to-end on the branch:
-  `unchecked_add_u8`, `unchecked_neg_i8`, `wrapping_shl_u8`, and
-  `unchecked_sub_u8` all passed with `ProofStatus.PASSED`.
+- Five direct proof slices now complete end-to-end on the branch:
+  `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
+  `wrapping_shl_u8`, and `wrapping_shr_u8` all passed with
+  `ProofStatus.PASSED`.
 - The branch now has branch-local proof evidence across three Part 1
-  arithmetic slices and one Part 2 safe-API slice.
+  arithmetic slices and two Part 2 safe-API slices.
 - The float path is classified with direct branch-local evidence: the
   `to_int_unchecked-fail.*.expected` files show stuck `fabsf32` and `fabsf64`
   intrinsics for the `f32` and `f64` cases.
@@ -33,13 +34,15 @@
 - The published Part 1 matrix is still incomplete: `unchecked_mul`,
   `unchecked_shl`, `unchecked_shr`, and the remaining integer types are not
   yet proven on this branch.
-- Part 2 remains only partially covered because `wrapping_shr`,
-  `widening_mul`, and `carrying_mul` are not yet completed end-to-end.
+- Part 2 remains only partially covered because `widening_mul` and
+  `carrying_mul` are not yet completed end-to-end, and the branch still has
+  most integer-type combinations unproven for both wrapping shifts.
 - Part 3 remains unproven for the challenge as a whole; the branch-local
   blocker still affects `to_int_unchecked` for at least `f32` and `f64`, and
   the remaining float cases are still not proven.
 - No terminal verdict stronger than `IN PROGRESS` is justified while that
-  breadth gap remains open.
+  breadth gap remains open, because the remaining integer/safe-API surface is
+  still broad rather than narrowly external.
 
 ## Blocking Issues
 
@@ -52,12 +55,13 @@
 
 ## Evidence
 
-- The latest proof-pass commit is `2cf226c5` (`docs(verify-rust-std): record
-  unchecked_sub_u8 proof pass`).
+- The latest proof-pass commit is `06f9b66c` (`docs(verify-rust-std): record
+  wrapping_shr_u8 proof pass`).
 - `generator.md` records the completed proof runs for
-  `unchecked_add_u8`, `unchecked_neg_i8`, `wrapping_shl_u8`, and
-  `unchecked_sub_u8`, including the exact `kmir prove-rs` commands.
-- `workpad.md` records the same four passing slices and keeps the float blocker
+  `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
+  `wrapping_shl_u8`, and `wrapping_shr_u8`, including the exact
+  `kmir prove-rs` commands.
+- `workpad.md` records the same five passing slices and keeps the float blocker
   separate from the integer proof work.
 - `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/README.md`
   lists the published non-float APIs and the float harness set.
@@ -71,5 +75,5 @@
 
 - Run another narrow integer or safe-API proof slice to completion on
   `verify-rust-std/reexec-0011-floats-ints` to broaden the proof evidence
-  beyond the current four passing slices, then reassess whether the remaining
+  beyond the current five passing slices, then reassess whether the remaining
   work is only float-blocked.

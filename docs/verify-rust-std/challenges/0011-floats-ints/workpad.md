@@ -6,7 +6,7 @@
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
   exist, five direct proof slices pass on the branch, and the latest
-  evaluator refresh still leaves the challenge `IN PROGRESS` at `2.7 / 3`
+  evaluator refresh still leaves the challenge `IN PROGRESS` at `2.8 / 3`
   pending a broader reassessment. This turn added the planner-selected
   `wrapping_shr_u8` pass, bringing the branch to five direct passing slices.
 
@@ -23,7 +23,7 @@
   `wrapping_shl_u8`, and now `wrapping_shr_u8`), confirming that both narrow
   Part 2 wrapping-shift siblings execute cleanly on this branch with the
   already-ported support.
-- The refreshed evaluator result stays at `IN PROGRESS` with score `2.7 / 3`,
+- The refreshed evaluator result stays at `IN PROGRESS` with score `2.8 / 3`,
   so the branch still needs more non-float breadth before any terminal state
   can be justified.
 
@@ -137,7 +137,7 @@
   improves the Part 1 evidence, but the strongest justified verdict remains
   `IN PROGRESS` rather than `CONDITIONALLY READY`.
 - 2026-04-09: After the `unchecked_sub_u8` pass, the evaluator score is now
-  `2.7 / 3`; the breadth gap is still the limiting factor, and the float
+  `2.8 / 3`; the breadth gap is still the limiting factor, and the float
   blocker remains the precise `fabsf32` / `fabsf64` frontier in
   `to_int_unchecked`.
 - 2026-04-09: After the `wrapping_shr_u8` pass, the strongest updated evaluator
@@ -145,3 +145,7 @@
   `IN PROGRESS`; the remaining technical blocker is still the precise
   `fabsf32` / `fabsf64` float frontier in `to_int_unchecked`, not a new Part 2
   regression.
+- 2026-04-09: Re-evaluation after `wrapping_shr_u8` keeps the verdict at
+  `IN PROGRESS`; the branch is stronger, but the remaining integer and safe-API
+  matrix is still broad enough that `CONDITIONALLY READY` would overstate the
+  present evidence.
