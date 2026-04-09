@@ -79,11 +79,49 @@
 ### Remaining Gap After This Slice
 
 - Add dedicated challenge-local artifacts for:
-  - `from_bytes_with_nul_unchecked` contract
   - `strlen` contract
   - exact-byte `CloneToUninit`
 - Refine current artifacts/lemmas/contracts until targeted proofs can close or
   reach evaluator-acceptable constrained states with clear blockers.
+
+## Generator NEXT SLICE 2: Add `from_bytes_with_nul_unchecked` Artifact (2026-04-09)
+
+### Implemented Artifact
+
+- Added
+  `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_bytes_with_nul_unchecked.rs`
+  with:
+  - `test_from_bytes_with_nul_unchecked_ok` (unsafe
+    `CStr::from_bytes_with_nul_unchecked` target)
+
+### Validation Commands and Outcomes
+
+1. Command:
+   `timeout 240s uv --project kmir run -- kmir prove-rs /home/zhaoji/projs/mir-semantics-vrs/challenges/0013-cstr/kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_bytes_with_nul_unchecked.rs --start-symbol test_from_bytes_with_nul_unchecked_ok --terminate-on-thunk --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-from-bytes --fail-fast`
+   Outcome:
+   `APRProof: from_bytes_with_nul_unchecked.test_from_bytes_with_nul_unchecked_ok`,
+   `ProofStatus.FAILED`, `nodes: 4`, `failing: 1`, `terminal: 2` (exit code 1).
+
+2. Command:
+   `uv --project kmir run -- kmir show from_bytes_with_nul_unchecked.test_from_bytes_with_nul_unchecked_ok --proof-dir /tmp/kmir-0013-from-bytes --leaves`
+   Outcome:
+   failing leaf reduced to a thunk frontier at
+   `std::ffi::CStr::from_bytes_with_nul_unchecked` around
+   `#mkPtr ( toAlloc ( allocId ( 3 ) ) , ... )`.
+
+### Scope Notes
+
+- No challenge-external support file changes were required for this slice.
+- This slice adds one required unsafe-entry artifact and records the first
+  branch-local frontier for it.
+
+### Remaining Gap After This Slice
+
+- `strlen` artifact still missing.
+- exact-byte `CloneToUninit` artifact still missing.
+- current `from_ptr`, `Index<RangeFrom>`, and
+  `from_bytes_with_nul_unchecked` targets all have reproducible but unresolved
+  proof frontiers.
 
 ## Generator Retry Execution Log
 

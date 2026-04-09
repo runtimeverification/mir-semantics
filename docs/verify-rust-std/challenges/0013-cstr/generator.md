@@ -35,6 +35,9 @@ Ownership:
   `Index<RangeFrom<usize>>` target.
 - 2026-04-09: Ran narrow scoped `prove-rs` validation on the new challenge-local
   start symbols and recorded concrete failing/stuck proof states.
+- 2026-04-09: Added a second required Challenge 0013 artifact,
+  `from_bytes_with_nul_unchecked.rs`, and ran narrow scoped validation for
+  `test_from_bytes_with_nul_unchecked_ok`.
 
 ## Files Touched
 
@@ -43,6 +46,7 @@ Ownership:
 - `kmir/src/kmir/linker.py`
 - `kmir/src/kmir/smir.py`
 - `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_ptr.rs`
+- `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_bytes_with_nul_unchecked.rs`
 - `docs/verify-rust-std/challenges/0013-cstr/generator.md`
 - `docs/verify-rust-std/challenges/0013-cstr/workpad.md`
 
@@ -80,6 +84,20 @@ Ownership:
    `APRProof: from_ptr.test_index_range_from_exact_bytes`, status `FAILED`,
    `nodes: 3`, `failing: 1`, `stuck: 1`, `terminal: 1` (exit code 1).
 
+5. Command:
+   `timeout 240s uv --project kmir run -- kmir prove-rs /home/zhaoji/projs/mir-semantics-vrs/challenges/0013-cstr/kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_bytes_with_nul_unchecked.rs --start-symbol test_from_bytes_with_nul_unchecked_ok --terminate-on-thunk --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-from-bytes --fail-fast`
+   Result:
+   command executed and reached APR summary:
+   `APRProof: from_bytes_with_nul_unchecked.test_from_bytes_with_nul_unchecked_ok`,
+   status `FAILED`, `nodes: 4`, `failing: 1`, `terminal: 2` (exit code 1).
+
+6. Command:
+   `uv --project kmir run -- kmir show from_bytes_with_nul_unchecked.test_from_bytes_with_nul_unchecked_ok --proof-dir /tmp/kmir-0013-from-bytes --leaves`
+   Result:
+   failing leaf reduced to a thunk frontier at
+   `std::ffi::CStr::from_bytes_with_nul_unchecked` around
+   `#mkPtr ( toAlloc ( allocId ( 3 ) ) , ... )`.
+
 ## Commit Inventory
 
 - `80244466` — `feat(linker): port cross-crate body resolution for cstr`
@@ -87,10 +105,10 @@ Ownership:
 ## Blockers
 
 - This retry only ports prerequisite linker/SMIR infrastructure.
-- First challenge-local artifact file now exists, but core Challenge 0013
+- First challenge-local artifact files now exist (`from_ptr.rs` and
+  `from_bytes_with_nul_unchecked.rs`), but core Challenge 0013
   coverage is still incomplete:
-  - missing dedicated `from_bytes_with_nul_unchecked` and `strlen` contract
-    artifacts
+  - missing dedicated `strlen` contract artifact
   - missing exact-byte `CloneToUninit` artifact
   - missing broader CStr method/invariant artifact set expected by
     verify-rust-std reviewers
