@@ -41,6 +41,11 @@ submission-ready.
   explicitly blocked.
 - If a NonZero harness only proves "nonzero-ness" or absence of UB, that is not
   enough unless the published API has no stronger semantic relation to assert.
+- If a transparent-wrapper same-size transmute control passes but the exact
+  `Option<NonZero<T>>` reproduction still fails on `castKindTransmute`, treat
+  the remaining issue as niche-cast semantics rather than generic transmute
+  support and keep the challenge `IN PROGRESS` until that exact shape closes or
+  is explicitly blocked.
 - For `isqrt`, any omission of wider unsigned types must be explicitly bounded
   or justified with a documented performance rationale.
 - For `checked_pow` / `saturating_pow` on 128-bit types, bounded exponents are

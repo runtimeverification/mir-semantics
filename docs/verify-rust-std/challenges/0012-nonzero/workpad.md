@@ -6,6 +6,7 @@
 - 2026-04-09 UTC: The branch-local planning target is to convert the public NonZero baseline into a stricter semantic proof set, not to invent a new proof strategy.
 - 2026-04-09 UTC: The next delegated slice is narrowed to the `NonZero::new` `castKindTransmute` frontier, with the untracked transparent-wrapper probe as the smallest evidence-bearing reproduction.
 - 2026-04-09 UTC: The transparent-wrapper probe was refined into a two-point repro: a passing `u8 -> #[repr(transparent)] WrapU8` control and a failing exact `NonZero::new`-shape `u8 -> Option<NonZeroU8>` transmute.
+- 2026-04-09 UTC: Evaluator verdict remains `IN PROGRESS`; the wrapper control passes, but the exact `u8 -> Option<NonZeroU8>` transmute still fails on `castKindTransmute`, so this is still a semantic frontier rather than submission-ready evidence.
 
 ## Evidence Collected
 
