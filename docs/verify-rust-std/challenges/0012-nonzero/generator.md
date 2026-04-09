@@ -40,6 +40,9 @@ Ownership:
   transmute report by reproducing failures on concrete-input start symbols and
   isolating two cast-level obstructions (`castKindTransmute` and
   `castKindPtrToPtr`) inside `NonZero` APIs.
+- 2026-04-09: Turned the untracked transparent-wrapper probe into a challenge-
+  local comparison repro and reran the transmute slice against the exact
+  `NonZero::new` shape (`u8 -> Option<NonZeroU8>`).
 
 ## Files Touched
 
@@ -57,6 +60,7 @@ Ownership:
 - `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/new_unchecked.rs`
 - `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/from_mut.rs`
 - `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/count_ones.rs`
+- `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs`
 - `docs/verify-rust-std/challenges/0012-nonzero/generator.md`
 - `docs/verify-rust-std/challenges/0012-nonzero/workpad.md`
 
@@ -156,6 +160,32 @@ Ownership:
     `#cast ( PtrLocal ... , castKindPtrToPtr , ... )` in
     `std::num::NonZero::<u8>::from_mut`.
 
+17. Command:
+    `/home/zhaoji/.stable-mir-json/release.sh -Zno-codegen kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs`
+    Result:
+    compile succeeded for the narrowed transmute repro.
+
+18. Command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs --start-symbol part1_transmute_wrapper_u8 --terminate-on-thunk --max-depth 200 --max-iterations 300 --proof-dir /tmp/kmir-0012-transmute-wrapper-u8-wrapper-final --fail-fast`
+    Result:
+    `APRProof: transmute_wrapper_u8.part1_transmute_wrapper_u8`, status
+    `PASSED`. A same-size `u8 -> #[repr(transparent)] WrapU8` transmute closes
+    under current semantics.
+
+19. Command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs --start-symbol part1_transmute_option_nonzero_u8 --terminate-on-thunk --max-depth 200 --max-iterations 300 --proof-dir /tmp/kmir-0012-transmute-wrapper-u8-option-nonzero --fail-fast`
+    Result:
+    `APRProof: transmute_wrapper_u8.part1_transmute_option_nonzero_u8`, status
+    `FAILED`, `failing: 1`.
+
+20. Command:
+    `uv --project kmir run -- kmir show transmute_wrapper_u8.part1_transmute_option_nonzero_u8 --proof-dir /tmp/kmir-0012-transmute-wrapper-u8-option-nonzero --leaves`
+    Result:
+    leaf frontier is a thunk at
+    `#cast ( Integer ( 1 , 8 , false ) , castKindTransmute , ... )` in
+    `part1_transmute_option_nonzero_u8`, which matches the concrete
+    integer-to-niche transmute shape used by `std::num::NonZero::<u8>::new`.
+
 ## Commit Inventory
 
 - `a52729d7` — `fix(transmute): accept MaybeUninit reinterpretation`
@@ -164,6 +194,7 @@ Ownership:
 - `3c4138db` — `fix(intrinsics): prioritize assert_inhabited failure`
 - `2d5916d6` — `fix(pointer-casts): support array-to-wrapper projections`
 - `01416c6d` — `fix(pointer-casts): preserve wrapper projections for iterators`
+- `d87eb4dc` — `test(verify-rust-std): add 0012 nonzero transmute probe`
 
 ## Blockers
 
@@ -174,3 +205,10 @@ Ownership:
   - Wrapper pointer cast in `NonZero::from_mut`
 - Current evidence shows these frontiers persist even on concrete-input `main`
   starts, so this is not only a symbolic-branching artifact.
+- This slice sharpened the `NonZero::new` blocker further:
+  - same-size `u8 -> #[repr(transparent)] WrapU8` transmute already passes
+  - the exact `NonZero::new` shape (`u8 -> Option<NonZeroU8>`) still fails on
+    `castKindTransmute`
+  - therefore the generic same-size transmute story is not sufficient on this
+    branch; the remaining blocker is specifically integer-to-niche / NonZero
+    transmute semantics, not plain transparent-wrapper support

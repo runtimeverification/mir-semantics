@@ -5,6 +5,7 @@
 - 2026-04-09 UTC: Chosen as the next active batch candidate because the public solution history is rich and the review feedback already points to the exact weakness to fix.
 - 2026-04-09 UTC: The branch-local planning target is to convert the public NonZero baseline into a stricter semantic proof set, not to invent a new proof strategy.
 - 2026-04-09 UTC: The next delegated slice is narrowed to the `NonZero::new` `castKindTransmute` frontier, with the untracked transparent-wrapper probe as the smallest evidence-bearing reproduction.
+- 2026-04-09 UTC: The transparent-wrapper probe was refined into a two-point repro: a passing `u8 -> #[repr(transparent)] WrapU8` control and a failing exact `NonZero::new`-shape `u8 -> Option<NonZeroU8>` transmute.
 
 ## Evidence Collected
 
@@ -13,6 +14,10 @@
 - PR `#544` review feedback points out that `isqrt` coverage is incomplete unless wider unsigned types are added or a bound/rationale is documented.
 - The current branch frontier is concrete, not abstract: `NonZero::new` still fails on `castKindTransmute`, and `NonZero::from_mut` still fails separately on `castKindPtrToPtr`.
 - The untracked probe `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs` shows a minimal `#[repr(transparent)]` wrapper transmute from `u8` to a newtype, which is the closest local shape to the `NonZero::new` frontier and therefore the best next step for isolating the cast semantics.
+- Rust's checked-in `core::num::nonzero.rs` source for the active toolchain confirms that `NonZero::new` is implemented as `unsafe { intrinsics::transmute_unchecked(n) }` returning `Option<Self>`, so the exact reduced target shape is `u8 -> Option<NonZeroU8>`, not just `u8 -> NonZeroU8`.
+- Branch-local proof evidence now distinguishes two cases on concrete input `1u8`:
+  - `u8 -> #[repr(transparent)] WrapU8` passes.
+  - `u8 -> Option<NonZeroU8>` fails at `castKindTransmute`.
 
 ## Reuse Candidates
 
@@ -130,3 +135,20 @@
   transparent-wrapper probe shape first; that is the highest-leverage slice
   because it is the closest local reproduction of the failing transmute path
   and it keeps the separate pointer-cast frontier out of scope for now.
+
+## Transparent-Wrapper Probe Outcome
+
+- Compile check for `transmute_wrapper_u8.rs` succeeded.
+- `part1_transmute_wrapper_u8` passes under `kmir prove-rs`, so the current
+  semantics already support a plain same-size transparent-wrapper transmute.
+- `part1_transmute_option_nonzero_u8` fails under `kmir prove-rs` on a concrete
+  `#cast ( Integer ( 1 , 8 , false ) , castKindTransmute , ... )` leaf.
+- This means the frontier moved materially:
+  - the blocker is no longer "same-size transmute support in general"
+  - the blocker is now the exact integer-to-`Option<NonZero<T>>` niche cast
+    shape used by `NonZero::new`
+- Decision for Part 1 after this slice:
+  - the challenge-page same-size contract story is not sufficient by itself on
+    this branch
+  - Part 1 remains blocked on a precise semantic frontier in
+    `castKindTransmute` for `NonZero::new`
