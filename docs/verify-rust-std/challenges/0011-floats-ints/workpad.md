@@ -5,10 +5,10 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, four direct proof slices pass on the branch, and the latest evaluator
-  refresh still leaves the challenge `IN PROGRESS` at `2.7 / 3` pending a
-  broader reassessment. The next cheapest high-value slice is
-  `wrapping_shr_u8`.
+  exist, five direct proof slices pass on the branch, and the latest
+  evaluator refresh still leaves the challenge `IN PROGRESS` at `2.7 / 3`
+  pending a broader reassessment. This turn added the planner-selected
+  `wrapping_shr_u8` pass, bringing the branch to five direct passing slices.
 
 ## Evidence gathered
 
@@ -18,11 +18,11 @@
 - PR #985’s file list confirms that `wrapping_shl` relied on the already-ported
   shift-mask simplification lemmas; this branch-local re-execution therefore
   tests whether that support is sufficient here without importing new logic.
-- The branch now has four passing direct proof slices
-  (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`, and
-  `wrapping_shl_u8`), so the cheapest remaining high-value slice is
-  `wrapping_shr_u8`; it is the direct safe-API sibling of `wrapping_shl_u8`
-  and should reuse the same shift support without new backend work.
+- The branch now has five passing direct proof slices
+  (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
+  `wrapping_shl_u8`, and now `wrapping_shr_u8`), confirming that both narrow
+  Part 2 wrapping-shift siblings execute cleanly on this branch with the
+  already-ported support.
 - The refreshed evaluator result stays at `IN PROGRESS` with score `2.7 / 3`,
   so the branch still needs more non-float breadth before any terminal state
   can be justified.
@@ -30,7 +30,10 @@
 ## Planning decisions
 
 - Treat the integer portion and float portion as separate evidence-bearing slices.
-- Make `wrapping_shr_u8` the next delegated slice because it is the cheapest remaining safe-API proof, it extends the proof set beyond add/neg/sub/shift coverage without new backend work, and it gives the evaluator a cleaner read on the remaining non-float matrix.
+- `wrapping_shr_u8` was the correct next delegated slice: it passed without
+  new support changes, broadened Part 2 safe-API evidence beyond the existing
+  `wrapping_shl_u8` result, and left the remaining gap as breadth rather than
+  a new slice-specific blocker.
 - Do not escalate to backend changes yet; first confirm whether the current branch can independently add one more passing safe-API proof before reclassifying the remaining float gap.
 
 ## Reusable rubric patterns for evaluator
@@ -66,6 +69,12 @@
 - 2026-04-09: Direct proof follow-up run completed with
   `ProofStatus.PASSED` for `unchecked_sub_u8` using:
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_sub.rs --start-symbol unchecked_sub_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-sub-u8 --reload --fail-fast --max-workers 1`.
+- 2026-04-09: Scoped discovery check for the planner-selected Part 2 follow-up
+  collected exactly `test_verify_rust_std[wrapping_shr]` using:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "wrapping_shr and not fail" -q`.
+- 2026-04-09: Direct proof follow-up run completed with
+  `ProofStatus.PASSED` for `wrapping_shr_u8` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/wrapping_shr.rs --start-symbol wrapping_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-wrapping-shr-u8 --reload --fail-fast --max-workers 1`.
 
 ## Generator retry execution log
 
@@ -92,6 +101,13 @@
 - Re-executed the delegated Part 1 slice directly with `kmir prove-rs`;
   `unchecked_sub_u8` passed without any new support changes, broadening the
   integer-side evidence while keeping the float blocker isolated.
+- Confirmed the next safe-API sibling is wired through the same runner:
+  `test_verify_rust_std[wrapping_shr]` is selected by
+  `-k "wrapping_shr and not fail"`.
+- Re-executed the planner-selected Part 2 follow-up directly with
+  `kmir prove-rs`; `wrapping_shr_u8` passed without any new support changes,
+  broadening the safe-API evidence while preserving the existing float blocker
+  boundary.
 
 ## Evidence for next evaluator step
 
@@ -101,17 +117,18 @@
 - Validation now includes branch-local passing proof evidence in two published
   requirement families:
   `unchecked_add_u8`, `unchecked_neg_i8`, and `unchecked_sub_u8` pass in
-  Part 1, and `wrapping_shl_u8` passes in Part 2.
+  Part 1, and `wrapping_shl_u8` plus `wrapping_shr_u8` pass in Part 2.
 - Float blocker signal remains present in ported evidence:
   `to_int_unchecked-fail` expected outputs include stuck float intrinsic hooks.
 
 ## Next handoff
 
-- Generator should now run the exact `wrapping_shr_u8` proof command:
-  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/wrapping_shr.rs --start-symbol wrapping_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-wrapping-shr-u8 --reload --fail-fast --max-workers 1`.
-- Remaining branch work should stay scoped to this planner-selected follow-up
-  slice or to documenting the already-recorded float blocker; this turn should
-  not be widened beyond the planned `wrapping_shr_u8` evidence.
+- The planner-selected `wrapping_shr_u8` slice is now complete with a passing
+  branch-local proof and matching collect-only evidence.
+- Remaining branch work should stay focused on evaluator reassessment of the
+  broadened non-float evidence or on documenting the already-recorded float
+  blocker; this generator turn should not be widened beyond the completed
+  `wrapping_shr_u8` evidence.
 
 ## Evaluator Note
 
@@ -123,3 +140,8 @@
   `2.7 / 3`; the breadth gap is still the limiting factor, and the float
   blocker remains the precise `fabsf32` / `fabsf64` frontier in
   `to_int_unchecked`.
+- 2026-04-09: After the `wrapping_shr_u8` pass, the strongest updated evaluator
+  question is whether the non-float evidence is now broad enough to move past
+  `IN PROGRESS`; the remaining technical blocker is still the precise
+  `fabsf32` / `fabsf64` float frontier in `to_int_unchecked`, not a new Part 2
+  regression.
