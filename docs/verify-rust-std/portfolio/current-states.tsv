@@ -9,9 +9,9 @@ challenge_id	slug	state	batch_slot	note
 0008	smallsort	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0009	duration	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0010	string	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
-0011	floats-ints	IN PROGRESS	active	four proof slices now pass (unchecked_add_u8 unchecked_neg_i8 unchecked_sub_u8 wrapping_shl_u8); float path still blocked by fabsf32/fabsf64 frontier; next action is another narrow integer slice or stronger integer-readiness boundary
-0012	nonzero	IN PROGRESS	active	passing control shows plain transparent-wrapper transmute works but exact u8->Option<NonZeroU8> still stops at castKindTransmute; next action is layout-driven or lookupTy(TY_TO)-driven niche-cast investigation
-0013	cstr	IN PROGRESS	active	exact-byte CloneToUninit harness exists and edition-2024 standalone compile landed; remaining shared blocker is linked-SMIR body supply for core::ffi::CStr::from_bytes_with_nul; next action is focused donor-link or precise blocker checkpoint
+0011	floats-ints	IN PROGRESS	active	seven proof slices now pass including wrapping_shr_u8 widening_mul_u8 and carrying_mul_u8; float path still blocked by fabsf32/fabsf64 frontier; next action is unchecked_mul_u8
+0012	nonzero	BLOCKED	terminal	exact blocker: u8->Option<NonZeroU8> still stops at top-level castKindTransmute thunk after SMIR-confirmed zero-niche inspection and two failed matcher attempts; next action is lookupTy(TY_TO) or lower-level byte/layout transmute work
+0013	cstr	BLOCKED	terminal	exact blocker: donor-linked SMIR name qualification breaks start_symbol lookup in make_call_config before donated CStr::from_bytes_with_nul body can execute; next action is root-name-preserving donor-link plumbing
 0014	convert-num	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0015	intrinsics-simd	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0016	iter	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
@@ -24,7 +24,7 @@ challenge_id	slug	state	batch_slot	note
 0023	vec-pt1	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0024	vec-pt2	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0025	vecdeque	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
-0026	rc	BOOTSTRAP	next-batch	candidate next batch with strong public solution coverage
-0027	arc	BOOTSTRAP	next-batch	candidate next batch with shared reference-counting patterns
-0028	flt2dec	BOOTSTRAP	next-batch	candidate next batch reusing float findings from 0011
+0026	rc	IN PROGRESS	active	contract-map.md now covers all 12 public unsafe Rc APIs and first tranche is rooted at Rc::from_raw_in; next action is proof work on raw-pointer/refcount spine
+0027	arc	BOOTSTRAP	next-batch	next reuse target after 0026 because Arc shares the same refcounting pattern family
+0028	flt2dec	IN PROGRESS	active	initial probes cleared SliceIndex::index and from_raw_parts but still die in helper equality scaffolding; next action is remove assert-style equality and rerun
 0029	boxed	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch

@@ -15,60 +15,76 @@ The portfolio is complete only when every published challenge is in one of:
 
 ## Current Batch
 
-- `0011-floats-ints` -> `IN PROGRESS` (`2.7 / 3`)
-- `0012-nonzero` -> `IN PROGRESS` (`2.0 / 3`)
-- `0013-cstr` -> `IN PROGRESS` (`2.0 / 3`)
+- `0011-floats-ints` -> `IN PROGRESS` (`2.9 / 3`)
+- `0028-flt2dec` -> `IN PROGRESS` (`1.5 / 3`)
+- `0026-rc` -> `IN PROGRESS` (`1.5 / 3`)
 
 ## Current Active State
 
-- `0011-floats-ints`: branch-local proof passes now cover
-  `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`, and
-  `wrapping_shl_u8`; float `to_int_unchecked` remains precisely blocked by the
-  stuck `fabsf32` / `fabsf64` frontier; next action is another narrow integer
-  slice or a stronger integer-readiness boundary against the float blocker.
-- `0012-nonzero`: prerequisite semantic baseline is ported and validated;
-  the exact `u8 -> Option<NonZeroU8>` reproduction now isolates the
-  `NonZero::new` blocker beyond plain transparent-wrapper support; next action
-  is a lower-level byte/layout-driven transmute investigation or a runtime
-  `lookupTy(TY_TO)` shape check for the niche cast.
-- `0013-cstr`: prerequisite cross-crate support is ported; the exact-byte
-  `CloneToUninit` harness exists and standalone prove targets now compile as
-  edition 2024; the remaining shared frontier is linked-SMIR body supply for
-  `core::ffi::CStr::from_bytes_with_nul`; next action is a minimal donor-link
-  path or a precise blocker checkpoint for that constructor body gap.
+- `0011-floats-ints`: seven branch-local proof slices now pass
+  (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
+  `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
+  `carrying_mul_u8`); float `to_int_unchecked` remains blocked by the precise
+  `fabsf32` / `fabsf64` frontier; next action is `unchecked_mul_u8`.
+- `0028-flt2dec`: two successive probe rewrites removed the initial
+  `SliceIndex::index` and `from_raw_parts` frontiers, but the probe still dies
+  in challenge-local scaffolding (`array::equality`); next action is to remove
+  the helper equality path and rerun until a real `flt2dec` boundary or backend
+  limit appears.
+- `0026-rc`: the first contract/entrypoint audit is committed and now maps all
+  12 public `unsafe` `Rc` APIs, with a first tranche rooted at
+  `Rc::from_raw_in`; next action is to start proof work on that raw-pointer /
+  refcount spine.
+
+## Newly Terminal This Run
+
+- `0012-nonzero` -> `BLOCKED`
+  Exact blocker: `u8 -> Option<NonZeroU8>` still stops at the same top-level
+  `castKindTransmute` thunk even after SMIR-confirmed zero-niche layout
+  inspection and two reverted matcher attempts.
+- `0013-cstr` -> `BLOCKED`
+  Exact blocker: donor-linked SMIR item qualification rewrites root item names
+  and breaks `start_symbol` lookup in `make_call_config`, so the donated
+  `core::ffi::CStr::from_bytes_with_nul` body cannot execute.
 
 ## Exact Restart Point If The Run Stops Now
 
-- Resume the current batch: `0011-floats-ints`, `0012-nonzero`,
-  `0013-cstr`.
+- Resume the current batch: `0011-floats-ints`, `0028-flt2dec`, `0026-rc`.
 - Restart priority inside the current batch:
-  1. `0012-nonzero`: continue from the checkpointed niche-transmute blocker
-     with a layout-driven or `lookupTy(TY_TO)`-driven investigation on the
-     exact `u8 -> Option<NonZeroU8>` cast.
-  2. `0013-cstr`: continue from the edition-2024 checkpoint and either land a
-     focused donor-link path for `core::ffi::CStr::from_bytes_with_nul` or
-     record that constructor-body gap as the exact blocker.
-  3. `0011-floats-ints`: run the next cheapest narrow integer slice after
-     `unchecked_sub_u8` to keep widening the integer matrix while the float
-     blocker stays unchanged.
-- Do not reseat the batch until these three leave `IN PROGRESS`.
+  1. `0028-flt2dec`: remove the helper equality path from the narrowed probe
+     and rerun until the failure is inside `flt2dec` or a real backend limit.
+  2. `0026-rc`: start the first proof tranche rooted at `Rc::from_raw_in`,
+     then extend to the paired refcount transitions.
+  3. `0011-floats-ints`: run `unchecked_mul_u8`, then reassess whether the
+     remaining non-float matrix is finally narrow enough for a stronger verdict.
+- `0012` and `0013` are terminal and should not be returned to the active batch
+  unless the user explicitly asks to reopen blocked challenges.
 
 ## Batch Selection Rationale
 
-- `0011-floats-ints`: direct `mir-semantics` reference PR exists in [#985](https://github.com/runtimeverification/mir-semantics/pull/985); likely to yield either a precise float-capability blocker or a near-terminal readiness assessment quickly.
-- `0012-nonzero`: strong public solution set exists in verify-rust-std and a local historical branch exists; high probability of moving to `READY FOR SUBMISSION`.
-- `0013-cstr`: strong public solution set exists and the historical local branch includes linker/body-resolution work that may accelerate later challenges.
+- `0011-floats-ints`: already near the top of the scale (`2.9 / 3`) and cheap
+  to widen with one more slice at a time.
+- `0028-flt2dec`: directly reuses numeric / float instincts from `0011`, but
+  now appears to have its own probe-scaffolding ladder rather than the same
+  backend blocker.
+- `0026-rc`: first contract map is committed and the next tranche is concrete;
+  this also sets up reuse for `0027-arc`.
 
 ## Exact Next Batch If Interrupted After The Current Batch
 
-- `0028-flt2dec`
-- `0026-rc`
 - `0027-arc`
+- `0014-convert-num`
+- `0015-intrinsics-simd`
 
 Rationale:
 
-- `0028-flt2dec` reuses float-support findings from `0011`.
-- `0026-rc` and `0027-arc` share reference-counting patterns and both have strong public solution material for reuse.
+- `0027-arc` is the strongest immediate reuse target from the new `0026-rc`
+  contract map.
+- `0014-convert-num` is the next numeric-conversion challenge that can reuse
+  the widening / conversion findings from `0011`.
+- `0015-intrinsics-simd` is still unstarted but is a better next candidate than
+  the remaining bootstrap queue once the current batch yields another terminal
+  verdict.
 
 ## Portfolio Inventory
 
