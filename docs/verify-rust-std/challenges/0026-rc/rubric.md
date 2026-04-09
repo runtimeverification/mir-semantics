@@ -27,6 +27,18 @@ submission-ready.
 | Review feedback patterns are incorporated | no | Prior review comments on similar work are reflected in naming, test organization, and explanation quality. |
 | Residual risk is explicit | no | Open blockers, solver limitations, unsupported hooks, or dependency escalations are called out precisely. |
 
+## Challenge 0026 Addendum
+
+Use the following challenge-specific criteria alongside the baseline rubric.
+
+| Criterion | Critical | 3 means |
+| --- | --- | --- |
+| Public unsafe API surface is fully mapped | yes | All 12 listed public `unsafe` functions are traced to a source safety summary and either a proof root, wrapper follow-on, or explicit blocker note. |
+| Raw-pointer/refcount tranche is isolated | yes | The chosen first tranche preserves the `from_raw_in` -> increment/decrement -> weak raw recovery dependency spine and is the smallest leverage-preserving slice. |
+| Challenge-specific UB obligations are explicit | yes | The evaluator names the relevant UB families and notes whether they are discharged or deferred. |
+| External dependency risk is named precisely | no | Any upstream tool/backend dependency is identified with the specific affected API(s) and treated as a soft risk until tested. |
+| Evidence remains challenge-local | yes | File paths, commands, and commit SHAs are recorded in the branch-local docs. |
+
 ## Required Evaluator Updates
 
 Each evaluator must append challenge-specific criteria for:
