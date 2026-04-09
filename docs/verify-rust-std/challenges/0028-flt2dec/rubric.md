@@ -27,6 +27,19 @@ submission-ready.
 | Review feedback patterns are incorporated | no | Prior review comments on similar work are reflected in naming, test organization, and explanation quality. |
 | Residual risk is explicit | no | Open blockers, solver limitations, unsupported hooks, or dependency escalations are called out precisely. |
 
+## Challenge 0028 Addendum
+
+Use the following challenge-specific criteria alongside the baseline rubric.
+
+| Criterion | Critical | 3 means |
+| --- | --- | --- |
+| Published `flt2dec` coverage is concrete | yes | Each published success target is mapped to a harness, proof, or explicit blocker with a next action. |
+| Safety conditions are carried through | yes | The evaluation shows how `assume_init()` and the lifetime-laundering pattern are handled, or explains precisely why they remain blocked. |
+| UB obligations are tracked explicitly | yes | The evaluator names whether dangling/misaligned access, intrinsic UB, immutable-byte mutation, and invalid values are discharged or still blocked. |
+| Harness frontiers are separated from module frontiers | yes | Any blocker is classified as wrapper/setup/harness-side versus `flt2dec`-owned, with the exact failing leaf named. |
+| Evidence is reproducible and challenge-local | yes | File paths, commands, proof outputs, and commit SHAs are recorded so another agent can rerun the same slice. |
+| Residual risk is actionable | no | The next narrowing step is precise enough that the follow-up probe can be delegated without reinterpretation. |
+
 ## Required Evaluator Updates
 
 Each evaluator must append challenge-specific criteria for:
