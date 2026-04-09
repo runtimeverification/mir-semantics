@@ -35,6 +35,10 @@ submission-ready.
 - If branch-local `NonZero` artifacts exist but the first proofs fail on a
   concrete transmute or count-assert frontier, score that as partial readiness
   rather than missing evidence.
+- If frontier reduction narrows `NonZero::new` to `castKindTransmute` or
+  `NonZero::from_mut` to `castKindPtrToPtr`, treat that as actionable semantic
+  evidence and keep the challenge `IN PROGRESS` until one frontier closes or is
+  explicitly blocked.
 - If a NonZero harness only proves "nonzero-ness" or absence of UB, that is not
   enough unless the published API has no stronger semantic relation to assert.
 - For `isqrt`, any omission of wider unsigned types must be explicitly bounded

@@ -25,11 +25,11 @@ Ownership:
 
 | Criterion | Score | Evidence | Gap |
 | --- | --- | --- | --- |
-| Published NonZero requirements are mapped to concrete artifacts | 2 | Challenge page parsed into planner/workpad; branch-local `NonZero` artifacts now exist for `new`, `new_unchecked`, `from_mut`, and `count_ones` | full Part 2 matrix and remaining published APIs still missing |
+| Published NonZero requirements are mapped to concrete artifacts | 2 | Challenge page parsed into planner/workpad; branch-local `NonZero` artifacts now exist for `new`, `new_unchecked`, `from_mut`, and `count_ones`; frontier reduction narrowed `new` and `from_mut` to concrete cast semantics | full Part 2 matrix and remaining published APIs still missing |
 | Challenge-book rules are satisfied | 3 | Work remains in `runtimeverification/mir-semantics`, scoped to the challenge branch, and is tracked by committed docs and cherry-pickable commits | none for current evidence set |
 | Safety conditions are modeled faithfully | 2 | Challenge assumptions and review notes recorded in planner/workpad; Part 1 artifacts now encode explicit `NonZero` semantics and fail on concrete frontiers | no completed NonZero proofs yet |
-| Undefined behavior obligations are covered | 2 | baseline `prove-rs` regressions validate the current branch can execute the affected stack; `NonZero` artifacts now reproduce proof frontiers for `new` / `new_unchecked` / `count_ones` | published NonZero UB obligations still need passing proofs |
-| Evidence is reproducible | 3 | `collect-only`, `make build`, compile checks, and direct `kmir prove-rs` evidence are recorded in `generator.md` | broader `NonZero` proof matrix still unrun |
+| Undefined behavior obligations are covered | 2 | baseline `prove-rs` regressions validate the current branch can execute the affected stack; `NonZero` artifacts now reproduce proof frontiers for `new` / `new_unchecked` / `from_mut` / `count_ones` | published NonZero UB obligations still need passing proofs |
+| Evidence is reproducible | 3 | `collect-only`, `make build`, compile checks, and direct `kmir prove-rs` evidence are recorded in `generator.md`; the failing leafs are narrowed to concrete cast semantics | broader `NonZero` proof matrix still unrun |
 | Scope is challenge-local and cherry-pickable | 3 | prerequisite slice landed in coherent commits without portfolio churn | none |
 | Review feedback patterns are incorporated | 3 | rubric tracks the "semantic baseline is not completion" pattern, the thin-harness warning from public reviews, and the new distinction between artifact existence and failing proof frontiers | none |
 | Residual risk is explicit | 3 | missing layer is called out as challenge-specific `NonZero` work, not unresolved baseline semantics | none |
@@ -38,10 +38,10 @@ Ownership:
 
 | Criterion | Score | Evidence | Gap |
 | --- | --- | --- | --- |
-| Part 1 `new` / `new_unchecked` correctness is implemented and verified | 1 | `new.rs` and `new_unchecked.rs` exist; `kmir prove-rs` reproduces concrete `FAILED` frontiers at `NonZero::new` transmute paths | no passing proof yet |
+| Part 1 `new` / `new_unchecked` correctness is implemented and verified | 1 | `new.rs`, `new_unchecked.rs`, and `from_mut.rs` exist; `kmir prove-rs` reproduces concrete `FAILED` frontiers at `NonZero::new` transmute and `NonZero::from_mut` pointer-cast paths | no passing Part 1 proof yet |
 | Part 2 `NonZero` APIs are covered with semantic assertions, not just UB-free harnesses | 1 | `count_ones.rs` seeds the Part 2 matrix with explicit `.get()` assertions; broader Part 2 matrix still absent | no full semantic matrix yet |
 | Wide-type / bounded-case decisions are explicit for `isqrt` and `128-bit` pow-family cases | 0 | none | no challenge-specific coverage map yet |
-| Reproducible proof/test evidence exists for the actual NonZero suite | 1 | `release.sh` compile checks and direct `kmir prove-rs` failures are recorded for the new challenge-local artifacts | no scoped proof pass for the full suite yet |
+| Reproducible proof/test evidence exists for the actual NonZero suite | 2 | `release.sh` compile checks and direct `kmir prove-rs` failures are recorded for the new challenge-local artifacts, and the frontier reports now pinpoint `castKindTransmute` and `castKindPtrToPtr` | no scoped proof pass for the full suite yet |
 
 ## Review Pattern Notes
 
@@ -50,6 +50,7 @@ Ownership:
   - Any harness that only proves nonzero-ness or UB-freedom is insufficient if the published function has an expected semantic relation.
 - New pattern from this re-execution branch:
   - If challenge-local `NonZero` artifacts exist but the first proof frontier fails reproducibly, keep the challenge `IN PROGRESS` and treat the frontier as actionable evidence rather than missing setup.
+  - If frontier reduction narrows `NonZero::new` to `castKindTransmute` or `NonZero::from_mut` to `castKindPtrToPtr`, keep the challenge `IN PROGRESS` and treat those as actionable semantic frontiers rather than missing setup.
 
 ## Verdict
 
