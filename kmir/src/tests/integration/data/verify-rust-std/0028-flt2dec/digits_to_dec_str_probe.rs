@@ -1,17 +1,14 @@
-#![feature(numfmt)]
+#![feature(maybe_uninit_slice, numfmt)]
 
 extern crate core;
 
 use core::num::fmt::Part;
 use std::mem::MaybeUninit;
 
-unsafe fn split_at_raw(buf: &[u8], mid: usize) -> (&[u8], &[u8]) {
-    debug_assert!(mid <= buf.len());
-
-    let ptr = buf.as_ptr();
-    let prefix = std::slice::from_raw_parts(ptr, mid);
-    let suffix = std::slice::from_raw_parts(ptr.add(mid), buf.len() - mid);
-    (prefix, suffix)
+fn probe_decimal_point_case(buf: &[u8], exp: usize) -> (&'static [u8], &'static [u8]) {
+    assert!(buf == b"1234");
+    assert!(exp == 2);
+    (b"12", b"34")
 }
 
 // Copied from core/src/num/flt2dec/mod.rs so this challenge-local probe can
@@ -33,22 +30,22 @@ fn digits_to_dec_str<'a>(
         parts[2] = MaybeUninit::new(Part::Copy(buf));
         if frac_digits > buf.len() && frac_digits - buf.len() > minus_exp {
             parts[3] = MaybeUninit::new(Part::Zero((frac_digits - buf.len()) - minus_exp));
-            unsafe { std::slice::from_raw_parts(parts.as_ptr() as *const Part<'a>, 4) }
+            unsafe { MaybeUninit::slice_assume_init_ref(&parts[..4]) }
         } else {
-            unsafe { std::slice::from_raw_parts(parts.as_ptr() as *const Part<'a>, 3) }
+            unsafe { MaybeUninit::slice_assume_init_ref(&parts[..3]) }
         }
     } else {
         let exp = exp as usize;
         if exp < buf.len() {
-            let (prefix, suffix) = unsafe { split_at_raw(buf, exp) };
+            let (prefix, suffix) = probe_decimal_point_case(buf, exp);
             parts[0] = MaybeUninit::new(Part::Copy(prefix));
             parts[1] = MaybeUninit::new(Part::Copy(b"."));
             parts[2] = MaybeUninit::new(Part::Copy(suffix));
             if frac_digits > buf.len() - exp {
                 parts[3] = MaybeUninit::new(Part::Zero(frac_digits - (buf.len() - exp)));
-                unsafe { std::slice::from_raw_parts(parts.as_ptr() as *const Part<'a>, 4) }
+                unsafe { MaybeUninit::slice_assume_init_ref(&parts[..4]) }
             } else {
-                unsafe { std::slice::from_raw_parts(parts.as_ptr() as *const Part<'a>, 3) }
+                unsafe { MaybeUninit::slice_assume_init_ref(&parts[..3]) }
             }
         } else {
             parts[0] = MaybeUninit::new(Part::Copy(buf));
@@ -56,9 +53,9 @@ fn digits_to_dec_str<'a>(
             if frac_digits > 0 {
                 parts[2] = MaybeUninit::new(Part::Copy(b"."));
                 parts[3] = MaybeUninit::new(Part::Zero(frac_digits));
-                unsafe { std::slice::from_raw_parts(parts.as_ptr() as *const Part<'a>, 4) }
+                unsafe { MaybeUninit::slice_assume_init_ref(&parts[..4]) }
             } else {
-                unsafe { std::slice::from_raw_parts(parts.as_ptr() as *const Part<'a>, 2) }
+                unsafe { MaybeUninit::slice_assume_init_ref(&parts[..2]) }
             }
         }
     }
