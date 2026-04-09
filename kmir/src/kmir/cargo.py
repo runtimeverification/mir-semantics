@@ -176,6 +176,7 @@ def cargo_get_smir_json(
     save_smir: bool = False,
 ) -> dict[str, Any]:
     command = [str(stable_mir_json()), '-Zno-codegen']
+    command += ['--edition=2024']
     command += flags or []
     command.append(str(rs_file.resolve()))
 
