@@ -99,7 +99,7 @@ for challenge_file in "$challenge_ref_root"/doc/src/challenges/*.md; do
         "$challenge_id" "$slug" "$title" "$doc_url" "$tracking_url" "$issue_state" \
         "$branch" "$worktree" "$challenge_doc_dir" "$challenge_artifact_dir"
 
-    if ! git -C "$worktree" diff --quiet -- "$challenge_doc_dir" "$challenge_artifact_dir"; then
+    if [[ -n "$(git -C "$worktree" status --short -- "$challenge_doc_dir" "$challenge_artifact_dir")" ]]; then
         git -C "$worktree" add "$challenge_doc_dir" "$challenge_artifact_dir"
         git -C "$worktree" commit -m "chore(verify-rust-std): initialize challenge ${challenge_id} orchestration docs"
     fi
