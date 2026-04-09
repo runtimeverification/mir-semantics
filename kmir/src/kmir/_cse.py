@@ -9,9 +9,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from pyk.kast.att import Atts
 from pyk.kast.inner import KApply, KAs, KInner, KRewrite, KSequence, KSort, KToken, KVariable
 from pyk.kast.manip import bottom_up, free_vars, remove_generated_cells
-from pyk.kast.att import Atts
 from pyk.kast.outer import KFlatModule, KRule
 from pyk.proof.reachability import APRProof
 
@@ -151,9 +151,7 @@ class CSEResult:
             'skipped': self.skipped,
             'callee_results': {name: detail.to_dict() for name, detail in self.callee_results.items()},
             'callee_times': {
-                name: round(detail.prove_time, 3)
-                for name, detail in self.callee_results.items()
-                if detail.summarized
+                name: round(detail.prove_time, 3) for name, detail in self.callee_results.items() if detail.summarized
             },
             'callee_total_kore_time': round(self.total_callee_time, 3),
             'callee_total_wall_time': round(self.total_callee_wall_time, 3),
@@ -438,9 +436,7 @@ def write_to_module(kmir: KMIR, proof: APRProof, to_module_path: Path) -> int:
 
     if push_prestate_ensures:
         k_module = k_module.let(
-            sentences=[
-                _push_prestate_ensures(sent) if isinstance(sent, KRule) else sent for sent in k_module.sentences
-            ]
+            sentences=[_push_prestate_ensures(sent) if isinstance(sent, KRule) else sent for sent in k_module.sentences]
         )
 
     if canonicalize_ptoken_key_guards:
@@ -620,7 +616,9 @@ def _should_skip_cse_summary(name: str, *, start_symbol: str = '') -> str | None
     )
     if stripped_name.startswith(summary_relevant_prefixes):
         return None
-    if stripped_name.startswith(('core::', 'alloc::', 'std::', 'pinocchio::account_info::', 'pinocchio::program_error::')):
+    if stripped_name.startswith(
+        ('core::', 'alloc::', 'std::', 'pinocchio::account_info::', 'pinocchio::program_error::')
+    ):
         return 'low_value_helper'
     if name.startswith('_ZN') or name in {'raw_eq', 'black_box', 'ctpop'}:
         return 'low_value_helper'
@@ -878,8 +876,6 @@ def _generate_frontier_summary_rules(
     executes terminatorKindReturn.
     """
     from pyk.kast.att import EMPTY_ATT
-    from pyk.kast.manip import free_vars as _free_vars
-    from pyk.kast.inner import Subst as _Subst
 
     rules: list[KRule] = []
 
@@ -891,6 +887,7 @@ def _generate_frontier_summary_rules(
     try:
         init_locals = init_node.cterm.cell('LOCALS_CELL')
         from .kmir import KMIRCSESemantics
+
         init_local_items = KMIRCSESemantics._list_items(init_locals)
         for idx, item in enumerate(init_local_items):
             for var_name, _var_node in KMIRCSESemantics._extract_free_vars(item):
@@ -1154,6 +1151,12 @@ def _call_boundary_frontier_node_ids(proof: APRProof, target_k_cell: KInner | No
     target_dest = target_first.args[0]
     target_bb = target_second.args[0]
 
+    # When target uses symbolic variables, match structurally (any dest/bb)
+    from pyk.kast.inner import KVariable
+
+    dest_is_symbolic = isinstance(target_dest, KVariable)
+    bb_is_symbolic = isinstance(target_bb, KVariable)
+
     predecessor_ids: dict[int, set[int]] = {node.id: set() for node in proof.kcfg.nodes}
     for edge in proof.kcfg.edges():
         predecessor_ids.setdefault(edge.target.id, set()).add(edge.source.id)
@@ -1167,17 +1170,28 @@ def _call_boundary_frontier_node_ids(proof: APRProof, target_k_cell: KInner | No
         if node.id == proof.target:
             continue
         k_cell = node.cterm.cell('K_CELL')
-        if not isinstance(k_cell, KSequence) or len(k_cell.items) < 2:
+        if not isinstance(k_cell, KSequence) or not k_cell.items:
             continue
+
         node_first = k_cell.items[0]
-        node_second = k_cell.items[1]
-        if not isinstance(node_first, KApply) or '#setLocalValue' not in node_first.label.name:
-            continue
-        if not isinstance(node_second, KApply) or '#execBlockIdx' not in node_second.label.name:
-            continue
-        if node_first.args[0] != target_dest or node_second.args[0] != target_bb:
-            continue
-        matching_ids.add(node.id)
+
+        # termReturnSome: #setLocalValue(DEST, VAL) ~> #execBlockIdx(TARGET)
+        if len(k_cell.items) >= 2 and isinstance(node_first, KApply) and '#setLocalValue' in node_first.label.name:
+            node_second = k_cell.items[1]
+            if (
+                isinstance(node_second, KApply)
+                and '#execBlockIdx' in node_second.label.name
+                and (dest_is_symbolic or node_first.args[0] == target_dest)
+                and (bb_is_symbolic or node_second.args[0] == target_bb)
+            ):
+                matching_ids.add(node.id)
+                continue
+
+        # termReturnNone: #execBlockIdx(TARGET) (no #setLocalValue)
+        if isinstance(node_first, KApply) and '#execBlockIdx' in node_first.label.name:
+            if bb_is_symbolic or node_first.args[0] == target_bb:
+                matching_ids.add(node.id)
+                continue
 
     if not matching_ids:
         return []
@@ -1284,28 +1298,39 @@ def _prove_callee_summary(
                 init_cterm = observed_call_cterm
                 _LOGGER.info('CSE: using observed call-site cterm for %s', name)
             else:
-                from .kast import SymbolicMode, make_call_config
+                from .kast import make_cse_call_config
 
-                init_config, init_constraints = make_call_config(
+                cse_call = make_cse_call_config(
                     kmir_callee.definition,
                     smir_info=main_smir,
                     start_symbol=name,
-                    mode=SymbolicMode(),
                 )
-                init_cterm = CTerm(init_config, init_constraints)
+                init_cterm = CTerm(cse_call.config, list(cse_call.constraints))
 
-        # Callee proofs run standalone with <target> = noBasicBlockIdx (default).
-        # When the callee hits terminatorKindReturn, the K semantics matches
-        # endprogram-return / endprogram-no-return rules (not termReturnSome/None
-        # which require someBasicBlockIdx on the stack).  So the callee naturally
-        # reaches #EndProgram.  Using None here makes apr_proof_from_smir set
-        # the target K_CELL to #EndProgram, which is the correct callee-local
-        # return boundary.
-        #
-        # The old _build_call_summary_target_k_cell set the target to the
-        # CALLER's continuation (#setLocalValue(local(N), ...) ~> #execBlockIdx),
-        # which the standalone callee could never reach.
-        target_k_cell = None
+        # Callee proofs use make_cse_call_config which sets up:
+        #   - someBasicBlockIdx(TARGET_BB) in the call terminator
+        #   - a synthetic caller StackFrame on the stack
+        # When the callee returns, termReturnSome/termReturnNone fires
+        # (not endprogram-return), popping the synthetic frame and producing:
+        #   K_CELL = #setLocalValue(DEST, ...) ~> #execBlockIdx(TARGET)
+        # The target K_CELL must match this post-return state.
+        from pyk.kast.inner import KApply, KSequence, KSort, KVariable
+
+        target_k_cell = KSequence(
+            [
+                KApply(
+                    '#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation',
+                    (
+                        KVariable('CSE_TARGET_DEST', sort=KSort('Place')),
+                        KVariable('CSE_TARGET_RETVAL', sort=KSort('Evaluation')),
+                    ),
+                ),
+                KApply(
+                    '#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx',
+                    (KVariable('CSE_TARGET_BB', sort=KSort('BasicBlockIdx')),),
+                ),
+            ]
+        )
 
         with kmir_cterm_symbolic(
             kmir_callee.definition,
@@ -1451,7 +1476,9 @@ def _prove_callee_summary(
             )
             summary_rule_module_path = summary_dir / f'{safe_name}.summary-rules.json'
             if summary_rules:
-                rule_module_name = ''.join(c if c.isalnum() or c == '-' else '-' for c in safe_name.upper()) + '-CSE-RULES'
+                rule_module_name = (
+                    ''.join(c if c.isalnum() or c == '-' else '-' for c in safe_name.upper()) + '-CSE-RULES'
+                )
                 rule_count = _write_summary_rules_module(summary_rule_module_path, summary_rules, rule_module_name)
                 result.exported_modules[name] = summary_rule_module_path
                 _LOGGER.info('CSE: exported %d summary rules for %s to %s', rule_count, name, summary_rule_module_path)
@@ -1625,7 +1652,9 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     phase1_only_names = set(_env_csv('KMIR_CSE_PHASE1_ONLY_NAMES'))
     if phase1_only_names:
         phase1_callee_order = [
-            ty for ty in phase1_callee_order if (name := _ty_to_name(smir_info, ty)) is not None and name in phase1_only_names
+            ty
+            for ty in phase1_callee_order
+            if (name := _ty_to_name(smir_info, ty)) is not None and name in phase1_only_names
         ]
         _LOGGER.info(
             'CSE: filtered phase-1 to %d callees via KMIR_CSE_PHASE1_ONLY_NAMES',
@@ -1760,7 +1789,9 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
 
     if generate_only_mode:
         print(f'[CSE] Summary-generation-only mode active, skipping main proof for {start_name}', flush=True)
-        result_path = (opts.proof_dir / 'cse_result.json') if opts.proof_dir is not None else (summary_dir / 'cse_result.json')
+        result_path = (
+            (opts.proof_dir / 'cse_result.json') if opts.proof_dir is not None else (summary_dir / 'cse_result.json')
+        )
         result.write_json(result_path)
         return result
 
@@ -1786,7 +1817,9 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             effective_proof_dir = None
             if callee_proof_dir_path and APRProof.proof_data_exists(callee_label, callee_proof_dir_path):
                 effective_proof_dir = callee_proof_dir_path
-            elif summary_callee_proof_dir.exists() and APRProof.proof_data_exists(callee_label, summary_callee_proof_dir):
+            elif summary_callee_proof_dir.exists() and APRProof.proof_data_exists(
+                callee_label, summary_callee_proof_dir
+            ):
                 effective_proof_dir = summary_callee_proof_dir
             if effective_proof_dir is not None:
                 callee_proof = APRProof.read_proof_data(effective_proof_dir, callee_label)
@@ -1794,7 +1827,9 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
                     frontier_node_ids = _load_frontier_summary_node_ids(detail.summary_path)
                     if frontier_node_ids:
                         setattr(callee_proof, '_cse_frontier_node_ids', tuple(frontier_node_ids))
-                if detail.summary_kind == 'frontier' or ((online_autoreuse_mode or reuse_only_mode) and detail.summary_kind == 'return'):
+                if detail.summary_kind == 'frontier' or (
+                    (online_autoreuse_mode or reuse_only_mode) and detail.summary_kind == 'return'
+                ):
                     if callee_name in smir_info.function_tys:
                         func_ty = smir_info.function_tys[callee_name]
                         callee_proofs[func_ty] = callee_proof
@@ -1869,16 +1904,14 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     # causing NDBranch explosion).  Don't pass summary-rules.json as
     # extra_modules to avoid re-kompile overhead.
     use_dynamic_cse = bool(callee_proofs) or learn_observed_calls or reuse_only_mode
-    observed_runtime_names = [name for func_ty in observed_runtime_seen if (name := _ty_to_name(smir_info, Ty(func_ty))) is not None]
+    observed_runtime_names = [
+        name for func_ty in observed_runtime_seen if (name := _ty_to_name(smir_info, Ty(func_ty))) is not None
+    ]
     dynamic_break_targets = {*opts.break_on_function, *dynamic_summary_names, *observed_runtime_names}
     if observe_only_mode:
-        dynamic_break_targets.update(
-            name for ty in callee_order if (name := _ty_to_name(smir_info, ty)) is not None
-        )
+        dynamic_break_targets.update(name for ty in callee_order if (name := _ty_to_name(smir_info, ty)) is not None)
     if online_autoreuse_mode:
-        dynamic_break_targets.update(
-            name for ty in callee_order if (name := _ty_to_name(smir_info, ty)) is not None
-        )
+        dynamic_break_targets.update(name for ty in callee_order if (name := _ty_to_name(smir_info, ty)) is not None)
     dynamic_break_on_function = sorted(dynamic_break_targets)
     # Don't include summary-rules.json as extra_modules — they cause
     # NDBranch explosion in the booster and trigger expensive re-kompile.
@@ -1920,8 +1953,8 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
         main_smir.dump(opts.proof_dir / final_proof.id / 'smir.json')
 
     if use_dynamic_cse:
-        from .kmir import KMIRCSESemantics
         from ._prove import _cut_point_rules
+        from .kmir import KMIRCSESemantics
 
         # Use CSE semantics with callee proofs for dynamic function call interception
         cse_semantics = KMIRCSESemantics(
@@ -2002,7 +2035,9 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
             if (name := _ty_to_name(smir_info, Ty(func_ty))) is not None
         }
         for func_ty in cse_semantics.online_generated_tys:
-            if (name := _ty_to_name(smir_info, Ty(func_ty))) is not None and name not in result.online_generated_summaries:
+            if (
+                name := _ty_to_name(smir_info, Ty(func_ty))
+            ) is not None and name not in result.online_generated_summaries:
                 result.online_generated_summaries.append(name)
 
     result.final_prove_time = time.time() - t0
@@ -2010,7 +2045,9 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     result.final_proof_exec_time = final_proof.exec_time
     print(f'[CSE] {start_name}: {"PASSED" if final_proof.passed else "FAILED"} in {result.final_prove_time:.1f}s')
 
-    result_path = (opts.proof_dir / 'cse_result.json') if opts.proof_dir is not None else (summary_dir / 'cse_result.json')
+    result_path = (
+        (opts.proof_dir / 'cse_result.json') if opts.proof_dir is not None else (summary_dir / 'cse_result.json')
+    )
     result.write_json(result_path)
 
     return result
