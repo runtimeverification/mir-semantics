@@ -26,9 +26,44 @@
 
 ## Failed-attempt log
 
-- None yet. This is the first challenge-local planning pass on the re-execution branch.
+- 2026-04-09: First filtered run used
+  `-k '0011-floats-ints and unchecked_add'` and matched zero cases in pytest
+  parametrization (`no tests ran`, exit 5).
+- 2026-04-09: Second filtered run used
+  `-k 'unchecked_add and not fail'`; the test case started but did not complete
+  in a bounded runtime window and was terminated (exit 143).
+
+## Generator retry execution log
+
+- Ported historical Challenge 0011 files from
+  `origin/verify-rust-std/challenge-0011` into this branch for scoped paths:
+  challenge artifact directory, test runner entrypoint, and shift-mask lemmas.
+- Added dedicated make entrypoint `test-verify-rust-std` (from historical
+  branch) and parameterized `test_verify_rust_std` integration coverage with
+  challenge start symbols and show-output handling.
+- Initialized `deps/stable-mir-json` in this worktree to satisfy build/test
+  prerequisites.
+- Confirmed scoped case discovery with collect-only:
+  `test_verify_rust_std[unchecked_add]` is selected by
+  `-k "unchecked_add and not fail"`.
+
+## Evidence for next evaluator step
+
+- Technical port commit exists: `2e09185c`.
+- Challenge 0011 artifact set now exists under
+  `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints`.
+- Validation is partially complete:
+  test discovery and runtime launch are confirmed; a bounded successful proof
+  completion is still pending.
+- Float blocker signal remains present in ported evidence:
+  `to_int_unchecked-fail` expected outputs include stuck float intrinsic hooks.
 
 ## Next handoff
 
-- Generator should produce the first challenge-local technical attempt and attach command/file evidence.
-- Evaluator should update the rubric only after that evidence is available.
+- Generator follow-up should run one narrower proof slice to completion
+  (e.g., one `unchecked_add` start symbol via `kmir prove-rs` directly) so this
+  branch has at least one completed proof result in addition to collection
+  evidence.
+- Evaluator should classify readiness based on:
+  integer artifact completeness vs. completed-proof evidence, and whether
+  float-to-int remains a structural backend blocker.

@@ -24,20 +24,60 @@ Ownership:
 
 ## Work Log
 
-- Bootstrap record created by orchestrator.
+- 2026-04-09: Ported Challenge 0011 harness/test artifacts and runner support
+  from `origin/verify-rust-std/challenge-0011` into this re-execution branch.
+- 2026-04-09: Initialized missing `deps/stable-mir-json` submodule for this
+  worktree to enable scoped integration-test execution.
+- 2026-04-09: Ran filtered `test_verify_rust_std` validation and collected
+  concrete evidence for test discovery and runtime behavior.
 
 ## Files Touched
 
-- None yet.
+- `Makefile`
+- `kmir/src/tests/integration/test_integration.py`
+- `kmir/src/kmir/kdist/mir-semantics/lemmas/kmir-lemmas.md`
+- `kmir/src/tests/integration/data/verify-rust-std/README.md`
+- `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/README.md`
+- `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/*.rs`
+- `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/show/*.expected`
+- `docs/verify-rust-std/challenges/0011-floats-ints/generator.md`
+- `docs/verify-rust-std/challenges/0011-floats-ints/workpad.md`
 
 ## Validation Evidence
 
-- None yet.
+1. Command:
+   `make test-verify-rust-std PARALLEL=1 TEST_ARGS="-k '0011-floats-ints and unchecked_add'"`
+   Result:
+   runner invoked but filter matched zero parametrized cases; pytest reported
+   `no tests ran` and make exited with status 5.
+
+2. Command:
+   `git submodule update --init deps/stable-mir-json`
+   Result:
+   submodule initialized at `885ab4a9f6dd1b5416b57e914082fbb341c89f97`.
+
+3. Command:
+   `make test-verify-rust-std PARALLEL=1 TEST_ARGS="-k 'unchecked_add and not fail'"`
+   Result:
+   one scoped case (`test_verify_rust_std[unchecked_add]`) was dispatched and
+   executed for an extended period. The run was terminated to keep this retry
+   bounded; make exited with status 143.
+
+4. Command:
+   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_add and not fail" -q`
+   Result:
+   passed; exactly `test_verify_rust_std[unchecked_add]` collected
+   (`1/17 collected, 16 deselected`).
 
 ## Commit Inventory
 
-- None yet.
+- `2e09185c` — `feat(verify-rust-std): port challenge 0011 harnesses and runner`
 
 ## Blockers
 
-- Waiting for planner contract and evaluator baseline.
+- Full proof execution is still runtime-heavy even for a single scoped case in
+  this environment; this retry did not complete one end-to-end passing proof.
+- Float-to-int path still appears blocked by backend capability in the current
+  stack; the ported expected outputs still include stuck frontiers on float
+  intrinsics (e.g., `fabsf32`, `fabsf64`) in
+  `to_int_unchecked-fail.*.expected`.
