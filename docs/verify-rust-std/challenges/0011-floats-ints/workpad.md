@@ -4,13 +4,18 @@
 
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
-- Status at planner handoff: the challenge-local docs and ported artifacts exist, two direct Part 1 proof slices already pass, and the current frontier is one new Part 2 proof slice from a different requirement family.
+- Status after generator slice: the challenge-local docs and ported artifacts
+  exist, two direct Part 1 proof slices still pass, and `wrapping_shl_u8` now
+  adds one passing Part 2 proof slice from a different requirement family.
 
 ## Evidence gathered
 
 - Challenge 11 on the verify-rust-std site is resolved and lists three concrete requirement families: Part 1 integer methods, Part 2 safe APIs, and Part 3 float-to-int conversion.
 - PR #985 states that the integer-method portion and the safe APIs were intended to complete, while Part 3 is blocked by missing KMIR float-value support.
 - PR #985’s visible review context is thin; the only public review signal currently accessible is an LGTM comment, so the blocker signal comes from the PR body and the branch-local float artifacts.
+- PR #985’s file list confirms that `wrapping_shl` relied on the already-ported
+  shift-mask simplification lemmas; this branch-local re-execution therefore
+  tests whether that support is sufficient here without importing new logic.
 
 ## Planning decisions
 
@@ -39,6 +44,12 @@
 - 2026-04-09: Follow-up 2 run completed with `ProofStatus.PASSED` for
   `unchecked_neg_i8` using:
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_neg.rs --start-symbol unchecked_neg_i8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-neg-i8 --reload --fail-fast --max-workers 1`.
+- 2026-04-09: Scoped discovery check for the next Part 2 slice collected
+  exactly `test_verify_rust_std[wrapping_shl]` using:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "wrapping_shl and not fail" -q`.
+- 2026-04-09: Direct proof follow-up run completed with
+  `ProofStatus.PASSED` for `wrapping_shl_u8` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/wrapping_shl.rs --start-symbol wrapping_shl_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-wrapping-shl-u8 --reload --fail-fast --max-workers 1`.
 
 ## Generator retry execution log
 
@@ -53,19 +64,29 @@
 - Confirmed scoped case discovery with collect-only:
   `test_verify_rust_std[unchecked_add]` is selected by
   `-k "unchecked_add and not fail"`.
+- Confirmed the next safe-API case is wired through the same runner:
+  `test_verify_rust_std[wrapping_shl]` is selected by
+  `-k "wrapping_shl and not fail"`.
+- Re-executed the branch-local Part 2 slice directly with `kmir prove-rs`;
+  `wrapping_shl_u8` passed without any new support changes, so the prior
+  shift-mask lemma port was already sufficient on this branch.
 
 ## Evidence for next evaluator step
 
 - Technical port commit exists: `2e09185c`.
 - Challenge 0011 artifact set now exists under
   `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints`.
-- Validation now includes one completed integer proof slice:
-  `unchecked_add_u8` and `unchecked_neg_i8` both pass end-to-end in direct
-  `kmir prove-rs` mode.
+- Validation now includes branch-local passing proof evidence in two published
+  requirement families:
+  `unchecked_add_u8` and `unchecked_neg_i8` pass in Part 1, and
+  `wrapping_shl_u8` passes in Part 2.
 - Float blocker signal remains present in ported evidence:
   `to_int_unchecked-fail` expected outputs include stuck float intrinsic hooks.
 
 ## Next handoff
 
-- Generator follow-up: run `kmir prove-rs` against `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/wrapping_shl.rs` with `--start-symbol wrapping_shl_u8`, then report the proof status, proof directory, and any blocker text if the run does not pass.
-- Evaluator should classify readiness based on whether that new Part 2 proof lands cleanly and whether the only remaining terminal constraint is still the documented float-value blocker from PR #985.
+- Evaluator should reassess terminal state now that `wrapping_shl_u8` passes
+  branch-locally and the integer evidence spans both Part 1 and Part 2.
+- Remaining generator work, if any, should stay scoped to documenting or
+  confirming the already-recorded float blocker rather than widening back into
+  unrelated integer symbols.
