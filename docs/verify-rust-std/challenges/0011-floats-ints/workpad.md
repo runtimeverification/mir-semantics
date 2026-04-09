@@ -7,7 +7,8 @@
 - Status after generator slice: the challenge-local docs and ported artifacts
   exist, four direct proof slices pass on the branch, and the latest evaluator
   refresh still leaves the challenge `IN PROGRESS` at `2.7 / 3` pending a
-  broader reassessment.
+  broader reassessment. The next cheapest high-value slice is
+  `wrapping_shr_u8`.
 
 ## Evidence gathered
 
@@ -17,25 +18,27 @@
 - PR #985’s file list confirms that `wrapping_shl` relied on the already-ported
   shift-mask simplification lemmas; this branch-local re-execution therefore
   tests whether that support is sufficient here without importing new logic.
-- `unchecked_sub_u8` now passes directly on this branch with the existing
-  runner and harness support, so the current Part 1 frontier moved from
-  "proof exists for add/neg only" to "proof exists across add/sub/neg".
+- The branch now has four passing direct proof slices
+  (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`, and
+  `wrapping_shl_u8`), so the cheapest remaining high-value slice is
+  `wrapping_shr_u8`; it is the direct safe-API sibling of `wrapping_shl_u8`
+  and should reuse the same shift support without new backend work.
 - The refreshed evaluator result stays at `IN PROGRESS` with score `2.7 / 3`,
-  so the branch still needs more integer breadth before any terminal state can
-  be justified.
+  so the branch still needs more non-float breadth before any terminal state
+  can be justified.
 
 ## Planning decisions
 
 - Treat the integer portion and float portion as separate evidence-bearing slices.
-- Make `unchecked_sub_u8` the next delegated slice because it is the cheapest remaining unchecked-math proof, it extends the proof set beyond add/neg/shift without new backend work, and it gives the evaluator a cleaner read on the remaining arithmetic matrix.
-- Do not escalate to backend changes yet; first confirm whether the current branch can independently add one more passing arithmetic proof before reclassifying the remaining float gap.
+- Make `wrapping_shr_u8` the next delegated slice because it is the cheapest remaining safe-API proof, it extends the proof set beyond add/neg/sub/shift coverage without new backend work, and it gives the evaluator a cleaner read on the remaining non-float matrix.
+- Do not escalate to backend changes yet; first confirm whether the current branch can independently add one more passing safe-API proof before reclassifying the remaining float gap.
 
 ## Reusable rubric patterns for evaluator
 
 - Successful evaluation must tie every published requirement to a concrete artifact or an explicit blocker.
 - A float-specific blocker should mention the exact missing capability, not just "floats are hard."
 - Terminal classification should distinguish `CONDITIONALLY READY` from `BLOCKED` based on whether the remaining gap is narrow and external versus structural and unimplemented.
-- A new passing proof in an additional arithmetic slice is the strongest low-cost signal that the branch is moving beyond bootstrap evidence without consuming float-blocker budget.
+- A new passing proof in an additional safe-API slice is the strongest low-cost signal that the branch is moving beyond bootstrap evidence without consuming float-blocker budget.
 
 ## Failed-attempt log
 
@@ -104,11 +107,11 @@
 
 ## Next handoff
 
-- Generator completed the delegated `unchecked_sub_u8` slice end-to-end and
-  recorded the exact command and proof outcome.
-- Remaining branch work should stay scoped to planner-selected follow-up slices
-  or to documenting the already-recorded float blocker; this turn should not be
-  widened beyond the completed `unchecked_sub_u8` evidence.
+- Generator should now run the exact `wrapping_shr_u8` proof command:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/wrapping_shr.rs --start-symbol wrapping_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-wrapping-shr-u8 --reload --fail-fast --max-workers 1`.
+- Remaining branch work should stay scoped to this planner-selected follow-up
+  slice or to documenting the already-recorded float blocker; this turn should
+  not be widened beyond the planned `wrapping_shr_u8` evidence.
 
 ## Evaluator Note
 

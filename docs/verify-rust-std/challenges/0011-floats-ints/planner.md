@@ -39,9 +39,9 @@ Ownership:
 
 ## Dependencies And Blockers
 
-- Current frontier: three direct proof slices pass on this branch, but the broader arithmetic matrix is still unconfirmed. The highest-leverage next step is `unchecked_sub_u8`, because it is the cheapest remaining unchecked-math slice, expands Part 1 breadth beyond add/neg/shift evidence, and is likely to reuse the existing harness and arithmetic support without any new backend work.
+- Current frontier: four direct proof slices pass on this branch, but the broader non-float matrix is still unconfirmed. The highest-leverage next step is `wrapping_shr_u8`, because it is the cheapest remaining safe-API slice, expands Part 2 breadth beyond the already green `wrapping_shl_u8`, and is likely to reuse the existing shift support without any new backend work.
 - Primary blocker remains the float path in Part 3: PR #985 states that KMIR lacks float-value support, and the ported `to_int_unchecked-fail` artifacts still show stuck float intrinsic hooks. That blocker should stay separate from any new integer proof work.
-- Secondary dependency: if the new Part 1 slice passes, the evaluator can reassess whether the remaining gap is purely the known float blocker plus the still-broad integer/safe-API matrix, or whether another artifact gap still exists.
+- Secondary dependency: if the new Part 2 slice passes, the evaluator can reassess whether the remaining gap is purely the known float blocker plus the still-broad Part 1/Part 2 matrix, or whether another artifact gap still exists.
 
 ## Cross-Challenge Notes
 
@@ -53,4 +53,4 @@ Ownership:
 
 - Bootstrap record created by orchestrator.
 - Planner updated after reconfirming the challenge page, PR #985, and selecting `wrapping_shl_u8` as the first delegated proof slice.
-- Planner updated after the `wrapping_shl_u8` pass and evaluator refresh; `unchecked_sub_u8` is now the next delegated proof slice.
+- Planner updated after the `unchecked_sub_u8` pass and evaluator refresh; `wrapping_shr_u8` is now the next delegated proof slice.
