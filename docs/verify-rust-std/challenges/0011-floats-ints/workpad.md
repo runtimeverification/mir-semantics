@@ -6,9 +6,10 @@
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
   exist, six direct proof slices pass on the branch, and the latest evaluator
-  refresh still leaves the challenge `IN PROGRESS` at `2.8 / 3` pending a
-  broader reassessment. The planner-selected `widening_mul_u8` slice is now
-  complete and passed without any support changes.
+  refresh leaves the challenge `IN PROGRESS` at `2.9 / 3` pending a broader
+  reassessment. The planner-selected `widening_mul_u8` slice is now complete
+  and passed without any support changes, and `carrying_mul_u8` is the next
+  delegated slice.
 
 ## Evidence gathered
 
@@ -26,9 +27,12 @@
   `wrapping_shl_u8`, `wrapping_shr_u8`, and now `widening_mul_u8`), confirming
   that the first widening-mul Part 2 slice also executes cleanly on this
   branch with the already-ported support.
-- The refreshed evaluator result stays at `IN PROGRESS` with score `2.8 / 3`,
+- The refreshed evaluator result stays at `IN PROGRESS` with score `2.9 / 3`,
   so the branch still needs more non-float breadth before any terminal state
   can be justified.
+- `carrying_mul.rs` is wired in the same branch-local harness set and was
+  confirmed by scoped collection, so the next cheapest Part 2 slice is
+  `carrying_mul_u8`.
 
 ## Planning decisions
 
@@ -37,6 +41,9 @@
   remaining safe-API case, broadened Part 2 beyond the existing wrapping-shift
   pair, and re-used the already-ported unsigned multiplication support without
   introducing float work.
+- `carrying_mul_u8` is the correct next delegated slice: it is the remaining
+  safe-API family in Part 2, and the branch-local harness already exposes the
+  `carrying_mul` runner.
 - Do not escalate to backend changes from this slice; it passed cleanly, so the
   next step is evaluator/planner reassessment rather than widening scope inside
   this generator turn.
@@ -86,6 +93,9 @@
 - 2026-04-09: Direct proof follow-up run completed with
   `ProofStatus.PASSED` for `widening_mul_u8` using:
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/widening_mul.rs --start-symbol widening_mul_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-widening-mul-u8 --reload --fail-fast --max-workers 1`.
+- 2026-04-09: Scoped discovery check for the next Part 2 slice collected
+  exactly `test_verify_rust_std[carrying_mul]` using:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "carrying_mul and not fail" -q`.
 
 ## Generator retry execution log
 
@@ -126,6 +136,9 @@
   `kmir prove-rs`; `widening_mul_u8` passed without any new support changes,
   broadening the safe-API evidence beyond the wrapping-shift pair while
   preserving the existing float blocker boundary.
+- The next Part 2 safe-API target is `carrying_mul_u8`; it is present in the
+  branch-local harness set and should be the cheapest remaining way to widen
+  the non-float evidence without changing scope.
 
 ## Evidence for next evaluator step
 
@@ -148,8 +161,8 @@
   keeping the remaining float blocker tied to the precise
   `fabsf32` / `fabsf64` frontier.
 - If the planner delegates another generator slice after that reassessment, it
-  should choose the next narrow proof target explicitly rather than widening
-  scope inside this completed turn.
+  should choose `carrying_mul_u8` explicitly rather than widening scope inside
+  this completed turn.
 
 ## Evaluator Note
 
