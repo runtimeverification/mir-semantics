@@ -5,11 +5,13 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, seven direct proof slices pass on the branch, and the latest
+  exist, eight direct proof slices pass on the branch, and the latest
   evaluator refresh before this slice left the challenge `IN PROGRESS` at
   `2.9 / 3` pending a broader reassessment. The planner-selected
-  `carrying_mul_u8` slice is now complete and passed without any support
-  changes. The next planner target is `unchecked_mul_u8`.
+  `carrying_mul_u8` slice is complete, and the follow-up
+  `unchecked_mul_u8` slice also passed without any support changes. The next
+  concrete target is `unchecked_mul_u16` if the generator continues in the
+  same file.
 
 ## Evidence gathered
 
@@ -28,11 +30,12 @@
 - `unchecked_mul.rs` and its fail artifact are already present in the same
   challenge-local harness set, so the next cheapest remaining Part 1 slice is
   `unchecked_mul_u8`.
-- The branch now has seven passing direct proof slices
+- The branch now has eight passing direct proof slices
   (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`, and now
-  `carrying_mul_u8`), confirming that the first carrying-mul Part 2 slice also
-  executes cleanly on this branch with the already-ported support.
+  `carrying_mul_u8`, plus `unchecked_mul_u8`), confirming that the first
+  carrying-mul Part 2 slice and the unsigned unchecked-mul slice also execute
+  cleanly on this branch with the already-ported support.
 - The refreshed evaluator result stays at `IN PROGRESS` with score `2.9 / 3`,
   so the branch still needs more non-float breadth before any terminal state
   can be justified.
@@ -106,6 +109,12 @@
 - 2026-04-09: Direct proof follow-up run completed with
   `ProofStatus.PASSED` for `carrying_mul_u8` using:
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/carrying_mul.rs --start-symbol carrying_mul_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-carrying-mul-u8 --reload --fail-fast --max-workers 1`.
+- 2026-04-09: Scoped discovery check for the delegated unchecked-mul slice
+  collected exactly `test_verify_rust_std[unchecked_mul]` using:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_mul and not fail" -q`.
+- 2026-04-09: Direct proof follow-up run completed with
+  `ProofStatus.PASSED` for `unchecked_mul_u8` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_mul.rs --start-symbol unchecked_mul_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-mul-u8 --reload --fail-fast --max-workers 1`.
 
 ## Generator retry execution log
 
@@ -167,9 +176,10 @@
 ## Next handoff
 
 - The planner-selected `carrying_mul_u8` slice is complete and passed.
-- The planner-selected `unchecked_mul_u8` slice is now the next concrete
-  target.
-- Evaluator should reassess whether the branch’s seven direct proof passes
+- The planner-selected `unchecked_mul_u8` slice is complete and passed.
+- If the generator continues in the same file, the next concrete target is
+  `unchecked_mul_u16`.
+- Evaluator should reassess whether the branch’s eight direct proof passes
   across Part 1 and Part 2 materially change the non-float readiness signal,
   while keeping the remaining float blocker tied to the precise
   `fabsf32` / `fabsf64` frontier.

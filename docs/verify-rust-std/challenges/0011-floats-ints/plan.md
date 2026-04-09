@@ -4,7 +4,7 @@ Current objective:
 - Move Challenge 11 toward a terminal portfolio state by adding one new Part 1 unsafe-method proof slice on the current branch and preserving the float blocker as a separate, explicitly evidenced terminal constraint.
 
 Next generator task:
-- Prove `unchecked_mul_u8` end-to-end with a scoped `kmir prove-rs` run on `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_mul.rs`, then record whether the branch now has a second passing Part 1 arithmetic slice beyond add/neg/sub and the already-passing Part 2 slices.
+- Prove `unchecked_mul_u16` end-to-end with a scoped `kmir prove-rs` run on `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_mul.rs`, then record whether the branch now has another passing Part 1 arithmetic slice beyond `unchecked_mul_u8`, add/neg/sub, and the already-passing Part 2 slices.
 
 Generator acceptance evidence:
 - A concrete mapping from each published requirement to an artifact or an explicit blocker.
