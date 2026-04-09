@@ -1,24 +1,26 @@
 # Evaluation Result: Challenge 0013
 
-Independent evaluator refresh completed on the re-execution branch. The upstream
-Challenge 13 bar is unchanged: implement `Invariant` for `CStr`, verify the nine
-safe methods, annotate and verify contracts for `from_ptr`,
+Independent evaluator refresh completed on the re-execution branch. The
+published Challenge 13 bar is unchanged: implement `Invariant` for `CStr`,
+verify the nine safe methods, annotate and verify contracts for `from_ptr`,
 `from_bytes_with_nul_unchecked`, and `strlen`, and verify `CloneToUninit` plus
 `Index<RangeFrom<usize>>`.
 
-The branch now has the prerequisite cross-crate body-resolution slice, linked
-`CStr` fixture support, and challenge-local `CStr` artifacts. The new
-`c93bbe4a` edition-2024 change moved standalone prove targets past the prior
-frontend issue, but the challenge still stops on concrete proof frontiers rather
-than closed Challenge 13 evidence.
+The branch still has the prerequisite cross-crate body-resolution slice,
+linked `CStr` fixture support, and challenge-local `CStr` artifacts. The
+current checkpoint on `8309b54d` shows a more precise blocker than the earlier
+frontier description: donor-linked SMIR rewrites the root names before proof
+setup, so `make_call_config` cannot resolve `test_clone_to_uninit` or
+`test_clone_to_uninit_exact_bytes` and the donated constructor body is never
+reached.
 
 ## Verdict
 
-`IN PROGRESS`
+`BLOCKED`
 
 ## Score
 
-`2.0`
+`2.1`
 
 ## Satisfied Criteria
 
@@ -36,11 +38,10 @@ than closed Challenge 13 evidence.
   and compares the exact written region against `cstr.to_bytes_with_nul()`.
 - `generator.md` and `workpad.md` record reproducible commands and outcomes,
   including the edition-2024 rerun on `c93bbe4a`.
-- The branch now shows two distinct proof frontiers instead of a single
-  bootstrap failure: the linked-SMIR path still stops at
-  `core::ffi::CStr::from_bytes_with_nul`, and the standalone exact-byte
-  `CloneToUninit` target now reaches a separate `#decodeConstant` thunk on the
-  `c"hello"` literal.
+- The branch now has a concrete donor-link setup blocker instead of a generic
+  proof frontier: the linked-SMIR donor path can supply a constructor body, but
+  proof setup fails before execution because the linked SMIR no longer exposes
+  the unqualified start symbols that `make_call_config` expects.
 
 ## Missing Criteria
 
@@ -54,15 +55,17 @@ than closed Challenge 13 evidence.
 
 ## Blocking Issues
 
-- This is not a hard blocker. The prerequisite port and edition-2024 compile
-  fix are useful, but the branch still has unresolved proof frontiers rather
-  than completed Challenge 13 evidence.
-- The linked-SMIR `test_clone_to_uninit` path is still blocked by the concrete
-  missing-body/stuck frontier at `core::ffi::CStr::from_bytes_with_nul`.
-- The standalone exact-byte `CloneToUninit` slice now fails earlier on a local
-  `#decodeConstant` thunk for `c"hello"` at
-  `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs:19`,
-  so it is not yet a closed proof either.
+- This is a hard, branch-local setup blocker, not a completion signal. The
+  prerequisite port and edition-2024 compile fix are useful, but the donor-link
+  experiment is currently the thing preventing meaningful progress on the
+  highest-leverage constructor-body frontier.
+- The blocker is precise and evidence-backed: donor-linked SMIR qualifies item
+  names through `link()`, which drops the original unqualified roots
+  `test_clone_to_uninit` and `test_clone_to_uninit_exact_bytes` before
+  `make_call_config` resolves the start symbol.
+- The next action is concrete and narrow: preserve or alias the original root
+  item names across donor linking, or restrict qualification to the donor side
+  only, then rerun the two `CloneToUninit` proof entry points.
 
 ## Evidence
 
@@ -76,26 +79,28 @@ than closed Challenge 13 evidence.
 - Branch head includes prerequisite port commit `80244466`, evidence commit
   `d0517441`, and edition-2024 compile fix commit `c93bbe4a`.
 - `generator.md` records a successful `resolve_bodies`-style check, a linked
-  proof run on `test_from_ptr`, and failing challenge-local proofs for
+  proof run on `test_from_ptr`, failing challenge-local proofs for
   `test_from_ptr`, `test_index_range_from_exact_bytes`, and
-  `test_from_bytes_with_nul_unchecked_ok`.
-- Fresh reruns on `c93bbe4a` show:
-  - `kmir prove-rs kmir/cstr.smir.json --smir --start-symbol test_clone_to_uninit`
-    still fails with a stuck leaf at
-    `core::ffi::c_str::CStr::from_bytes_with_nul`
-  - `kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs --start-symbol test_clone_to_uninit_exact_bytes --terminate-on-thunk`
-    now fails on a `#decodeConstant` thunk instead of the older frontend issue
-- `workpad.md` records the remaining gap: missing `from_bytes_with_nul_unchecked`
-  and `strlen` artifacts, plus the shared
-  `core::ffi::CStr::from_bytes_with_nul` frontier on the linked-SMIR path.
+  `test_from_bytes_with_nul_unchecked_ok`, plus the exact donor-link setup
+  failure.
+- The branch-local checkpoint in `workpad.md` records the donor-link blocker in
+  precise terms:
+  - donor-linked SMIR can materialize a body-bearing synthetic item for
+    `core::ffi::CStr::from_bytes_with_nul`
+  - `link()` qualification rewrites the item names
+  - `make_call_config` then fails with `ValueError: <start-symbol> not found in
+    program`
+- `workpad.md` also preserves the remaining gap: missing
+  `from_bytes_with_nul_unchecked` and `strlen` artifacts, plus the
+  uncompleted safe-method and trait-impl coverage.
 
 ## Next Action Required To Improve State
 
-- Reduce the linked-SMIR `core::ffi::CStr::from_bytes_with_nul` frontier so the
-  shared constructor body is available to the `CloneToUninit` path.
-- Eliminate or isolate the standalone exact-byte harness's `c"hello"`
-  `#decodeConstant` thunk so that proof path can exercise the same CStr
-  constructor body instead of stopping at local constant decoding.
+- Fix donor-link root-name preservation or aliasing so the proof entry points
+  survive `link()` qualification and `make_call_config` can resolve the
+  unqualified start symbols again.
+- Once that plumbing is corrected, rerun the linked-SMIR and challenge-local
+  `CloneToUninit` proofs against the donated constructor body.
 - Then continue the remaining Challenge 13 work: the nine safe-method invariant
   checks, `from_ptr`, `from_bytes_with_nul_unchecked`, `strlen`, and the
   `Index<RangeFrom<usize>>` proof.
