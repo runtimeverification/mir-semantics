@@ -59,3 +59,4 @@ Each evaluator iteration should end with:
 - Prior review comments indicate that `CloneToUninit` must be checked against the exact writable region, not just against null or a broad helper buffer.
 - A branch-local prerequisite for cross-crate body resolution is useful evidence, but it is not a substitute for the published `CStr` harnesses/contracts.
 - For this challenge, the evaluator should fail closed if the branch lacks the `CStr` artifacts even when prerequisite linker infrastructure has landed.
+- If challenge-local `CStr` artifacts exist but the proof still fails, classify that as branch-local frontier evidence rather than a missing-artifact gap, and keep the verdict `IN PROGRESS` unless the remaining work is narrowly blocked and well documented.

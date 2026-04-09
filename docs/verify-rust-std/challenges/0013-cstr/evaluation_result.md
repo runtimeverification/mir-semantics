@@ -1,9 +1,9 @@
 # Evaluation Result: Challenge 0013
 
-Independent evaluator pass completed on the re-execution branch. The branch has
-now landed a prerequisite cross-crate body-resolution slice and a linked CStr
-fixture, but it still lacks the actual challenge-local `CStr` harnesses and
-contracts required by the published challenge.
+Independent evaluator refresh completed on the re-execution branch. The branch
+has now landed a prerequisite cross-crate body-resolution slice, a linked CStr
+fixture, and the first challenge-local `CStr` artifacts, but those challenge-
+local proofs are still failing and the full published `CStr` set is incomplete.
 
 ## Verdict
 
@@ -11,45 +11,49 @@ contracts required by the published challenge.
 
 ## Score
 
-`1.35`
+`1.75`
 
 ## Satisfied Criteria
 
 - Dedicated branch, worktree, and draft PR exist.
 - The branch now contains direct prerequisite evidence for cross-crate body
   resolution on `kmir/cstr.smir.json`.
-- `generator.md` and `workpad.md` record reproducible commands and outcomes.
-- The rubric now distinguishes prerequisite linker work from actual Challenge
-  13 completion evidence.
+- The branch now contains first challenge-local `CStr` artifacts:
+  `from_ptr.rs` with `test_from_ptr` and `test_index_range_from_exact_bytes`.
+- `generator.md` and `workpad.md` record reproducible commands and outcomes,
+  including proof failures that expose branch-local frontiers.
+- The rubric now distinguishes prerequisite linker work, exact-byte evidence,
+  and actual Challenge 13 completion evidence.
 
 ## Missing Criteria
 
-- No challenge-local `CStr` contracts or harnesses have been added yet on this
-  branch.
 - The nine safe-method invariant checks are absent.
-- `from_ptr`, `from_bytes_with_nul_unchecked`, and `strlen` have not been
-  annotated and verified on this branch.
-- No exact-byte evidence exists yet for `CloneToUninit` or
-  `Index<RangeFrom<usize>>`.
-- No completed challenge-local proof result exists for the actual published
+- `from_bytes_with_nul_unchecked` and `strlen` have not been annotated and
+  verified on this branch.
+- No exact-byte evidence exists yet for `CloneToUninit`.
+- The current `Index<RangeFrom<usize>>` artifact exists, but its proof fails
+  and still needs refinement before it can count as discharge evidence.
+- No completed challenge-local proof result exists for the full published
   `CStr` requirements.
 
 ## Blocking Issues
 
-- This is not a hard blocker. The prerequisite port is useful, but it is not
-  enough to satisfy the published challenge.
-- The current evidence still stops at infrastructure and fixture readiness; the
-  branch needs the challenge-specific `CStr` artifacts themselves.
+- This is not a hard blocker. The prerequisite port is useful, and the branch
+  now has challenge-local artifacts, but the current proofs still fail on
+  branch-local frontiers.
+- The current evidence now stops at partial artifact coverage plus unresolved
+  proof frontiers, not at missing setup alone.
 
 ## Evidence
 
 - Branch head includes prerequisite port commit `80244466` and evidence commit
-  `d0517441`.
-- `generator.md` records a successful `resolve_bodies`-style check and a linked
-  proof run on `test_from_ptr`.
-- `workpad.md` records the remaining gap: missing `CStr` harnesses/contracts,
-  including the exact-byte `CloneToUninit` and `Index<RangeFrom<usize>>`
-  checks.
+  `d0517441`, plus challenge-artifact commit `5cd0bae4`.
+- `generator.md` records a successful `resolve_bodies`-style check, a linked
+  proof run on `test_from_ptr`, and failing challenge-local proofs for
+  `test_from_ptr` and `test_index_range_from_exact_bytes`.
+- `workpad.md` records the remaining gap: missing `from_bytes_with_nul_unchecked`
+  and `strlen` artifacts, missing exact-byte `CloneToUninit`, and the need to
+  refine the current exact-byte index proof frontier.
 
 ## Next Action Required To Improve State
 
@@ -59,4 +63,5 @@ contracts required by the published challenge.
     `from_bytes_with_nul_unchecked`, and `strlen`
   - exact-byte checks for `CloneToUninit` and `Index<RangeFrom<usize>>`
 - Re-run the narrowest scoped validation on the resulting challenge-local
-  artifacts.
+  artifacts and reduce the failing `from_ptr` / index frontier to a proven or
+  explicitly blocked state.
