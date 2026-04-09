@@ -9,7 +9,7 @@
   evaluator refresh before this slice left the challenge `IN PROGRESS` at
   `2.9 / 3` pending a broader reassessment. The planner-selected
   `carrying_mul_u8` slice is now complete and passed without any support
-  changes.
+  changes. The next planner target is `unchecked_mul_u8`.
 
 ## Evidence gathered
 
@@ -23,8 +23,11 @@
   current branch already matched the prior harness shape and runner wiring, so
   this slice could be re-executed independently without importing more logic.
 - `carrying_mul.rs` is wired in the same branch-local harness set and was
-  confirmed by scoped collection, so the next cheapest Part 2 slice is
+  confirmed by scoped collection, so the next cheapest Part 2 slice was
   `carrying_mul_u8`.
+- `unchecked_mul.rs` and its fail artifact are already present in the same
+  challenge-local harness set, so the next cheapest remaining Part 1 slice is
+  `unchecked_mul_u8`.
 - The branch now has seven passing direct proof slices
   (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`, and now
@@ -44,6 +47,10 @@
 - `carrying_mul_u8` was the correct delegated slice: it is the remaining
   safe-API family in Part 2, and the branch-local harness already exposes the
   `carrying_mul` runner.
+- `unchecked_mul_u8` is the next best slice: it stays on the already-covered
+  `u8` width, reuses the multiplication support proven by `widening_mul_u8`
+  and `carrying_mul_u8`, and advances the core unsafe-method matrix more
+  directly than widening scope to a new safe-API width.
 - Do not escalate to backend changes from this slice; it passed cleanly, so
   the next step is evaluator/planner reassessment rather than widening scope
   inside this generator turn.
@@ -160,6 +167,8 @@
 ## Next handoff
 
 - The planner-selected `carrying_mul_u8` slice is complete and passed.
+- The planner-selected `unchecked_mul_u8` slice is now the next concrete
+  target.
 - Evaluator should reassess whether the branch’s seven direct proof passes
   across Part 1 and Part 2 materially change the non-float readiness signal,
   while keeping the remaining float blocker tied to the precise

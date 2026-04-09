@@ -1,10 +1,10 @@
 # Execution Plan: Challenge 0011
 
 Current objective:
-- Move Challenge 11 toward a terminal portfolio state by adding one new Part 2 safe-API proof slice on the current branch and preserving the float blocker as a separate, explicitly evidenced terminal constraint.
+- Move Challenge 11 toward a terminal portfolio state by adding one new Part 1 unsafe-method proof slice on the current branch and preserving the float blocker as a separate, explicitly evidenced terminal constraint.
 
 Next generator task:
-- Prove `carrying_mul_u8` end-to-end with a scoped `kmir prove-rs` run on `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/carrying_mul.rs`, then record whether the branch now has a first passing carrying-mul safe-API slice beyond the widening-mul and wrapping-shift families.
+- Prove `unchecked_mul_u8` end-to-end with a scoped `kmir prove-rs` run on `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_mul.rs`, then record whether the branch now has a second passing Part 1 arithmetic slice beyond add/neg/sub and the already-passing Part 2 slices.
 
 Generator acceptance evidence:
 - A concrete mapping from each published requirement to an artifact or an explicit blocker.
@@ -13,10 +13,10 @@ Generator acceptance evidence:
 
 Plan slices:
 1. Reconfirm the published function list and success criteria from the challenge page and PR #985.
-2. Execute one new Part 2 proof slice, starting with `carrying_mul_u8`, to widen the proof evidence beyond the current add/neg/sub/shift/widening-mul coverage.
+2. Execute one new Part 1 proof slice, starting with `unchecked_mul_u8`, to widen the proof evidence beyond the current add/neg/sub coverage while reusing the already-validated multiplication support.
 3. Hand the evaluator a refreshed frontier classification that distinguishes the remaining integer and safe-API breadth from the float-capability blocker.
 
 Stop conditions:
-- Stop at `BLOCKED` if the `carrying_mul_u8` proof reveals an uncovered backend or harness defect that prevents any new safe-API evidence.
-- Stop after recording the `carrying_mul_u8` outcome and hand the evaluator the updated frontier; do not widen the slice in the same delegation.
+- Stop at `BLOCKED` if the `unchecked_mul_u8` proof reveals an uncovered backend or harness defect that prevents any new Part 1 evidence.
+- Stop after recording the `unchecked_mul_u8` outcome and hand the evaluator the updated frontier; do not widen the slice in the same delegation.
 - Continue only if a concrete technical subtask remains with measurable value and can be delegated without broadening scope.
