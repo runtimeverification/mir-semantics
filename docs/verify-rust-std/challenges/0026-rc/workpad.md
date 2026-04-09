@@ -4,7 +4,7 @@
 
 - Branch: `verify-rust-std/reexec-0026-rc`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
-- Local status: first audit slice committed in `87a669dc`; first root harness added for `Rc::from_raw_in`, with proof-frontier evidence captured in `/tmp/rc-from-raw-in-proof`.
+- Local status: first audit slice committed in `87a669dc`; the `Rc::from_raw_in` root harness has now been rewritten to use a direct `System`-backed witness struct instead of `Rc::new_in`, with proof artifacts in `/tmp/rc-from-raw-in-proof`.
 
 ## Confirmed Inputs
 
@@ -15,7 +15,7 @@
 
 ## Next Action
 
-- Remove the unrelated `Rc::new_in`/`Box::try_new_uninit_in` dependency from the root harness so `Rc::from_raw_in` can be exercised directly against a raw-pointer/allocator witness.
+- The next exact boundary is the new direct-witness leaf at `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` with `CastKind::Transmute` in the root proof graph; if work continues, shrink the harness witness one step further instead of widening into other `Rc` APIs.
 
 ## What Needs To Be Captured
 
@@ -28,8 +28,9 @@
 - Keep the plan narrowed to one tranche only.
 - Do not expand into code or proof implementation from this file.
 - Use this workpad to record the chosen tranche before any generator work starts.
-- The first root harness currently stalls in `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`, at the `castKindTransmute` thunk in `core/src/alloc/layout.rs:140`.
-- This is a precise blocker on the current harness shape, not on the `Rc::from_raw_in` body itself.
+- The rewritten root harness no longer calls `Rc::new_in`; it allocates a `repr(C)` `RcInnerWitness<u32>` under `System`, converts it to a raw pointer, and feeds `Rc::from_raw_in` directly from the witness value field.
+- The previous `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` blocker is gone.
+- The new frontier is the direct witness path itself, which terminates in `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` with `CastKind::Transmute` rather than inside `Rc::new_in`.
 
 ## Audit Result
 
@@ -45,8 +46,10 @@
 
 - Harness: `kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs`
 - Validation command: `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs --proof-dir /tmp/rc-from-raw-in-proof --verbose --terminate-on-thunk`
-- Frontier evidence: `uv --project kmir run kmir show rc-from-raw-in.main --proof-dir /tmp/rc-from-raw-in-proof --leaves --statistics`
-- Leaf 4 reaches `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` and stops at `core/src/alloc/layout.rs:140` in a `castKindTransmute` thunk.
+- Frontier evidence:
+  - `proof.json` / `kcfg/nodes/3.json`
+  - `proof.json` / `kcfg/nodes/4.json`
+- Leaf 4 is now a terminal proof state whose `<k>` begins with `thunk(_)_RT-DATA_Value_Evaluation(#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty(..., CastKind::Transmute, ...))`.
 
 ## Selected First Tranche
 
@@ -71,3 +74,4 @@
 ## Known Soft Risks
 
 - Challenge guidance still flags `assume_init` as potentially hard to express in the current type system, but that does not block the selected tranche.
+- The current root witness still needs a smaller direct allocator/raw-pointer shape if this proof is to advance past the `#cast` transmute leaf.
