@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from collections import deque
 from functools import cached_property
 from typing import TYPE_CHECKING, NewType
@@ -202,7 +203,11 @@ class SMIRInfo:
         # filter the new symbols to avoid key errors
         new_syms = [self.function_symbols[ty] for ty in reachable]
         new_syms_ = [sym['NormalSym'] for sym in new_syms if 'NormalSym' in sym]
-        new_smir['items'] = [self.items[sym] for sym in new_syms_ if sym in self.items]
+
+        # For linked SMIR with cross-crate bodies, keep ALL items to avoid
+        # losing transitive dependencies. The reduce_to only filters the
+        # function_symbols map; items are kept in full for body resolution.
+        new_smir['items'] = list(self.items.values())
 
         return SMIRInfo(new_smir)
 

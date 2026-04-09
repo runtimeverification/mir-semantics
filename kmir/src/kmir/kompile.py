@@ -547,6 +547,23 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
         for ty in smir_info.function_symbols_reverse[item_name]:
             functions[ty] = parsed_item_kinner.args[1]
 
+    # Build a cross-crate body lookup: stripped symbol → parsed K item
+    # This allows resolving noBody functions against bodies from other crates in linked SMIR
+    import re
+
+    def _strip_hash(symbol: str) -> str:
+        return re.sub(r'17h[0-9a-f]{16}E$', '', symbol)
+
+    cross_crate_bodies: dict[str, KInner] = {}
+    for item_name, item in smir_info.items.items():
+        key = _strip_hash(item_name)
+        if key and key not in cross_crate_bodies:
+            parsed = kmir.parser.parse_mir_json(item, 'MonoItem')
+            if parsed:
+                parsed_kinner, _ = parsed
+                if isinstance(parsed_kinner, KApply) and parsed_kinner.label.name == 'monoItemWrapper':
+                    cross_crate_bodies[key] = parsed_kinner.args[1]
+
     # Add intrinsic functions and linked normal symbols that have no local body in `items`.
     # Normal symbols must still map to `monoItemFn(..., noBody)` instead of falling back to UNKNOWN FUNCTION.
     for ty, sym in smir_info.function_symbols.items():
@@ -558,14 +575,20 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
                 [KApply('symbol(_)_LIB_Symbol_String', [stringToken(sym['IntrinsicSym'])])],
             )
         elif isinstance(sym.get('NormalSym'), str):
-            functions[ty] = KApply(
-                'MonoItemKind::MonoItemFn',
-                (
-                    KApply('symbol(_)_LIB_Symbol_String', (stringToken(sym['NormalSym']),)),
-                    KApply('defId(_)_BODY_DefId_Int', (intToken(ty),)),
-                    KApply('noBody_BODY_MaybeBody', ()),
-                ),
-            )
+            # Try to find a cross-crate body for this function
+            stripped = _strip_hash(sym['NormalSym'])
+            if stripped in cross_crate_bodies:
+                _LOGGER.info(f'Resolved cross-crate body for {sym["NormalSym"]}')
+                functions[ty] = cross_crate_bodies[stripped]
+            else:
+                functions[ty] = KApply(
+                    'MonoItemKind::MonoItemFn',
+                    (
+                        KApply('symbol(_)_LIB_Symbol_String', (stringToken(sym['NormalSym']),)),
+                        KApply('defId(_)_BODY_DefId_Int', (intToken(ty),)),
+                        KApply('noBody_BODY_MaybeBody', ()),
+                    ),
+                )
 
     return functions
 
