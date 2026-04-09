@@ -71,6 +71,12 @@ Ownership:
   first leaf is the helper's `assert!(buf == b\"1234\")`, which enters
   `std::array::equality::<impl std::cmp::PartialEq<[u8; 4]> for [u8]>::eq` at
   `library/core/src/slice/mod.rs:871` from `probe_decimal_point_case`.
+- The latest rerun removes that helper equality path entirely. The proof now
+  fails in `std::mem::MaybeUninit::<core::num::fmt::Part<'_>>::slice_assume_init_ref`
+  at `core/src/mem/maybe_uninit.rs:987`, reached from the copied
+  `digits_to_dec_str` body rather than from the concrete-case helper itself.
+- This keeps the challenge-local frontier narrow while exposing the next
+  harness boundary more directly.
 
 ## Files Touched
 
@@ -123,6 +129,17 @@ Ownership:
   span `/library/core/src/slice/mod.rs:871`, reached from the
   challenge-local `probe_decimal_point_case` assertion at
   `dec/digits_to_dec_str_probe.rs:9`.
+- `rustc kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs -o /tmp/digits_to_dec_str_probe_0028_eqless`
+  succeeded after deleting the helper equality checks and prefixing the now-unused helper arguments with underscores.
+- `/tmp/digits_to_dec_str_probe_0028_eqless` exited successfully.
+- `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-eqless-proof --max-depth 200 --reload`
+  ended with `ProofStatus.FAILED`, `nodes: 10`, `failing: 1`, `stuck: 1`,
+  `terminal: 1`.
+- `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-eqless-proof --statistics --leaves`
+  showed the new first concrete leaf:
+  function `std::mem::MaybeUninit::<core::num::fmt::Part<'_>>::slice_assume_init_ref`,
+  span `core/src/mem/maybe_uninit.rs:987`, reached from
+  `digits_to_dec_str` at `dec/digits_to_dec_str_probe.rs:41`.
 
 ## Commit Inventory
 
@@ -143,3 +160,7 @@ Ownership:
   challenge-local: the helper that hard-codes the single concrete split case
   now gets stuck in slice/array equality before the copied `digits_to_dec_str`
   path reaches a `flt2dec`-owned frontier.
+- After removing the helper equality path as well, the next blocker is now the
+  initialized-slice helper itself, so the next narrowing step would be to
+  bypass `MaybeUninit::slice_assume_init_ref` and see whether the proof can
+  finally enter a real `flt2dec` leaf or a backend limit.

@@ -50,6 +50,14 @@
 - The current evidence therefore says the next boundary remains harness-level,
   but it has moved past raw-slice construction to the helper's concrete-case
   equality check.
+- The next rerun removed that helper equality path entirely. The probe now
+  compiles cleanly and the proof no longer stops in the helper assertion; the
+  new first leaf is
+  `std::mem::MaybeUninit::<core::num::fmt::Part<'_>>::slice_assume_init_ref`
+  at `core/src/mem/maybe_uninit.rs:987`, reached from the copied
+  `digits_to_dec_str` body in `dec/digits_to_dec_str_probe.rs:41`.
+- This is still harness-side rather than `flt2dec`-owned behavior, but it is a
+  more informative frontier than the removed array/slice equality path.
 
 ## Planning decisions
 
@@ -83,15 +91,21 @@
   concrete-case helper now fails earlier in
   `std::array::equality::<impl std::cmp::PartialEq<[u8; 4]> for [u8]>::eq`,
   so the path is still stuck in challenge scaffolding.
+- The equality-free rerun now reaches
+  `std::mem::MaybeUninit::<core::num::fmt::Part<'_>>::slice_assume_init_ref`
+  at `core/src/mem/maybe_uninit.rs:987` instead of the helper assertion, so
+  the remaining blocker is now the initialized-slice conversion itself rather
+  than the concrete-case probe wrapper.
 
 ## Next handoff
 
 - Generator has now completed the planner-selected raw-slice-removal slice and
   rerun it.
 - Evaluator can classify the new outcome against concrete evidence:
-  `split_at_raw` / `from_raw_parts` are gone from the active path, but the next
-  meaningful result is still harness-level at the helper's array/slice equality
-  check rather than a `flt2dec` boundary or float backend crash.
-- Any further generator work should stay narrow and only target the
-  `probe_decimal_point_case` equality artifact if another follow-up slice is
-  explicitly requested.
+  `split_at_raw` / `from_raw_parts` are gone from the active path, the helper
+  equality path is gone as well, and the next meaningful result is now the
+  harness-side `MaybeUninit::slice_assume_init_ref` frontier rather than a
+  `flt2dec` boundary or float backend crash.
+- The next exact narrowing step, if continued, is to bypass the
+  `MaybeUninit::slice_assume_init_ref` path so the probe can determine whether
+  it finally reaches real `flt2dec` code or a backend limit.
