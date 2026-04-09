@@ -74,7 +74,7 @@ for challenge_file in "$challenge_ref_root"/doc/src/challenges/*.md; do
     challenge_doc_dir="docs/verify-rust-std/challenges/${challenge_id}-${slug}"
     challenge_artifact_dir="kmir/src/tests/integration/data/verify-rust-std/${challenge_id}-${slug}"
 
-    if [[ ! -d "$worktree/.git" ]]; then
+    if [[ ! -e "$worktree/.git" ]]; then
         git -C "$repo_root" worktree add -b "$branch" "$worktree" origin/master
     fi
 
