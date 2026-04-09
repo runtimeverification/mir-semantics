@@ -3,13 +3,14 @@
 Checkpoint date: 2026-04-09 UTC
 
 This evaluation pass counts the prerequisite semantic baseline, the first
-branch-local `NonZero` artifacts, and the reduced proof frontiers as real
-progress, but it does not count as challenge completion because the new
-harnesses still fail on concrete proof frontiers.
+branch-local `NonZero` artifacts, and the transparent-wrapper control as real
+progress, but it does not count as challenge completion because the exact
+`u8 -> Option<NonZeroU8>` niche-cast repro still fails on the same top-level
+`castKindTransmute` frontier.
 
 ## Verdict
 
-`IN PROGRESS`
+`BLOCKED`
 
 ## Score
 
@@ -32,6 +33,8 @@ harnesses still fail on concrete proof frontiers.
 - The transparent-wrapper probe now separates generic same-size transmute
   support from the exact `u8 -> Option<NonZeroU8>` niche-cast shape used by
   `NonZero::new`.
+- The transparent-wrapper control passes, confirming that generic same-size
+  transmute support is already available on this branch.
 - Branch-local docs now distinguish prerequisite baseline progress from actual
   Challenge 12 work.
 
@@ -46,17 +49,24 @@ harnesses still fail on concrete proof frontiers.
 - No scoped `nonzero` proof/test run has passed end-to-end.
 - The exact `NonZero::new` niche-cast reproduction still fails on
   `castKindTransmute`, even though the transparent-wrapper control passes.
+- The exact `u8 -> Option<NonZeroU8>` transmute remains the current blocker.
 
 ## Blocking Issues
 
-- None. The remaining work is actionable challenge-specific implementation and
-  proof reduction, not an unresolved prerequisite semantic problem.
+- The exact `u8 -> Option<NonZeroU8>` niche-cast path still terminates at the
+  same top-level `castKindTransmute` thunk after the transparent-wrapper
+  control passed, so the remaining gap is now a precise semantic blocker rather
+  than missing setup.
+- Next action: deeper runtime/semantic investigation of the niche-cast path in
+  `NonZero::new`, then rerun the narrow Part 1 slice and reassess whether the
+  blocker closes or needs to be carried forward as a documented limitation.
 
 ## Evidence
 
-- Branch head now includes `d8e723b5`, `692cb0c5`, `5f225c52`, and `6673bcdd`
-  on top of the prerequisite baseline, and the current head `56afcd01`
-  records the transmute probe evidence.
+- Branch head `5555ddba` records the latest niche-blocker checkpoint on top of
+  the prerequisite baseline, and `generator.md` / `workpad.md` record the
+  precise `castKindTransmute` frontier together with the passing transparent-
+  wrapper control.
 - `generator.md` records compile success for `new.rs`, `new_unchecked.rs`,
   `from_mut.rs`, and `count_ones.rs`.
 - `generator.md` also records direct proof frontiers:
@@ -70,9 +80,12 @@ harnesses still fail on concrete proof frontiers.
   leaf.
 - `workpad.md` records the review-driven distinction between baseline readiness
   and challenge-specific `NonZero` work.
+- The latest workpad checkpoint records two reverted minimal matcher attempts
+  against the same leaf, which confirms the blocker is stable rather than a
+  transient harness issue.
 
 ## Next Action Required To Improve State
 
-- Reduce the exact `NonZero::new` niche-cast frontier on
-  `verify-rust-std/reexec-0012-nonzero` to a passing proof or a precise
-  blocker note, then rerun the narrow Part 1 slice and reassess readiness.
+- Investigate the exact `u8 -> Option<NonZeroU8>` niche-cast semantics in
+  `NonZero::new`, then rerun the narrow Part 1 slice and decide whether the
+  blocker can be closed or must remain documented.
