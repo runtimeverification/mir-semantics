@@ -36,6 +36,10 @@ Ownership:
   explicit semantic assertions.
 - 2026-04-09: Ran direct `kmir prove-rs` checks on new challenge-local
   artifacts and collected concrete failing/stuck frontiers for follow-up.
+- 2026-04-09: Reduced the Part 1 failure frontier beyond the symbolic
+  transmute report by reproducing failures on concrete-input start symbols and
+  isolating two cast-level obstructions (`castKindTransmute` and
+  `castKindPtrToPtr`) inside `NonZero` APIs.
 
 ## Files Touched
 
@@ -131,6 +135,27 @@ Ownership:
     `APRProof: count_ones.part2_count_ones_u8`, status `FAILED`, with
     `pending: 1`, `failing: 1`, `stuck: 1`.
 
+14. Command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/new.rs --start-symbol part1_new_u8 --terminate-on-thunk --max-depth 200 --max-iterations 300 --proof-dir /tmp/kmir-0012-new-u8-frontier --fail-fast`
+    Result:
+    `APRProof: new.part1_new_u8`, status `FAILED`, `failing: 1`.
+
+15. Command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/new.rs --start-symbol main --terminate-on-thunk --max-depth 200 --max-iterations 300 --proof-dir /tmp/kmir-0012-new-main-frontier --fail-fast`
+    Result:
+    `APRProof: new.main`, status `FAILED` even with concrete input path.
+    `kmir show` leaf confirms thunk at
+    `#cast ( Integer ( 1 , 8 , false ) , castKindTransmute , ... )` in
+    `std::num::NonZero::<u8>::new`.
+
+16. Command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/from_mut.rs --start-symbol main --terminate-on-thunk --max-depth 200 --max-iterations 300 --proof-dir /tmp/kmir-0012-from-mut-main-frontier --fail-fast`
+    Result:
+    `APRProof: from_mut.main`, status `FAILED`.
+    `kmir show` leaf confirms thunk at
+    `#cast ( PtrLocal ... , castKindPtrToPtr , ... )` in
+    `std::num::NonZero::<u8>::from_mut`.
+
 ## Commit Inventory
 
 - `a52729d7` — `fix(transmute): accept MaybeUninit reinterpretation`
@@ -142,8 +167,10 @@ Ownership:
 
 ## Blockers
 
-- No blocker for this prerequisite slice.
-- Remaining work for Challenge 0012 is now narrowed to making the new Part 1
-  and Part 2 harnesses provable under current semantics.
-- Current frontier from this slice is concrete: failure/stuck states around the
-  `NonZero::new` transmute path and related follow-on execution.
+- No external/tooling blocker was found in this frontier-reduction slice.
+- Remaining work for Challenge 0012 is narrowed to cast semantics used by Part 1
+  `NonZero` APIs:
+  - Integer-to-wrapper transmute cast in `NonZero::new`
+  - Wrapper pointer cast in `NonZero::from_mut`
+- Current evidence shows these frontiers persist even on concrete-input `main`
+  starts, so this is not only a symbolic-branching artifact.

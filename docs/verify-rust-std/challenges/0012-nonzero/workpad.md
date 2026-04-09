@@ -100,3 +100,27 @@
   (`new` or `new_unchecked`) to a minimal semantic issue and either:
   - fix it locally if low-risk and reusable, or
   - record it as a precise blocker candidate for evaluator classification.
+
+## Frontier Reduction Slice (Part 1)
+
+- Reproduced `new.part1_new_u8` failure with a fresh proof directory:
+  `/tmp/kmir-0012-new-u8-frontier`.
+- Ran `new.main` (concrete argument path) and confirmed it still fails, then
+  inspected leaves:
+  thunk at `#cast ( Integer ( 1 , 8 , false ) , castKindTransmute , ... )` in
+  `std::num::NonZero::<u8>::new`.
+- Ran `from_mut.main` and confirmed independent failure frontier:
+  thunk at `#cast ( PtrLocal ... , castKindPtrToPtr , ... )` in
+  `std::num::NonZero::<u8>::from_mut`.
+
+## Frontier Reduction Outcome
+
+- This slice did not produce a passing Part 1 proof.
+- It did reduce the blocker beyond the previous generic
+  `NonZero::new transmute/thunk` report:
+  - `new` fails even for concrete constant input (`1`), so the issue is not
+    only symbolic branching.
+  - `from_mut` reveals a second cast-level frontier (`castKindPtrToPtr`) tied
+    to NonZero wrapper pointer conversion.
+- Next action should target one of these cast frontiers with a minimal semantic
+  fix or an evaluator-grade blocker classification if the fix is out of scope.
