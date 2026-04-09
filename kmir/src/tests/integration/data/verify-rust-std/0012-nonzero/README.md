@@ -26,7 +26,16 @@ Challenge-local artifact contract:
 
 Status board:
 
-- Planner: not started
-- Generator: waiting for planner and evaluator baselines
-- Evaluator: not started
-- Draft PR: not created
+- Planner: started
+- Generator: in progress
+- Evaluator: started
+- Draft PR: created
+
+Artifact progress:
+
+- Part 1 semantics (initial slice):
+  - `new.rs`
+  - `new_unchecked.rs`
+  - `from_mut.rs`
+- Part 2 low-risk seed:
+  - `count_ones.rs`
