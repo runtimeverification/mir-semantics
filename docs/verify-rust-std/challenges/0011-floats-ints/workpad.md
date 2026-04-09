@@ -7,8 +7,8 @@
 - Status after generator slice: the challenge-local docs and ported artifacts
   exist, five direct proof slices pass on the branch, and the latest
   evaluator refresh still leaves the challenge `IN PROGRESS` at `2.8 / 3`
-  pending a broader reassessment. This turn added the planner-selected
-  `wrapping_shr_u8` pass, bringing the branch to five direct passing slices.
+  pending a broader reassessment. The next generator handoff now targets
+  `widening_mul_u8` as the cheapest remaining safe-API slice.
 
 ## Evidence gathered
 
@@ -30,10 +30,10 @@
 ## Planning decisions
 
 - Treat the integer portion and float portion as separate evidence-bearing slices.
-- `wrapping_shr_u8` was the correct next delegated slice: it passed without
-  new support changes, broadened Part 2 safe-API evidence beyond the existing
-  `wrapping_shl_u8` result, and left the remaining gap as breadth rather than
-  a new slice-specific blocker.
+- `widening_mul_u8` is the correct next delegated slice: it is the cheapest
+  remaining safe-API case, broadens Part 2 beyond the existing wrapping-shift
+  pair, and should re-use the already-ported unsigned multiplication support
+  without introducing float work.
 - Do not escalate to backend changes yet; first confirm whether the current branch can independently add one more passing safe-API proof before reclassifying the remaining float gap.
 
 ## Reusable rubric patterns for evaluator
@@ -123,12 +123,13 @@
 
 ## Next handoff
 
-- The planner-selected `wrapping_shr_u8` slice is now complete with a passing
-  branch-local proof and matching collect-only evidence.
-- Remaining branch work should stay focused on evaluator reassessment of the
-  broadened non-float evidence or on documenting the already-recorded float
-  blocker; this generator turn should not be widened beyond the completed
-  `wrapping_shr_u8` evidence.
+- The planner-selected `widening_mul_u8` slice is now the active target.
+- Generator should use `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/widening_mul.rs`
+  with `--start-symbol widening_mul_u8` in a scoped `kmir prove-rs` run, and
+  then record whether Part 2 now has a first passing widening-mul slice.
+- Remaining branch work should stay focused on that single proof attempt or on
+  documenting the already-recorded float blocker; this generator turn should
+  not be widened beyond `widening_mul_u8`.
 
 ## Evaluator Note
 
