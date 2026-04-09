@@ -4,25 +4,26 @@
 
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
-- Status at planner handoff: bootstrap artifacts exist; no challenge-local implementation, proof, or evaluation has been performed by this planner.
+- Status at planner handoff: the challenge-local docs and ported artifacts exist, two direct Part 1 proof slices already pass, and the current frontier is one new Part 2 proof slice from a different requirement family.
 
 ## Evidence gathered
 
-- PR #985 states that the integer-method portion is complete and that the float portion is blocked by missing KMIR float-value support.
-- PR #985 includes a concrete split between integer methods, safe APIs, and `to_int_unchecked` for `f16`, `f32`, `f64`, and `f128`.
-- Review history on PR #985 is thin; the main reusable signal is the challenge decomposition and the explicit float-support blocker.
+- Challenge 11 on the verify-rust-std site is resolved and lists three concrete requirement families: Part 1 integer methods, Part 2 safe APIs, and Part 3 float-to-int conversion.
+- PR #985 states that the integer-method portion and the safe APIs were intended to complete, while Part 3 is blocked by missing KMIR float-value support.
+- PR #985’s visible review context is thin; the only public review signal currently accessible is an LGTM comment, so the blocker signal comes from the PR body and the branch-local float artifacts.
 
 ## Planning decisions
 
 - Treat the integer portion and float portion as separate evidence-bearing slices.
-- Keep the next generator task narrow so the evaluator can distinguish a real backend blocker from a missing artifact or a bad harness decomposition.
-- Do not escalate to backend changes yet; first confirm whether the current branch can independently re-execute the published workload.
+- Make `wrapping_shl_u8` the next delegated slice because it crosses into Part 2, exercises the existing shift-mask lemma path, and is the smallest proof action that materially broadens branch-local evidence.
+- Do not escalate to backend changes yet; first confirm whether the current branch can independently add one more passing proof family before reclassifying the remaining float gap.
 
 ## Reusable rubric patterns for evaluator
 
 - Successful evaluation must tie every published requirement to a concrete artifact or an explicit blocker.
 - A float-specific blocker should mention the exact missing capability, not just "floats are hard."
 - Terminal classification should distinguish `CONDITIONALLY READY` from `BLOCKED` based on whether the remaining gap is narrow and external versus structural and unimplemented.
+- A new passing proof in a second requirement family is the strongest low-cost signal that the branch is moving beyond bootstrap evidence without consuming float-blocker budget.
 
 ## Failed-attempt log
 
@@ -66,12 +67,5 @@
 
 ## Next handoff
 
-- Generator follow-up should either:
-  - add one more completed small integer slice from a new bucket
-    (preferred: `wrapping_shl_u8`),
-    or
-  - run a tightly scoped fail-case (`unchecked_add-fail`) to verify UB-detection
-    behavior on this branch.
-- Evaluator should classify readiness based on:
-  integer artifact completeness vs. completed-proof evidence, and whether
-  float-to-int remains a structural backend blocker.
+- Generator follow-up: run `kmir prove-rs` against `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/wrapping_shl.rs` with `--start-symbol wrapping_shl_u8`, then report the proof status, proof directory, and any blocker text if the run does not pass.
+- Evaluator should classify readiness based on whether that new Part 2 proof lands cleanly and whether the only remaining terminal constraint is still the documented float-value blocker from PR #985.

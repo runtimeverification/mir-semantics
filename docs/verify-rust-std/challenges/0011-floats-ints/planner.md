@@ -17,10 +17,11 @@ Ownership:
 
 ## Requirements Extraction
 
-- Published goal: verify Challenge 11 from `model-checking/verify-rust-std`, covering the numeric primitive methods in Part 1 and Part 2 plus the float-to-int conversion target in Part 3.
-- Published success criteria: all listed integer-method harnesses must pass under their stated preconditions, the UB-fail cases must produce the expected failures, and `to_int_unchecked` must be covered for the float types listed in the challenge page.
-- Challenge-specific UB obligations: overflow and shift-width violations for the unchecked integer methods, plus the invalid-float-conversion cases for `to_int_unchecked`.
-- Additional safety conditions from source docs or SAFETY comments: keep the proofs aligned with the `--terminate-on-thunk` execution model and the challenge assumptions; do not weaken the float path into a vacuous proof.
+- Published goal: verify Challenge 11 from `model-checking/verify-rust-std`, covering Part 1 unsafe integer methods, Part 2 safe integer APIs, and Part 3 `to_int_unchecked` for `f16`, `f32`, `f64`, and `f128`.
+- Published success criteria: each listed integer harness must satisfy its stated preconditions, the UB-fail harnesses must exhibit the expected failures, and the float-to-int conversion path must be either proved or blocked with exact backend evidence.
+- Challenge-specific UB obligations: overflow, underflow, and shift-width violations for the unchecked integer methods, plus invalid float conversions and the generic UB list from the challenge page.
+- Additional safety conditions from source docs or SAFETY comments: keep the proofs aligned with the `--terminate-on-thunk` execution model and the challenge assumptions; do not weaken the float path into a vacuous proof or a placeholder artifact.
+- Historical guidance from PR #985: Parts 1 and 2 were intended to be complete, while Part 3 is explicitly blocked by missing KMIR / haskell-backend float-value support; the only review context visible on the PR is an LGTM comment, so the blocker signal comes from the PR body and the branch-local float artifacts, not from a deep review thread.
 
 ## Scope Contract
 
@@ -33,20 +34,22 @@ Ownership:
 | Sprint | Intended slice | Acceptance check | Status |
 | --- | --- | --- | --- |
 | 0 | Bootstrap challenge understanding | Requirements and blockers recorded | done |
-| 1 | Narrow the generator target | One concrete next technical subtask and its required evidence are written in `plan.md` | pending |
-| 2 | Preserve evaluator evidence trail | `workpad.md` records blocker hypotheses, reusable rubric patterns, and handoff state | pending |
+| 1 | Narrow the generator target | One concrete next technical subtask and its required evidence are written in `plan.md` | done |
+| 2 | Preserve evaluator evidence trail | `workpad.md` records blocker hypotheses, reusable rubric patterns, and handoff state | in progress |
 
 ## Dependencies And Blockers
 
-- Primary suspected blocker: the float subtask is still constrained by KMIR / haskell-backend float-value support, as stated in PR #985. That limits any direct progress on `to_int_unchecked` unless the backend gap is already closed in the current branch.
-- Secondary dependency: the evaluator should confirm whether the integer harnesses can be re-executed independently and whether the challenge is therefore `CONDITIONALLY READY` for the integer portion while the float path remains blocked.
+- Current frontier: two direct integer proof slices pass on this branch, but only one requirement family is represented. The highest-leverage next step is a new Part 2 proof slice, starting with `wrapping_shl_u8`, because it widens the evidence from Part 1 into a second published requirement family without broadening scope.
+- Primary blocker remains the float path in Part 3: PR #985 states that KMIR lacks float-value support, and the ported `to_int_unchecked-fail` artifacts still show stuck float intrinsic hooks. That blocker should stay separate from any new integer proof work.
+- Secondary dependency: if the new Part 2 slice passes, the evaluator can reassess whether the remaining gap is purely the known float blocker plus missing integer breadth, or whether another artifact gap still exists.
 
 ## Cross-Challenge Notes
 
 - Reuse candidate: PR #985 already records the intended harness split and the float blocker hypothesis; its review history is light, so the main reusable pattern is the challenge decomposition and evidence structure rather than a large review thread.
 - Reuse candidate: challenge 13/28 work shows how the portfolio uses branch-local docs to isolate one challenge per evidence trail, but it does not change the float blocker for this challenge.
+- Reuse candidate: the verify-rust-std challenge page itself is the authoritative success-criteria source, so the planner should keep the current frontier tied to published requirements rather than to incidental test discovery.
 
 ## History
 
 - Bootstrap record created by orchestrator.
-- Planner updated after reconfirming PR #985 and selecting the next generator focus.
+- Planner updated after reconfirming the challenge page, PR #985, and selecting `wrapping_shl_u8` as the next delegated proof slice.
