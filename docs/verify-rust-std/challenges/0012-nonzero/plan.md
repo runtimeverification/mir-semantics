@@ -6,23 +6,21 @@ Turn the reviewed public NonZero baseline into a branch-local implementation tha
 
 ## Next Generator Task
 
-Rebuild the Challenge 12 harness matrix from the public `verify-rust-std` solutions and tighten every remaining weak spot so each API has an explicit semantic assertion, not just a nonzero check.
+Close the concrete `castKindTransmute` frontier in `NonZero::new` by turning the existing transparent-wrapper probe into the smallest challenge-local transmute reproduction, then use that evidence to decide whether the same-size contract is sufficient for Part 1.
 
 ## Task Breakdown
 
-1. Rehydrate the reviewed public baseline from PR `#544` and PR `#565`.
-2. Map every published `NonZero` API to a concrete harness or contract in `library/core/src/num/nonzero.rs`, including the `max` / `min` / `clamp` trio and the signed-only / unsigned-only cases.
-3. Add the smallest supporting `core` annotations needed to make the proofs go through, especially if `checked_pow` or related helpers still need invariant help.
-4. Keep any wide-type or bounded proof strategy explicit in the artifact text so the evaluator can separate acceptable bounds from missing coverage.
+1. Reproduce the `NonZero::new` transmute path with the checked transparent-wrapper probe shape in `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs`.
+2. Determine whether the frontier is closed by the existing same-size contract story or whether the proof still needs a narrower semantic blocker record.
+3. Leave the `castKindPtrToPtr` `NonZero::from_mut` frontier and the broader Part 2 API matrix for the next slice after the transmute path is understood.
 
 ## Evidence The Evaluator Needs
 
-- A file-to-function coverage map for the published API list.
-- Proof or test commands for the full harness set.
-- A note for any intentionally bounded case, including why the bound is acceptable.
-- A clear record of any core annotations added only to support verification.
+- A precise note of the `NonZero::new` frontier that was targeted.
+- A clear statement of how the transparent-wrapper probe changes the next-step choice.
+- Proof or test commands only for the narrowed frontier slice.
+- A blocker note if same-size transmute contracts are still not enough.
 
 ## Current Risk
 
-The main risk is not missing coverage but insufficiently strong specifications. The prior public review already flagged thin harnesses, so the generator should prove semantic properties directly wherever the API allows it.
-
+The main risk is not missing coverage but insufficiently strong specifications. The prior public review already flagged thin harnesses, and the current frontier is still a cast-semantics failure, so the generator should isolate that cast before spending effort on the wider API matrix.

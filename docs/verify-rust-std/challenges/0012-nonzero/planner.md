@@ -18,6 +18,7 @@ Ownership:
 ## Requirements Extraction
 
 - Published goal: verify the safety of `NonZero` in `core::num`.
+- Challenge page wording: Part 1 requires `NonZero::new` and `NonZero::new_unchecked` to uphold the `SAFETY` preconditions and prove that a value is created iff the input is nonzero and that the resulting inner value equals the input; Part 2 requires the full published `core::num::nonzero` API list, and the challenge page explicitly permits same-size contracts for `new` / `get` transmutation assumptions.
 - Published success criteria:
   - Part 1: verify `NonZero::new` and `NonZero::new_unchecked` with the stated preconditions.
   - Part 1 correctness: an object is created iff the input is nonzero, and the resulting value equals the input.
@@ -47,7 +48,7 @@ Ownership:
 | Sprint | Intended slice | Acceptance check | Status |
 | --- | --- | --- | --- |
 | 0 | Bootstrap challenge understanding | Requirements, review feedback, and likely proof hazards recorded | complete |
-| 1 | Rebuild the reviewed NonZero baseline | Generator has a branch-local implementation plan that maps every published API to explicit semantic assertions and evidence | pending |
+| 1 | Rebuild the reviewed NonZero baseline | Generator has a branch-local implementation plan that maps every published API to explicit semantic assertions and evidence | in progress |
 | 2 | Tighten the remaining review-sensitive cases | Evaluator can point to exact harnesses, bounds, and any justified exclusions | pending |
 
 ## Dependencies And Blockers
@@ -55,6 +56,17 @@ Ownership:
 - Public review feedback on the existing solution PRs indicates the obvious baseline is not enough unless the harnesses assert semantic behavior, not just nonzero-ness.
 - Wider `isqrt` and 128-bit `pow` cases may need explicit bounds or a documented performance rationale.
 - No backend escalation is known yet.
+
+## Current Frontier
+
+- The narrowed Part 1 blocker is `NonZero::new` on the `castKindTransmute` path.
+- A second, separate Part 1 blocker remains in `NonZero::from_mut` on `castKindPtrToPtr`, but it is not the next delegated slice.
+- The untracked probe `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs` is the strongest evidence that the next generator slice should isolate wrapper-transmute semantics first, because it mirrors the concrete `NonZero::new` cast shape more closely than the pointer-cast frontier.
+
+## Next Delegation
+
+- Delegate a minimal `NonZero::new` transmute reproduction around the existing transparent-wrapper probe shape.
+- Keep the subtask narrow enough to decide whether the same-size contract story is sufficient before widening to Part 2 or the pointer-cast frontier.
 
 ## Cross-Challenge Notes
 

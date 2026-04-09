@@ -4,24 +4,28 @@
 
 - 2026-04-09 UTC: Chosen as the next active batch candidate because the public solution history is rich and the review feedback already points to the exact weakness to fix.
 - 2026-04-09 UTC: The branch-local planning target is to convert the public NonZero baseline into a stricter semantic proof set, not to invent a new proof strategy.
+- 2026-04-09 UTC: The next delegated slice is narrowed to the `NonZero::new` `castKindTransmute` frontier, with the untracked transparent-wrapper probe as the smallest evidence-bearing reproduction.
 
 ## Evidence Collected
 
 - Upstream challenge page confirms the goal, the Part 1 correctness requirements, the full Part 2 API list, and the UB obligations.
 - PR `#565` review feedback says the prior solution is "a solid first submission" but still too thin because most Part 2 harnesses only prove non-UB.
 - PR `#544` review feedback points out that `isqrt` coverage is incomplete unless wider unsigned types are added or a bound/rationale is documented.
+- The current branch frontier is concrete, not abstract: `NonZero::new` still fails on `castKindTransmute`, and `NonZero::from_mut` still fails separately on `castKindPtrToPtr`.
+- The untracked probe `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs` shows a minimal `#[repr(transparent)]` wrapper transmute from `u8` to a newtype, which is the closest local shape to the `NonZero::new` frontier and therefore the best next step for isolating the cast semantics.
 
 ## Reuse Candidates
 
 - Public solution PR `#544` is the best baseline for harness shape and coverage matrix.
 - Public solution PR `#565` is the best baseline for the narrower Part 1 / Part 2 framing and for the review-driven readiness criteria.
 - Small core-side verification helpers, if needed, should stay limited to `uint_macros.rs` and `int_macros.rs`.
+- The transparent-wrapper probe is now the strongest local signal for the next generator slice, because it should tell us whether the `NonZero::new` frontier can be reduced to a same-size wrapper transmute contract before we invest in the wider API matrix.
 
 ## Handoff To Generator
 
-- Start by reconstructing the reviewed public baseline in this branch.
-- Strengthen any harness that only checks `get() != 0` so it also asserts the expected semantic relation when the API has one.
-- Keep any bounded 128-bit proof strategy explicit and documented.
+- Start from `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs` and make the next challenge-local slice a minimal `NonZero::new` transmute reproduction.
+- Decide whether the same-size contract story already closes the `castKindTransmute` frontier or whether the result is a precise blocker record.
+- Do not widen to the Part 2 matrix or the `from_mut` pointer-cast frontier until this transmute slice is understood.
 
 ## Handoff To Evaluator
 
@@ -96,10 +100,10 @@
 
 - Challenge-local artifacts now exist, but none of the new symbolic proofs are
   closing yet under current semantics.
-- Next highest-value step is to reduce one failing Part 1 frontier
-  (`new` or `new_unchecked`) to a minimal semantic issue and either:
-  - fix it locally if low-risk and reusable, or
-  - record it as a precise blocker candidate for evaluator classification.
+- Next highest-value step is to reduce the concrete `NonZero::new`
+  transmute frontier to a minimal wrapper-reproduction slice and either:
+  - close it with the existing same-size contract story, or
+  - record the exact blocker if the frontier still survives.
 
 ## Frontier Reduction Slice (Part 1)
 
@@ -122,5 +126,7 @@
     only symbolic branching.
   - `from_mut` reveals a second cast-level frontier (`castKindPtrToPtr`) tied
     to NonZero wrapper pointer conversion.
-- Next action should target one of these cast frontiers with a minimal semantic
-  fix or an evaluator-grade blocker classification if the fix is out of scope.
+- Next action should target the `NonZero::new` cast frontier with the
+  transparent-wrapper probe shape first; that is the highest-leverage slice
+  because it is the closest local reproduction of the failing transmute path
+  and it keeps the separate pointer-cast frontier out of scope for now.
