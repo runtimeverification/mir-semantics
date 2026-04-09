@@ -39,9 +39,9 @@ Ownership:
 
 ## Dependencies And Blockers
 
-- Current frontier: two direct integer proof slices pass on this branch, but only one requirement family is represented. The highest-leverage next step is a new Part 2 proof slice, starting with `wrapping_shl_u8`, because it widens the evidence from Part 1 into a second published requirement family without broadening scope.
+- Current frontier: three direct proof slices pass on this branch, but the broader arithmetic matrix is still unconfirmed. The highest-leverage next step is `unchecked_sub_u8`, because it is the cheapest remaining unchecked-math slice, expands Part 1 breadth beyond add/neg/shift evidence, and is likely to reuse the existing harness and arithmetic support without any new backend work.
 - Primary blocker remains the float path in Part 3: PR #985 states that KMIR lacks float-value support, and the ported `to_int_unchecked-fail` artifacts still show stuck float intrinsic hooks. That blocker should stay separate from any new integer proof work.
-- Secondary dependency: if the new Part 2 slice passes, the evaluator can reassess whether the remaining gap is purely the known float blocker plus missing integer breadth, or whether another artifact gap still exists.
+- Secondary dependency: if the new Part 1 slice passes, the evaluator can reassess whether the remaining gap is purely the known float blocker plus the still-broad integer/safe-API matrix, or whether another artifact gap still exists.
 
 ## Cross-Challenge Notes
 
@@ -52,4 +52,5 @@ Ownership:
 ## History
 
 - Bootstrap record created by orchestrator.
-- Planner updated after reconfirming the challenge page, PR #985, and selecting `wrapping_shl_u8` as the next delegated proof slice.
+- Planner updated after reconfirming the challenge page, PR #985, and selecting `wrapping_shl_u8` as the first delegated proof slice.
+- Planner updated after the `wrapping_shl_u8` pass and evaluator refresh; `unchecked_sub_u8` is now the next delegated proof slice.

@@ -5,8 +5,8 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, two direct Part 1 proof slices still pass, and `wrapping_shl_u8` now
-  adds one passing Part 2 proof slice from a different requirement family.
+  exist, three direct proof slices pass on the branch, and the latest evaluator
+  refresh still leaves the challenge `IN PROGRESS` at `2.6 / 3`.
 
 ## Evidence gathered
 
@@ -16,19 +16,22 @@
 - PR #985’s file list confirms that `wrapping_shl` relied on the already-ported
   shift-mask simplification lemmas; this branch-local re-execution therefore
   tests whether that support is sufficient here without importing new logic.
+- The refreshed evaluator result stays at `IN PROGRESS` with score `2.6 / 3`,
+  so the branch still needs more integer breadth before any terminal state can
+  be justified.
 
 ## Planning decisions
 
 - Treat the integer portion and float portion as separate evidence-bearing slices.
-- Make `wrapping_shl_u8` the next delegated slice because it crosses into Part 2, exercises the existing shift-mask lemma path, and is the smallest proof action that materially broadens branch-local evidence.
-- Do not escalate to backend changes yet; first confirm whether the current branch can independently add one more passing proof family before reclassifying the remaining float gap.
+- Make `unchecked_sub_u8` the next delegated slice because it is the cheapest remaining unchecked-math proof, it extends the proof set beyond add/neg/shift without new backend work, and it gives the evaluator a cleaner read on the remaining arithmetic matrix.
+- Do not escalate to backend changes yet; first confirm whether the current branch can independently add one more passing arithmetic proof before reclassifying the remaining float gap.
 
 ## Reusable rubric patterns for evaluator
 
 - Successful evaluation must tie every published requirement to a concrete artifact or an explicit blocker.
 - A float-specific blocker should mention the exact missing capability, not just "floats are hard."
 - Terminal classification should distinguish `CONDITIONALLY READY` from `BLOCKED` based on whether the remaining gap is narrow and external versus structural and unimplemented.
-- A new passing proof in a second requirement family is the strongest low-cost signal that the branch is moving beyond bootstrap evidence without consuming float-blocker budget.
+- A new passing proof in an additional arithmetic slice is the strongest low-cost signal that the branch is moving beyond bootstrap evidence without consuming float-blocker budget.
 
 ## Failed-attempt log
 
@@ -85,14 +88,15 @@
 
 ## Next handoff
 
-- Evaluator should reassess terminal state now that `wrapping_shl_u8` passes
-  branch-locally and the integer evidence spans both Part 1 and Part 2.
+- Generator should next run `unchecked_sub_u8` end-to-end and record the
+  command, proof outcome, and any exact missing support if the slice does not
+  pass.
 - Remaining generator work, if any, should stay scoped to documenting or
   confirming the already-recorded float blocker rather than widening back into
   unrelated integer symbols.
 
 ## Evaluator Note
 
-- 2026-04-09: `wrapping_shl_u8` is strong Part 2 evidence, but the remaining
+- 2026-04-09: `wrapping_shl_u8` is strong evidence, but the remaining
   unverified integer and safe-API surface is still broad, so the strongest
   justified verdict remains `IN PROGRESS` rather than `CONDITIONALLY READY`.
