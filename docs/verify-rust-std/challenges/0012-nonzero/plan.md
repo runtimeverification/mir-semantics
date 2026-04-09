@@ -6,21 +6,21 @@ Turn the reviewed public NonZero baseline into a branch-local implementation tha
 
 ## Next Generator Task
 
-Close the concrete `castKindTransmute` frontier in `NonZero::new` by turning the existing transparent-wrapper probe into the smallest challenge-local transmute reproduction, then use that evidence to decide whether the same-size contract is sufficient for Part 1.
+Close the concrete `castKindTransmute` frontier in `NonZero::new` by treating the transparent-wrapper probe as the passing control and then isolating the exact `u8 -> Option<NonZeroU8>` niche-cast shape that still fails. Use that one slice to decide whether the remaining blocker is a precise niche-cast semantic gap or a recordable proof frontier.
 
 ## Task Breakdown
 
 1. Reproduce the `NonZero::new` transmute path with the checked transparent-wrapper probe shape in `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs`.
-2. Determine whether the frontier is closed by the existing same-size contract story or whether the proof still needs a narrower semantic blocker record.
-3. Leave the `castKindPtrToPtr` `NonZero::from_mut` frontier and the broader Part 2 API matrix for the next slice after the transmute path is understood.
+2. Isolate the exact `u8 -> Option<NonZeroU8>` reproduction and determine whether it still fails on `castKindTransmute` after the transparent-wrapper control passes.
+3. If the exact niche-cast still fails, record the blocker precisely and leave the `castKindPtrToPtr` `NonZero::from_mut` frontier and the broader Part 2 API matrix for a later slice.
 
 ## Evidence The Evaluator Needs
 
 - A precise note of the `NonZero::new` frontier that was targeted.
-- A clear statement of how the transparent-wrapper probe changes the next-step choice.
+- A clear statement that the transparent-wrapper probe now serves as the passing control, while the exact `Option<NonZeroU8>` cast remains the frontier.
 - Proof or test commands only for the narrowed frontier slice.
-- A blocker note if same-size transmute contracts are still not enough.
+- A blocker note if the exact niche-cast still fails even after the same-size wrapper control passes.
 
 ## Current Risk
 
-The main risk is not missing coverage but insufficiently strong specifications. The prior public review already flagged thin harnesses, and the current frontier is still a cast-semantics failure, so the generator should isolate that cast before spending effort on the wider API matrix.
+The main risk is not missing coverage but spending effort on the wrong frontier. The prior public review already flagged thin harnesses, and the current evidence shows plain same-size transmute support is already available, so the generator should isolate the exact niche-cast before spending effort on the wider API matrix.

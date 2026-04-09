@@ -7,6 +7,7 @@
 - 2026-04-09 UTC: The next delegated slice is narrowed to the `NonZero::new` `castKindTransmute` frontier, with the untracked transparent-wrapper probe as the smallest evidence-bearing reproduction.
 - 2026-04-09 UTC: The transparent-wrapper probe was refined into a two-point repro: a passing `u8 -> #[repr(transparent)] WrapU8` control and a failing exact `NonZero::new`-shape `u8 -> Option<NonZeroU8>` transmute.
 - 2026-04-09 UTC: Evaluator verdict remains `IN PROGRESS`; the wrapper control passes, but the exact `u8 -> Option<NonZeroU8>` transmute still fails on `castKindTransmute`, so this is still a semantic frontier rather than submission-ready evidence.
+- 2026-04-09 UTC: The next technical slice should not spend more time on generic same-size transmute support, because that is already closed by the wrapper control; it should isolate the exact niche-cast semantics in `NonZero::new` and stop if that exact shape still fails.
 
 ## Evidence Collected
 
@@ -25,13 +26,13 @@
 - Public solution PR `#544` is the best baseline for harness shape and coverage matrix.
 - Public solution PR `#565` is the best baseline for the narrower Part 1 / Part 2 framing and for the review-driven readiness criteria.
 - Small core-side verification helpers, if needed, should stay limited to `uint_macros.rs` and `int_macros.rs`.
-- The transparent-wrapper probe is now the strongest local signal for the next generator slice, because it should tell us whether the `NonZero::new` frontier can be reduced to a same-size wrapper transmute contract before we invest in the wider API matrix.
+- The transparent-wrapper probe is now the strongest local control, because it already passes and lets us separate generic same-size transmute support from the exact niche-cast semantics used by `NonZero::new`.
 
 ## Handoff To Generator
 
-- Start from `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs` and make the next challenge-local slice a minimal `NonZero::new` transmute reproduction.
-- Decide whether the same-size contract story already closes the `castKindTransmute` frontier or whether the result is a precise blocker record.
-- Do not widen to the Part 2 matrix or the `from_mut` pointer-cast frontier until this transmute slice is understood.
+- Keep `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs` as the passing control.
+- Make the next challenge-local slice a minimal `NonZero::new` niche-cast reproduction that targets only the exact `u8 -> Option<NonZeroU8>` failure on `castKindTransmute`.
+- If that exact shape still fails, write down the blocker precisely and do not widen to the Part 2 matrix or the `from_mut` pointer-cast frontier.
 
 ## Handoff To Evaluator
 
@@ -149,7 +150,7 @@
   - the blocker is now the exact integer-to-`Option<NonZero<T>>` niche cast
     shape used by `NonZero::new`
 - Decision for Part 1 after this slice:
-  - the challenge-page same-size contract story is not sufficient by itself on
-    this branch
-  - Part 1 remains blocked on a precise semantic frontier in
-    `castKindTransmute` for `NonZero::new`
+  - the challenge-page same-size contract story is already validated by the
+    wrapper control, so it is not the next question
+  - Part 1 remains blocked on the precise `castKindTransmute` niche-cast
+    semantics for `NonZero::new`

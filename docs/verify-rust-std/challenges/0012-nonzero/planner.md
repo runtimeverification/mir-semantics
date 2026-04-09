@@ -61,12 +61,13 @@ Ownership:
 
 - The narrowed Part 1 blocker is `NonZero::new` on the `castKindTransmute` path.
 - A second, separate Part 1 blocker remains in `NonZero::from_mut` on `castKindPtrToPtr`, but it is not the next delegated slice.
-- The untracked probe `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs` is the strongest evidence that the next generator slice should isolate wrapper-transmute semantics first, because it mirrors the concrete `NonZero::new` cast shape more closely than the pointer-cast frontier.
+- The transparent-wrapper probe has now been checked as a control: `u8 -> #[repr(transparent)] WrapU8` passes, while `u8 -> Option<NonZeroU8>` still fails on `castKindTransmute`.
+- That makes the remaining question narrower than generic same-size transmute support: the next generator slice should isolate the exact `NonZero::new` niche-cast semantics and stop there if it still fails.
 
 ## Next Delegation
 
-- Delegate a minimal `NonZero::new` transmute reproduction around the existing transparent-wrapper probe shape.
-- Keep the subtask narrow enough to decide whether the same-size contract story is sufficient before widening to Part 2 or the pointer-cast frontier.
+- Delegate a minimal `NonZero::new` niche-cast reproduction that keeps the passing transparent-wrapper probe as the control and targets only the exact `u8 -> Option<NonZeroU8>` failure.
+- Keep the subtask narrow enough to decide whether the remaining blocker is a precise `castKindTransmute` niche-cast gap or a blocker note, and do not widen to Part 2 or the `from_mut` pointer-cast frontier.
 
 ## Cross-Challenge Notes
 
