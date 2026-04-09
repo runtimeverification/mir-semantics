@@ -2,46 +2,52 @@
 
 ## Current Position
 
-The branch is still at bootstrap. No implementation, proofs, or evaluator scoring
-exist yet. The next generator step should therefore target the smallest slice
-that can establish a trustworthy evidence chain for the rest of the challenge.
+This branch is past bootstrap. It already contains challenge-local artifacts for
+`from_ptr`, `Index<RangeFrom<usize>>`, and `from_bytes_with_nul_unchecked`,
+but those proofs are still failing or incomplete, and `strlen` plus
+`CloneToUninit` are still missing as dedicated challenge slices.
+
+The highest-leverage next technical subtask is the exact-byte
+`CloneToUninit` slice, because it is one of the final published criteria and it
+touches the review-sensitive byte-exact destination-validity trap directly.
 
 ## Next Generator Task
 
-Implement the `CStr` verification core in the challenge branch:
+Implement the `CloneToUninit` verification slice for `CStr`:
 
-1. Add or refine the `CStr` invariant harnesses so the result of each safe API is
-   checked with `is_safe()` and matched against the expected byte view.
-2. Add the unsafe contracts and proof harnesses for `from_ptr`,
-   `from_bytes_with_nul_unchecked`, and `strlen`.
-3. Add the `CloneToUninit` and `Index<RangeFrom<usize>>` checks in a way that
-   exercises the exact bytes the contract promises, not an oversized helper
-   buffer.
-4. Record proof/test commands and outputs in the generator log.
+1. Add a dedicated challenge-local harness that exercises `CStr` through the
+   `CloneToUninit` trait impl.
+2. Validate the destination preconditions required by the trait contract, not
+   just nullness.
+3. Compare the exact written region against the source `CStr` bytes, including
+   the trailing NUL byte.
+4. Keep the harness bounded and defined even if the implementation is buggy.
+5. Record the proof command and the resulting frontier or pass/fail state in
+   the generator log.
 
 ## Evidence Expected
 
-- file paths for each harness and contract change
-- commands used to run the scoped verification
-- confirmation that the bytes copied by `CloneToUninit` are compared against the
-  source `CStr`
-- confirmation that the indexed `CStr` preserves the invariant and byte tail
-- any failing proof output, if the challenge is not yet green
+- file paths for the `CloneToUninit` harness and any contract update
+- the exact destination validity check used by the harness
+- evidence that the copied bytes are compared against the source `CStr`
+- the proof command and the resulting status for the narrowed slice
 
 ## Stop Conditions
 
-- mark the challenge `READY FOR SUBMISSION` only after the evaluator sees direct
-  evidence for the published checklist items
-- mark it `CONDITIONALLY READY` only if the remaining gap is narrow, explicit,
-  and tied to a single missing proof or contract
+- mark the challenge `READY FOR SUBMISSION` only after the evaluator sees
+  direct evidence for every published checklist item
+- mark it `CONDITIONALLY READY` only if the remaining gap is now limited to a
+  single explicit frontier with no broader artifact gap
 - mark it `BLOCKED` only if the generator can prove a concrete tooling or
   dependency limitation
 
 ## Carry-Forward Notes
 
-- The public PR comments on `model-checking/verify-rust-std#543` highlight two
-  important verification traps:
-  - `CloneToUninit` must be checked against the exact written region
-  - the harness must remain defined even if the implementation is buggy
-- The older public PR `#566` is still useful as a documentation map, but its
-  review comments should be treated as the authoritative readiness hints.
+- Public PR `model-checking/verify-rust-std#543` shows the intended
+  `CloneToUninit` / `Index<RangeFrom<usize>>` shape and highlights the
+  byte-exact clone check.
+- Public PR `model-checking/verify-rust-std#566` confirms the full challenge
+  bar: nine safe methods, three unsafe contracts, `CloneToUninit`, and
+  `Index<RangeFrom<usize>>`.
+- The `strlen` and safe-method invariant slices remain queued after the
+  `CloneToUninit` frontier is reduced.
