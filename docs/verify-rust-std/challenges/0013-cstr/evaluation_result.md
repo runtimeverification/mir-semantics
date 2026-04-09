@@ -1,8 +1,9 @@
 # Evaluation Result: Challenge 0013
 
-Checkpoint type: orchestrator interruption checkpoint due generator-runtime stall in
-this run. No independent technical evaluator pass has been completed yet on this
-re-execution branch.
+Independent evaluator pass completed on the re-execution branch. The branch has
+now landed a prerequisite cross-crate body-resolution slice and a linked CStr
+fixture, but it still lacks the actual challenge-local `CStr` harnesses and
+contracts required by the published challenge.
 
 ## Verdict
 
@@ -10,45 +11,52 @@ re-execution branch.
 
 ## Score
 
-`0.22`
+`1.35`
 
 ## Satisfied Criteria
 
 - Dedicated branch, worktree, and draft PR exist.
-- Challenge-local planner artifacts exist and were updated in this run.
-- Planner/workpad artifacts capture the key quality risk around exact-byte
-  `CloneToUninit` evidence and `Index<RangeFrom<usize>>`.
+- The branch now contains direct prerequisite evidence for cross-crate body
+  resolution on `kmir/cstr.smir.json`.
+- `generator.md` and `workpad.md` record reproducible commands and outcomes.
+- The rubric now distinguishes prerequisite linker work from actual Challenge
+  13 completion evidence.
 
 ## Missing Criteria
 
-- No challenge-local `CStr` contracts, harnesses, or supporting artifacts have
-  been added yet on this re-execution branch.
-- No branch-local validation evidence has been recorded yet.
-- No current-branch answer exists yet for the review concern that
-  `CloneToUninit` needs destination-validity evidence stronger than a loose
-  non-null check.
+- No challenge-local `CStr` contracts or harnesses have been added yet on this
+  branch.
+- The nine safe-method invariant checks are absent.
+- `from_ptr`, `from_bytes_with_nul_unchecked`, and `strlen` have not been
+  annotated and verified on this branch.
+- No exact-byte evidence exists yet for `CloneToUninit` or
+  `Index<RangeFrom<usize>>`.
+- No completed challenge-local proof result exists for the actual published
+  `CStr` requirements.
 
 ## Blocking Issues
 
-- The dedicated generator threads for the active batch were launched in this
-  run but produced no branch changes or generator-record updates during the
-  polling window.
-- The local reference branch and public solution PRs have not yet been
-  converted into current branch-local mir-semantics artifacts.
+- This is not a hard blocker. The prerequisite port is useful, but it is not
+  enough to satisfy the published challenge.
+- The current evidence still stops at infrastructure and fixture readiness; the
+  branch needs the challenge-specific `CStr` artifacts themselves.
 
 ## Evidence
 
-- Branch head is planner commit `c373c492`.
-- `workpad.md` records the exact-byte evidence requirement and the
-  `CloneToUninit` risk.
-- `generator.md` remains at bootstrap state with no files touched and no
-  validation evidence.
+- Branch head includes prerequisite port commit `80244466` and evidence commit
+  `d0517441`.
+- `generator.md` records a successful `resolve_bodies`-style check and a linked
+  proof run on `test_from_ptr`.
+- `workpad.md` records the remaining gap: missing `CStr` harnesses/contracts,
+  including the exact-byte `CloneToUninit` and `Index<RangeFrom<usize>>`
+  checks.
 
 ## Next Action Required To Improve State
 
-- Relaunch the dedicated generator on
-  `verify-rust-std/reexec-0013-cstr`.
-- Implement the `CloneToUninit` / `Index<RangeFrom<usize>>` slice plus the
-  unsafe-entry contracts.
-- Record the narrowest reproducible validation evidence, especially for the
-  writable-region assumptions behind `CloneToUninit`.
+- Implement the actual Challenge 13 `CStr` artifacts:
+  - invariant harnesses for the nine safe APIs
+  - contracts and proof harnesses for `from_ptr`,
+    `from_bytes_with_nul_unchecked`, and `strlen`
+  - exact-byte checks for `CloneToUninit` and `Index<RangeFrom<usize>>`
+- Re-run the narrowest scoped validation on the resulting challenge-local
+  artifacts.
