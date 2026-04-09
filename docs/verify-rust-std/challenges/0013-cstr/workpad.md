@@ -35,9 +35,37 @@
 
 - None. This is still the initial planning pass.
 
+## Generator Retry Execution Log
+
+- Port source selected: local branch `verify-rust-std/challenge-0013-0028`,
+  commit `16440d11` (`feat(linker): cross-crate body resolution for linked SMIR`).
+- Ported files (prerequisite slice only):
+  - `kmir/cstr.smir.json`
+  - `kmir/src/kmir/kompile.py`
+  - `kmir/src/kmir/linker.py`
+  - `kmir/src/kmir/smir.py`
+- Technical port commit on this branch:
+  - `80244466` (`feat(linker): port cross-crate body resolution for cstr`)
+
+## Validation Results
+
+- `uv --project kmir run -- python - <<'PY' ...`
+  - synthetic cross-crate `resolve_bodies` case resolved `noBody` to a donor body
+  - fixture reduce check on `kmir/cstr.smir.json` kept all items
+    (`orig_items=61`, `reduced_items=61`)
+- `timeout 180s uv --project kmir run -- kmir prove-rs kmir/cstr.smir.json --smir --start-symbol test_from_ptr --max-iterations 1 --max-depth 80 --proof-dir /tmp/kmir-cstr-proof --fail-fast`
+  - command executed against the linked CStr fixture
+  - result reached proof state reporting (`APRProof: cstr.smir.test_from_ptr`,
+    `PENDING`, `nodes: 3`, `pending: 1`, `terminal: 1`)
+  - exit code was non-zero because proof did not close in one iteration
+
 ## Next Handoff
 
-- Generator should implement the challenge-local harness and contract slice
-  described in `plan.md`.
-- Evaluator should add rubric criteria that distinguish exact-byte evidence from
-  merely "a passing harness".
+- Prerequisite cross-crate linker/body-resolution slice is now in this branch
+  with direct validation evidence.
+- Challenge-specific work still pending:
+  - add `CStr` contracts/harnesses (`from_ptr`,
+    `from_bytes_with_nul_unchecked`, `strlen`)
+  - add `CloneToUninit` and `Index<RangeFrom<usize>>` exact-byte checks
+- Evaluator should keep this challenge at `IN PROGRESS` until those
+  challenge-local artifacts and proofs are present.
