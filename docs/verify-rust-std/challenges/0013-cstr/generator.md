@@ -46,6 +46,11 @@ Ownership:
   destination buffer, an explicit `len <= dest.len()` validity guard beyond
   nullness, and exact byte-for-byte comparison against
   `cstr.to_bytes_with_nul()`.
+- 2026-04-09: Replaced the standalone `c"hello"` literal in
+  `clone_to_uninit.rs` with an explicit `CStr::from_bytes_with_nul(b"hello\0")`
+  constructor so the challenge-local exact-byte path bypasses the local
+  `#decodeConstant` thunk and reaches the same shared `from_bytes_with_nul`
+  frontier as the linked-SMIR slice.
 - 2026-04-09: Ran narrow validation on both the preexisting linked-SMIR
   `test_clone_to_uninit` symbol and the new challenge-local
   `test_clone_to_uninit_exact_bytes` symbol; both now reduce to the same
@@ -152,11 +157,43 @@ Ownership:
     - exact written-region comparison against `cstr.to_bytes_with_nul()`,
       including the trailing NUL byte
 
+12. Command:
+    `timeout 240s uv --project kmir run -- kmir prove-rs kmir/cstr.smir.json --smir --start-symbol test_clone_to_uninit --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-cstr-smir-clone-slice --fail-fast`
+    Result:
+    command executed and reached APR summary:
+    `APRProof: cstr.smir.test_clone_to_uninit`, status `FAILED`, `nodes: 3`,
+    `failing: 1`, `stuck: 1`, `terminal: 1` (exit code 1).
+
+13. Command:
+    `timeout 180s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs --start-symbol test_clone_to_uninit_exact_bytes --terminate-on-thunk --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-clone-to-uninit-local-slice-2 --fail-fast`
+    Result:
+    command executed and reached APR summary:
+    `APRProof: clone_to_uninit.test_clone_to_uninit_exact_bytes`, status
+    `FAILED`, `nodes: 3`, `failing: 1`, `stuck: 1`, `terminal: 1`
+    (exit code 1).
+
+14. Command:
+    `uv --project kmir run -- kmir show cstr.smir.test_clone_to_uninit --proof-dir /tmp/kmir-0013-cstr-smir-clone-slice --leaves`
+    Result:
+    the linked-SMIR leaf remains a missing-body/stuck call to
+    `core::ffi::c_str::CStr::from_bytes_with_nul`, reported from
+    `/home/zhaoji/projs/verify-rust-std/kmir-proofs/cstr/cstr.rs:189:16`.
+
+15. Command:
+    `uv --project kmir run -- kmir show clone_to_uninit.test_clone_to_uninit_exact_bytes --proof-dir /tmp/kmir-0013-clone-to-uninit-local-slice-2 --leaves`
+    Result:
+    the local exact-byte `CloneToUninit` leaf is now the same missing-body/stuck
+    call to `core::ffi::c_str::CStr::from_bytes_with_nul`, reported from
+    `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs:17:16`.
+    The standalone `#decodeConstant` thunk on `c"hello"` no longer appears in
+    the local proof path.
+
 ## Commit Inventory
 
 - `80244466` — `feat(linker): port cross-crate body resolution for cstr`
 - `13bcd786` — `feat(vrs-0013): add clone_to_uninit slice harness`
 - `056ee1a7` — `refactor(vrs-0013): isolate clone_to_uninit slice frontier`
+- `f33878dd` — `fix(vrs-0013): bypass cstr literal thunk`
 
 ## Blockers
 

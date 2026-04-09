@@ -4,8 +4,9 @@
 
 - Branch: `verify-rust-std/reexec-0013-cstr`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0013-cstr`
-- Current stage: generator slice focused on removing the standalone
-  `#decodeConstant` thunk from the exact-byte `CloneToUninit` path
+- Current stage: literal-thunk slice completed; the exact-byte
+  `CloneToUninit` path is back to the shared `CStr::from_bytes_with_nul`
+  frontier
 - Implementation status: in progress; existing challenge-local CStr artifacts
   still have failing or incomplete proofs, and the evaluator is now at `2.0`
   with `IN PROGRESS` because the safe-method matrix and `strlen` are still
@@ -40,13 +41,13 @@
   - `test_from_ptr` remains failing
   - `test_index_range_from_exact_bytes` remains failing
   - `test_from_bytes_with_nul_unchecked_ok` still hits a thunk frontier
-  - `test_clone_to_uninit_exact_bytes` now stops at a local
-    `#decodeConstant` thunk for `c"hello"` before it can reach
-    `core::ffi::CStr::from_bytes_with_nul`
-- Highest-leverage next task:
-  - remove the standalone `#decodeConstant` thunk so the exact-byte
-    `CloneToUninit` slice can reach the same shared `CStr::from_bytes_with_nul`
-    frontier already observed by the linked-SMIR `test_clone_to_uninit` slice
+  - both `test_clone_to_uninit_exact_bytes` and linked-SMIR
+    `test_clone_to_uninit` now stop at the same
+    `core::ffi::CStr::from_bytes_with_nul` missing-body frontier
+- Immediate blocker:
+  - the standalone `#decodeConstant` thunk has been removed, so the remaining
+    blocker is now the shared `CStr::from_bytes_with_nul` constructor/body gap
+    rather than the local harness materialization path
 
 ## Decisions
 
@@ -56,6 +57,10 @@
 - Treat the existing exact-byte `CloneToUninit` harness logic as sufficient and
   do not rework it unless the literal decoding issue exposes a concrete harness
   defect.
+- Keep the exact-byte harness on an explicit
+  `CStr::from_bytes_with_nul(b"hello\0")` construction, because it bypasses the
+  unsupported `&CStr` literal constant while preserving the same byte-exact
+  clone contract.
 - Leave `strlen` and the safe-method matrix as follow-on work once the exact-
   byte `CloneToUninit` path is aligned to the shared `from_bytes_with_nul`
   frontier.
@@ -73,27 +78,57 @@
   one step earlier at a local `#decodeConstant` thunk on the `c"hello"` literal
   in `clone_to_uninit.rs`.
 
-## Generator NEXT SLICE: Remove the `c"hello"` `#decodeConstant` Thunk (2026-04-09)
+## Literal-Thunk Slice Result (2026-04-09)
+
+### Harness Adjustment
+
+- Updated `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs`
+  to construct the source via `CStr::from_bytes_with_nul(b"hello\0")` instead
+  of the standalone `c"hello"` literal.
+- Kept the exact-byte `CloneToUninit` checks unchanged:
+  initialized destination storage, explicit `len <= dest.len()` guard, and
+  byte-for-byte comparison against `to_bytes_with_nul()`.
+
+### Validation
+
+- `timeout 240s uv --project kmir run -- kmir prove-rs kmir/cstr.smir.json --smir --start-symbol test_clone_to_uninit --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-cstr-smir-clone-slice --fail-fast`
+  -> `FAILED`, `nodes: 3`, `failing: 1`, `stuck: 1`, `terminal: 1`
+- `uv --project kmir run -- kmir show cstr.smir.test_clone_to_uninit --proof-dir /tmp/kmir-0013-cstr-smir-clone-slice --leaves`
+  -> stuck leaf at `core::ffi::c_str::CStr::from_bytes_with_nul` from `/home/zhaoji/projs/verify-rust-std/kmir-proofs/cstr/cstr.rs:189:16`
+- `timeout 180s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs --start-symbol test_clone_to_uninit_exact_bytes --terminate-on-thunk --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-clone-to-uninit-local-slice-2 --fail-fast`
+  -> `FAILED`, `nodes: 3`, `failing: 1`, `stuck: 1`, `terminal: 1`
+- `uv --project kmir run -- kmir show clone_to_uninit.test_clone_to_uninit_exact_bytes --proof-dir /tmp/kmir-0013-clone-to-uninit-local-slice-2 --leaves`
+  -> same stuck leaf at `core::ffi::c_str::CStr::from_bytes_with_nul` from `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs:17:16`
+
+### Outcome
+
+- The local `#decodeConstant` thunk on `c"hello"` is gone.
+- The exact-byte challenge-local `CloneToUninit` slice now aligns with the
+  linked-SMIR control path.
+- The slice remains blocked, but now only by the shared
+  `core::ffi::CStr::from_bytes_with_nul` missing-body frontier.
+
+## Completed Generator Slice: Remove the `c"hello"` `#decodeConstant` Thunk (2026-04-09)
 
 ### Hand-off
 
-- Implement the smallest harness adjustment that lets
+- Implemented the smallest harness adjustment that lets
   `test_clone_to_uninit_exact_bytes` reach the shared
   `CStr::from_bytes_with_nul` frontier instead of stopping at a local
   `#decodeConstant` thunk.
-- Keep the slice narrowly scoped to the standalone literal-decoding issue; do
-  not expand it into the nine safe methods or `strlen`.
-- Preserve the existing exact-byte `CloneToUninit` harness logic so the result
+- Kept the slice narrowly scoped to the standalone literal-decoding issue and
+  did not expand it into the nine safe methods or `strlen`.
+- Preserved the existing exact-byte `CloneToUninit` harness logic so the result
   remains byte-exact and destination-validity aware.
 
 ### Validation Expectations
 
-- Record the file path(s) touched for the harness adjustment and any associated
-  contract update.
-- Run the narrowest proof commands that exercise both the linked-SMIR and
-  challenge-local `CloneToUninit` paths.
-- Capture whether the standalone thunk disappeared and both paths now reach the
-  same shared frontier, or whether a second frontier remains.
+- Recorded the file path touched for the harness adjustment and the updated
+  challenge docs.
+- Re-ran the narrow linked-SMIR and challenge-local `CloneToUninit` proof
+  commands.
+- Confirmed the standalone thunk disappeared and both paths now reach the same
+  shared frontier.
 
 ### Scope Notes
 
@@ -127,8 +162,7 @@
 ### Outcome
 
 - The exact-byte `CloneToUninit` slice is now implemented and reviewer-readable.
-- The slice is materially advanced but not closed: the remaining blocker is a
-  local `#decodeConstant` thunk ahead of the shared
+- The remaining blocker is the shared
   `core::ffi::CStr::from_bytes_with_nul` frontier, not a missing
   destination-validity or exact-byte comparison check in the harness.
 
@@ -140,6 +174,6 @@
   still stops at the shared `core::ffi::CStr::from_bytes_with_nul` body
   frontier.
 - `kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs --start-symbol test_clone_to_uninit_exact_bytes --terminate-on-thunk`
-  now fails on a local `#decodeConstant` thunk for the `c"hello"` literal at
-  `clone_to_uninit.rs:19`, so the standalone path has moved past the old
-  frontend issue but is not yet a closed proof.
+  now reaches the same shared `core::ffi::CStr::from_bytes_with_nul` body
+  frontier after replacing the `c"hello"` literal with an explicit
+  `CStr::from_bytes_with_nul(b"hello\0")` construction.
