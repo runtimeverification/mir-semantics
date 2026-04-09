@@ -90,3 +90,9 @@
 - Remaining generator work, if any, should stay scoped to documenting or
   confirming the already-recorded float blocker rather than widening back into
   unrelated integer symbols.
+
+## Evaluator Note
+
+- 2026-04-09: `wrapping_shl_u8` is strong Part 2 evidence, but the remaining
+  unverified integer and safe-API surface is still broad, so the strongest
+  justified verdict remains `IN PROGRESS` rather than `CONDITIONALLY READY`.
