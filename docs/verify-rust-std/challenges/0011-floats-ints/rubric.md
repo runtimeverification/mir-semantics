@@ -41,6 +41,8 @@ submission-ready.
 - A `pytest --collect-only` result is evidence of discovery only; it is not proof completion.
 - A single passing integer proof is material evidence, but it does not justify a
   terminal classification while the remaining integer matrix is unverified.
+- Two passing integer proofs from different buckets materially strengthen the
+  branch, but they still do not imply full Part 1 / Part 2 coverage.
 - A challenge may still be `IN PROGRESS` even when one subpath is structurally blocked, if another subpath still has a concrete next proof action.
 - A float blocker should be recorded against the exact missing backend capability or intrinsic hook, not as a vague "floats unsupported" note.
 

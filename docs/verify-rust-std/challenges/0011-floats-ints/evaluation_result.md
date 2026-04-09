@@ -6,7 +6,7 @@
 
 ## Score
 
-`2.1 / 3`
+`2.4 / 3`
 
 ## Satisfied Criteria
 
@@ -16,14 +16,15 @@
 - The challenge artifact set for Part 1 and Part 2 was ported from the
   historical Challenge 11 branch into this re-execution branch.
 - Reproducible commands and their outcomes are recorded in `generator.md`.
-- One integer proof slice now completes end-to-end on the branch:
-  `unchecked_add_u8` passed with `ProofStatus.PASSED`.
+- Two integer proof slices now complete end-to-end on the branch:
+  `unchecked_add_u8` and `unchecked_neg_i8` both passed with
+  `ProofStatus.PASSED`.
 - The float path is no longer just a historical claim; branch-local evidence
   now shows the stuck float intrinsic frontier in `to_int_unchecked-fail`.
 
 ## Missing Criteria
 
-- The integer matrix is still incomplete; one passing symbol does not establish
+- The integer matrix is still incomplete; two passing symbols do not establish
   the full Part 1 / Part 2 surface required by the published challenge.
 - No evaluator-side terminal verdict can be justified while the remaining
   integer coverage is unconfirmed.
@@ -33,7 +34,7 @@
 ## Blocking Issues
 
 - The integer side still needs broader proof coverage beyond the completed
-  `unchecked_add_u8` slice.
+  `unchecked_add_u8` and `unchecked_neg_i8` slices.
 - The float path is a structural backend blocker in the current stack: the
   ported `to_int_unchecked-fail.*.expected` outputs still show stuck float
   intrinsic hooks such as `fabsf32` and `fabsf64`, matching the historical
@@ -49,6 +50,7 @@
   - `make test-verify-rust-std PARALLEL=1 TEST_ARGS="-k 'unchecked_add and not fail'"`
   - `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_add and not fail" -q`
   - `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_add.rs --start-symbol unchecked_add_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-add-u8 --reload --fail-fast --max-workers 1`
+  - `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_neg.rs --start-symbol unchecked_neg_i8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-neg-i8 --reload --fail-fast --max-workers 1`
 - `workpad.md` records the exact-byte float blocker interpretation and the
   discovery-vs-proof distinction.
 
@@ -56,5 +58,5 @@
 
 - Run another narrow integer proof slice to completion on
   `verify-rust-std/reexec-0011-floats-ints` to broaden the proof evidence
-  beyond `unchecked_add_u8`, then reassess whether the remaining work is only
-  float-blocked.
+  beyond the two passing slices, then reassess whether the remaining work is
+  only float-blocked.

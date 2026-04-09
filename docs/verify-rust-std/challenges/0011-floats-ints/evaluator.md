@@ -25,7 +25,7 @@ Ownership:
 
 | Criterion | Score | Evidence | Gap |
 | --- | --- | --- | --- |
-| Integer methods have branch-local proof evidence | 2 | `generator.md` records artifact porting and a direct `kmir prove-rs` pass for `unchecked_add_u8` with `ProofStatus.PASSED`; `workpad.md` records the exact command. | Only one integer symbol has a completed passing proof so far; the broader integer matrix is still unconfirmed. |
+| Integer methods have branch-local proof evidence | 3 | `generator.md` and `workpad.md` record two direct `kmir prove-rs` passes with `ProofStatus.PASSED`: `unchecked_add_u8` and `unchecked_neg_i8`. | The broader integer matrix is still unconfirmed, so this does not imply full challenge completion. |
 | Non-float APIs are mapped to concrete artifacts | 3 | Ported `0011-floats-ints` harnesses and expected outputs under `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/`. | None. |
 | Float path is classified with direct evidence | 3 | Ported `to_int_unchecked-fail.*.expected` files show stuck frontiers on float intrinsics such as `fabsf32` and `fabsf64`; PR #985 states the same blocker. | None. |
 | Validation is replayable | 3 | Commands and outcomes are recorded in `generator.md` and `workpad.md`, including both collection and a completed direct proof run. | None. |
@@ -56,3 +56,6 @@ Ownership:
 - 2026-04-09: `unchecked_add_u8` completed end-to-end on the branch with
   `ProofStatus.PASSED`; the remaining gap is integer breadth rather than proof
   existence.
+- 2026-04-09: `unchecked_neg_i8` also completed end-to-end on the branch with
+  `ProofStatus.PASSED`; the remaining gap is still integer breadth rather than
+  proof existence.
