@@ -35,6 +35,9 @@
 - 2026-04-09: Direct proof follow-up run completed with
   `ProofStatus.PASSED` for `unchecked_add_u8` using:
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_add.rs --start-symbol unchecked_add_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-add-u8 --reload --fail-fast --max-workers 1`.
+- 2026-04-09: Follow-up 2 run completed with `ProofStatus.PASSED` for
+  `unchecked_neg_i8` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_neg.rs --start-symbol unchecked_neg_i8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-neg-i8 --reload --fail-fast --max-workers 1`.
 
 ## Generator retry execution log
 
@@ -56,14 +59,16 @@
 - Challenge 0011 artifact set now exists under
   `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints`.
 - Validation now includes one completed integer proof slice:
-  `unchecked_add_u8` passes end-to-end in direct `kmir prove-rs` mode.
+  `unchecked_add_u8` and `unchecked_neg_i8` both pass end-to-end in direct
+  `kmir prove-rs` mode.
 - Float blocker signal remains present in ported evidence:
   `to_int_unchecked-fail` expected outputs include stuck float intrinsic hooks.
 
 ## Next handoff
 
 - Generator follow-up should either:
-  - add one more completed small integer slice (preferred: `unchecked_add_i8`),
+  - add one more completed small integer slice from a new bucket
+    (preferred: `wrapping_shl_u8`),
     or
   - run a tightly scoped fail-case (`unchecked_add-fail`) to verify UB-detection
     behavior on this branch.

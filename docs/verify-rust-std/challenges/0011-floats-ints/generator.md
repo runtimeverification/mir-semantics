@@ -32,6 +32,8 @@ Ownership:
   concrete evidence for test discovery and runtime behavior.
 - 2026-04-09: Completed one direct integer proof slice end-to-end with
   `kmir prove-rs` for `unchecked_add_u8`.
+- 2026-04-09: Completed a second direct integer proof slice from a different
+  requirement bucket with `kmir prove-rs` for `unchecked_neg_i8`.
 
 ## Files Touched
 
@@ -77,6 +79,12 @@ Ownership:
    passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
    `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
 
+6. Command:
+   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_neg.rs --start-symbol unchecked_neg_i8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-neg-i8 --reload --fail-fast --max-workers 1`
+   Result:
+   passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
+   `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
+
 ## Commit Inventory
 
 - `2e09185c` — `feat(verify-rust-std): port challenge 0011 harnesses and runner`
@@ -85,7 +93,8 @@ Ownership:
 
 - Full proof execution across the full integer matrix is still runtime-heavy in
   this environment, but the prior "no completed proof" blocker is reduced:
-  `unchecked_add_u8` now passes end-to-end on this branch.
+  both `unchecked_add_u8` and `unchecked_neg_i8` now pass end-to-end on this
+  branch.
 - Float-to-int path still appears blocked by backend capability in the current
   stack; the ported expected outputs still include stuck frontiers on float
   intrinsics (e.g., `fabsf32`, `fabsf64`) in
