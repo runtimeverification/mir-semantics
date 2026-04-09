@@ -77,6 +77,11 @@ Ownership:
   `digits_to_dec_str` body rather than from the concrete-case helper itself.
 - This keeps the challenge-local frontier narrow while exposing the next
   harness boundary more directly.
+- The next rerun replaced the `MaybeUninit::slice_assume_init_ref` return
+  conversion with a challenge-local static-slice helper. The proof moved
+  again, but now the first concrete leaf is the `buf[0]` bounds check inserted
+  by `assert!(buf[0] > b'0')` at `dec/digits_to_dec_str_probe.rs:44`, with a
+  sibling leaf on the `assert!(!buf.is_empty())` panic path at line 43.
 
 ## Files Touched
 
@@ -140,6 +145,18 @@ Ownership:
   function `std::mem::MaybeUninit::<core::num::fmt::Part<'_>>::slice_assume_init_ref`,
   span `core/src/mem/maybe_uninit.rs:987`, reached from
   `digits_to_dec_str` at `dec/digits_to_dec_str_probe.rs:41`.
+- `rustc kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs -o /tmp/digits_to_dec_str_probe_0028_bypass`
+  succeeded after replacing the `MaybeUninit` slice conversion with a static
+  slice helper.
+- `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-bypass-proof --max-depth 200 --reload`
+  ended with `ProofStatus.FAILED`, `nodes: 6`, `failing: 3`, `stuck: 3`,
+  `terminal: 1`.
+- `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-bypass-proof --statistics --leaves`
+  showed the new first concrete leaf at the probe's own guard path:
+  `#traverseProjection ( toLocal ( 1 ) , thunk ( #cast ( thunk ( #decodeConstant ...`),
+  span `dec/digits_to_dec_str_probe.rs:44`, corresponding to
+  `assert!(buf[0] > b'0')`. A sibling leaf remains on the
+  `assert!(!buf.is_empty())` panic path at line 43.
 
 ## Commit Inventory
 
@@ -147,6 +164,7 @@ Ownership:
 - `1499bc9f` `test(verify-rust-std): add 0028 digits_to_dec_str probe`
 - `44813fb9` `test(verify-rust-std): narrow 0028 digits_to_dec_str probe`
 - `7f898c54` `test(verify-rust-std): narrow 0028 probe past raw slices`
+- `b93c7e68` `test(verify-rust-std): bypass 0028 maybeuninit return path`
 
 ## Blockers
 
@@ -165,3 +183,7 @@ Ownership:
   initialized-slice helper itself, so the next narrowing step would be to
   bypass `MaybeUninit::slice_assume_init_ref` and see whether the proof can
   finally enter a real `flt2dec` leaf or a backend limit.
+- After bypassing `MaybeUninit::slice_assume_init_ref`, the new blocker is the
+  probe's own top-of-function guard path, specifically the `buf[0]` bounds
+  check and the `assert!(!buf.is_empty())` panic path, so the frontier still
+  has not reached `flt2dec`-owned logic.

@@ -4,7 +4,7 @@
 
 - Branch: `verify-rust-std/reexec-0028-flt2dec`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec`
-- Status at planner handoff: the first `digits_to_dec_str` probe has already run, the first follow-up moved the blocker from wrapper slice indexing to raw-slice construction, and this slice removes that raw-slice path to expose the next concrete boundary.
+- Status at planner handoff: the first `digits_to_dec_str` probe had already run, the latest bypass removed the `MaybeUninit::slice_assume_init_ref` return-path helper, and the new frontier is now the probe's own guard path.
 
 ## Evidence gathered
 
@@ -96,16 +96,20 @@
   at `core/src/mem/maybe_uninit.rs:987` instead of the helper assertion, so
   the remaining blocker is now the initialized-slice conversion itself rather
   than the concrete-case probe wrapper.
+- The next rerun replaced that return conversion with a challenge-local static
+  slice helper. The proof moved again, but the first concrete leaf is now the
+  `buf[0]` bounds check inserted by `assert!(buf[0] > b'0')` at
+  `dec/digits_to_dec_str_probe.rs:44`, with a sibling leaf on the
+  `assert!(!buf.is_empty())` panic path at line 43.
 
 ## Next handoff
 
-- Generator has now completed the planner-selected raw-slice-removal slice and
-  rerun it.
+- Generator has now completed the `MaybeUninit::slice_assume_init_ref`
+  bypass slice and rerun it.
 - Evaluator can classify the new outcome against concrete evidence:
   `split_at_raw` / `from_raw_parts` are gone from the active path, the helper
-  equality path is gone as well, and the next meaningful result is now the
-  harness-side `MaybeUninit::slice_assume_init_ref` frontier rather than a
-  `flt2dec` boundary or float backend crash.
-- The next exact narrowing step, if continued, is to bypass the
-  `MaybeUninit::slice_assume_init_ref` path so the probe can determine whether
-  it finally reaches real `flt2dec` code or a backend limit.
+  equality path is gone as well, and the current blocker is now the probe's
+  own guard path rather than the old `MaybeUninit` return conversion.
+- The next exact narrowing step, if continued, is to decide whether to strip
+  the probe's top-of-function guards or to stop here as a challenge-local
+  blocker checkpoint.
