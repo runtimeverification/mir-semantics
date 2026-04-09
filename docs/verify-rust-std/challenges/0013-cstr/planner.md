@@ -17,31 +17,59 @@ Ownership:
 
 ## Requirements Extraction
 
-- Published goal:
+- Published goal: verify that `CStr` safely represents a borrowed reference to a null-terminated byte sequence and that the implementation preserves the `CStr` safety invariant.
 - Published success criteria:
+  - implement `Invariant` for `CStr`
+  - verify the invariant after all nine listed safe public methods
+  - annotate and verify safety contracts for `from_ptr`, `from_bytes_with_nul_unchecked`, and `strlen`
+  - verify the `CloneToUninit` trait impl and `ops::Index<RangeFrom<usize>>` for `CStr`
 - Challenge-specific UB obligations:
+  - no dangling or misaligned loads/stores
+  - no out-of-bounds pointer arithmetic / projection
+  - no mutation of immutable bytes
+  - no access to uninitialized memory
 - Additional safety conditions from source docs or SAFETY comments:
+  - `CloneToUninit` must validate the destination pointer according to the trait contract, not merely against null
+  - the indexed `CStr` result must preserve the invariant and correspond to the source tail bytes
+  - bounded harnesses are allowed, but the bound must be justified by the exercised safety property
 
 ## Scope Contract
 
 - In scope for current branch:
+  - `library/core/src/ffi/c_str.rs`
+  - `library/core/src/clone.rs` only if required for `CloneToUninit`
+  - challenge-local docs and integration artifacts under `kmir/src/tests/integration/data/verify-rust-std/0013-cstr`
 - Out of scope unless later justified:
+  - `runtimeverification/stable-mir-json`
+  - `runtimeverification/haskell-backend`
+  - any unrelated refactor outside the `CStr` challenge path
 - Exceptional dependency escalation policy:
+  - escalate to `stable-mir-json` only if the generator can show a missing JSON or linking artifact blocks the challenge
+  - escalate to `haskell-backend` only if the generator can show a verifier limitation prevents the required contracts or harnesses from being expressed in `mir-semantics`
 
 ## Sprint Contracts
 
 | Sprint | Intended slice | Acceptance check | Status |
 | --- | --- | --- | --- |
-| 0 | Bootstrap challenge understanding | Requirements and blockers recorded | pending |
+| 0 | Bootstrap challenge understanding | Requirements and blockers recorded | complete |
+| 1 | Narrow generator target | Next technical subtask and evidence path identified | in progress |
+| 2 | Technical execution | Harnesses/contracts added and validation evidence recorded | pending |
+| 3 | Evaluation loop | Rubric updated and readiness scored with explicit gaps | pending |
 
 ## Dependencies And Blockers
 
-- None recorded yet.
+- No hard blocker recorded yet.
+- Likely risk: `CloneToUninit` verification may need a stronger destination validity contract than a non-null precondition, based on prior review comments.
 
 ## Cross-Challenge Notes
 
-- No reuse candidates recorded yet.
+- Reuse candidates:
+  - PR `model-checking/verify-rust-std#543` for `CStr` harness shape and review comments
+  - PR `model-checking/verify-rust-std#566` for the earlier full Challenge 13 structure and review comments
+  - local `verify-rust-std/challenge-0013-0028` branch for any linker or CStr-resolution context if the generator needs it
+- Evaluator should prefer a rubric item that distinguishes "a harness exists" from "the harness exercises the exact bytes and destination validity the trait contract requires".
 
 ## History
 
 - Bootstrap record created by orchestrator.
+- Planner checkpoint: extracted the published challenge bar and narrowed the next generator task to the CStr invariant plus the contract/harness pair most likely to unblock full coverage.
