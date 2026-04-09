@@ -25,10 +25,10 @@ Ownership:
 
 | Criterion | Score | Evidence | Gap |
 | --- | --- | --- | --- |
-| Integer methods have branch-local proof evidence | 1 | `generator.md` records artifact porting, `uv --project kmir run -- pytest ... --collect-only -k "unchecked_add and not fail"` selected `test_verify_rust_std[unchecked_add]`. | No completed passing proof result yet on the re-execution branch. |
+| Integer methods have branch-local proof evidence | 2 | `generator.md` records artifact porting and a direct `kmir prove-rs` pass for `unchecked_add_u8` with `ProofStatus.PASSED`; `workpad.md` records the exact command. | Only one integer symbol has a completed passing proof so far; the broader integer matrix is still unconfirmed. |
 | Non-float APIs are mapped to concrete artifacts | 3 | Ported `0011-floats-ints` harnesses and expected outputs under `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/`. | None. |
 | Float path is classified with direct evidence | 3 | Ported `to_int_unchecked-fail.*.expected` files show stuck frontiers on float intrinsics such as `fabsf32` and `fabsf64`; PR #985 states the same blocker. | None. |
-| Validation is replayable | 2 | Commands and outcomes are recorded in `generator.md` and `workpad.md`. | One end-to-end proof run still needs to complete successfully. |
+| Validation is replayable | 3 | Commands and outcomes are recorded in `generator.md` and `workpad.md`, including both collection and a completed direct proof run. | None. |
 | Residual risk is explicit | 3 | `generator.md` and `workpad.md` name the exact float-capability blocker and the remaining integer proof gap. | None. |
 
 ## Review Pattern Notes
@@ -53,3 +53,6 @@ Ownership:
   integer case, but no completed passing proof was recorded yet.
 - 2026-04-09: Float path was reduced to a branch-local structural blocker
   (`fabsf32` / `fabsf64` stuck intrinsics in `to_int_unchecked-fail`).
+- 2026-04-09: `unchecked_add_u8` completed end-to-end on the branch with
+  `ProofStatus.PASSED`; the remaining gap is integer breadth rather than proof
+  existence.
