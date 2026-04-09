@@ -4,7 +4,7 @@
 
 - Branch: `verify-rust-std/reexec-0026-rc`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
-- Local status: doc-only audit in progress; no code or proof artifacts touched.
+- Local status: first audit slice committed in `87a669dc`; no code or proof artifacts touched.
 
 ## Confirmed Inputs
 

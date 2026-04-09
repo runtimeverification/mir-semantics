@@ -25,19 +25,34 @@ Ownership:
 ## Work Log
 
 - Bootstrap record created by orchestrator.
+- 2026-04-09: Audited the latest challenge page and the local `nightly-2024-11-29` `alloc/src/rc.rs` source for all 12 public `unsafe` `alloc::rc` APIs.
+- 2026-04-09: Added `docs/verify-rust-std/challenges/0026-rc/contract-map.md` with a source-grounded contract matrix, invariant clustering, and proof-entrypoint mapping.
+- 2026-04-09: Selected the smallest first tranche inside the planner-approved raw-pointer/refcount family:
+  - proof roots: `Rc::from_raw_in`, `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, `Weak::from_raw_in`
+  - immediate wrapper follow-ons: `Rc::from_raw`, `Rc::increment_strong_count`, `Rc::decrement_strong_count`, `Weak::from_raw`
 
 ## Files Touched
 
-- None yet.
+- `docs/verify-rust-std/challenges/0026-rc/contract-map.md`
+- `docs/verify-rust-std/challenges/0026-rc/workpad.md`
+- `docs/verify-rust-std/challenges/0026-rc/generator.md`
 
 ## Validation Evidence
 
-- None yet.
+- `rustc --print sysroot`
+- `cat rust-toolchain.toml`
+- `nl -ba /home/zhaoji/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/alloc/src/rc.rs | sed -n '1160,1695p'`
+- `nl -ba /home/zhaoji/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/alloc/src/rc.rs | sed -n '1730,2025p'`
+- `nl -ba /home/zhaoji/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/alloc/src/rc.rs | sed -n '3048,3278p'`
+- `git diff --check -- docs/verify-rust-std/challenges/0026-rc/contract-map.md docs/verify-rust-std/challenges/0026-rc/workpad.md`
 
 ## Commit Inventory
 
-- None yet.
+- `87a669dc` `docs(verify-rust-std): map challenge 0026 rc contracts`
 
 ## Blockers
 
-- Waiting for planner contract and evaluator baseline.
+- No confirmed blocker for the selected raw-pointer/refcount tranche on this branch.
+- Soft risks intentionally left out of tranche 1:
+  - `assume_init` may still need expressivity beyond the current type system.
+  - `Rc::get_mut_unchecked` likely needs stronger alias and lifetime reasoning than the raw-pointer tranche.
