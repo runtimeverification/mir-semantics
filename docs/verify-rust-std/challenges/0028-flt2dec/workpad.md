@@ -27,12 +27,24 @@
   `thunk ( #applyBinOp ( binOpOffset , ... ) )`.
 - This first result is therefore distinct from Challenge 0011: it did not
   reproduce the earlier float-value/backend gap.
-- The highest-leverage next slice is to remove the wrapper's range indexing and rerun a narrower `digits_to_dec_str` probe so the next failure point is attributable to `flt2dec` itself, if one exists.
+- A follow-up rerun on this branch replaced the copied function's
+  `&buf[..exp]` / `&buf[exp..]` path with a raw helper `split_at_raw`, and
+  removed result indexing from `main`, so the probe no longer depends on the
+  old `Range<usize>::index` route.
+- The narrower rerun still did not reach a `flt2dec`-owned boundary. Its first
+  new stuck leaf is `std::slice::from_raw_parts::<'_, u8>` at
+  `library/core/src/slice/raw.rs:138`, reached from `split_at_raw` at
+  `dec/digits_to_dec_str_probe.rs:9`.
+- The current evidence therefore says the next boundary is still harness-level,
+  but it is now a narrower raw-slice artifact rather than the original
+  slice-index/pointer-offset artifact.
 
 ## Planning decisions
 
 - Keep the first generator task to one representative probe instead of the full function list.
-- Favor `digits_to_dec_str` as the initial signal source, but strip the wrapper indexing so the evaluator can classify backend support versus harness artifact cleanly.
+- Favor `digits_to_dec_str` as the initial signal source, but strip the wrapper
+  indexing so the evaluator can classify backend support versus harness artifact
+  cleanly.
 - Do not expand scope into backend work unless the follow-up probe shows a distinct, challenge-local float limitation.
 
 ## Reusable rubric patterns for evaluator
@@ -51,11 +63,19 @@
   Running `make build` resolved that branch-local prerequisite.
 - A capped probe run with `--max-iterations 3` stopped at `ProofStatus.PENDING`
   and was discarded as a driver-limit artifact rather than the first semantic result.
+- The narrowed follow-up rerun bypassed `SliceIndex::index`, but then failed in
+  `std::slice::from_raw_parts::<'_, u8>` from the challenge-local
+  `split_at_raw` helper, so it still does not expose a real `flt2dec`
+  frontier.
 
 ## Next handoff
 
-- Generator should next produce a narrower `digits_to_dec_str` probe that bypasses the wrapper's slice-index path.
+- Generator has now produced the narrower `digits_to_dec_str` probe and rerun
+  it.
 - Evaluator can now classify Sprint 1 against concrete evidence:
-  the first `digits_to_dec_str` probe did run, and its first meaningful result
-  was a slice-index/pointer-offset stuck leaf rather than a float backend crash.
-- Any follow-up generator work should stay narrow and treat the wrapper artifact as the immediate blocker until a direct `flt2dec` boundary is observed.
+  the original slice-index artifact is gone, but the next meaningful result is
+  still harness-level at raw-slice construction rather than a float backend
+  crash.
+- Any further generator work should stay narrow and only target the
+  `split_at_raw` / `from_raw_parts` artifact if another follow-up slice is
+  explicitly requested.

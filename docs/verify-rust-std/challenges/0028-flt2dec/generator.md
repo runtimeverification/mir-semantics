@@ -49,6 +49,15 @@ Ownership:
 - This means the first 0028 probe currently maps to an artifact/setup path
   issue around the challenge-local wrapper's use of slice indexing, not to the
   earlier Challenge 0011 float backend blocker.
+- Follow-up rerun on this branch narrowed the harness by replacing the copied
+  `digits_to_dec_str` branch's `&buf[..exp]` / `&buf[exp..]` indexing with a
+  challenge-local `split_at_raw` helper based on raw slice construction, and by
+  dropping the probe's result indexing assertions.
+- That rerun bypassed the original `Range<usize>::index` blocker, but the next
+  boundary is still harness-level: the proof now gets stuck inside
+  `std::slice::from_raw_parts::<'_, u8>` at `library/core/src/slice/raw.rs:138`
+  after entering `split_at_raw`, so the probe still has not reached a
+  `flt2dec`-owned failure.
 
 ## Files Touched
 
@@ -75,14 +84,29 @@ Ownership:
   function `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index`,
   span `library/core/src/slice/index.rs:440`, stuck on
   `thunk ( #applyBinOp ( binOpOffset , ... ) )`.
+- `rustc kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs -o /tmp/digits_to_dec_str_probe_0028_followup`
+  succeeded after the follow-up narrowing edit.
+- `/tmp/digits_to_dec_str_probe_0028_followup` exited successfully.
+- `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-followup-proof --max-depth 200 --reload`
+  ended with `ProofStatus.FAILED`, `nodes: 5`, `failing: 1`, `stuck: 1`,
+  `terminal: 1`.
+- `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-followup-proof --statistics --leaves`
+  showed the new first concrete leaf:
+  function `std::slice::from_raw_parts::<'_, u8>`, span
+  `library/core/src/slice/raw.rs:138`, reached from the challenge-local
+  `split_at_raw` helper at `dec/digits_to_dec_str_probe.rs:9`.
 
 ## Commit Inventory
 
 - `1499bc9f` `test(verify-rust-std): add 0028 digits_to_dec_str probe`
+- `44813fb9` `test(verify-rust-std): narrow 0028 digits_to_dec_str probe`
 
 ## Blockers
 
 - First probe blocker is not the Challenge 0011 float-value backend gap.
-- Current blocker is challenge-local: the wrapper probe reaches a stuck
-  slice-index pointer-offset leaf before any float-specific backend limitation.
-- No backend escalation is justified yet from this first probe alone.
+- The original `SliceIndex::index` blocker is gone, so Sprint 1's immediate
+  target was met.
+- The current blocker is still challenge-local: the narrowed wrapper now
+  reaches a stuck raw-slice construction leaf before any float-specific
+  `flt2dec` limitation.
+- No backend escalation is justified yet from this follow-up probe alone.
