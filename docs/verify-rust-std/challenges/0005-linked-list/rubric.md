@@ -27,6 +27,34 @@ submission-ready.
 | Review feedback patterns are incorporated | no | Prior review comments on similar work are reflected in naming, test organization, and explanation quality. |
 | Residual risk is explicit | no | Open blockers, solver limitations, unsupported hooks, or dependency escalations are called out precisely. |
 
+## Challenge 0005 Criteria
+
+The evaluator should apply the baseline criteria above and also check the
+challenge-specific criteria below.
+
+| Criterion | Critical | Evidence expectation |
+| --- | --- | --- |
+| All seven published functions are individually accounted for | yes | `clear`, `contains`, `split_off`, `remove`, `retain`, `retain_mut`, and `extract_if` each map to a proof artifact, a test harness, or a named blocker in this challenge directory. |
+| The proof is unbounded over arbitrary linked-list shape | yes | Evidence shows the result is not limited to a fixed depth or canonical topology; the reasoning must cover arbitrary-length bidirectional chains and the relevant inductive structure. |
+| Linked-list invariants are modeled explicitly | yes | Contracts or harness assumptions capture the list head/tail relationship, predecessor/successor consistency, initialized node fields, and any allocator or alignment preconditions needed by the proof. |
+| Challenge UB obligations are discharged or explicitly blocked | yes | Evidence addresses dangling or misaligned access, uninitialized reads, mutation of immutable bytes, and invalid values, with any missing obligation logged as a blocker. |
+| Evidence is reproducible from the recorded command line | yes | Commands, tool versions, target files, and expected outputs are stored under `kmir/src/tests/integration/data/verify-rust-std/0005-linked-list` or referenced from this branch-local documentation. |
+| Upstream `linked_list.rs` drift is controlled | yes | If a proof copy, stripped file, or generated diff is used, the docs must explain how it is compared against the upstream snapshot and how CI fails on drift. |
+| Prior review concerns are explicitly handled | yes | The docs record whether shared doubly-linked-list theory is isolated from per-function proofs, whether any `assume` is used, and whether unwind-path limitations are fully verified or clearly scoped out. |
+| Challenge-specific blockers are explicit | no | Solver limits, unsupported semantics features, unstable dependencies, or omitted proof obligations are named with the next action required, together with the exact function or artifact they affect. |
+
+## Required Evidence
+
+For a submission to be scoreable, the evaluator should be able to point at:
+
+- the challenge-local artifact directory and any proof or harness files stored
+  there
+- the upstream challenge page and the resolved issue/PR trail that defines the
+  challenge contract
+- the exact rerun command used to produce the proof or test output
+- a file-level explanation of how each of the seven functions is covered
+- any explicit blocker for a function or obligation that is still not proven
+
 ## Required Evaluator Updates
 
 Each evaluator must append challenge-specific criteria for:
