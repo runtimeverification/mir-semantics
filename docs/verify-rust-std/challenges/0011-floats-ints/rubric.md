@@ -27,6 +27,21 @@ submission-ready.
 | Review feedback patterns are incorporated | no | Prior review comments on similar work are reflected in naming, test organization, and explanation quality. |
 | Residual risk is explicit | no | Open blockers, solver limitations, unsupported hooks, or dependency escalations are called out precisely. |
 
+## Challenge-Specific Criteria: Challenge 0011
+
+| Criterion | Critical | Initial expectation |
+| --- | --- | --- |
+| Integer methods have branch-local proof evidence | yes | At least one scoped integer proof completes on this branch, not just collection or harness wiring. |
+| Non-float APIs are mapped to concrete artifacts | yes | `unchecked_add`, `unchecked_sub`, `unchecked_mul`, `unchecked_shl`, `unchecked_shr`, `unchecked_neg`, `wrapping_shl`, `wrapping_shr`, `widening_mul`, and `carrying_mul` each have direct harness or expected-output artifacts. |
+| Float path is classified with direct evidence | yes | `to_int_unchecked` is either proven or blocked by branch-local evidence that names the missing float capability/hook. |
+| Validation is replayable | yes | Commands distinguish discovery, collection, and execution so another evaluator can reproduce the same reading of the branch. |
+
+## Reusable Evaluator Patterns
+
+- A `pytest --collect-only` result is evidence of discovery only; it is not proof completion.
+- A challenge may still be `IN PROGRESS` even when one subpath is structurally blocked, if another subpath still has a concrete next proof action.
+- A float blocker should be recorded against the exact missing backend capability or intrinsic hook, not as a vague "floats unsupported" note.
+
 ## Required Evaluator Updates
 
 Each evaluator must append challenge-specific criteria for:

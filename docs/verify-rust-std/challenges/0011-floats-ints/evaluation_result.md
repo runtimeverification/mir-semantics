@@ -1,53 +1,55 @@
 # Evaluation Result: Challenge 0011
 
-Checkpoint type: orchestrator interruption checkpoint due generator-runtime stall in
-this run. No independent technical evaluator pass has been completed yet on this
-re-execution branch.
-
 ## Verdict
 
 `IN PROGRESS`
 
 ## Score
 
-`0.20`
+`1.8 / 3`
 
 ## Satisfied Criteria
 
 - Dedicated branch, worktree, and draft PR exist.
-- Challenge-local planner artifacts exist and were updated in this run.
-- Published requirements and the likely float-support risk were extracted into
-  planner/workpad artifacts.
+- Challenge-local planner, generator, and workpad artifacts exist and were
+  updated on the challenge branch.
+- The challenge artifact set for Part 1 and Part 2 was ported from the
+  historical Challenge 11 branch into this re-execution branch.
+- Reproducible commands and their outcomes are recorded in `generator.md`.
+- The float path is no longer just a historical claim; branch-local evidence
+  now shows the stuck float intrinsic frontier in `to_int_unchecked-fail`.
 
 ## Missing Criteria
 
-- No challenge-local proof or harness implementation has been added yet on this
-  re-execution branch.
-- No challenge-local validation commands or pass/fail evidence have been
-  recorded yet.
-- No independent readiness assessment against the full rubric has been
-  completed.
+- No end-to-end passing integer proof has completed on this branch yet.
+- No evaluator-side passing verdict can be justified from collection evidence
+  alone.
+- The remaining `to_int_unchecked` float path is still not provable on the
+  current backend stack.
 
 ## Blocking Issues
 
-- The dedicated generator threads for the active batch were launched in this
-  run but produced no branch changes or generator-record updates during the
-  polling window.
-- The float-path blocker from `runtimeverification/mir-semantics#985` remains a
-  hypothesis only; it has not yet been independently reduced to current
-  branch-local evidence.
+- The integer slice still needs one completed proof execution to move this
+  branch from artifact porting into actual verification evidence.
+- The float path is a structural backend blocker in the current stack: the
+  ported `to_int_unchecked-fail.*.expected` outputs still show stuck float
+  intrinsic hooks such as `fabsf32` and `fabsf64`, matching the historical
+  blocker in PR `#985`.
 
 ## Evidence
 
-- Branch head is planner commit `d8cd9fdb`.
-- `workpad.md` records the decomposition into integer and float evidence slices.
-- `generator.md` remains at bootstrap state with no files touched and no
-  validation evidence.
+- Branch head is `85922382` after the retry evidence commit.
+- Ported artifacts exist under
+  `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/`.
+- `generator.md` records:
+  - `make test-verify-rust-std PARALLEL=1 TEST_ARGS="-k '0011-floats-ints and unchecked_add'"`
+  - `make test-verify-rust-std PARALLEL=1 TEST_ARGS="-k 'unchecked_add and not fail'"`
+  - `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_add and not fail" -q`
+- `workpad.md` records the exact-byte float blocker interpretation and the
+  discovery-vs-proof distinction.
 
 ## Next Action Required To Improve State
 
-- Relaunch the dedicated generator on
-  `verify-rust-std/reexec-0011-floats-ints`.
-- Re-execute the integer-method slice first.
-- Then isolate `to_int_unchecked` as a separate reproducible float frontier
-  with exact command/file evidence for the next evaluator pass.
+- Run one narrower proof slice to completion on `verify-rust-std/reexec-0011-floats-ints`
+  so the integer side has a completed passing proof result, then reassess
+  whether any remaining work is only float-blocked.
