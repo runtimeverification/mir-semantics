@@ -15,38 +15,42 @@ The portfolio is complete only when every published challenge is in one of:
 
 ## Current Batch
 
-- `0011-floats-ints` -> `IN PROGRESS` (`2.4 / 3`)
-- `0012-nonzero` -> `IN PROGRESS` (`1.8 / 3`)
-- `0013-cstr` -> `IN PROGRESS` (`1.9 / 3`)
+- `0011-floats-ints` -> `IN PROGRESS` (`2.7 / 3`)
+- `0012-nonzero` -> `IN PROGRESS` (`2.0 / 3`)
+- `0013-cstr` -> `IN PROGRESS` (`2.0 / 3`)
 
 ## Current Active State
 
-- `0011-floats-ints`: historical artifact set ported; two distinct integer
-  proof slices pass (`unchecked_add_u8`, `unchecked_neg_i8`); float path
-  remains structurally blocked by backend float intrinsic support; next action
-  is broader integer coverage.
+- `0011-floats-ints`: branch-local proof passes now cover
+  `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`, and
+  `wrapping_shl_u8`; float `to_int_unchecked` remains precisely blocked by the
+  stuck `fabsf32` / `fabsf64` frontier; next action is another narrow integer
+  slice or a stronger integer-readiness boundary against the float blocker.
 - `0012-nonzero`: prerequisite semantic baseline is ported and validated;
-  challenge-local Part 1 artifacts exist; current narrowed frontiers are
-  `castKindTransmute` in `NonZero::new` and `castKindPtrToPtr` in
-  `NonZero::from_mut`; next action is a minimal semantic-fix or sharper blocker
-  reduction on one of those cast frontiers.
-- `0013-cstr`: prerequisite cross-crate support is ported; challenge-local
-  artifacts exist for `from_ptr`, `Index<RangeFrom<usize>>`, and
-  `from_bytes_with_nul_unchecked`; remaining required coverage includes
-  `strlen` and exact-byte `CloneToUninit`; next action is remaining coverage
-  plus proof-frontier reduction.
+  the exact `u8 -> Option<NonZeroU8>` reproduction now isolates the
+  `NonZero::new` blocker beyond plain transparent-wrapper support; next action
+  is a lower-level byte/layout-driven transmute investigation or a runtime
+  `lookupTy(TY_TO)` shape check for the niche cast.
+- `0013-cstr`: prerequisite cross-crate support is ported; the exact-byte
+  `CloneToUninit` harness exists and standalone prove targets now compile as
+  edition 2024; the remaining shared frontier is linked-SMIR body supply for
+  `core::ffi::CStr::from_bytes_with_nul`; next action is a minimal donor-link
+  path or a precise blocker checkpoint for that constructor body gap.
 
 ## Exact Restart Point If The Run Stops Now
 
 - Resume the current batch: `0011-floats-ints`, `0012-nonzero`,
   `0013-cstr`.
 - Restart priority inside the current batch:
-  1. `0012-nonzero`: continue the interrupted semantic-fix attempt on the
-     `NonZero::new` / `NonZero::from_mut` cast frontier.
-  2. `0013-cstr`: add remaining `CStr` coverage (`strlen`, exact-byte
-     `CloneToUninit`) or discharge one of the current proof frontiers.
-  3. `0011-floats-ints`: run another narrow integer proof slice to broaden
-     coverage beyond the two completed proofs.
+  1. `0012-nonzero`: continue from the checkpointed niche-transmute blocker
+     with a layout-driven or `lookupTy(TY_TO)`-driven investigation on the
+     exact `u8 -> Option<NonZeroU8>` cast.
+  2. `0013-cstr`: continue from the edition-2024 checkpoint and either land a
+     focused donor-link path for `core::ffi::CStr::from_bytes_with_nul` or
+     record that constructor-body gap as the exact blocker.
+  3. `0011-floats-ints`: run the next cheapest narrow integer slice after
+     `unchecked_sub_u8` to keep widening the integer matrix while the float
+     blocker stays unchanged.
 - Do not reseat the batch until these three leave `IN PROGRESS`.
 
 ## Batch Selection Rationale
@@ -75,10 +79,13 @@ Rationale:
 
 ## Current Run Constraint
 
-- One additional semantic-fix attempt on `0012-nonzero` remained live after a
-  full wait window and was stopped to preserve a clean interruption checkpoint.
-- This is treated as an external runtime/tool constraint for this turn, not as
-  a challenge-level terminal verdict.
+- Long proof / linkage loops on `0012-nonzero` and `0013-cstr` required
+  checkpoint-style finishes to avoid leaving dirty experimental state in the
+  worktrees.
+- The observed live-agent cap remains `6`, which forced repeated close/reopen
+  cycles for planner/generator/evaluator passes.
+- If this run stops here, treat that as an external runtime/tool constraint for
+  this turn, not as a challenge-level terminal verdict.
 
 ## Challenge State Index
 

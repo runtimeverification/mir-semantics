@@ -9,9 +9,9 @@ challenge_id	slug	state	batch_slot	note
 0008	smallsort	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0009	duration	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0010	string	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
-0011	floats-ints	IN PROGRESS	active	two integer proof slices pass; float path still structurally blocked; next action is broader integer coverage
-0012	nonzero	IN PROGRESS	active	part1 artifacts exist; narrowed cast frontiers in NonZero::new and from_mut; next action is minimal semantic-fix or blocker reduction
-0013	cstr	IN PROGRESS	active	from_ptr/index/from_bytes_with_nul_unchecked artifacts exist; remaining coverage is strlen and exact-byte CloneToUninit plus frontier reduction
+0011	floats-ints	IN PROGRESS	active	four proof slices now pass (unchecked_add_u8 unchecked_neg_i8 unchecked_sub_u8 wrapping_shl_u8); float path still blocked by fabsf32/fabsf64 frontier; next action is another narrow integer slice or stronger integer-readiness boundary
+0012	nonzero	IN PROGRESS	active	passing control shows plain transparent-wrapper transmute works but exact u8->Option<NonZeroU8> still stops at castKindTransmute; next action is layout-driven or lookupTy(TY_TO)-driven niche-cast investigation
+0013	cstr	IN PROGRESS	active	exact-byte CloneToUninit harness exists and edition-2024 standalone compile landed; remaining shared blocker is linked-SMIR body supply for core::ffi::CStr::from_bytes_with_nul; next action is focused donor-link or precise blocker checkpoint
 0014	convert-num	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0015	intrinsics-simd	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0016	iter	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
