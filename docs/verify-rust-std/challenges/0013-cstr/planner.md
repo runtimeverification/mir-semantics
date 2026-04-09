@@ -51,19 +51,22 @@ Ownership:
     `test_index_range_from_exact_bytes`
   - `from_bytes_with_nul_unchecked.rs` with
     `test_from_bytes_with_nul_unchecked_ok`
+  - `clone_to_uninit.rs` with `test_clone_to_uninit_exact_bytes`
 - Current proof state:
   - `test_from_ptr` fails
   - `test_index_range_from_exact_bytes` fails
   - `test_from_bytes_with_nul_unchecked_ok` fails at a thunk frontier
+  - `test_clone_to_uninit_exact_bytes` and the linked-SMIR `test_clone_to_uninit`
+    both reduce to the same `core::ffi::CStr::from_bytes_with_nul` frontier
 - Missing challenge slices:
   - dedicated `strlen` artifact
-  - dedicated exact-byte `CloneToUninit` artifact
   - the nine-method invariant harness set
 
-The exact current frontier that should be delegated next is the exact-byte
-`CloneToUninit` slice. It is the tightest missing published criterion, and it is
-the piece that most directly tests the destination-validity and byte-exactness
-trap highlighted by the public reviews.
+The exact current frontier that should be delegated next is the shared
+`core::ffi::CStr::from_bytes_with_nul` frontier reduction. It is the tightest
+lever now because it blocks two existing challenge-local slices at once and is
+the concrete constructor/body gap that prevents the new exact-byte
+`CloneToUninit` evidence from counting as discharge.
 
 ## Scope Contract
 
@@ -98,6 +101,9 @@ trap highlighted by the public reviews.
 - Likely risk: `CloneToUninit` verification may need a stronger destination
   validity contract than a non-null precondition, based on prior review
   comments.
+- Current actionability risk: if the shared constructor frontier is not reduced,
+  the branch will remain in frontier-reduction mode even though the exact-byte
+  `CloneToUninit` harness is already present.
 
 ## Cross-Challenge Notes
 
@@ -111,10 +117,13 @@ trap highlighted by the public reviews.
 - Evaluator should prefer a rubric item that distinguishes "a harness exists"
   from "the harness exercises the exact bytes and destination validity the trait
   contract requires".
+- Evaluator should also distinguish "constructor/body frontier remains shared"
+  from "a missing harness", because the current blocker is now common to both
+  linked-SMIR and challenge-local `CloneToUninit` runs.
 
 ## History
 
 - Bootstrap record created by orchestrator.
 - Planner checkpoint: extracted the published challenge bar, confirmed the
-  current challenge-local frontiers, and narrowed the next generator task to
-  the exact-byte `CloneToUninit` slice.
+  current challenge-local frontiers, and narrowed the next generator task to the
+  shared `core::ffi::CStr::from_bytes_with_nul` frontier reduction.

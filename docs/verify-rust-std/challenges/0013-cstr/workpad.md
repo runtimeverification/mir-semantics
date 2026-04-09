@@ -4,10 +4,12 @@
 
 - Branch: `verify-rust-std/reexec-0013-cstr`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0013-cstr`
-- Current stage: generator slice focused on the exact-byte `CloneToUninit`
-  frontier
+- Current stage: generator slice focused on the shared
+  `core::ffi::CStr::from_bytes_with_nul` frontier
 - Implementation status: in progress; existing challenge-local CStr artifacts
-  still have failing or incomplete proofs
+  still have failing or incomplete proofs, and the evaluator is now at `2.0`
+  with `IN PROGRESS` because the safe-method matrix and `strlen` are still
+  missing
 
 ## Evidence Gathered
 
@@ -22,8 +24,8 @@
   challenge shape: invariant, nine safe methods, three unsafe contracts, and
   the two trait impls.
 - The current branch already has narrow local artifacts for `from_ptr`,
-  `Index<RangeFrom<usize>>`, and `from_bytes_with_nul_unchecked`, but those
-  proofs are still not closed.
+  `Index<RangeFrom<usize>>`, `from_bytes_with_nul_unchecked`, and
+  `clone_to_uninit`, but those proofs are still not closed.
 - A dedicated exact-byte `CloneToUninit` slice now exists at
   `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs`.
 - There is still no dedicated `strlen` slice on this branch.
@@ -42,20 +44,19 @@
     `core::ffi::CStr::from_bytes_with_nul`
 - Highest-leverage next task:
   - reduce the shared `CStr::from_bytes_with_nul` frontier so the new exact-byte
-    `CloneToUninit` slice can execute past CStr construction and into the trait
-    body cleanly
+    `CloneToUninit` slice and the linked-SMIR `test_clone_to_uninit` slice can
+    both execute past CStr construction cleanly
 
 ## Decisions
 
-- Keep the next generator slice tightly focused on `CloneToUninit` rather than
-  widening immediately into the full nine-method invariant sweep.
-- Treat the exact written region, destination validity, and source-byte
-  comparison as the core evidence requirements for that slice.
-- Encode destination validity beyond nullness with an explicit
-  `len <= dest.len()` guard and an initialized destination buffer so the slice
-  stays defined even if `clone_to_uninit` underwrites.
-- Leave `strlen` and the safe-method invariant harness set as follow-on work
-  once the `CloneToUninit` frontier is reduced.
+- Keep the next generator slice tightly focused on the shared constructor
+  frontier rather than widening immediately into the full nine-method invariant
+  sweep.
+- Treat the existing exact-byte `CloneToUninit` harness logic as sufficient and
+  do not rework it unless the constructor frontier exposes a concrete harness
+  defect.
+- Leave `strlen` and the safe-method matrix as follow-on work once the shared
+  `from_bytes_with_nul` frontier is reduced.
 
 ## Failed Attempts
 
@@ -67,30 +68,33 @@
   `c"hello"` C-string literal still reduced to the same
   `core::ffi::CStr::from_bytes_with_nul` frontier on this branch.
 
-## Generator NEXT SLICE: Exact-Byte `CloneToUninit` (2026-04-09)
+## Generator NEXT SLICE: Shared `CStr::from_bytes_with_nul` Frontier Reduction (2026-04-09)
 
 ### Hand-off
 
-- Implement a dedicated `CloneToUninit` harness/contract slice for `CStr`.
-- Validate the destination preconditions required by the trait contract.
-- Compare the exact region written by `clone_to_uninit` against the source
-  `CStr` bytes, including the trailing NUL.
-- Keep the harness bounded and defined even if the implementation is buggy.
+- Implement the smallest constructor/frontier slice that lets
+  `CStr::from_bytes_with_nul` advance far enough for both `test_clone_to_uninit`
+  and `test_clone_to_uninit_exact_bytes` to move past CStr construction.
+- Keep the slice narrowly scoped to the shared constructor gap; do not expand it
+  into the nine safe methods or `strlen`.
+- Preserve the existing exact-byte `CloneToUninit` harness logic so the result
+  remains byte-exact and destination-validity aware.
 
 ### Validation Expectations
 
-- Record the file path(s) touched for the trait contract and harness.
-- Run the narrowest proof command that exercises the new slice.
-- Capture whether the result is a pass, a concrete failing frontier, or a
-  blocker that needs escalation.
+- Record the file path(s) touched for the constructor/frontier slice and any
+  associated contract update.
+- Run the narrowest proof commands that exercise both the linked-SMIR and
+  challenge-local `CloneToUninit` paths.
+- Capture whether the shared frontier moved, stayed stuck, or needs escalation.
 
 ### Scope Notes
 
 - Do not expand this slice into the nine safe-method invariant set.
-- Do not spend this slice on `strlen` unless `CloneToUninit` unexpectedly
-  exposes a shared prerequisite.
-- Keep the evidence trace reviewer-readable: commands, frontier, and exact
-  byte comparisons.
+- Do not spend this slice on `strlen` unless the shared constructor work
+  unexpectedly exposes a prerequisite.
+- Keep the evidence trace reviewer-readable: commands, frontier, and the exact
+  constructor/body gap that remains.
 
 ## CloneToUninit Slice Update (2026-04-09)
 
