@@ -2,7 +2,7 @@
 
 Status: `IN PROGRESS`
 
-Overall score: `1.5/3`
+Overall score: `1.6/3`
 
 ## Reconfirmed Requirements
 
@@ -15,26 +15,62 @@ Overall score: `1.5/3`
 
 | Criterion | Score | Evidence | Gap |
 | --- | --- | --- | --- |
-| Published success criteria are mapped to concrete artifacts | 2 | `contract-map.md` covers all 12 public `unsafe` APIs and assigns each to a proof entrypoint or wrapper follow-on; `workpad.md` names the first tranche and next action. | No proof or harness artifacts exist yet, and the internal unsafe 75% target is still unmapped. |
-| Challenge-specific UB obligations are tracked explicitly | 2 | `contract-map.md` and `planner.md` record the UB families and the source assumptions for `decrement_strong_count` and `assume_init`. | Nothing has been discharged against the backend yet. |
-| Safety conditions are modeled faithfully | 2 | The source SAFETY summaries are captured per API in `contract-map.md`, including allocator provenance and one-shot ownership recovery. | The models are still descriptive; no semantic proof has checked them. |
-| Evidence is reproducible and challenge-local | 2 | `generator.md` records the exact `rc.rs` line ranges and validation commands; the branch diff is confined to challenge-local docs. | No proof/test rerun has been recorded, so there is no executable evidence yet. |
-| Scope is challenge-local and cherry-pickable | 3 | `git log` shows a narrow docs-only line of commits: `87a669dc` and `9702b523`. | None for this slice. |
-| Residual risk is explicit | 2 | `workpad.md` names the soft `assume_init` expressivity risk and the possible Kani dependency, while noting no confirmed blocker on the selected tranche. | The dependency has not yet been validated against the current backend. |
-| Review feedback patterns are incorporated | 0 | No prior review-pattern notes exist yet for this branch. | Nothing concrete to incorporate yet. |
+| Published success criteria are mapped to concrete artifacts | 2 | `contract-map.md` traces all 12 public `unsafe` APIs to source anchors, source SAFETY summaries, proof entrypoints, and the first-tranche split; `plan.md` and `workpad.md` now pin the next subtask to the `Rc::from_raw_in` harness. | The 75% internal-unsafe target is still not mapped to concrete artifacts, and no proof has discharged any of the listed APIs yet. |
+| Challenge-book rules are satisfied | 2 | The branch stays challenge-local, uses the documented `kmir` prove/show commands, and avoids stdlib runtime changes. | The current evidence is still evaluator-record evidence, not a completed PR with passing proof/test results. |
+| Safety conditions are modeled faithfully | 2 | `contract-map.md` captures the source SAFETY summaries for allocator provenance, one-shot ownership recovery, aliasing, and type-identity conditions. | The models remain descriptive; they have not yet been validated by a successful proof. |
+| Undefined behavior obligations are covered | 2 | `contract-map.md` names the UB families and separates the raw-pointer/refcount tranche from `assume_init`, `get_mut_unchecked`, and `downcast_unchecked`. | None of the UB obligations have been discharged against the backend; they are only tracked and triaged. |
+| Evidence is reproducible | 2 | The branch records exact validation commands and proof-dir locations, and the current frontier is tied to a specific leaf in the root harness. | The current root harness still stalls before a passing proof, so the evidence is reproducible but not yet successful. |
+| Scope is challenge-local and cherry-pickable | 3 | The committed work stays inside `docs/verify-rust-std/challenges/0026-rc` plus one harness file under `kmir/src/tests/integration/data/prove-rs/`. | None for this slice. |
+| Review feedback patterns are incorporated | 1 | The latest plan update narrows the next step to the exact harness shape problem rather than widening to unrelated `Rc` APIs. | No external review thread or repeated solution-pattern feedback is yet reflected in a broader evaluator pattern. |
+| Residual risk is explicit | 3 | The workpad and generator record the concrete blocker, the exact stalled leaf, and the next action. | The blocker is explicit, but the fix is not yet implemented. |
+| Public unsafe API surface is fully mapped | 2 | `contract-map.md` lists all 12 public `unsafe` functions and classifies each into a tranche or wrapper follow-on. | Mapping exists, but the tranche has not been proven and the internal-unsafe target remains open. |
+| Raw-pointer/refcount tranche is isolated | 3 | `contract-map.md` and `plan.md` both select `Rc::from_raw_in`, `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, and `Weak::from_raw_in` as the first proof roots. | None for tranche selection. |
+| Challenge-specific UB obligations are explicit | 3 | The UB families are named in `contract-map.md` and summarized again in `plan.md` and `workpad.md`. | None for explicitness; only discharge is missing. |
+| External dependency risk is named precisely | 1 | `generator.md` preserves the earlier note that a Kani update may still be relevant, but the current blocker is now recorded as a harness-shape failure in `Rc::from_raw_in`. | No upstream dependency has been proven necessary for this blocker, and the possible Kani dependency is not yet tied to a specific API failure. |
+| Evidence remains challenge-local | 3 | All cited paths, commands, and commit SHAs stay inside the challenge bundle and current branch. | None for locality. |
 
-## Verdict
+## Satisfied Criteria
 
-- `IN PROGRESS`
-- The tranche map is a real technical advancement because it reduces the 12-function challenge surface to one dependency-spined raw-pointer/refcount slice with a concrete next step: turn `Rc::from_raw_in` into proof or harness seeds.
-- This is not `BLOCKED` because no precise technical blocker has been evidenced.
-- This is not `READY FOR SUBMISSION` because there are no proof/test results yet.
+- The public `unsafe` surface is fully enumerated and split into a usable tranche.
+- The raw-pointer/refcount family is isolated as the first lever.
+- The current blocker is named precisely enough to keep the next step narrow.
+- Evidence stays local to the challenge branch.
+
+## Missing Criteria
+
+- No proof/test has succeeded yet for `Rc::from_raw_in`.
+- The root harness still depends on `Rc::new_in` and `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`.
+- The internal-unsafe 75% requirement is still unmapped.
+- None of the challenge UB obligations are discharged, only documented.
+
+## Blockers
+
+- The current root harness for `Rc::from_raw_in` reaches `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` and stalls at the `castKindTransmute` thunk in `core/src/alloc/layout.rs:140`.
+- That failure is a harness-shape problem, not a semantic failure in the `Rc::from_raw_in` body.
+- Until the harness is rewritten to use a direct raw-pointer/allocator witness, the tranche cannot advance to `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in`.
 
 ## Evidence Base
 
 - `docs/verify-rust-std/challenges/0026-rc/contract-map.md`
+- `docs/verify-rust-std/challenges/0026-rc/plan.md`
 - `docs/verify-rust-std/challenges/0026-rc/workpad.md`
-- `docs/verify-rust-std/challenges/0026-rc/planner.md`
 - `docs/verify-rust-std/challenges/0026-rc/generator.md`
-- `docs/verify-rust-std/challenges/0026-rc/evaluator.md`
-- `git -C /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc log --oneline --decorate -n 8`
+- `docs/verify-rust-std/challenges/0026-rc/evaluation_result.md`
+- Commit `7abe7dcd` `test(verify-rust-std): seed rc from_raw_in root harness`
+- Commit `7398e820` `docs(verify-rust-std): record rc from_raw_in blocker evidence`
+- Commit `cc2f0e86` `docs(verify-rust-std): narrow rc harness next step`
+- `git -C /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc show 7abe7dcd:kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs`
+- `git -C /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc show 7398e820:docs/verify-rust-std/challenges/0026-rc/generator.md`
+- `git -C /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc show cc2f0e86:docs/verify-rust-std/challenges/0026-rc/plan.md`
+- `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs --proof-dir /tmp/rc-from-raw-in-proof --verbose --terminate-on-thunk`
+- `uv --project kmir run kmir show rc-from-raw-in.main --proof-dir /tmp/rc-from-raw-in-proof --leaves --statistics`
+
+## Verdict
+
+- `IN PROGRESS`
+- The challenge is not submission-ready because the first root harness still fails before a proof result, and the internal-unsafe requirement remains unmapped.
+- This remains `IN PROGRESS` rather than `BLOCKED` because the blocker is a local harness-shape issue with a concrete next edit, not an external dead end.
+
+## Exact Next Action
+
+- Rewrite the `Rc::from_raw_in` root harness so it stops constructing the witness through `Rc::new_in` and `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`, and instead feeds `from_raw_in` the smallest direct raw-pointer/allocator witness that preserves `System` provenance.
