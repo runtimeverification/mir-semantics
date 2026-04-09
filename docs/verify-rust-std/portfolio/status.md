@@ -2,41 +2,47 @@
 
 Last orchestrator checkpoint: 2026-04-09 UTC
 
-## Bootstrap Completed
+## Terminal-State Rule
 
-The following challenges have:
+The portfolio is complete only when every published challenge is in one of:
 
-- dedicated worktree
-- dedicated branch
-- draft PR
-- planner record with a planner-agent commit
-- generator record with a generator-agent commit
-- evaluator record and rubric with an evaluator-agent commit
+- `BLOCKED`
+- `CONDITIONALLY READY`
+- `READY FOR SUBMISSION`
+- `SUBMITTED / CLOSED`
 
-Completed bootstrap set:
+`BOOTSTRAP` and `IN PROGRESS` are explicitly non-terminal.
 
-- `0001-core-transmutation`
-- `0002-intrinsics-memory`
-- `0003-pointer-arithmentic`
-- `0004-btree-node`
-- `0005-linked-list`
-- `0006-nonnull`
+## Current Batch
 
-## Portfolio-Wide Bootstrap State
+- `0011-floats-ints` -> `IN PROGRESS`
+- `0012-nonzero` -> `IN PROGRESS`
+- `0013-cstr` -> `IN PROGRESS`
+
+## Batch Selection Rationale
+
+- `0011-floats-ints`: direct `mir-semantics` reference PR exists in [#985](https://github.com/runtimeverification/mir-semantics/pull/985); likely to yield either a precise float-capability blocker or a near-terminal readiness assessment quickly.
+- `0012-nonzero`: strong public solution set exists in verify-rust-std and a local historical branch exists; high probability of moving to `READY FOR SUBMISSION`.
+- `0013-cstr`: strong public solution set exists and the historical local branch includes linker/body-resolution work that may accelerate later challenges.
+
+## Exact Next Batch If Interrupted After The Current Batch
+
+- `0028-flt2dec`
+- `0026-rc`
+- `0027-arc`
+
+Rationale:
+
+- `0028-flt2dec` reuses float-support findings from `0011`.
+- `0026-rc` and `0027-arc` share reference-counting patterns and both have strong public solution material for reuse.
+
+## Portfolio Inventory
 
 - Challenge worktrees created: `29`
-- Draft PRs opened: `29`
-- Agent thread cap observed: `6` concurrent threads
-- Active challenge agents at checkpoint: `0`
-- Next challenge queued for agent bootstrap: `0007-atomic-types`
+- Challenge draft PRs opened: `29`
+- Dedicated challenge branches created: `29`
+- Observed agent thread cap: `6`
 
-## Pending Agent Bootstrap
+## Challenge State Index
 
-Challenges `0007` through `0029` still need dedicated planner, generator, and
-evaluator agents created and recorded.
-
-## Notes
-
-- The runtime thread cap means agent creation must proceed in batches.
-- The branch and PR scaffolding for all challenges already exists, so remaining
-  work is agent creation plus substantive planning, generation, and evaluation.
+See `docs/verify-rust-std/portfolio/current-states.tsv`.

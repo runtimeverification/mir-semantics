@@ -1,0 +1,30 @@
+challenge_id	slug	state	batch_slot	note
+0001	core-transmutation	BOOTSTRAP	idle	bootstrap docs exist; dedicated triad exists; waiting for future batch
+0002	intrinsics-memory	BOOTSTRAP	idle	bootstrap docs exist; dedicated triad exists; waiting for future batch
+0003	pointer-arithmentic	BOOTSTRAP	idle	bootstrap docs exist; dedicated triad exists; waiting for future batch
+0004	btree-node	BOOTSTRAP	idle	bootstrap docs exist; dedicated triad exists; waiting for future batch
+0005	linked-list	BOOTSTRAP	idle	bootstrap docs exist; dedicated triad exists; waiting for future batch
+0006	nonnull	BOOTSTRAP	idle	bootstrap docs exist; dedicated triad exists; waiting for future batch
+0007	atomic-types	BOOTSTRAP	queued	candidate for later batch after current triage completes
+0008	smallsort	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0009	duration	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0010	string	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0011	floats-ints	IN PROGRESS	active	planner launched; reference PR #985 and float support evidence under review
+0012	nonzero	IN PROGRESS	active	planner launched; public solution reuse and local historical branch under review
+0013	cstr	IN PROGRESS	active	planner launched; public solution reuse and local linker branch under review
+0014	convert-num	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0015	intrinsics-simd	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0016	iter	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0017	slice	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0018	slice-iter	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0019	rawvec	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0020	str-pattern-pt1	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0021	str-pattern-pt2	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0022	str-iter	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0023	vec-pt1	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0024	vec-pt2	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0025	vecdeque	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
+0026	rc	BOOTSTRAP	next-batch	candidate next batch with strong public solution coverage
+0027	arc	BOOTSTRAP	next-batch	candidate next batch with shared reference-counting patterns
+0028	flt2dec	BOOTSTRAP	next-batch	candidate next batch reusing float findings from 0011
+0029	boxed	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
