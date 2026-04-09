@@ -15,14 +15,14 @@ Turn the published `Rc`/`Weak` challenge requirements into one concrete proof-or
 
 ## Single Next Technical Subtask
 
-Audit the `alloc::rc` raw-pointer and refcount-transition family, map each function to its source SAFETY comment and likely proof entrypoint, and choose the smallest first tranche that gives the most leverage toward the 12 public unsafe contracts.
+Rewrite the `Rc::from_raw_in` root harness so it no longer constructs the witness through `Rc::new_in` and `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`; instead, feed `from_raw_in` the smallest direct raw-pointer/allocator witness that preserves the current `System` provenance and stays inside the raw-pointer/refcount tranche.
 
 ## Why This Comes First
 
-These APIs define the ownership and count-transition invariants that the rest of `Rc` and `Weak` builds on. If the tranche is chosen poorly, later proof work will duplicate invariant discovery instead of reusing it.
+The current proof frontier is not a `Rc::from_raw_in` semantic failure. It is a harness-shape failure caused by the `Rc::new_in` detour into `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`, which stalls at `castKindTransmute` in `core/src/alloc/layout.rs:140`. Removing that detour is the narrowest change most likely to unblock the existing root without widening scope.
 
 ## Exit Criteria
 
-- A function-by-function matrix exists for the raw-pointer/refcount APIs.
-- The first tranche is explicitly named.
-- Any external blocker, including the public Kani dependency note from issue #382, is marked as a dependency rather than assumed.
+- The `Rc::from_raw_in` harness takes a direct raw-pointer/allocator witness and no longer depends on `Rc::new_in` or `Box::try_new_uninit_in`.
+- The existing `System` provenance is preserved in the root harness.
+- Any remaining blocker is recorded as a precise backend dependency or semantic gap, not as a widened Rc API search.
