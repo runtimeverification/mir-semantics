@@ -5,10 +5,10 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, five direct proof slices pass on the branch, and the latest
-  evaluator refresh still leaves the challenge `IN PROGRESS` at `2.8 / 3`
-  pending a broader reassessment. The next generator handoff now targets
-  `widening_mul_u8` as the cheapest remaining safe-API slice.
+  exist, six direct proof slices pass on the branch, and the latest evaluator
+  refresh still leaves the challenge `IN PROGRESS` at `2.8 / 3` pending a
+  broader reassessment. The planner-selected `widening_mul_u8` slice is now
+  complete and passed without any support changes.
 
 ## Evidence gathered
 
@@ -18,11 +18,14 @@
 - PR #985’s file list confirms that `wrapping_shl` relied on the already-ported
   shift-mask simplification lemmas; this branch-local re-execution therefore
   tests whether that support is sufficient here without importing new logic.
-- The branch now has five passing direct proof slices
+- Re-reading the historical challenge branch for `widening_mul` showed that the
+  current branch already matched the prior harness shape and runner wiring, so
+  this slice could be re-executed independently without importing more logic.
+- The branch now has six passing direct proof slices
   (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
-  `wrapping_shl_u8`, and now `wrapping_shr_u8`), confirming that both narrow
-  Part 2 wrapping-shift siblings execute cleanly on this branch with the
-  already-ported support.
+  `wrapping_shl_u8`, `wrapping_shr_u8`, and now `widening_mul_u8`), confirming
+  that the first widening-mul Part 2 slice also executes cleanly on this
+  branch with the already-ported support.
 - The refreshed evaluator result stays at `IN PROGRESS` with score `2.8 / 3`,
   so the branch still needs more non-float breadth before any terminal state
   can be justified.
@@ -30,11 +33,13 @@
 ## Planning decisions
 
 - Treat the integer portion and float portion as separate evidence-bearing slices.
-- `widening_mul_u8` is the correct next delegated slice: it is the cheapest
-  remaining safe-API case, broadens Part 2 beyond the existing wrapping-shift
-  pair, and should re-use the already-ported unsigned multiplication support
-  without introducing float work.
-- Do not escalate to backend changes yet; first confirm whether the current branch can independently add one more passing safe-API proof before reclassifying the remaining float gap.
+- `widening_mul_u8` was the correct delegated slice: it was the cheapest
+  remaining safe-API case, broadened Part 2 beyond the existing wrapping-shift
+  pair, and re-used the already-ported unsigned multiplication support without
+  introducing float work.
+- Do not escalate to backend changes from this slice; it passed cleanly, so the
+  next step is evaluator/planner reassessment rather than widening scope inside
+  this generator turn.
 
 ## Reusable rubric patterns for evaluator
 
@@ -75,6 +80,12 @@
 - 2026-04-09: Direct proof follow-up run completed with
   `ProofStatus.PASSED` for `wrapping_shr_u8` using:
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/wrapping_shr.rs --start-symbol wrapping_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-wrapping-shr-u8 --reload --fail-fast --max-workers 1`.
+- 2026-04-09: Scoped discovery check for the planner-selected widening-mul
+  follow-up collected exactly `test_verify_rust_std[widening_mul]` using:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "widening_mul and not fail" -q`.
+- 2026-04-09: Direct proof follow-up run completed with
+  `ProofStatus.PASSED` for `widening_mul_u8` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/widening_mul.rs --start-symbol widening_mul_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-widening-mul-u8 --reload --fail-fast --max-workers 1`.
 
 ## Generator retry execution log
 
@@ -108,6 +119,13 @@
   `kmir prove-rs`; `wrapping_shr_u8` passed without any new support changes,
   broadening the safe-API evidence while preserving the existing float blocker
   boundary.
+- Confirmed the next safe-API family is wired through the same runner:
+  `test_verify_rust_std[widening_mul]` is selected by
+  `-k "widening_mul and not fail"`.
+- Re-executed the planner-selected widening-mul slice directly with
+  `kmir prove-rs`; `widening_mul_u8` passed without any new support changes,
+  broadening the safe-API evidence beyond the wrapping-shift pair while
+  preserving the existing float blocker boundary.
 
 ## Evidence for next evaluator step
 
@@ -117,19 +135,21 @@
 - Validation now includes branch-local passing proof evidence in two published
   requirement families:
   `unchecked_add_u8`, `unchecked_neg_i8`, and `unchecked_sub_u8` pass in
-  Part 1, and `wrapping_shl_u8` plus `wrapping_shr_u8` pass in Part 2.
+  Part 1, and `wrapping_shl_u8`, `wrapping_shr_u8`, plus `widening_mul_u8`
+  pass in Part 2.
 - Float blocker signal remains present in ported evidence:
   `to_int_unchecked-fail` expected outputs include stuck float intrinsic hooks.
 
 ## Next handoff
 
-- The planner-selected `widening_mul_u8` slice is now the active target.
-- Generator should use `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/widening_mul.rs`
-  with `--start-symbol widening_mul_u8` in a scoped `kmir prove-rs` run, and
-  then record whether Part 2 now has a first passing widening-mul slice.
-- Remaining branch work should stay focused on that single proof attempt or on
-  documenting the already-recorded float blocker; this generator turn should
-  not be widened beyond `widening_mul_u8`.
+- The planner-selected `widening_mul_u8` slice is complete and passed.
+- Evaluator should reassess whether the branch’s six direct proof passes across
+  Part 1 and Part 2 materially change the non-float readiness signal, while
+  keeping the remaining float blocker tied to the precise
+  `fabsf32` / `fabsf64` frontier.
+- If the planner delegates another generator slice after that reassessment, it
+  should choose the next narrow proof target explicitly rather than widening
+  scope inside this completed turn.
 
 ## Evaluator Note
 
