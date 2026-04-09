@@ -6,7 +6,7 @@
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
   exist, four direct proof slices pass on the branch, and the latest evaluator
-  refresh still leaves the challenge `IN PROGRESS` at `2.6 / 3` pending a
+  refresh still leaves the challenge `IN PROGRESS` at `2.7 / 3` pending a
   broader reassessment.
 
 ## Evidence gathered
@@ -20,7 +20,7 @@
 - `unchecked_sub_u8` now passes directly on this branch with the existing
   runner and harness support, so the current Part 1 frontier moved from
   "proof exists for add/neg only" to "proof exists across add/sub/neg".
-- The refreshed evaluator result stays at `IN PROGRESS` with score `2.6 / 3`,
+- The refreshed evaluator result stays at `IN PROGRESS` with score `2.7 / 3`,
   so the branch still needs more integer breadth before any terminal state can
   be justified.
 
@@ -116,3 +116,7 @@
   unverified integer and safe-API surface is still broad; `unchecked_sub_u8`
   improves the Part 1 evidence, but the strongest justified verdict remains
   `IN PROGRESS` rather than `CONDITIONALLY READY`.
+- 2026-04-09: After the `unchecked_sub_u8` pass, the evaluator score is now
+  `2.7 / 3`; the breadth gap is still the limiting factor, and the float
+  blocker remains the precise `fabsf32` / `fabsf64` frontier in
+  `to_int_unchecked`.

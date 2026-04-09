@@ -6,61 +6,70 @@
 
 ## Score
 
-`2.6 / 3`
+`2.7 / 3`
 
 ## Satisfied Criteria
 
 - Dedicated branch, worktree, and draft PR exist.
 - Challenge-local planner, generator, and workpad artifacts exist and were
   updated on the challenge branch.
-- The challenge artifact set for Part 1 and Part 2 was ported from the
-  historical Challenge 11 branch into this re-execution branch.
-- Reproducible commands and their outcomes are recorded in `generator.md`.
-- Three direct proof slices now complete end-to-end on the branch:
-  `unchecked_add_u8`, `unchecked_neg_i8`, and `wrapping_shl_u8` all passed
-  with `ProofStatus.PASSED`.
-- The branch now has branch-local proof evidence in two published requirement
-  families, not just the initial Part 1 bucket.
-- The float path is no longer just a historical claim; branch-local evidence
-  now shows the stuck float intrinsic frontier in `to_int_unchecked-fail`.
+- The published challenge scope is mapped to concrete artifacts in
+  `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/`,
+  including the non-float method harnesses and the float
+  `to_int_unchecked-fail` harness.
+- Reproducible commands and their outcomes are recorded in `generator.md`
+  and `workpad.md`.
+- Four direct proof slices now complete end-to-end on the branch:
+  `unchecked_add_u8`, `unchecked_neg_i8`, `wrapping_shl_u8`, and
+  `unchecked_sub_u8` all passed with `ProofStatus.PASSED`.
+- The branch now has branch-local proof evidence across three Part 1
+  arithmetic slices and one Part 2 safe-API slice.
+- The float path is classified with direct branch-local evidence: the
+  `to_int_unchecked-fail.*.expected` files show stuck `fabsf32` and `fabsf64`
+  intrinsics for the `f32` and `f64` cases.
 
 ## Missing Criteria
 
-- The integer and safe-API matrix is still incomplete; three passing symbols do
-  not establish the full Part 1 / Part 2 surface required by the published
-  challenge.
-- No evaluator-side terminal verdict beyond `IN PROGRESS` can be justified
-  while the remaining unverified integer/safe-API coverage is still broad.
-- The remaining `to_int_unchecked` float path is still not provable on the
-  current backend stack.
+- The published Part 1 matrix is still incomplete: `unchecked_mul`,
+  `unchecked_shl`, `unchecked_shr`, and the remaining integer types are not
+  yet proven on this branch.
+- Part 2 remains only partially covered because `wrapping_shr`,
+  `widening_mul`, and `carrying_mul` are not yet completed end-to-end.
+- Part 3 remains unproven for the challenge as a whole; the branch-local
+  blocker still affects `to_int_unchecked` for at least `f32` and `f64`, and
+  the remaining float cases are still not proven.
+- No terminal verdict stronger than `IN PROGRESS` is justified while that
+  breadth gap remains open.
 
 ## Blocking Issues
 
-- The integer side still needs broader proof coverage beyond the completed
-  `unchecked_add_u8`, `unchecked_neg_i8`, and `wrapping_shl_u8` slices.
-- The float path is a precise backend blocker in the current stack: the
-  ported `to_int_unchecked-fail.*.expected` outputs still show stuck float
-  intrinsic hooks such as `fabsf32` and `fabsf64`, matching the historical
-  blocker in PR `#985`.
+- The float path still has a precise backend blocker in the current stack:
+  `to_int_unchecked-fail.to_int_unchecked_f32_i32.expected` and
+  `to_int_unchecked-fail.to_int_unchecked_f64_i64.expected` stop at stuck
+  `fabsf32` / `fabsf64` intrinsics.
+- The remaining integer and safe-API surface is still broad enough to make
+  meaningful forward progress; this is a gap, not a terminal blocker.
 
 ## Evidence
 
-- The proof-pass commit is `1f715e75` for `wrapping_shl_u8`.
-- Ported artifacts exist under
-  `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/`.
-- `generator.md` records:
-  - `make test-verify-rust-std PARALLEL=1 TEST_ARGS="-k '0011-floats-ints and unchecked_add'"`
-  - `make test-verify-rust-std PARALLEL=1 TEST_ARGS="-k 'unchecked_add and not fail'"`
-  - `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_add and not fail" -q`
-  - `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_add.rs --start-symbol unchecked_add_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-add-u8 --reload --fail-fast --max-workers 1`
-  - `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_neg.rs --start-symbol unchecked_neg_i8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-neg-i8 --reload --fail-fast --max-workers 1`
-- `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/wrapping_shl.rs --start-symbol wrapping_shl_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-wrapping-shl-u8 --reload --fail-fast --max-workers 1`
-- `workpad.md` records the exact-byte float blocker interpretation and the
-  discovery-vs-proof distinction.
+- The latest proof-pass commit is `2cf226c5` (`docs(verify-rust-std): record
+  unchecked_sub_u8 proof pass`).
+- `generator.md` records the completed proof runs for
+  `unchecked_add_u8`, `unchecked_neg_i8`, `wrapping_shl_u8`, and
+  `unchecked_sub_u8`, including the exact `kmir prove-rs` commands.
+- `workpad.md` records the same four passing slices and keeps the float blocker
+  separate from the integer proof work.
+- `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/README.md`
+  lists the published non-float APIs and the float harness set.
+- The float frontier is shown directly in:
+  - `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/show/to_int_unchecked-fail.to_int_unchecked_f32_i32.expected`
+  - `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/show/to_int_unchecked-fail.to_int_unchecked_f64_i64.expected`
+  - `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/show/to_int_unchecked-fail.to_int_unchecked_f16_i8.expected`
+  - `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/show/to_int_unchecked-fail.to_int_unchecked_f128_i128.expected`
 
 ## Next Action Required To Improve State
 
 - Run another narrow integer or safe-API proof slice to completion on
   `verify-rust-std/reexec-0011-floats-ints` to broaden the proof evidence
-  beyond a single Part 2 pass, then reassess whether the remaining work is
-  only float-blocked.
+  beyond the current four passing slices, then reassess whether the remaining
+  work is only float-blocked.
