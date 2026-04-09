@@ -38,6 +38,18 @@ Ownership:
 - 2026-04-09: Added a second required Challenge 0013 artifact,
   `from_bytes_with_nul_unchecked.rs`, and ran narrow scoped validation for
   `test_from_bytes_with_nul_unchecked_ok`.
+- 2026-04-09: Reused the public Challenge 13 `CloneToUninit` guidance from
+  `model-checking/verify-rust-std#543` and `#566`, then added a dedicated
+  challenge-local exact-byte `CloneToUninit` artifact at
+  `clone_to_uninit.rs`.
+- 2026-04-09: Refined the new `CloneToUninit` harness to use an initialized
+  destination buffer, an explicit `len <= dest.len()` validity guard beyond
+  nullness, and exact byte-for-byte comparison against
+  `cstr.to_bytes_with_nul()`.
+- 2026-04-09: Ran narrow validation on both the preexisting linked-SMIR
+  `test_clone_to_uninit` symbol and the new challenge-local
+  `test_clone_to_uninit_exact_bytes` symbol; both now reduce to the same
+  concrete `core::ffi::CStr::from_bytes_with_nul` body frontier.
 
 ## Files Touched
 
@@ -47,6 +59,7 @@ Ownership:
 - `kmir/src/kmir/smir.py`
 - `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_ptr.rs`
 - `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/from_bytes_with_nul_unchecked.rs`
+- `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs`
 - `docs/verify-rust-std/challenges/0013-cstr/generator.md`
 - `docs/verify-rust-std/challenges/0013-cstr/workpad.md`
 
@@ -98,17 +111,62 @@ Ownership:
    `std::ffi::CStr::from_bytes_with_nul_unchecked` around
    `#mkPtr ( toAlloc ( allocId ( 3 ) ) , ... )`.
 
+7. Command:
+   `timeout 240s uv --project kmir run -- kmir prove-rs kmir/cstr.smir.json --smir --start-symbol test_clone_to_uninit --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-cstr-smir-clone --fail-fast`
+   Result:
+   command executed and reached APR summary:
+   `APRProof: cstr.smir.test_clone_to_uninit`, status `FAILED`, `nodes: 3`,
+   `failing: 1`, `stuck: 1`, `terminal: 1` (exit code 1).
+
+8. Command:
+   `uv --project kmir run -- kmir show cstr.smir.test_clone_to_uninit --proof-dir /tmp/kmir-0013-cstr-smir-clone --leaves`
+   Result:
+   the failing leaf is a missing-body/stuck call to
+   `core::ffi::c_str::CStr::from_bytes_with_nul` at the linked fixture's
+   `test_clone_to_uninit` span.
+
+9. Command:
+   `timeout 240s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs --start-symbol test_clone_to_uninit_exact_bytes --terminate-on-thunk --max-depth 120 --max-iterations 80 --proof-dir /tmp/kmir-0013-clone-to-uninit --fail-fast`
+   Result:
+   command executed and reached APR summary:
+   `APRProof: clone_to_uninit.test_clone_to_uninit_exact_bytes`, status
+   `FAILED`, `nodes: 3`, `failing: 1`, `stuck: 1`, `terminal: 1`
+   (exit code 1).
+
+10. Command:
+    `uv --project kmir run -- kmir show clone_to_uninit.test_clone_to_uninit_exact_bytes --proof-dir /tmp/kmir-0013-clone-to-uninit --leaves`
+    Result:
+    the challenge-local exact-byte slice now reduces to the same stuck leaf:
+    `core::ffi::c_str::CStr::from_bytes_with_nul::haa71ee97b79727bbE`,
+    reported from
+    `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs:17:18`.
+    This means the harness reaches a concrete constructor/body frontier after
+    encoding the intended destination-validity and exact-byte checks.
+
+11. Harness evidence:
+    `kmir/src/tests/integration/data/verify-rust-std/0013-cstr/clone_to_uninit.rs`
+    now checks the narrowed reviewer-sensitive requirements directly:
+    - destination pointer non-nullness via `!dest_ptr.is_null()`
+    - destination region validity via `len <= dest.len()`
+    - initialized destination storage via `let mut dest = [0xAAu8; 6]`
+    - exact written-region comparison against `cstr.to_bytes_with_nul()`,
+      including the trailing NUL byte
+
 ## Commit Inventory
 
 - `80244466` — `feat(linker): port cross-crate body resolution for cstr`
+- `13bcd786` — `feat(vrs-0013): add clone_to_uninit slice harness`
+- `056ee1a7` — `refactor(vrs-0013): isolate clone_to_uninit slice frontier`
 
 ## Blockers
 
-- This retry only ports prerequisite linker/SMIR infrastructure.
-- First challenge-local artifact files now exist (`from_ptr.rs` and
-  `from_bytes_with_nul_unchecked.rs`), but core Challenge 0013
-  coverage is still incomplete:
-  - missing dedicated `strlen` contract artifact
-  - missing exact-byte `CloneToUninit` artifact
-  - missing broader CStr method/invariant artifact set expected by
-    verify-rust-std reviewers
+- This branch now has a dedicated exact-byte `CloneToUninit` artifact, but the
+  narrowed slice is still blocked by a concrete missing-body/stuck frontier at
+  `core::ffi::CStr::from_bytes_with_nul`.
+- Both the preexisting linked-SMIR `test_clone_to_uninit` and the new
+  challenge-local `test_clone_to_uninit_exact_bytes` reduce to that same
+  frontier, so the remaining gap is specific to CStr construction/body support
+  on this branch rather than to missing exact-byte harness logic.
+- Core Challenge 0013 coverage remains incomplete beyond this narrowed slice:
+  - `strlen` still lacks a dedicated contract artifact
+  - the broader CStr method/invariant harness set is still missing
