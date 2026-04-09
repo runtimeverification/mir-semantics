@@ -54,6 +54,13 @@ Ownership:
   end-to-end with `kmir prove-rs` for `widening_mul_u8`; the existing harness,
   runner wiring, and unsigned multiplication support were already sufficient on
   this branch.
+- 2026-04-09: Confirmed the branch-local runner still exposes
+  `test_verify_rust_std[carrying_mul]` and re-executed the planner-selected
+  `carrying_mul_u8` slice independently on this branch.
+- 2026-04-09: Completed the next planner-selected Part 2 proof slice
+  end-to-end with `kmir prove-rs` for `carrying_mul_u8`; the existing harness,
+  runner wiring, and bigint-helper support were already sufficient on this
+  branch.
 
 ## Files Touched
 
@@ -153,6 +160,18 @@ Ownership:
     passed with `ProofStatus.PASSED`; summary reported `nodes: 3`,
     `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 2`.
 
+15. Command:
+    `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "carrying_mul and not fail" -q`
+    Result:
+    passed; exactly `test_verify_rust_std[carrying_mul]` collected
+    (`1/17 collected, 16 deselected`).
+
+16. Command:
+    `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/carrying_mul.rs --start-symbol carrying_mul_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-carrying-mul-u8 --reload --fail-fast --max-workers 1`
+    Result:
+    passed with `ProofStatus.PASSED`; summary reported `nodes: 3`,
+    `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 2`.
+
 ## Commit Inventory
 
 - `2e09185c` — `feat(verify-rust-std): port challenge 0011 harnesses and runner`
@@ -162,10 +181,10 @@ Ownership:
 - Full proof execution across the full integer matrix is still runtime-heavy in
   this environment, but the prior "no completed proof" blocker is reduced:
   `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
-  `wrapping_shl_u8`, `wrapping_shr_u8`, and `widening_mul_u8` all pass
-  end-to-end on this branch, with `widening_mul_u8` broadening the Part 2
-  safe-API evidence beyond the wrapping-shift family without any new support
-  changes.
+  `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`, and
+  `carrying_mul_u8` all pass end-to-end on this branch, with
+  `carrying_mul_u8` broadening the Part 2 safe-API evidence to the remaining
+  carrying-mul family without any new support changes.
 - Float-to-int path still appears blocked by backend capability in the current
   stack; the ported expected outputs still include stuck frontiers on float
   intrinsics (e.g., `fabsf32`, `fabsf64`) in

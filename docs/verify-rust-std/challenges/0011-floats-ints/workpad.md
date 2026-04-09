@@ -5,11 +5,11 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, six direct proof slices pass on the branch, and the latest evaluator
-  refresh leaves the challenge `IN PROGRESS` at `2.9 / 3` pending a broader
-  reassessment. The planner-selected `widening_mul_u8` slice is now complete
-  and passed without any support changes, and `carrying_mul_u8` is the next
-  delegated slice.
+  exist, seven direct proof slices pass on the branch, and the latest
+  evaluator refresh before this slice left the challenge `IN PROGRESS` at
+  `2.9 / 3` pending a broader reassessment. The planner-selected
+  `carrying_mul_u8` slice is now complete and passed without any support
+  changes.
 
 ## Evidence gathered
 
@@ -22,17 +22,17 @@
 - Re-reading the historical challenge branch for `widening_mul` showed that the
   current branch already matched the prior harness shape and runner wiring, so
   this slice could be re-executed independently without importing more logic.
-- The branch now has six passing direct proof slices
-  (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
-  `wrapping_shl_u8`, `wrapping_shr_u8`, and now `widening_mul_u8`), confirming
-  that the first widening-mul Part 2 slice also executes cleanly on this
-  branch with the already-ported support.
-- The refreshed evaluator result stays at `IN PROGRESS` with score `2.9 / 3`,
-  so the branch still needs more non-float breadth before any terminal state
-  can be justified.
 - `carrying_mul.rs` is wired in the same branch-local harness set and was
   confirmed by scoped collection, so the next cheapest Part 2 slice is
   `carrying_mul_u8`.
+- The branch now has seven passing direct proof slices
+  (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
+  `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`, and now
+  `carrying_mul_u8`), confirming that the first carrying-mul Part 2 slice also
+  executes cleanly on this branch with the already-ported support.
+- The refreshed evaluator result stays at `IN PROGRESS` with score `2.9 / 3`,
+  so the branch still needs more non-float breadth before any terminal state
+  can be justified.
 
 ## Planning decisions
 
@@ -41,12 +41,12 @@
   remaining safe-API case, broadened Part 2 beyond the existing wrapping-shift
   pair, and re-used the already-ported unsigned multiplication support without
   introducing float work.
-- `carrying_mul_u8` is the correct next delegated slice: it is the remaining
+- `carrying_mul_u8` was the correct delegated slice: it is the remaining
   safe-API family in Part 2, and the branch-local harness already exposes the
   `carrying_mul` runner.
-- Do not escalate to backend changes from this slice; it passed cleanly, so the
-  next step is evaluator/planner reassessment rather than widening scope inside
-  this generator turn.
+- Do not escalate to backend changes from this slice; it passed cleanly, so
+  the next step is evaluator/planner reassessment rather than widening scope
+  inside this generator turn.
 
 ## Reusable rubric patterns for evaluator
 
@@ -96,6 +96,9 @@
 - 2026-04-09: Scoped discovery check for the next Part 2 slice collected
   exactly `test_verify_rust_std[carrying_mul]` using:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "carrying_mul and not fail" -q`.
+- 2026-04-09: Direct proof follow-up run completed with
+  `ProofStatus.PASSED` for `carrying_mul_u8` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/carrying_mul.rs --start-symbol carrying_mul_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-carrying-mul-u8 --reload --fail-fast --max-workers 1`.
 
 ## Generator retry execution log
 
@@ -136,9 +139,10 @@
   `kmir prove-rs`; `widening_mul_u8` passed without any new support changes,
   broadening the safe-API evidence beyond the wrapping-shift pair while
   preserving the existing float blocker boundary.
-- The next Part 2 safe-API target is `carrying_mul_u8`; it is present in the
-  branch-local harness set and should be the cheapest remaining way to widen
-  the non-float evidence without changing scope.
+- Re-executed the planner-selected carrying-mul slice directly with
+  `kmir prove-rs`; `carrying_mul_u8` passed without any new support changes,
+  broadening the safe-API evidence beyond wrapping shifts and widening-mul
+  while preserving the existing float blocker boundary.
 
 ## Evidence for next evaluator step
 
@@ -148,21 +152,21 @@
 - Validation now includes branch-local passing proof evidence in two published
   requirement families:
   `unchecked_add_u8`, `unchecked_neg_i8`, and `unchecked_sub_u8` pass in
-  Part 1, and `wrapping_shl_u8`, `wrapping_shr_u8`, plus `widening_mul_u8`
-  pass in Part 2.
+  Part 1, and `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`, plus
+  `carrying_mul_u8` pass in Part 2.
 - Float blocker signal remains present in ported evidence:
   `to_int_unchecked-fail` expected outputs include stuck float intrinsic hooks.
 
 ## Next handoff
 
-- The planner-selected `widening_mul_u8` slice is complete and passed.
-- Evaluator should reassess whether the branch’s six direct proof passes across
-  Part 1 and Part 2 materially change the non-float readiness signal, while
-  keeping the remaining float blocker tied to the precise
+- The planner-selected `carrying_mul_u8` slice is complete and passed.
+- Evaluator should reassess whether the branch’s seven direct proof passes
+  across Part 1 and Part 2 materially change the non-float readiness signal,
+  while keeping the remaining float blocker tied to the precise
   `fabsf32` / `fabsf64` frontier.
 - If the planner delegates another generator slice after that reassessment, it
-  should choose `carrying_mul_u8` explicitly rather than widening scope inside
-  this completed turn.
+  should choose a new explicit non-float target rather than revisiting the
+  now-completed `carrying_mul_u8` slice.
 
 ## Evaluator Note
 
