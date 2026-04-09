@@ -24,20 +24,64 @@ Ownership:
 
 ## Work Log
 
-- Bootstrap record created by orchestrator.
+- 2026-04-09: Ported the prerequisite semantic-fix slice from local branch
+  `verify-rust-std/challenge-0012` via six ordered cherry-picks.
+- 2026-04-09: Ran narrow collection and execution for the affected `prove-rs`
+  regressions (`transmute-maybe-uninit-i128`, `unions`).
+- 2026-04-09: Built local kdist definitions to satisfy integration-test
+  fixture requirements before rerunning targeted proofs.
 
 ## Files Touched
 
-- None yet.
+- `kmir/src/kmir/kdist/mir-semantics/intrinsics.md`
+- `kmir/src/kmir/kdist/mir-semantics/kmir.md`
+- `kmir/src/kmir/kdist/mir-semantics/rt/data.md`
+- `kmir/src/kmir/kdist/mir-semantics/rt/types.md`
+- `kmir/src/tests/integration/data/prove-rs/show/transmute-maybe-uninit-i128.main.expected`
+- `kmir/src/tests/integration/data/prove-rs/show/unions-fail.main.expected`
+- `kmir/src/tests/integration/data/prove-rs/transmute-maybe-uninit-i128.rs`
+- `kmir/src/tests/integration/data/prove-rs/unions.rs`
+- `kmir/src/tests/integration/test_integration.py`
+- `docs/verify-rust-std/challenges/0012-nonzero/generator.md`
+- `docs/verify-rust-std/challenges/0012-nonzero/workpad.md`
 
 ## Validation Evidence
 
-- None yet.
+1. Command:
+   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_prove --collect-only -k "transmute-maybe-uninit-i128 or unions" -q`
+   Result:
+   selected exactly two tests:
+   `test_prove[transmute-maybe-uninit-i128]` and `test_prove[unions]`.
+
+2. Command:
+   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_prove -k "transmute-maybe-uninit-i128 or unions" -q`
+   Result:
+   failed at fixture setup because the local Haskell definition directory did
+   not exist (`ValueError: Directory does not exist: ~/.cache/kdist-.../mir-semantics/haskell`).
+
+3. Command:
+   `make build`
+   Result:
+   succeeded; rebuilt `mir-semantics.haskell`, `mir-semantics.llvm`, and
+   `mir-semantics.llvm-library`.
+
+4. Command:
+   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_prove -k "transmute-maybe-uninit-i128 or unions" -q --maxfail=1`
+   Result:
+   `2 passed, 108 deselected in 122.64s`.
 
 ## Commit Inventory
 
-- None yet.
+- `a52729d7` — `fix(transmute): accept MaybeUninit reinterpretation`
+- `a681af49` — `fix(unions): reinterpret payload on field reads`
+- `4a8cdb0a` — `test(unions): rename passing union regression`
+- `3c4138db` — `fix(intrinsics): prioritize assert_inhabited failure`
+- `2d5916d6` — `fix(pointer-casts): support array-to-wrapper projections`
+- `01416c6d` — `fix(pointer-casts): preserve wrapper projections for iterators`
 
 ## Blockers
 
-- Waiting for planner contract and evaluator baseline.
+- No blocker for this prerequisite slice.
+- Remaining work for Challenge 0012 is challenge-specific NonZero harness and
+  contract work; this port only establishes the semantic/test baseline needed
+  before that layer.

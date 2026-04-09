@@ -29,3 +29,35 @@
 - Require explicit evidence for any omitted wide-type case or bounded proof case.
 - Treat any unsupported backend escalation as a last resort, not as the default path.
 
+## Generator Retry Execution Log
+
+- Ported six prerequisite semantic-fix commits from
+  `verify-rust-std/challenge-0012` in chronological order:
+  `01578d44`, `bb4813b2`, `22fd4eec`, `6f1c072a`, `9b55225b`, `8347764a`.
+- Port included transmute reinterpretation handling, unions payload read fixes,
+  union regression rename updates, `assert_inhabited` failure prioritization,
+  and pointer-cast projection preservation updates.
+- Narrow collection confirmed the expected affected tests:
+  `test_prove[transmute-maybe-uninit-i128]` and `test_prove[unions]`.
+- Initial targeted execution failed due to missing local compiled definitions.
+  Ran `make build` and reran the same targeted tests successfully.
+
+## Validation Snapshot
+
+- `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_prove --collect-only -k "transmute-maybe-uninit-i128 or unions" -q`
+  - Outcome: `2/110` selected, exact target tests collected.
+- `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_prove -k "transmute-maybe-uninit-i128 or unions" -q`
+  - Outcome: fixture setup error due to missing
+    `~/.cache/kdist-.../mir-semantics/haskell`.
+- `make build`
+  - Outcome: success; required definitions rebuilt.
+- `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_prove -k "transmute-maybe-uninit-i128 or unions" -q --maxfail=1`
+  - Outcome: `2 passed, 108 deselected in 122.64s`.
+
+## Remaining Gap After This Slice
+
+- The prerequisite semantic/test slice now appears healthy and validated, but
+  Challenge 0012 still lacks challenge-specific `NonZero` harness and contract
+  artifacts on this re-execution branch.
+- Evaluator should keep status at `IN PROGRESS` until branch-local NonZero
+  verification work is implemented and validated.
