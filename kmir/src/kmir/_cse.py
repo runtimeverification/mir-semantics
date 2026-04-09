@@ -1294,7 +1294,18 @@ def _prove_callee_summary(
                 )
                 init_cterm = CTerm(init_config, init_constraints)
 
-        target_k_cell = _build_call_summary_target_k_cell(observed_call_cterm) if observed_call_cterm is not None else None
+        # Callee proofs run standalone with <target> = noBasicBlockIdx (default).
+        # When the callee hits terminatorKindReturn, the K semantics matches
+        # endprogram-return / endprogram-no-return rules (not termReturnSome/None
+        # which require someBasicBlockIdx on the stack).  So the callee naturally
+        # reaches #EndProgram.  Using None here makes apr_proof_from_smir set
+        # the target K_CELL to #EndProgram, which is the correct callee-local
+        # return boundary.
+        #
+        # The old _build_call_summary_target_k_cell set the target to the
+        # CALLER's continuation (#setLocalValue(local(N), ...) ~> #execBlockIdx),
+        # which the standalone callee could never reach.
+        target_k_cell = None
 
         with kmir_cterm_symbolic(
             kmir_callee.definition,
