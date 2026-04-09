@@ -157,6 +157,18 @@ Ownership:
   span `dec/digits_to_dec_str_probe.rs:44`, corresponding to
   `assert!(buf[0] > b'0')`. A sibling leaf remains on the
   `assert!(!buf.is_empty())` panic path at line 43.
+- `rustc kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs -o /tmp/digits_to_dec_str_probe_0028_guardbypass`
+  succeeded after deleting the two top-of-function guard asserts from the
+  copied `digits_to_dec_str` body.
+- `/tmp/digits_to_dec_str_probe_0028_guardbypass` exited successfully.
+- `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-guardbypass-proof --max-depth 200 --reload`
+  ended with `ProofStatus.FAILED`, `nodes: 9`, `failing: 1`, `vacuous: 2`,
+  `stuck: 1`, `terminal: 1`.
+- `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-guardbypass-proof --statistics --leaves`
+  showed the new first leaf as a stuck `#selectBlock` inside `digits_to_dec_str`
+  on the `if exp < buf.len()` branch, with the active path `1 -> 3 -> 4 -> 7`.
+  This is an inference from the leaf shape and the source location around
+  `dec/digits_to_dec_str_probe.rs:58`.
 
 ## Commit Inventory
 
@@ -187,3 +199,7 @@ Ownership:
   probe's own top-of-function guard path, specifically the `buf[0]` bounds
   check and the `assert!(!buf.is_empty())` panic path, so the frontier still
   has not reached `flt2dec`-owned logic.
+- After removing those guards, the frontier moved again and is now inside the
+  copied `digits_to_dec_str` control flow at the `if exp < buf.len()` branch
+  select, so the next exact narrowing step should focus there if this slice is
+  continued.

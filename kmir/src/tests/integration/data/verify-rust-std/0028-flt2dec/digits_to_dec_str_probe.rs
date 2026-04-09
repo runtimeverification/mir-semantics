@@ -40,8 +40,6 @@ fn digits_to_dec_str<'a>(
     frac_digits: usize,
     parts: &'a mut [MaybeUninit<Part<'a>>],
 ) -> &'a [Part<'a>] {
-    assert!(!buf.is_empty());
-    assert!(buf[0] > b'0');
     assert!(parts.len() >= 4);
 
     if exp <= 0 {

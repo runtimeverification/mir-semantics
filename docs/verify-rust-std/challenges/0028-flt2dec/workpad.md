@@ -102,6 +102,19 @@
   `dec/digits_to_dec_str_probe.rs:44`, with a sibling leaf on the
   `assert!(!buf.is_empty())` panic path at line 43.
 
+- The guard-bypass rerun removed those top-of-function asserts from the active
+  path and compiled/runs cleanly:
+  `rustc kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs -o /tmp/digits_to_dec_str_probe_0028_guardbypass`
+  followed by `/tmp/digits_to_dec_str_probe_0028_guardbypass`.
+- The corresponding proof command:
+  `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-guardbypass-proof --max-depth 200 --reload`
+  finished with `ProofStatus.FAILED`, `nodes: 9`, `failing: 1`, `vacuous: 2`,
+  `stuck: 1`, `terminal: 1`.
+- The first leaf in `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-guardbypass-proof --statistics --leaves`
+  is a stuck `#selectBlock` inside `digits_to_dec_str` on the `if exp < buf.len()`
+  branch. This is the next exact frontier after the probe-local guard checks
+  were bypassed.
+
 ## Next handoff
 
 - Generator has now completed the `MaybeUninit::slice_assume_init_ref`
@@ -110,6 +123,6 @@
   `split_at_raw` / `from_raw_parts` are gone from the active path, the helper
   equality path is gone as well, and the current blocker is now the probe's
   own guard path rather than the old `MaybeUninit` return conversion.
-- The next exact narrowing step, if continued, is to decide whether to strip
-  the probe's top-of-function guards or to stop here as a challenge-local
-  blocker checkpoint.
+- The next exact narrowing step, if continued, is to focus on the copied
+  `digits_to_dec_str` branch select at `if exp < buf.len()` rather than
+  reopening the already-bypassed wrapper preconditions.
