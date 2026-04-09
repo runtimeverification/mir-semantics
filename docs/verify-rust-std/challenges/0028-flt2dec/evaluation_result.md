@@ -19,8 +19,8 @@ Overall score: `1.5/3`
 | Safety conditions are carried through | 1 | The probe exercises `MaybeUninit<Part<'_>>` and raw-slice construction, which is the right safety surface for this module. | No proof result yet discharges `assume_init()` or lifetime-laundering safety for the actual `flt2dec` bodies. |
 | UB obligations are tracked explicitly | 1 | The planner and challenge page enumerate the UB list, and the current probe is narrow enough to expose blockers before any real `flt2dec` behavior. | The branch has not yet established absence of dangling/misaligned access, intrinsic UB, immutable-byte mutation, or invalid values. |
 | Evidence is reproducible and challenge-local | 3 | The generator log records the exact `rustc`, `make build`, `uv --project kmir run kmir prove`, and `uv ... show` commands together with the observed leaves. | None for this slice. |
-| Harness frontiers are separated from module frontiers | 3 | The first blocker was `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` at `library/core/src/slice/index.rs:440`; the follow-up moved to `std::slice::from_raw_parts::<'_, u8>` at `library/core/src/slice/raw.rs:138`, still from challenge-local wrapper code. | No `flt2dec`-owned leaf has been reached yet. |
-| Residual risk is actionable | 2 | The next narrowing step is clear: remove `split_at_raw` from the harness path, or rerun a case that avoids raw-slice construction so the proof can tell whether `from_raw_parts` itself or the copied `flt2dec` body is the next frontier. | The current frontier is still harness-level, so the next probe is needed before escalation. |
+| Harness frontiers are separated from module frontiers | 3 | The first blocker was `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` at `library/core/src/slice/index.rs:440`; the follow-up moved to `std::slice::from_raw_parts::<'_, u8>` at `library/core/src/slice/raw.rs:138`; the latest rerun now stops at `std::array::equality::<impl std::cmp::PartialEq<[u8; 4]> for [u8]>::eq` at `/library/core/src/slice/mod.rs:871`, all still in challenge-local scaffolding. | No `flt2dec`-owned leaf has been reached yet. |
+| Residual risk is actionable | 2 | The next narrowing step is now precise: remove the helper's `assert!(buf == b"1234")`-style equality check, or replace it with a check that does not route through array/slice equality, then rerun to see whether the proof finally reaches `flt2dec`-owned code. | The current frontier is still harness-level, but the next probe should be able to distinguish a helper artifact from module behavior. |
 | Challenge-book rules are satisfied | 2 | The work is challenge-local, uses the documented kmir/uv workflow, and avoids runtime-library edits. | No PR/review pass exists yet, so this is not submission-ready. |
 | Scope is challenge-local and cherry-pickable | 3 | The branch changes are confined to the challenge artifact area plus its docs, and the commit history is narrow enough to cherry-pick cleanly. | None for this slice. |
 | Review feedback patterns are incorporated | 0 | No prior review comments or solved-challenge feedback are recorded for this branch yet. | Nothing concrete to incorporate yet. |
@@ -28,8 +28,8 @@ Overall score: `1.5/3`
 ## Verdict
 
 - `IN PROGRESS`
-- The branch has made real progress by removing the original `SliceIndex::index` blocker, but the current frontier is still harness-level at `std::slice::from_raw_parts` rather than `flt2dec`-owned behavior.
-- The exact next narrowing step is to eliminate `split_at_raw` from the probe path, or rerun a case that avoids raw-slice construction, so the next failure can distinguish a harness artifact from a genuine module limitation.
+- The branch has made real progress by removing the original `SliceIndex::index` blocker and then the raw-slice construction blocker, but the current frontier is still harness-level at helper array equality rather than `flt2dec`-owned behavior.
+- The exact next narrowing step is to eliminate the helper's array-equality assertion, or otherwise avoid the overloaded `[u8]`/`[u8; 4]` equality path, so the next failure can distinguish a harness artifact from a genuine module limitation.
 
 ## Evidence Base
 
