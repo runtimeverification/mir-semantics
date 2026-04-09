@@ -1371,29 +1371,13 @@ def _prove_callee_summary(
                 )
                 init_cterm = CTerm(call_cfg.config, list(call_cfg.constraints))
 
-        # Callee proofs use make_call_config (standard symbolic mode) which sets up
-        # noBasicBlockIdx as the target — a top-level entry call with no caller frame.
-        # The callee proof stops AT the return terminator, BEFORE any return rule fires.
-        # This keeps the proof purely callee-local.  The return-to-caller semantics
-        # are handled by custom_step during reuse (extracting return value from locals[0]).
-        from pyk.kast.inner import KApply, KSequence, KSort, KVariable
-
-        target_k_cell = KSequence(
-            [
-                KApply(
-                    '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator',
-                    [
-                        KApply(
-                            'terminator(_,_)_BODY_Terminator_TerminatorKind_Span',
-                            [
-                                KApply('TerminatorKind::Return', []),
-                                KVariable('CSE_RETURN_SPAN', sort=KSort('Span')),
-                            ],
-                        ),
-                    ],
-                ),
-            ]
-        )
+        # Callee proofs use make_call_config which sets <target> = noBasicBlockIdx.
+        # Inner function calls via termCallFunction set someBasicBlockIdx, so inner
+        # returns match termReturnSome/None and work normally.  The outermost callee
+        # return matches endprogram-return (requires noBasicBlockIdx) → #EndProgram.
+        # Using target_k_cell=None makes apr_proof_from_smir use #EndProgram as target.
+        # Reuse extracts the return value from RETVAL_CELL (set by endprogram-return).
+        target_k_cell = None
 
         with kmir_cterm_symbolic(
             kmir_callee.definition,

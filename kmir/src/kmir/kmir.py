@@ -935,18 +935,22 @@ class KMIRCSESemantics(KMIRSemantics):
                 for node in [callee_proof.kcfg.node(node_id)]
                 if KMIRCSESemantics._is_reusable_frontier_node(node)
             ]
-        # Exclude stuck nodes and nodes not at a clean return boundary.
-        # Stuck nodes propagate stuck to the caller; deep nested nodes
-        # lead to paths baseline never explores.
+        # Include ALL non-target leaves: both reusable frontier nodes AND stuck nodes.
+        # A complete callee summary must represent all possible behaviors:
+        # - Reusable nodes (at return boundary) → return continuation branches
+        # - Stuck nodes (error/assertion paths) → stuck branches
+        # The caller's constraints determine which branches are feasible.
         stuck_ids = {n.id for n in callee_proof.kcfg.stuck}
-        frontier_nodes = [
-            node for node in callee_proof.kcfg.leaves
-            if (
-                node.id != callee_proof.target
-                and node.id not in stuck_ids
-                and KMIRCSESemantics._is_reusable_frontier_node(node)
-            )
-        ]
+        reusable_nodes = []
+        stuck_nodes = []
+        for node in callee_proof.kcfg.leaves:
+            if node.id == callee_proof.target:
+                continue
+            if node.id in stuck_ids:
+                stuck_nodes.append(node)
+            elif KMIRCSESemantics._is_reusable_frontier_node(node):
+                reusable_nodes.append(node)
+        frontier_nodes = reusable_nodes + stuck_nodes
         if frontier_nodes:
             return frontier_nodes
         if callee_proof.init != callee_proof.target:
