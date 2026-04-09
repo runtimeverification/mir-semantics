@@ -26,15 +26,18 @@ The portfolio is complete only when every published challenge is in one of:
   threads produced branch commits or generator-record updates.
 - This is treated as an external runtime/tool constraint for this run, not as a
   challenge-level terminal verdict.
+- Each active branch now has an interruption-checkpoint `evaluation_result.md`
+  recording the current `IN PROGRESS` state and the exact next technical action.
 
 ## Exact Restart Point If The Run Stops Now
 
 - Resume the current batch: `0011-floats-ints`, `0012-nonzero`,
   `0013-cstr`.
 - Restart each challenge at generator phase using the already committed
-  `plan.md` and `workpad.md`.
-- After the first generator checkpoint lands on each branch, launch the
-  corresponding evaluator to create `evaluation_result.md`.
+  `plan.md`, `workpad.md`, and interruption-checkpoint `evaluation_result.md`.
+- Keep the evaluator step after the first real generator checkpoint, so the next
+  evaluator pass can score technical evidence rather than only the stalled
+  runtime state.
 - Do not reseat the batch until these three leave `IN PROGRESS`.
 
 ## Batch Selection Rationale
