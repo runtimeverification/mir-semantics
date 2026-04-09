@@ -143,6 +143,7 @@ Ownership:
 
 ## Commit Inventory
 
+- `8505ae9d` `test(verify-rust-std): bypass 0028 helper equality path`
 - `1499bc9f` `test(verify-rust-std): add 0028 digits_to_dec_str probe`
 - `44813fb9` `test(verify-rust-std): narrow 0028 digits_to_dec_str probe`
 - `7f898c54` `test(verify-rust-std): narrow 0028 probe past raw slices`
