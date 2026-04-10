@@ -88,6 +88,17 @@ Ownership:
   end-to-end with `kmir prove-rs` for `unchecked_shl_u32`; the existing
   harness and shift support were already sufficient on this branch, and the
   unchecked-shl family now extends beyond `unchecked_shl_u16`.
+- 2026-04-10: Completed the next branch-local unchecked-shift proof slice
+  end-to-end with `kmir prove-rs` for `unchecked_shl_u64`; the existing
+  harness and shift support were already sufficient on this branch, and the
+  unchecked-shl family now extends beyond `unchecked_shl_u32`.
+- 2026-04-10: Verified the `unchecked_shl_u64` replay in
+  `/tmp/kmir-0011-unchecked-shl-u64` with
+  `uv --project kmir run -- kmir show unchecked_shl.unchecked_shl_u64 --proof-dir /tmp/kmir-0011-unchecked-shl-u64 --statistics --leaves`;
+  both split paths reached terminal `#EndProgram ~> .K`, with branches on
+  `core::num::<impl u64>::checked_shl` and constraints including
+  `notBool ARG_UINT2:Int <Int 64`, `ARG_UINT2:Int <Int 64`, and
+  `ARG_UINT2:Int >=Int 0`.
 - 2026-04-10: Ran the scoped discovery check for `unchecked_shl` on the
   verify-rust-std integration target with:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shl and not fail" -q`.
@@ -297,6 +308,12 @@ Ownership:
     unsigned cases and all signed cases remain on the same frontier shape with
     the same `ARG_UINT2:Int >=Int 0` constraint.
 
+27. Command:
+    `uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u64 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u64 --reload --fail-fast --max-workers 1`
+    Result:
+    passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
+    `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
+
 ## Commit Inventory
 
 - `2e09185c` — `feat(verify-rust-std): port challenge 0011 harnesses and runner`
@@ -308,9 +325,11 @@ Ownership:
   `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
   `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`,
-  `unchecked_mul_u32`, and `unchecked_mul_u64` all pass end-to-end on this branch, with
-  `carrying_mul_u8` broadening the Part 2 safe-API evidence to the remaining
-  carrying-mul family without any new support changes.
+  `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`,
+  `unchecked_shl_u16`, `unchecked_shl_u32`, and `unchecked_shl_u64` all pass
+  end-to-end on this branch, with `carrying_mul_u8` broadening the Part 2
+  safe-API evidence to the remaining carrying-mul family without any new
+  support changes.
 - Float-to-int path still appears blocked by backend capability in the current
   stack; the ported expected outputs still include stuck frontiers on float
   intrinsics (e.g., `fabsf32`, `fabsf64`) in

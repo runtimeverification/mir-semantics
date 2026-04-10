@@ -5,7 +5,7 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, fourteen direct proof slices pass on the branch, and the latest
+  exist, fifteen direct proof slices pass on the branch, and the latest
   evaluator refresh before this slice left the challenge `IN PROGRESS` at
   `2.9 / 3` pending a broader reassessment. The planner-selected
   `carrying_mul_u8` slice is complete, the follow-up `unchecked_mul_u8`
@@ -14,7 +14,8 @@
   passes on this branch. The latest branch-local `unchecked_shl_u8` proof
   also passed, and the branch-local `unchecked_shl_u16` replay now passes too.
   The new `unchecked_shl_u32` replay also passes, extending the unchecked-shl
-  family beyond `unchecked_shl_u16`. The current checkpoint adds a cheap
+  family beyond `unchecked_shl_u32`, and `unchecked_shl_u64` now passes too.
+  The current checkpoint adds a cheap
   `unchecked_shr` discovery check that still collects exactly one case, and
   the smallest proof slice (`unchecked_shr_u8`) was interrupted before any
   terminal proof status was emitted.
@@ -50,6 +51,9 @@
   confirming that the first carrying-mul Part 2 slice and the unsigned
   unchecked-mul slices also execute cleanly on this branch with the
   already-ported support.
+  `unchecked_shl_u8`, `unchecked_shl_u16`, `unchecked_shl_u32`, and
+  `unchecked_shl_u64` also pass, extending the unchecked-shl family on this
+  branch without any new support changes.
 - The refreshed evaluator result stays at `IN PROGRESS` with score `2.9 / 3`,
   so the branch still needs more non-float breadth before any terminal state
   can be justified.
