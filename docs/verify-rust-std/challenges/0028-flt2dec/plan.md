@@ -1,7 +1,7 @@
 # Execution Plan: Challenge 0028
 
 Current objective:
-- Reconfirm the challenge requirements, then retarget the next probe from the restored-prefix frontier at the copied `if exp >= buf.len()` branch in `digits_to_dec_str_probe.rs:76` so the same single case advances past that control-flow test without widening beyond one exact simplification target.
+- Reconfirm the published success criteria table, then retarget the next probe from the restored-prefix frontier at the copied `if exp >= buf.len()` branch in `digits_to_dec_str_probe.rs:76` so the same single case advances past that control-flow test without widening beyond one exact simplification target.
 
 Next generator task:
 - Keep the restored real prefix slice `&buf[..exp]`, keep the suffix stub in place, and rewrite only the copied `if exp >= buf.len()` check so `buf.len()` is fixed to the concrete single-case value for `b"1234", exp = 2`; then rerun and capture the first leaf beyond that branch select.
@@ -11,6 +11,7 @@ Generator acceptance evidence:
 - The exact command(s) used to rerun it.
 - The first pass/fail result with the precise failure mode.
 - A note saying whether the result stays in copied `digits_to_dec_str` control flow after the `buf.len()` simplification, advances into actual decimal-point-path logic, or exposes a genuine backend limit.
+- A pointer back to `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md` so the probe evidence is auditable against the published function list.
 
 Plan slices:
 1. Reconfirm the published function list, safety obligations, and UB exclusions from the challenge page.

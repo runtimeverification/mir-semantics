@@ -4,33 +4,21 @@
 
 - Branch: `verify-rust-std/reexec-0028-flt2dec`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec`
-- Status at planner handoff: the first `digits_to_dec_str` probe had already run, the latest bypass removed the `MaybeUninit::slice_assume_init_ref` return-path helper, and the new frontier is now the probe's own guard path.
-- Current checkpoint: the probe has been rewritten to isolate the taken decimal-point arm for the single `b"1234", exp = 2, frac_digits = 3` case, and `rustc` still compiles it cleanly.
-- The follow-up proof rerun was launched with `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-takenarm-proof --max-depth 200 --reload`, but it was interrupted before a fresh leaf summary was captured.
-- Because no post-edit leaf was recorded, the last validated boundary remains the copied `if exp < buf.len()` `#selectBlock` at `digits_to_dec_str_probe.rs:58`.
-- The saved-proof audit for the unchanged taken-arm specialization reaches the
-  terminal target leaf `#EndProgram ~> .K` via
-  `/tmp/0028-digits-to-dec-str-current-proof`.
-- The latest generator slice restores the real decimal-point prefix operation
-  `&buf[..exp]` inside `probe_decimal_point_case` while still stubbing the
-  suffix as `b"34"`.
-- That prefix-slice rerun no longer reaches the terminal saved slice. The new
-  proof at `/tmp/0028-digits-to-dec-str-prefixslice-proof` ends with
-  `ProofStatus.FAILED`, `nodes: 9`, `failing: 1`, `vacuous: 2`, `stuck: 1`,
-  `terminal: 1`.
-- Its first concrete leaf is a stuck `#selectBlock` back in the copied
-  `digits_to_dec_str` body at `dec/digits_to_dec_str_probe.rs:76`,
-  corresponding to `if exp >= buf.len()`, with the unsimplified predicate
-  `#applyBinOp ( binOpGe , 2 , #applyUnOp ( unOpPtrMetadata , ... ) )`.
+- Status at planner handoff: the challenge-local minimal reproducer is the copied `digits_to_dec_str_probe.rs` frontier, and the branch-local evidence is now being audited against `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md`.
+- Current checkpoint: the restored-prefix rerun keeps `&buf[..exp]` in place, the suffix stub remains narrow, and the exact frontier is still the copied `if exp >= buf.len()` select at `digits_to_dec_str_probe.rs:76`.
+- The saved-proof audit for the unchanged taken-arm specialization reaches the terminal target leaf `#EndProgram ~> .K` via `/tmp/0028-digits-to-dec-str-current-proof`.
+- The current branch evidence is still challenge-local rather than module-wide: the proof at `/tmp/0028-digits-to-dec-str-prefixslice-proof` ends with `ProofStatus.FAILED`, `nodes: 9`, `failing: 1`, `vacuous: 2`, `stuck: 1`, `terminal: 1`, and its first concrete leaf is the copied `if exp >= buf.len()` branch select in `digits_to_dec_str`.
 
 ## Evidence gathered
 
 - The published challenge goal is to verify `core::num::flt2dec`, the float-to-decimal conversion module.
-- The published success criteria cover the safe entry points `digits_to_dec_str`, `digits_to_exp_str`, `to_shortest_str`, `to_shortest_exp_str`, `to_exact_exp_str`, `to_exact_fixed_str`, and the `grisu` and `dragon` strategy wrappers `format_shortest_opt`, `format_shortest`, `format_exact_opt`, and `format_exact`.
+- The published success criteria are captured in `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md`, which lists the safe entry points `digits_to_dec_str`, `digits_to_exp_str`, `to_shortest_str`, `to_shortest_exp_str`, `to_exact_exp_str`, `to_exact_fixed_str`, and the `grisu` and `dragon` strategy wrappers `format_shortest_opt`, `format_shortest`, `format_exact_opt`, and `format_exact`.
 - The challenge also requires the standard UB exclusions: no dangling or misaligned memory access, no compiler-intrinsic UB, no mutation of immutable bytes, and no invalid values.
 - Challenge 0011 records the reusable float warning: the float-sensitive path previously stalled on missing KMIR / haskell-backend float-value support, so any new probe should determine whether 0028 hits the same boundary or a different artifact issue.
 - The 0028 artifact directory now contains a first probe harness:
   `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs`.
+- The published challenge function list is now captured in
+  `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md`.
 - Because `digits_to_dec_str` is private inside `core::num::flt2dec`, the
   first probe had to copy only that function body into a challenge-local
   wrapper rather than call the std item directly from an external crate.
@@ -147,7 +135,7 @@
   equality path is gone as well, and the current blocker is now the probe's
   own guard path rather than the old `MaybeUninit` return conversion.
 - The next exact narrowing step, if continued, is to focus on the copied
-  `digits_to_dec_str` branch select at `if exp < buf.len()` rather than
+  `digits_to_dec_str` branch select at `if exp >= buf.len()` rather than
   reopening the already-bypassed wrapper preconditions.
 - Current-turn checkpoint: the probe compiled again, but the follow-up proof
   rerun was interrupted before a new leaf summary was captured. No new frontier

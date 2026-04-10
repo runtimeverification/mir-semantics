@@ -14,6 +14,7 @@ Execution context:
 - Generator record: `docs/verify-rust-std/challenges/0028-flt2dec/generator.md`
 - Evaluator record: `docs/verify-rust-std/challenges/0028-flt2dec/evaluator.md`
 - Branch-local rubric: `docs/verify-rust-std/challenges/0028-flt2dec/rubric.md`
+- Published success criteria: `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md`
 
 Challenge-local artifact contract:
 
@@ -27,6 +28,24 @@ Challenge-local artifact contract:
 Status board:
 
 - Planner: not started
-- Generator: waiting for planner and evaluator baselines
+- Generator: checkpointed at the minimal `digits_to_dec_str_probe.rs` frontier
 - Evaluator: not started
 - Draft PR: not created
+
+Current minimal reproducer:
+
+- `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs`
+- This file is the challenge-local verification frontier for `flt2dec`, not a
+  generic test.
+- The current exact frontier is the copied `if exp >= buf.len()` select in
+  `digits_to_dec_str_probe.rs:76`, with the unsimplified predicate
+  `#applyBinOp ( binOpGe , 2 , #applyUnOp ( unOpPtrMetadata , ... ) )`.
+
+Replay commands:
+
+- `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-prefixslice-proof --max-depth 200 --reload`
+- `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-prefixslice-proof --statistics --leaves`
+
+Audit link:
+
+- The minimal reproducer maps to `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md`.

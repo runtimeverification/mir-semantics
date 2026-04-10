@@ -49,6 +49,31 @@ jobs:
       - name: 'Run unit tests'
         run: make test-unit PARALLEL=12
 
+  verify-rust-std-discoverability:
+    needs: code-quality-checks
+    name: 'Verify Rust Std Discoverability'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Check out code'
+        uses: actions/checkout@v4
+      - name: 'Get uv release'
+        id: uv_release
+        run: |
+          echo uv_version=$(cat deps/uv_release) >> "${GITHUB_OUTPUT}"
+      - name: 'Install uv'
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: ${{ steps.uv_release.outputs.uv_version }}
+      - name: 'Install Nix'
+        uses: cachix/install-nix-action@v31.5.1
+        with:
+          install_url: https://releases.nixos.org/nix/nix-2.31.2/install
+          extra_nix_config: |
+            substituters = https://cache.nixos.org
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+      - name: 'Run verify-rust-std discoverability check'
+        run: make test-verify-rust-std TEST_ARGS='-k test_verify_rust_std' PARALLEL=12
+
   integration-tests:
     needs: code-quality-checks
     name: 'Integration Tests ${{ matrix.name }}'
@@ -239,4 +264,3 @@ jobs:
           set -euxo pipefail
           nix --version
           nix flake check # build and run smoke test
-

@@ -12,14 +12,19 @@ Overall score: `1.9/3`
 - UB obligations: no dangling or misaligned loads/stores, no compiler-intrinsic UB, no mutation of immutable bytes, and no invalid values.
 - Current validated frontier: commit `2b760c78` restores the real prefix slice `&buf[..exp]`, invalidates the earlier saved terminal slice, and the proof in `/tmp/0028-digits-to-dec-str-prefixslice-proof` now stops at the copied `if exp >= buf.len()` `#selectBlock` at `dec/digits_to_dec_str_probe.rs:76`, with stuck predicate `#applyBinOp ( binOpGe , 2 , #applyUnOp ( unOpPtrMetadata , ... ) )`.
 
+Audit anchor:
+
+- `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md`
+- `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/README.md`
+
 ## Scorecard
 
 | Criterion | Score | Evidence | Gap |
 | --- | --- | --- | --- |
-| Published `flt2dec` coverage is concrete | 1 | The branch still has only a representative `digits_to_dec_str` probe, and `2b760c78` adds a concrete new frontier after restoring the real prefix slice rather than a durable proof of module coverage. | The rest of the published target list remains unmapped by concrete harnesses or proofs. |
+| Published `flt2dec` coverage is concrete | 1 | The branch still has only a representative `digits_to_dec_str` probe, and `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md` now records the whole published target list with `digits_to_dec_str` as the only branch-backed row. | The rest of the published target list remains unmapped by concrete harnesses or proofs. |
 | Safety conditions are carried through | 1 | Prior work already peeled away `MaybeUninit::slice_assume_init_ref` and earlier wrapper guards, and the new proof keeps the active frontier inside copied `digits_to_dec_str` control flow instead of backend float handling. | No proof result discharges `assume_init()` or the lifetime-laundering pattern for the actual `flt2dec` bodies. |
 | UB obligations are tracked explicitly | 1 | The rubric, workpad, and generator still enumerate the UB list, and the new prefix-slice result remains narrow enough to avoid confusing copied control-flow artifacts with UB closure. | The branch has not yet established absence of dangling/misaligned access, intrinsic UB, immutable-byte mutation, or invalid values. |
-| Evidence is reproducible and challenge-local | 3 | The checkpoint commit `2b760c78` and proof directory `/tmp/0028-digits-to-dec-str-prefixslice-proof` identify the exact rerun, first stuck leaf, and stuck predicate for the restored prefix-slice experiment. | None for this slice. |
+| Evidence is reproducible and challenge-local | 3 | The checkpoint commit `2b760c78`, proof directory `/tmp/0028-digits-to-dec-str-prefixslice-proof`, and the new success table identify the exact rerun, first stuck leaf, and published function mapping for the restored prefix-slice experiment. | None for this slice. |
 | Harness frontiers are separated from module frontiers | 3 | Restoring the real prefix slice breaks the earlier saved terminal slice and moves the first stuck leaf to the copied `if exp >= buf.len()` `#selectBlock` at `dec/digits_to_dec_str_probe.rs:76`, with predicate `#applyBinOp ( binOpGe , 2 , #applyUnOp ( unOpPtrMetadata , ... ) )`. This is a copied control-flow frontier, not a backend float leaf. | No `flt2dec`-owned leaf has been reached yet. |
 | Residual risk is actionable | 3 | The next narrowing step is explicit: keep `b"1234", exp = 2, frac_digits = 3`, preserve the restored real prefix slice, and isolate the copied `if exp >= buf.len()` branch select so the rerun records the first leaf beyond line 76. | The current frontier is still copied control flow, but the follow-up slice is precisely identified. |
 | Challenge-book rules are satisfied | 2 | The work stays challenge-local, uses the documented kmir/uv workflow, and records the proof evidence in the branch docs. | No PR/review pass exists yet, so this is not submission-ready. |
