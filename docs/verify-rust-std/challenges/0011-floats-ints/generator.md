@@ -84,6 +84,10 @@ Ownership:
   with `kmir prove-rs` for `unchecked_shl_u8`; the existing harness and shift
   support were already sufficient on this branch, and the next sibling width is
   now `unchecked_shl_u16`.
+- 2026-04-10: Completed the next branch-local unchecked-shift proof slice
+  end-to-end with `kmir prove-rs` for `unchecked_shl_u32`; the existing
+  harness and shift support were already sufficient on this branch, and the
+  unchecked-shl family now extends beyond `unchecked_shl_u16`.
 - 2026-04-10: Ran the scoped discovery check for `unchecked_shl` on the
   verify-rust-std integration target with:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shl and not fail" -q`.
@@ -218,6 +222,14 @@ Ownership:
     Result:
     passed with `ProofStatus.PASSED`; summary reported `nodes: 3`,
     `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 2`.
+
+17. Command:
+    `uv --project kmir run -- kmir show unchecked_shl.unchecked_shl_u32 --proof-dir /tmp/kmir-0011-unchecked-shl-u32 --statistics --leaves`
+    Result:
+    reached terminal `#EndProgram ~> .K` on both split paths; branches are on
+    `core::num::<impl u32>::checked_shl`, with constraints including
+    `notBool ARG_UINT2:Int <Int 32`, `ARG_UINT2:Int <Int 32`, and
+    `ARG_UINT2:Int >=Int 0`.
 
 17. Command:
     `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_mul and not fail" -q`

@@ -5,7 +5,7 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, thirteen direct proof slices pass on the branch, and the latest
+  exist, fourteen direct proof slices pass on the branch, and the latest
   evaluator refresh before this slice left the challenge `IN PROGRESS` at
   `2.9 / 3` pending a broader reassessment. The planner-selected
   `carrying_mul_u8` slice is complete, the follow-up `unchecked_mul_u8`
@@ -13,10 +13,11 @@
   `unchecked_mul_u16` slice passed as well, and `unchecked_mul_u32` now also
   passes on this branch. The latest branch-local `unchecked_shl_u8` proof
   also passed, and the branch-local `unchecked_shl_u16` replay now passes too.
-  The current checkpoint adds a cheap `unchecked_shr` discovery check that
-  still collects exactly one case, and the smallest proof slice
-  (`unchecked_shr_u8`) was interrupted before any terminal proof status was
-  emitted.
+  The new `unchecked_shl_u32` replay also passes, extending the unchecked-shl
+  family beyond `unchecked_shl_u16`. The current checkpoint adds a cheap
+  `unchecked_shr` discovery check that still collects exactly one case, and
+  the smallest proof slice (`unchecked_shr_u8`) was interrupted before any
+  terminal proof status was emitted.
 
 ## Evidence gathered
 
@@ -35,6 +36,9 @@
 - `unchecked_mul.rs` and its fail artifact are already present in the same
   challenge-local harness set, so the next cheapest remaining Part 1 slice is
   `unchecked_mul_u8`.
+- `unchecked_shl.rs` is already wired through the same harness set, and the
+  next unchecked-shift sibling beyond `unchecked_shl_u16` is
+  `unchecked_shl_u32`.
 - `unchecked_shr.rs` is a single-file harness with ten wrappers and no smaller
   split points; the smallest callable subcase is `unchecked_shr_u8` at lines
   16-21, so there is no narrower diagnostic target inside the harness itself.
@@ -194,7 +198,8 @@
   requirement families:
   `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `unchecked_mul_u8`, `unchecked_mul_u16`, `unchecked_mul_u32`,
-  `unchecked_mul_u64`, and `unchecked_shl_u16` pass in Part 1, and
+  `unchecked_mul_u64`, `unchecked_shl_u16`, and `unchecked_shl_u32` pass in
+  Part 1, and
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`, plus
   `carrying_mul_u8` pass in Part 2.
 - Float blocker signal remains present in ported evidence:
@@ -208,10 +213,11 @@
 - The planner-selected `unchecked_mul_u32` slice is complete and passed.
 - The planner-selected `unchecked_mul_u64` slice is complete and passed.
 - The planner-selected `unchecked_shl_u16` slice is complete and passed.
+- The planner-selected `unchecked_shl_u32` slice is complete and passed.
 - If the generator continues in the same file, the next concrete target is
   the next available `unchecked_mul_*` width beyond `u64`, if any is present
   in the branch-local harness.
-- Evaluator should reassess whether the branch’s thirteen direct proof passes
+- Evaluator should reassess whether the branch’s fourteen direct proof passes
   across Part 1 and Part 2 materially change the non-float readiness signal,
   while keeping the remaining float blocker tied to the precise
   `fabsf32` / `fabsf64` frontier.
@@ -262,11 +268,19 @@
   `core::num::<impl u16>::checked_shl`, with constraints including
   `notBool ARG_UINT2:Int <Int 16`, `ARG_UINT2:Int <Int 16`, and
   `ARG_UINT2:Int >=Int 0`.
+- 2026-04-10: Direct proof replay completed with `ProofStatus.PASSED` for
+  `unchecked_shl_u32` using:
+  `uv --project kmir run -- kmir show unchecked_shl.unchecked_shl_u32 --proof-dir /tmp/kmir-0011-unchecked-shl-u32 --statistics --leaves`.
+  The replay in `/tmp/kmir-0011-unchecked-shl-u32` reached terminal
+  `#EndProgram ~> .K` on both split paths. Branches were observed on
+  `core::num::<impl u32>::checked_shl`, with constraints including
+  `notBool ARG_UINT2:Int <Int 32`, `ARG_UINT2:Int <Int 32`, and
+  `ARG_UINT2:Int >=Int 0`.
 - 2026-04-10: Scoped discovery check for the next `unchecked_shl` sibling
   collected exactly `test_verify_rust_std[unchecked_shl]` using:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shl and not fail" -q`.
   The target is still present in collection, so this family is now checkpointed
-  through `unchecked_shl_u16`.
+  through `unchecked_shl_u32`.
 - 2026-04-10: Scoped discovery check for `unchecked_shr` collected exactly
   `test_verify_rust_std[unchecked_shr]` using:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shr and not fail" -q`.
