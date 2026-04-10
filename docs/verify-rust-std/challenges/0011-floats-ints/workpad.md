@@ -1,5 +1,14 @@
 # Workpad: Challenge 0011
 
+## Closure checkpoint
+
+- 2026-04-10: Closed per user instruction because this challenge was already
+  being pursued in `runtimeverification/mir-semantics#985`.
+- Last validated local evidence before closure: `unchecked_shl_i8` reached
+  `ProofStatus.PASSED` in `/tmp/kmir-0011-unchecked-shl-i8`.
+- This pass was intentionally not expanded into further branch-local proof
+  work. The batch slot is being reassigned rather than continuing 0011 here.
+
 ## Current handoff state
 
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
@@ -32,6 +41,9 @@
   `make test-verify-rust-std` target.
 - The next technical step is now `unchecked_shl_i8`. `unchecked_shr` remains
   parked, and the float blocker stays isolated in `to_int_unchecked-fail`.
+- Current terminal state override: this branch is now `CLOSED`, superseded by
+  PR `#985`, so the technical next step above is retained only as historical
+  context rather than an active instruction.
 
 ## Evidence gathered
 
@@ -233,6 +245,11 @@
   `to_int_unchecked-fail` expected outputs include stuck float intrinsic hooks.
 
 ## Next handoff
+
+- Challenge 0011 is closed on this branch. Do not schedule new generator or
+  evaluator work here unless the user explicitly reopens it.
+- Any future comparison work should happen against PR `#985`, not by extending
+  this re-execution branch.
 
 - The planner-selected `carrying_mul_u8` slice is complete and passed.
 - The planner-selected `unchecked_mul_u8` slice is complete and passed.

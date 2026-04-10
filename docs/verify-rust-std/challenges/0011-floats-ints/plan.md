@@ -1,40 +1,30 @@
 # Execution Plan: Challenge 0011
 
 Current objective:
-- Extend Challenge 11's branch-local non-float verification evidence one
-  bounded slice at a time while preserving the auditable artifact structure.
-- `unchecked_shl_u128` now passes end-to-end, so the next exact technical
-  proof step is `unchecked_shl_i8`.
+- Close this branch-local re-execution track as superseded by
+  `runtimeverification/mir-semantics#985`, per user instruction.
+- Preserve the last valid branch-local audit evidence without scheduling any
+  further generator work on this branch.
 
 Next generator task:
-- When technical proof work resumes, prove `unchecked_shl_i8` end-to-end
-  with a scoped `kmir prove-rs` run on
-  `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs`
-  using `--start-symbol unchecked_shl_i8`, then record whether the branch
-  extends the already-passing `unchecked_shl` family from the completed
-  unsigned widths into the signed half of the published matrix without
-  reopening the exhausted `unchecked_shr` diagnostic path.
+- None. Challenge 0011 is closed on this branch and removed from the active
+  portfolio batch.
 
 Generator acceptance evidence:
 - `docs/verify-rust-std/challenges/0011-floats-ints/success_criteria.md`
-  maps every published function family to a branch-local harness or an
-  explicit blocker.
-- `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/README.md`
-  distinguishes passing verification harnesses from fail/frontier harnesses
-  and records exact replay commands.
-- The challenge docs reference the same artifact structure and preserve
-  `unchecked_shl_i8` as the next technical step.
+  remains as the audit map for the branch-local artifacts accumulated before
+  closure.
+- `docs/verify-rust-std/challenges/0011-floats-ints/workpad.md` records the
+  final local checkpoint, including the last validated `unchecked_shl_i8`
+  proof result that was observed before closure.
+- `docs/verify-rust-std/challenges/0011-floats-ints/evaluation_result.md`
+  records the terminal verdict `CLOSED` and the supersession reason.
 
 Plan slices:
-1. Keep the persistent requirement table and harness docs aligned with the
-   current branch evidence.
-2. Continue the non-float proof expansion one bounded slice at a time, next
-   `unchecked_shl_i8`.
-3. Leave `unchecked_shr` parked and keep the float blocker explicit.
+1. Keep the existing evidence readable for later comparison against PR `#985`.
+2. Do not land new proof or semantic work on this branch.
+3. Free the batch slot for a different challenge.
 
 Stop conditions:
-- Stop after one bounded proof slice and the associated doc refresh land.
-- Do not reopen `unchecked_shr` until there is evidence stronger than the
-  current shared `binOpShrUnchecked` frontier.
-- Do not widen scope into float/backend work in this checkpoint; the next
-  technical proving step remains `unchecked_shl_i8`.
+- No further technical work is planned on Challenge 0011 in this re-execution
+  branch.

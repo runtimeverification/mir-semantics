@@ -2,11 +2,18 @@
 
 ## Verdict
 
-`IN PROGRESS`
+`CLOSED`
 
 ## Score
 
-`2.98 / 3`
+`2.98 / 3` technical checkpoint before closure
+
+## Closure Reason
+
+- Closed per user instruction because Challenge 0011 was already being pursued
+  in `runtimeverification/mir-semantics#985`.
+- The branch keeps its existing evidence as an audit trail only; it is no
+  longer an active path to submission in this portfolio.
 
 ## Strict Scorecard
 
@@ -106,9 +113,6 @@
 
 ## Next Action Required To Improve State
 
-- Resume the non-float proof expansion with `unchecked_shl_i8` using the
-  existing harness at
-  `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs`.
-  Keep `unchecked_shr` parked unless a new observation justifies reopening its
-  shared `binOpShrUnchecked` frontier, and keep the float blocker isolated in
-  `to_int_unchecked-fail` until backend float support changes.
+- None on this branch. If Challenge 0011 work needs to continue, continue it
+  in `runtimeverification/mir-semantics#985` rather than in this
+  re-execution branch.
