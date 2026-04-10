@@ -14,6 +14,10 @@
   passes on this branch. The latest branch-local `unchecked_shl_u8` proof
   also passed, and the scoped discovery check for `unchecked_shl` still
   collects the case, so the next bounded move remains `unchecked_shl_u16`.
+  The current checkpoint adds a cheap `unchecked_shr` discovery check that
+  still collects exactly one case, and the smallest proof slice
+  (`unchecked_shr_u8`) was interrupted before any terminal proof status was
+  emitted.
 
 ## Evidence gathered
 
@@ -73,6 +77,8 @@
 
 - 2026-04-10: Latest branch-local attempt started
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u16 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u16 --reload --fail-fast --max-workers 1`, but the run exited with status `143` before any terminal proof result was captured. No new frontier was established, and no code changes were kept.
+- 2026-04-10: Latest branch-local attempt started
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shr.rs --start-symbol unchecked_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shr-u8 --reload --fail-fast --max-workers 1`, but the run was interrupted before any terminal proof result was captured. No new frontier was established, and no code changes were kept.
 - 2026-04-09: First filtered run used
   `-k '0011-floats-ints and unchecked_add'` and matched zero cases in pytest
   parametrization (`no tests ran`, exit 5).
@@ -226,11 +232,10 @@
   direct proof slices and still needs broader non-float coverage before the
   float blocker can be treated as the only remaining gap.
 - 2026-04-10: Interrupted `kmir prove-rs` attempt started for
-  `unchecked_shl_u8` using:
-  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u8 --reload --fail-fast --max-workers 1`;
+  `unchecked_shr_u8` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shr.rs --start-symbol unchecked_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shr-u8 --reload --fail-fast --max-workers 1`;
   no terminal proof result was captured before interruption, no new frontier
-  was established, stray `tmp.*` artifacts were removed, and no code changes
-  were kept.
+  was established, and no code changes were kept.
 - 2026-04-10: Direct proof follow-up run completed with
   `ProofStatus.PASSED` for `unchecked_shl_u8` using:
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u8 --reload --fail-fast --max-workers 1`.
@@ -241,3 +246,11 @@
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shl and not fail" -q`.
   The target is still present in collection, so the next bounded move remains
   `unchecked_shl_u16`.
+- 2026-04-10: Scoped discovery check for `unchecked_shr` collected exactly
+  `test_verify_rust_std[unchecked_shr]` using:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shr and not fail" -q`.
+  The family is still present in collection.
+- 2026-04-10: Smallest available `unchecked_shr` proof slice was started with
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shr.rs --start-symbol unchecked_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shr-u8 --reload --fail-fast --max-workers 1`,
+  but the run was interrupted before a terminal proof result was captured.
+  No new frontier was established.
