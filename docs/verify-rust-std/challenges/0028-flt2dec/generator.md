@@ -183,6 +183,10 @@ Ownership:
 - The latest interrupted rerun used the same command above, did not complete
   before interruption, and captured no new leaf summary. No code changes from
   that attempt were kept.
+- Saved-proof evidence was later recorded without source edits:
+  `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec/kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-current-proof --statistics --leaves`
+  reaches the terminal target leaf `#EndProgram ~> .K` along path
+  `1 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 2`.
 - The `tmp.*` artifacts were removed after stopping the background proof
   process.
 - Because no post-edit proof result exists yet, the frontier move is
