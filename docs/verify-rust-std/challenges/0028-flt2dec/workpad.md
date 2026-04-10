@@ -5,11 +5,11 @@
 - Branch: `verify-rust-std/reexec-0028-flt2dec`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec`
 - Status at planner handoff: the challenge-local minimal reproducer is the copied `digits_to_dec_str_probe.rs` frontier, and the branch-local evidence is now being audited against `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md`.
-- Current checkpoint: the restored-prefix rerun keeps `&buf[..exp]` in place, the suffix stub remains narrow, and the exact frontier is still the copied `if exp >= buf.len()` select at `digits_to_dec_str_probe.rs:76`.
+- Current checkpoint: the restored-prefix rerun keeps `&buf[..exp]` in place, the suffix stub remains narrow, and the exact frontier is now the underlying `core::slice::index` leaf `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` at `library/core/src/slice/index.rs:440`.
 - The saved-proof audit for the unchanged taken-arm specialization reaches the terminal target leaf `#EndProgram ~> .K` via `/tmp/0028-digits-to-dec-str-current-proof`.
-- The current branch evidence is still challenge-local rather than module-wide: the proof at `/tmp/0028-digits-to-dec-str-prefixslice-step2-proof` ends with `ProofStatus.FAILED`, `nodes: 10`, `failing: 3`, `vacuous: 0`, `stuck: 3`, `terminal: 1`, and the frontier has moved into the underlying `core::slice::index` path (`slice_end_index_len_fail`) after concretizing the copied branch test.
+- The current branch evidence is still challenge-local rather than module-wide: the proof at `/tmp/0028-digits-to-dec-str-prefixslice-step2-proof` ends with `ProofStatus.FAILED`, `nodes: 10`, `failing: 3`, `vacuous: 0`, `stuck: 3`, `terminal: 1`, and the frontier has moved into the underlying `core::slice::index` path at `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`) after concretizing the copied branch test.
 - The branch-local discoverability check now replays that same probe with `kmir.prove_program` and asserts the proof still fails at the copied frontier instead of only checking for file presence.
-- After concretizing the copied branch test for `b"1234", exp = 2`, the replay now fails in the underlying `core::slice::index` path (`slice_end_index_len_fail`) instead of at the copied branch select itself.
+- After concretizing the copied branch test for `b"1234", exp = 2`, the replay now fails in the underlying `core::slice::index` path at `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`) instead of at the copied branch select itself.
 
 ## Evidence gathered
 

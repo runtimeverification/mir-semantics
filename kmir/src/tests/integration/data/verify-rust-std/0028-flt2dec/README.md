@@ -30,17 +30,18 @@ Status board:
 - Planner: success criteria table published
 - Generator: checkpointed at the minimal `digits_to_dec_str_probe.rs` frontier
 - Evaluator: captured in `docs/verify-rust-std/challenges/0028-flt2dec/evaluation_result.md`
-- Draft PR: pending
+- Draft PR: open
 
 Current minimal reproducer:
 
 - `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs`
 - This file is the challenge-local verification frontier for `flt2dec`, not a
   generic test.
-- The current exact frontier is the underlying `core::slice::index` path,
-  with the proof stopping on the `slice_end_index_len_fail` failure after the
-  copied branch condition is simplified for the single `b"1234", exp = 2`
-  case.
+- The current exact frontier is the underlying `core::slice::index` path at
+  `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index`
+  (`library/core/src/slice/index.rs:440`), with the proof stopping on the
+  concrete `slice_end_index_len_fail` leaf after the copied branch condition
+  is simplified for the single `b"1234", exp = 2` case.
 
 Replay commands:
 

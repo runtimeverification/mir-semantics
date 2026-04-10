@@ -1,7 +1,7 @@
 # Execution Plan: Challenge 0028
 
 Current objective:
-- Reconfirm the published success criteria table, then reduce the new `core::slice::index` / `slice_end_index_len_fail` frontier to the smallest challenge-local reproducer that still preserves the post-select path.
+- Reconfirm the published success criteria table, then reduce the new `core::slice::index` frontier at `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`) to the smallest challenge-local reproducer that still preserves the post-select path.
 
 Next generator task:
 - Keep the restored real prefix slice `&buf[..exp]`, keep the suffix stub in place, and trim only the current post-select slice-index path so the next replay still preserves the challenge-local frontier while shrinking the reproducer.
