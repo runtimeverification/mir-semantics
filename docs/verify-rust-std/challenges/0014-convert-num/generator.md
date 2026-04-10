@@ -56,7 +56,8 @@ Ownership:
 
 ## Commit Inventory
 
-- Pending first commit.
+- `e9d3e8e4` - `feat(0014): add initial convert-num proof harness sweep`
+- `973823d5` - `docs(0014): add v2 coverage map and replay notes`
 
 ## Blockers
 
