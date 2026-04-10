@@ -8,7 +8,9 @@
 - Evaluator: bootstrap only.
 - Success criteria map: `docs/verify-rust-std/challenges/0027-arc/success-criteria.md`
 - Challenge-local README: `kmir/src/tests/integration/data/verify-rust-std/0027-arc/README.md`
-- Current state: workspace prepared for active generator work, but no proof or semantic work has started yet.
+- Current state: the first verification-shaped `Arc::from_raw_in` harness has
+  been added, and the bounded proof attempt has now recorded a frontier at
+  leaf `4` inside `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`.
 
 ## Confirmed Inputs
 
@@ -31,10 +33,11 @@
 ## First Intended Split
 
 - Verification harness target: `arc-from-raw-in.rs`
-- Frontier reproducer target: `arc-from-raw-in-frontier-fail.rs`
+- Frontier reproducer target: reserved for the first semantic blocker if the
+  proof harness does not reach the intended target cleanly
 - Proof focus: `Arc::from_raw_in` first, then the refcount recovery spine it
   enables
-- Reproducer focus: capture the current `CastKind::Transmute` frontier in a
+- Reproducer focus: capture the smallest meaningful semantic blocker in a
   challenge-local file without counting it as verification
 
 ## Planning Notes
@@ -50,6 +53,11 @@
 
 ## Handoff State
 
-- No proof commands have been run on this challenge yet.
-- The next generator step is to create the first proof/reproducer files once
-  the planner and evaluator have the same narrowed tranche.
+- The bounded proof command was:
+  `timeout 900s uv --project kmir run -- kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir/src/tests/integration/data/verify-rust-std/0027-arc/arc-from-raw-in.rs --start-symbol verify_arc_from_raw_in --proof-dir /tmp/arc-from-raw-in-proof-0027 --verbose --terminate-on-thunk`
+- Result: `ProofStatus.FAILED`
+- Frontier: leaf `4`, stuck at `castKindTransmute` in
+  `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`
+- Next generator step is to keep this first slice as the verification harness
+  and, if a smaller reproducer becomes useful later, split the same frontier
+  into a separate challenge-local file without widening scope.

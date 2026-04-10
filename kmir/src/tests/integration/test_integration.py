@@ -73,6 +73,12 @@ PROVE_SHOW_SPECS = [
     'ptr-cast-array-to-singleton-wrapped-array-fail',
 ]
 
+VERIFY_RUST_STD_0027_ARC_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std' / '0027-arc').resolve(strict=True)
+VERIFY_RUST_STD_0027_ARC_PROOF_FILES = [VERIFY_RUST_STD_0027_ARC_DIR / 'arc-from-raw-in.rs']
+VERIFY_RUST_STD_0027_ARC_START_SYMBOLS = {
+    'arc-from-raw-in': ['verify_arc_from_raw_in'],
+}
+
 
 @pytest.mark.parametrize(
     'rs_file',
@@ -150,6 +156,24 @@ def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bo
 
         assert_or_update_show_output(show_res, file, update=update_expected_output)
     os.unlink(linked_file)
+
+
+@pytest.mark.parametrize(
+    'rs_file',
+    VERIFY_RUST_STD_0027_ARC_PROOF_FILES,
+    ids=[spec.stem for spec in VERIFY_RUST_STD_0027_ARC_PROOF_FILES],
+)
+def test_verify_rust_std_0027_arc(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    if update_expected_output:
+        pytest.skip()
+
+    prove_opts = ProveOpts(rs_file, smir=False, terminate_on_thunk=True)
+    start_symbols = VERIFY_RUST_STD_0027_ARC_START_SYMBOLS.get(rs_file.stem, ['main'])
+
+    for start_symbol in start_symbols:
+        prove_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_program(prove_opts)
+        assert apr_proof.passed
 
 
 EXEC_DATA_DIR = (Path(__file__).parent / 'data' / 'exec-smir').resolve(strict=True)

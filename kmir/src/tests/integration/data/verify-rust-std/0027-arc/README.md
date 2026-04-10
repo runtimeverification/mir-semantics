@@ -33,6 +33,14 @@ Challenge-local artifact contract:
 Status board:
 
 - Planner: bootstrap complete
-- Generator: preparing workspace
+- Generator: proof harness added; bounded proof attempt recorded frontier leaf `4`
 - Evaluator: bootstrap complete
 - Draft PR: not created
+
+Proof evidence:
+
+- Harness: `arc-from-raw-in.rs`
+- Start symbol: `verify_arc_from_raw_in`
+- Result: `ProofStatus.FAILED`
+- Frontier leaf: `4`
+- Frontier site: `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`
