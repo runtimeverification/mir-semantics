@@ -16,38 +16,23 @@ The portfolio is complete only when every published challenge is in one of:
 ## Current Batch
 
 - `0011-floats-ints` -> `IN PROGRESS` (`2.98 / 3`)
-- `0028-flt2dec` -> `IN PROGRESS` (`1.9 / 3`)
 - `0026-rc` -> `IN PROGRESS` (`1.7 / 3`)
+- `0028-flt2dec` -> `IN PROGRESS` (`1.9 / 3`)
 
 ## Current Active State
 
-- `0011-floats-ints`: fifteen branch-local proof slices now pass
-  (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
-  `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
-  `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`,
-  `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`,
-  `unchecked_shl_u16`, `unchecked_shl_u32`, `unchecked_shl_u64`); float
-  `to_int_unchecked` remains blocked by the precise `fabsf32` / `fabsf64`
-  frontier, and the latest `unchecked_shr` diagnostics found no smaller
-  branch-worthy subcase than `unchecked_shr_u8`, with the family collapsing to
-  the same `binOpShrUnchecked` surface; the refreshed planner keeps
-  `unchecked_shr` parked and retargets the next bounded slice to
-  `unchecked_shl_u128`.
-- `0028-flt2dec`: restoring the real prefix slice `&buf[..exp]` invalidates
-  the earlier saved terminal taken-arm slice and moves the first validated
-  stuck leaf to the copied `if exp >= buf.len()` `#selectBlock` at
-  `digits_to_dec_str_probe.rs:76`, with predicate
-  `#applyBinOp ( binOpGe , 2 , #applyUnOp ( unOpPtrMetadata , ... ) )`; this is
-  still copied `flt2dec` control flow, not a backend float leaf, and the next
-  bounded task is to simplify only that `buf.len()` test and record the first
-  leaf beyond it.
-- `0026-rc`: the first contract/entrypoint audit is committed, a direct
-  `Rc::from_raw_in` witness harness now exists, and the current blocker has
-  been narrowed to a direct-witness `CastKind::Transmute` leaf; the latest
-  `MaybeUninit`-backed witness attempt failed before proof construction with
-  unstable `Box::write(...)` (`E0658`), so the next action is a stable
-  `MaybeUninit` plus raw-write `System` witness that avoids both the unstable
-  helper and the same transmute shape.
+- `0011-floats-ints`: explicit success table, README, and CI shard now exist
+  on the challenge branch; `unchecked_shl_u128` passed at commit `c02477f8`;
+  score remains `2.98 / 3`; next action is `unchecked_shl_i8`.
+- `0026-rc`: success table, challenge-local frontier harness, and CI shard now
+  exist; the stable `MaybeUninit` witness now reaches proof construction, but
+  node 4 still ends at the same `CastKind::Transmute` leaf; score remains
+  `1.7 / 3`; next action is to attack that transmute leaf directly.
+- `0028-flt2dec`: success table, stronger replay collector, and explicit CI
+  discoverability now exist; the copied `if exp >= buf.len()` select was
+  passed; the new first leaf is deeper in `core::slice::index`
+  (`slice_end_index_len_fail`); score remains `1.9 / 3`; next action is to
+  reduce that new slice-index frontier.
 
 ## Newly Terminal This Run
 
@@ -79,14 +64,11 @@ The portfolio is complete only when every published challenge is in one of:
 ## Batch Selection Rationale
 
 - `0011-floats-ints`: now sits at `2.98 / 3`; the remaining non-float gap is
-  narrower than before, but the current evidence still needs one more bounded
-  `unchecked_shl` extension before a stronger verdict is justified.
-- `0028-flt2dec`: continues to yield reusable probe-narrowing patterns and is
-  still producing reusable probe-narrowing patterns, but the restored-prefix
-  slice shows the branch is not yet past copied control-flow scaffolding.
-- `0026-rc`: the refcount family still matters for `0027-arc`, but current
-  evidence says its next leverage point is a stable witness rewrite rather than
-  immediate API expansion.
+  narrower than before, and the next bounded slice is now `unchecked_shl_i8`.
+- `0026-rc`: the refcount family still matters for `0027-arc`, but the current
+  leverage point is the direct `CastKind::Transmute` leaf.
+- `0028-flt2dec`: the copied branch select is no longer the frontier; the
+  current leverage point is the deeper `core::slice::index` failure.
 
 ## Exact Next Batch If Interrupted After The Current Batch
 
