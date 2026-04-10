@@ -14,9 +14,15 @@ Execution context:
 - Generator record: `docs/verify-rust-std/challenges/0027-arc/generator.md`
 - Evaluator record: `docs/verify-rust-std/challenges/0027-arc/evaluator.md`
 - Branch-local rubric: `docs/verify-rust-std/challenges/0027-arc/rubric.md`
+- Success criteria: `docs/verify-rust-std/challenges/0027-arc/success-criteria.md`
+- Workpad: `docs/verify-rust-std/challenges/0027-arc/workpad.md`
 
 Challenge-local artifact contract:
 
+- Keep verification harnesses and frontier reproducers in separate files.
+- A symbolic proof harness should encode the `Arc` contract under verification.
+- A frontier reproducer should remain concrete and narrow so semantic blockers
+  stay auditable without being counted as verification progress.
 - Place harnesses, tests, expected output, and supporting files in this
   directory.
 - Keep changes organized so proof or semantic commits can be cherry-picked
@@ -26,7 +32,7 @@ Challenge-local artifact contract:
 
 Status board:
 
-- Planner: not started
-- Generator: waiting for planner and evaluator baselines
-- Evaluator: not started
+- Planner: bootstrap complete
+- Generator: preparing workspace
+- Evaluator: bootstrap complete
 - Draft PR: not created

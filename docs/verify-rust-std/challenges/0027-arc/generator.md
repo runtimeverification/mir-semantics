@@ -25,18 +25,25 @@ Ownership:
 ## Work Log
 
 - Bootstrap record created by orchestrator.
+- 2026-04-10: Workspace prep completed for the active batch handoff. Added
+  `workpad.md` for the challenge-local planning/evidence log, added a
+  challenge-local README note that separates verification harnesses from
+  frontier reproducers, and created `success-criteria.md` as the branch-local
+  surface map for the published `Arc`/`Weak` APIs.
 
 ## Files Touched
 
-- None yet.
+- `docs/verify-rust-std/challenges/0027-arc/success-criteria.md`
+- `docs/verify-rust-std/challenges/0027-arc/workpad.md`
+- `kmir/src/tests/integration/data/verify-rust-std/0027-arc/README.md`
 
 ## Validation Evidence
 
-- None yet.
+- Docs-only workspace prep. No proof commands run.
 
 ## Commit Inventory
 
-- None yet.
+- Pending commit.
 
 ## Blockers
 
