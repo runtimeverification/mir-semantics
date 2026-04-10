@@ -31,11 +31,11 @@
 - `unchecked_mul.rs` and its fail artifact are already present in the same
   challenge-local harness set, so the next cheapest remaining Part 1 slice is
   `unchecked_mul_u8`.
-- The branch now has ten passing direct proof slices
+- The branch now has eleven passing direct proof slices
   (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
   `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`, and
-  `unchecked_mul_u32`),
+  `unchecked_mul_u32`, plus `unchecked_mul_u64`),
   confirming that the first carrying-mul Part 2 slice and the unsigned
   unchecked-mul slices also execute cleanly on this branch with the
   already-ported support.
@@ -162,6 +162,10 @@
   `kmir prove-rs`; `carrying_mul_u8` passed without any new support changes,
   broadening the safe-API evidence beyond wrapping shifts and widening-mul
   while preserving the existing float blocker boundary.
+- Re-executed the next Part 1 multiplication slice directly with
+  `kmir prove-rs`; `unchecked_mul_u64` passed without any new support changes,
+  widening the integer evidence one step further while preserving the existing
+  float blocker boundary.
 
 ## Evidence for next evaluator step
 
@@ -171,7 +175,8 @@
 - Validation now includes branch-local passing proof evidence in two published
   requirement families:
   `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
-  `unchecked_mul_u8`, and `unchecked_mul_u16` pass in Part 1, and
+  `unchecked_mul_u8`, `unchecked_mul_u16`, `unchecked_mul_u32`, and
+  `unchecked_mul_u64` pass in Part 1, and
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`, plus
   `carrying_mul_u8` pass in Part 2.
 - Float blocker signal remains present in ported evidence:
@@ -183,9 +188,11 @@
 - The planner-selected `unchecked_mul_u8` slice is complete and passed.
 - The planner-selected `unchecked_mul_u16` slice is complete and passed.
 - The planner-selected `unchecked_mul_u32` slice is complete and passed.
+- The planner-selected `unchecked_mul_u64` slice is complete and passed.
 - If the generator continues in the same file, the next concrete target is
-  `unchecked_mul_u64`.
-- Evaluator should reassess whether the branch’s ten direct proof passes
+  the next available `unchecked_mul_*` width beyond `u64`, if any is present
+  in the branch-local harness.
+- Evaluator should reassess whether the branch’s eleven direct proof passes
   across Part 1 and Part 2 materially change the non-float readiness signal,
   while keeping the remaining float blocker tied to the precise
   `fabsf32` / `fabsf64` frontier.
