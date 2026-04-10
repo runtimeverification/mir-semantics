@@ -1646,6 +1646,25 @@ The layout is the same for the wrapped type and so the cast in either direction 
         </k>
       requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
 
+  // Up recursively through a transparent wrapper when the wrapper field
+  // already has a supported transmute from the source type.
+  syntax KItem ::= #wrapTransparent(Ty)
+
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            #cast(VAL, castKindTransmute, TY_SOURCE, {#transparentFieldTy(lookupTy(TY_TARGET))}:>Ty)
+            ~> #wrapTransparent(TY_TARGET)
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_TARGET)) =/=K TyUnknown
+       andBool {#transparentFieldTy(lookupTy(TY_TARGET))}:>Ty =/=K TY_SOURCE
+
+  rule <k> INNER:Value ~> #wrapTransparent(_TY_TARGET)
+          =>
+            Aggregate(variantIdx(0), ListItem(INNER))
+          ...
+        </k>
+
   // Down: Wrapper(T) -> T
   rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
           =>

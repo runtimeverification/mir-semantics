@@ -5,12 +5,14 @@
 - Branch: `verify-rust-std/reexec-0027-arc`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc`
 - Draft PR: exists.
-- Evaluator: bootstrap only.
+- Evaluator: active / awaiting next reassessment.
 - Success criteria map: `docs/verify-rust-std/challenges/0027-arc/success-criteria.md`
 - Challenge-local README: `kmir/src/tests/integration/data/verify-rust-std/0027-arc/README.md`
 - Current state: the first verification-shaped `Arc::from_raw_in` harness has
   been added, and the smallest concrete frontier reproducer for the same leaf
-  has been split into its own file.
+  has been split into its own file. The latest validation moved both the
+  symbolic harness and the frontier reproducer off the old transmute leaf and
+  onto the shared `malloc` `noBody` frontier at node `3`.
 
 ## Confirmed Inputs
 
@@ -61,5 +63,12 @@
   `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`
 - New reproducer command:
   `timeout 900s uv --project kmir run -- kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir/src/tests/integration/data/verify-rust-std/0027-arc/arc-from-raw-in-frontier-fail.rs --start-symbol main --proof-dir /tmp/arc-from-raw-in-frontier-proof-0027 --verbose --terminate-on-thunk`
-- Next generator step is to validate the reproducer confirms the same leaf
-  without widening the proof harness.
+- Latest validation commands:
+  `timeout 3600s make -C /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc build PARALLEL=2`
+  `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir run -- kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir/src/tests/integration/data/verify-rust-std/0027-arc/arc-from-raw-in-frontier-fail.rs --start-symbol main --proof-dir /tmp/arc-from-raw-in-frontier-proof-0027-fix1 --verbose --terminate-on-thunk`
+  `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir run -- kmir show arc-from-raw-in-frontier-fail.main --proof-dir /tmp/arc-from-raw-in-frontier-proof-0027-fix1 --nodes 3 --full-printer`
+  `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir run -- kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir/src/tests/integration/data/verify-rust-std/0027-arc/arc-from-raw-in.rs --start-symbol verify_arc_from_raw_in --proof-dir /tmp/arc-from-raw-in-proof-0027-fix1 --verbose --terminate-on-thunk`
+  `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir run -- kmir show arc-from-raw-in.verify_arc_from_raw_in --proof-dir /tmp/arc-from-raw-in-proof-0027-fix1 --nodes 3 --full-printer`
+- Next generator step is to determine whether the shared `malloc` `noBody`
+  frontier is now the Arc-side canonical blocker or a separate wrapper edge
+  that needs another narrowing pass.

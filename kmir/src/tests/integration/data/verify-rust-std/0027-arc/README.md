@@ -32,19 +32,28 @@ Challenge-local artifact contract:
 
 Status board:
 
-- Planner: bootstrap complete
-- Generator: proof harness added; frontier reproducer split recorded
-- Evaluator: bootstrap complete
-- Draft PR: not created
+- Planner: updated to shared frontier / `malloc` noBody follow-up
+- Generator: proof harness added; frontier reproducer split recorded; latest
+  validation moved both proofs to the shared `malloc` `noBody` leaf at node 3
+- Evaluator: active / awaiting reassessment
+- Draft PR: open and current
 
 Proof evidence:
 
 - Harness: `arc-from-raw-in.rs`
 - Start symbol: `verify_arc_from_raw_in`
 - Result: `ProofStatus.FAILED`
-- Frontier leaf: `4`
-- Frontier site: `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`
+- Frontier leaf: `3`
+- Frontier site: `#setUpCalleeData(monoItemFn(... name: symbol("malloc"), body: noBody), ...)`
 - Frontier reproducer: `arc-from-raw-in-frontier-fail.rs`
 - Frontier reproducer start symbol: `main`
 - Frontier reproducer note: smaller than the symbolic harness because it fixes
   the payload and uses `main`
+
+Validation commands:
+
+- `timeout 3600s make -C /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc build PARALLEL=2`
+- `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir run -- kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir/src/tests/integration/data/verify-rust-std/0027-arc/arc-from-raw-in-frontier-fail.rs --start-symbol main --proof-dir /tmp/arc-from-raw-in-frontier-proof-0027-fix1 --verbose --terminate-on-thunk`
+- `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir run -- kmir show arc-from-raw-in-frontier-fail.main --proof-dir /tmp/arc-from-raw-in-frontier-proof-0027-fix1 --nodes 3 --full-printer`
+- `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir run -- kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir/src/tests/integration/data/verify-rust-std/0027-arc/arc-from-raw-in.rs --start-symbol verify_arc_from_raw_in --proof-dir /tmp/arc-from-raw-in-proof-0027-fix1 --verbose --terminate-on-thunk`
+- `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir run -- kmir show arc-from-raw-in.verify_arc_from_raw_in --proof-dir /tmp/arc-from-raw-in-proof-0027-fix1 --nodes 3 --full-printer`

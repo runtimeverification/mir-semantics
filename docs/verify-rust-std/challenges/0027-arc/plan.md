@@ -72,13 +72,14 @@ Current planning focus for Challenge 0027 (`Arc`):
 - Shared blocker family with `0026-rc`:
   - helper-level `CastKind::Transmute`
   - current Arc-side site:
-    `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`
+    `#setUpCalleeData(monoItemFn(... name: symbol("malloc"), body: noBody), ...)`
+    at node `3`
 
 ## Minimal Reproducer Policy
 
-- Use `arc-from-raw-in-frontier-fail.rs` to shrink the helper setup until it
-  reaches the same `CastKind::Transmute` leaf with the smallest Arc-local
-  witness that still preserves the `Arc::from_raw_in` contract shape.
+- Use `arc-from-raw-in-frontier-fail.rs` to keep the helper setup as small as
+  possible while preserving the `Arc::from_raw_in` contract shape and the
+  shared helper frontier.
 - Keep `arc-from-raw-in.rs` symbolic and contract-shaped; do not turn it into a
   concrete reproducer.
 - Do not widen into other Arc families until this shared transmute-family leaf
@@ -86,11 +87,9 @@ Current planning focus for Challenge 0027 (`Arc`):
 
 ## Single Next Technical Subtask
 
-- Narrow `arc-from-raw-in-frontier-fail.rs` one step further around
-  `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in` so the
-  Arc branch carries the smallest dedicated reproducer for the shared
-  `CastKind::Transmute` family before any semantic repair or wider Arc follow-on
-  is attempted.
+- Validate whether the new `malloc` `noBody` leaf is the same shared wrapper
+  frontier as `0026-rc`; if it is, keep `arc-from-raw-in-frontier-fail.rs`
+  as the dedicated reproducer and do not widen the Arc tranche yet.
 
 ## Sprint Contracts
 
@@ -107,8 +106,8 @@ Current planning focus for Challenge 0027 (`Arc`):
 - Arc adds a data-race obligation that Rc did not have; the evaluator should
   fail closed if that obligation is only waved at.
 - The current shared blocker family is no longer hypothetical: both the proof
-  harness and the smaller reproducer point to helper-level
-  `CastKind::Transmute` in `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`.
+  harness and the smaller reproducer now point to the shared `malloc`
+  `noBody` leaf rather than the original helper-level transmute site.
 
 ## Cross-Challenge Notes
 
