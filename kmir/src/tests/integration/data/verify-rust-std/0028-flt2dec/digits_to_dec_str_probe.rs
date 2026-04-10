@@ -73,7 +73,7 @@ fn digits_to_dec_str<'a>(
         }
     } else {
         let exp = exp as usize;
-        if exp >= buf.len() {
+        if exp >= 4 {
             parts[0] = MaybeUninit::new(Part::Copy(buf));
             parts[1] = MaybeUninit::new(Part::Zero(exp - buf.len()));
             if frac_digits > 0 {

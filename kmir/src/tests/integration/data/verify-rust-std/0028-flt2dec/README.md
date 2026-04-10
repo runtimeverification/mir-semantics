@@ -37,14 +37,15 @@ Current minimal reproducer:
 - `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs`
 - This file is the challenge-local verification frontier for `flt2dec`, not a
   generic test.
-- The current exact frontier is the copied `if exp >= buf.len()` select in
-  `digits_to_dec_str_probe.rs:76`, with the unsimplified predicate
-  `#applyBinOp ( binOpGe , 2 , #applyUnOp ( unOpPtrMetadata , ... ) )`.
+- The current exact frontier is the underlying `core::slice::index` path,
+  with the proof stopping on the `slice_end_index_len_fail` failure after the
+  copied branch condition is simplified for the single `b"1234", exp = 2`
+  case.
 
 Replay commands:
 
-- `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-prefixslice-proof --max-depth 200 --reload`
-- `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-prefixslice-proof --statistics --leaves`
+- `timeout 900s uv --project kmir run -- kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-prefixslice-step2-proof --max-depth 200 --reload`
+- `uv --project kmir run -- kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-prefixslice-step2-proof --statistics --leaves`
 
 Audit link:
 
