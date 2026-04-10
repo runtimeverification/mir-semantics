@@ -40,6 +40,8 @@ PROVE_START_SYMBOLS = {
     'test_offset_from-fail': ['testing'],
     'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next': ['repro'],
+    'transmute_roundtrip': ['bytes_to_u64', 'u64_to_bytes'],
+    'transmute_unchecked_maybeuninit': ['into_maybeuninit', 'from_maybeuninit'],
 }
 PROVE_SHOW_SPECS = [
     'local-raw-fail',
@@ -71,6 +73,9 @@ PROVE_SHOW_SPECS = [
     'ptr-cast-array-to-wrapper-fail',
     'ptr-cast-array-to-nested-wrapper-fail',
     'ptr-cast-array-to-singleton-wrapped-array-fail',
+    'transmute_roundtrip',
+    'transmute_unchecked_maybeuninit',
+    'maybeuninit_array_assume_init',
 ]
 
 
