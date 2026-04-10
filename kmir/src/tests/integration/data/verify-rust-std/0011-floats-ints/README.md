@@ -41,7 +41,7 @@ in `docs/verify-rust-std/challenges/0011-floats-ints/success_criteria.md`.
 - Narrow collection check for the next technical step:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shl and not fail" -q`
 - Direct proof replay for the next technical step:
-  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u128 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u128 --reload --fail-fast --max-workers 1`
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_i8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-i8 --reload --fail-fast --max-workers 1`
 - Float frontier-harness replay against the checked-in `show/*.expected`
   artifacts:
   `make test-verify-rust-std PARALLEL=1 TEST_ARGS="-k 'to_int_unchecked and fail'"`

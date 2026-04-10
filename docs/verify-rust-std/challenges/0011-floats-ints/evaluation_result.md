@@ -20,7 +20,7 @@
 | Scope is challenge-local and cherry-pickable | 3 | The evidence comes from a single challenge branch with narrow doc-only refreshes and scoped proof runs. |
 | Review feedback patterns are incorporated | 2 | The branch keeps each proof slice narrow and records explicit next actions, but there is no substantive review-feedback cycle to incorporate beyond conservative evaluator framing. |
 | Residual risk is explicit | 3 | The remaining float-capability blocker and the still-broad integer matrix gap are both called out directly. |
-| Integer methods have branch-local proof evidence | 2 | `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`, `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`, `unchecked_shl_u16`, `unchecked_shl_u32`, and `unchecked_shl_u64` pass, but the integer matrix is still incomplete. |
+| Integer methods have branch-local proof evidence | 2 | `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`, `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`, `unchecked_shl_u16`, `unchecked_shl_u32`, `unchecked_shl_u64`, and `unchecked_shl_u128` pass, but the integer matrix is still incomplete. |
 | Non-float APIs are mapped to concrete artifacts | 3 | The published non-float method families are represented by direct harnesses and expected-output artifacts on the branch. |
 | Float path is classified with direct evidence | 3 | `to_int_unchecked-fail.*.expected` shows stuck `fabsf32` / `fabsf64` frontiers. |
 | Validation is replayable | 3 | The evaluator can replay the branch-local reads and proof runs from the recorded commands and artifact paths. |
@@ -41,17 +41,16 @@
   with exact replay commands and pointers to `show/*.expected`.
 - Reproducible commands and their outcomes are recorded in `generator.md`
   and `workpad.md`.
-- Fifteen direct proof slices now complete end-to-end on the branch:
+- Sixteen direct proof slices now complete end-to-end on the branch:
   `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
   `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`,
   `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`,
-  `unchecked_shl_u16`, `unchecked_shl_u32`, and
-  `unchecked_shl_u64` all
-  passed with `ProofStatus.PASSED`.
-- The branch now has branch-local proof evidence across nine Part 1
-  arithmetic slices and six Part 2 safe-API slices, which is materially
-  stronger than the prior evaluation but still short of broad matrix coverage.
+  `unchecked_shl_u16`, `unchecked_shl_u32`, `unchecked_shl_u64`, and
+  `unchecked_shl_u128` all passed with `ProofStatus.PASSED`.
+- The branch now has branch-local proof evidence across twelve Part 1
+  slices and four Part 2 safe-API slices. This is materially stronger than the
+  prior evaluation, but still short of broad matrix coverage.
 - The float path is classified with direct branch-local evidence: the
   `to_int_unchecked-fail.*.expected` files show stuck `fabsf32` and `fabsf64`
   intrinsics for the `f32` and `f64` cases.
@@ -86,15 +85,16 @@
 - `docs/verify-rust-std/challenges/0011-floats-ints/success_criteria.md`
   maps the published challenge page directly to the current branch artifacts.
 - `docs/verify-rust-std/challenges/0011-floats-ints/plan.md`
-  keeps the next technical step on `unchecked_shl_u128`.
+  now keeps the next technical step on `unchecked_shl_i8`.
 - `generator.md` records the completed proof runs for
   `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
   `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`,
   `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`,
-  `unchecked_shl_u16`, `unchecked_shl_u32`, and `unchecked_shl_u64`,
-  including the exact `kmir prove-rs` commands.
-- `workpad.md` records the same fifteen passing slices and keeps the float blocker
+  `unchecked_shl_u16`, `unchecked_shl_u32`, `unchecked_shl_u64`, and
+  `unchecked_shl_u128`, including the exact `kmir prove-rs` commands and the
+  terminal `kmir show` replay for `unchecked_shl_u128`.
+- `workpad.md` records the same sixteen passing slices and keeps the float blocker
   separate from the integer proof work.
 - `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/README.md`
   records the harness roles and the replay commands used for local and CI runs.
@@ -106,7 +106,7 @@
 
 ## Next Action Required To Improve State
 
-- Resume the non-float proof expansion with `unchecked_shl_u128` using the
+- Resume the non-float proof expansion with `unchecked_shl_i8` using the
   existing harness at
   `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs`.
   Keep `unchecked_shr` parked unless a new observation justifies reopening its

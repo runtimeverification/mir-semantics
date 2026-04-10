@@ -99,6 +99,17 @@ Ownership:
   `core::num::<impl u64>::checked_shl` and constraints including
   `notBool ARG_UINT2:Int <Int 64`, `ARG_UINT2:Int <Int 64`, and
   `ARG_UINT2:Int >=Int 0`.
+- 2026-04-10: Completed the next branch-local unchecked-shift proof slice
+  end-to-end with `kmir prove-rs` for `unchecked_shl_u128`; the existing
+  harness and shift support were already sufficient on this branch, and the
+  unchecked-shl family now covers every published unsigned width.
+- 2026-04-10: Verified the `unchecked_shl_u128` replay in
+  `/tmp/kmir-0011-unchecked-shl-u128` with
+  `uv --project kmir run -- kmir show unchecked_shl.unchecked_shl_u128 --proof-dir /tmp/kmir-0011-unchecked-shl-u128 --statistics --leaves`;
+  both split paths reached terminal `#EndProgram ~> .K`, with branches on
+  `core::num::<impl u128>::checked_shl` and constraints including
+  `notBool ARG_UINT2:Int <Int 128`, `ARG_UINT2:Int <Int 128`, and
+  `ARG_UINT2:Int >=Int 0`.
 - 2026-04-10: Ran the scoped discovery check for `unchecked_shl` on the
   verify-rust-std integration target with:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shl and not fail" -q`.
@@ -314,6 +325,20 @@ Ownership:
     passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
     `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
 
+28. Command:
+    `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u128 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u128 --reload --fail-fast --max-workers 1`
+    Result:
+    passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
+    `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
+
+29. Command:
+    `uv --project kmir run -- kmir show unchecked_shl.unchecked_shl_u128 --proof-dir /tmp/kmir-0011-unchecked-shl-u128 --statistics --leaves`
+    Result:
+    reached terminal `#EndProgram ~> .K` on both split paths; branches are on
+    `core::num::<impl u128>::checked_shl`, with constraints including
+    `notBool ARG_UINT2:Int <Int 128`, `ARG_UINT2:Int <Int 128`, and
+    `ARG_UINT2:Int >=Int 0`.
+
 ## Commit Inventory
 
 - `2e09185c` — `feat(verify-rust-std): port challenge 0011 harnesses and runner`
@@ -326,10 +351,10 @@ Ownership:
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
   `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`,
   `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`,
-  `unchecked_shl_u16`, `unchecked_shl_u32`, and `unchecked_shl_u64` all pass
-  end-to-end on this branch, with `carrying_mul_u8` broadening the Part 2
-  safe-API evidence to the remaining carrying-mul family without any new
-  support changes.
+  `unchecked_shl_u16`, `unchecked_shl_u32`, `unchecked_shl_u64`, and
+  `unchecked_shl_u128` all pass end-to-end on this branch, with
+  `unchecked_shl_u128` completing the unsigned half of the unchecked-shl
+  family without any new support changes.
 - Float-to-int path still appears blocked by backend capability in the current
   stack; the ported expected outputs still include stuck frontiers on float
   intrinsics (e.g., `fabsf32`, `fabsf64`) in
@@ -337,3 +362,11 @@ Ownership:
 - `unchecked_shr` diagnostics did not uncover a smaller branch-worthy target
   than `unchecked_shr_u8`; the family is still collected, but this checkpoint
   is evidence-only and does not justify another proof rerun yet.
+
+## Next Step
+
+- Exact next non-float proof step: `unchecked_shl_i8` in
+  `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs`.
+- Keep `unchecked_shr` parked unless a new observation narrows the shared
+  `binOpShrUnchecked` frontier.
+- Keep the float blocker isolated in `to_int_unchecked-fail`.
