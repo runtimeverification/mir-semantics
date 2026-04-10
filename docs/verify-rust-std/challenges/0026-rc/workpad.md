@@ -7,10 +7,10 @@
 - Draft PR: exists.
 - Evaluator: active / in progress.
 - Local status: first audit slice committed in `87a669dc`; latest generator commit is `fa4b34d8`; the branch now has a symbolic `Rc::from_raw_in` proof harness plus a smaller challenge-local reproducer for the transmute frontier, and the proof result for the correct symbol is still frontier-only.
-- Local status: the challenge-local reproducer has now been minimized one step further by removing the audit-only `assert_eq!`; the frontier remains the same helper-level `CastKind::Transmute` leaf.
+- Local status: the challenge-local reproducer is still the one-line `Rc::new_in(7u32, System)` witness, but the frontier has moved past the helper-level `CastKind::Transmute` leaf.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.
-- Latest blocker checkpoint: the smaller challenge-local reproducer `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs` fails at the same terminal `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` transmute frontier, and the symbolic proof harness `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs` still fails there when run with `--start-symbol verify_rc_from_raw_in`. The older `rc-from-raw-in-frontier-fail.rs` remains a broader reproducer only.
+- Latest blocker checkpoint: both the one-line reproducer `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs` and the symbolic proof harness `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs` now advance past the old transmute leaf and stop at `#setUpCalleeData(... symbol("malloc"), body: noBody ...)`. The older `rc-from-raw-in-frontier-fail.rs` remains a broader reproducer only.
 
 ## Confirmed Inputs
 
@@ -22,7 +22,7 @@
 
 ## Next Action
 
-- The next exact boundary is the new direct-witness leaf at `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` with `CastKind::Transmute` in the root proof graph; if work continues, shrink the harness witness one step further instead of widening into other `Rc` APIs.
+- The next exact boundary is allocator setup: `#setUpCalleeData(monoItemFn(... name: symbol("malloc"), body: noBody), ...)`; if work continues, classify or model that external `malloc` boundary instead of widening into other `Rc` APIs.
 
 ## What Needs To Be Captured
 
@@ -61,9 +61,9 @@
 - Frontier evidence:
   - `proof.json` / `kcfg/nodes/3.json`
   - `proof.json` / `kcfg/nodes/4.json`
-- Leaf 4 remains a terminal proof state whose `<k>` begins with `thunk(_)_RT-DATA_Value_Evaluation(#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty(..., CastKind::Transmute, ...))`.
 - The stable `MaybeUninit` proof run used `/tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit` and still did not move past the cast leaf.
-- The minimized `Rc::new_in` reproducer proof run used `/tmp/rc-new-in-frontier-proof-mini` and still stopped at the same `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` / `CastKind::Transmute` frontier at node 4.
+- The minimized `Rc::new_in` reproducer proof run with the semantic fix used `/tmp/rc-new-in-frontier-proof-fix1` and now stops at node 3 whose `<k>` begins with `#setUpCalleeData(monoItemFn(... name: symbol("malloc"), body: noBody), ...)`.
+- The symbolic `verify_rc_from_raw_in` proof run with the semantic fix used `/tmp/rc-from-raw-in-proof-fix1` and reaches the same `malloc` `noBody` leaf at node 3.
 
 ## Selected First Tranche
 
@@ -94,4 +94,4 @@
 ## Known Soft Risks
 
 - Challenge guidance still flags `assume_init` as potentially hard to express in the current type system, but that does not block the selected tranche.
-- The symbolic root proof still needs a smaller direct allocator/raw-pointer shape if this proof is to advance past the `#cast` transmute leaf in `Box::try_new_uninit_in`.
+- The symbolic root proof now needs allocator-call handling rather than a smaller transmute witness if it is to advance past the current `malloc` `noBody` leaf.

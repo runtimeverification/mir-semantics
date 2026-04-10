@@ -29,7 +29,7 @@ Current frontier:
 
 - Proof harness: `rc-from-raw-in.rs` with `#[no_mangle] pub fn verify_rc_from_raw_in(value: u32)`
 - Root repro mirror: `../../prove-rs/rc-from-raw-in.rs`
-- Frontier summary: the minimized minimal reproducer and the symbolic proof harness both terminate at the current `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` `CastKind::Transmute` leaf.
+- Frontier summary: a small transparent-wrapper transmute fix moved both the minimized minimal reproducer and the symbolic proof harness past the old `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` `CastKind::Transmute` leaf. They now both stop at allocator setup with `#setUpCalleeData(... symbol("malloc"), body: noBody ...)`.
 
 How to run:
 
@@ -37,8 +37,12 @@ How to run:
   `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs --start-symbol verify_rc_from_raw_in --proof-dir /tmp/rc-from-raw-in-proof --verbose --terminate-on-thunk`
 - Exact proof command for the minimal reproducer:
   `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs --proof-dir /tmp/rc-new-in-frontier-proof --verbose --terminate-on-thunk`
+- Semantic-fix replay for the minimal reproducer:
+  `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs --proof-dir /tmp/rc-new-in-frontier-proof-fix1 --verbose --terminate-on-thunk`
 - Exact proof command for the broader reproducer:
   `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs --proof-dir /tmp/rc-from-raw-in-frontier-proof --verbose --terminate-on-thunk`
+- Semantic-fix replay for the symbolic harness:
+  `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs --start-symbol verify_rc_from_raw_in --proof-dir /tmp/rc-from-raw-in-proof-fix1 --verbose --terminate-on-thunk`
 - Narrow collector:
   `make test-verify-rust-std`
 - Explicit CI shard: GitHub Actions job `Verify Rust Std 0026 RC`
@@ -61,6 +65,6 @@ Status board:
 
 - Branch: active on `verify-rust-std/reexec-0026-rc`
 - Proof harness: `rc-from-raw-in.rs`
-- Frontier: minimized minimal reproducer exists at `rc-new-in-frontier-fail.rs`; broader reproducer exists at `rc-from-raw-in-frontier-fail.rs`
+- Frontier: minimized minimal reproducer exists at `rc-new-in-frontier-fail.rs`; broader reproducer exists at `rc-from-raw-in-frontier-fail.rs`; both current proof paths stop at `malloc` `noBody`
 - Evaluator: active / in progress
 - Draft PR: exists

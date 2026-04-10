@@ -15,17 +15,17 @@ Turn the published `Rc`/`Weak` challenge requirements into a verification-shaped
 
 ## Single Next Technical Subtask
 
-Keep `rc-from-raw-in.rs` as the verification-shaped symbolic proof harness, and keep shrinking the temporary concrete reproducer chain only as long as it preserves the same helper-family `CastKind::Transmute` frontier. The current minimal reproducer is `rc-new-in-frontier-fail.rs` with only `let _ = Rc::new_in(7u32, System);`; `rc-from-raw-in-frontier-fail.rs` remains the broader audit reproducer.
+Keep `rc-from-raw-in.rs` as the verification-shaped symbolic proof harness, and keep `rc-new-in-frontier-fail.rs` as the canonical one-line reproducer while the new post-transmute frontier is classified. The transmute leaf is gone for both proof paths; the current blocker is `#setUpCalleeData(... symbol("malloc"), body: noBody ...)`.
 
 ## Why This Comes First
 
-The old `Rc::new_in` / `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` detour is already gone. The unstable `Box::write(...)` blocker is gone too, and the current concrete witness has now been minimized once more by removing the audit-only assert. The narrowest useful follow-up remains to keep the symbolic proof entrypoint separate from the concrete reproducer, rather than widening into `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in`.
+The old `Rc::new_in` / `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` transmute detour is now gone. The current concrete witness is one line long and the first semantic fix already moved both proof paths to the same allocator setup leaf, so the narrowest useful follow-up is to classify or model the `malloc` `noBody` boundary rather than widening into `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in`.
 
 ## Exit Criteria
 
 - The success table in `docs/verify-rust-std/challenges/0026-rc/success-criteria.md` stays aligned with the public `unsafe` surface and the branch-local evidence.
 - The `Rc::from_raw_in` challenge-local frontier file is clearly demoted to a temporary reproducer, not the verification target.
-- The smallest challenge-local reproducer for the current transmute frontier is `rc-new-in-frontier-fail.rs` with only `let _ = Rc::new_in(7u32, System);`; the broader `rc-from-raw-in-frontier-fail.rs` remains available for audit context.
+- The smallest challenge-local reproducer remains `rc-new-in-frontier-fail.rs` with only `let _ = Rc::new_in(7u32, System);`; the broader `rc-from-raw-in-frontier-fail.rs` remains available for audit context.
 - The verification-shaped harness should be symbolic over the payload value, keep `System` concrete, and prove the preconditions around the stable `MaybeUninit` witness helper.
-- The frontier reproducer remains separate until the new proof entrypoint is in place and collected.
+- The frontier reproducer remains separate while the new `malloc` `noBody` leaf is classified.
 - Any remaining blocker is recorded as a precise backend dependency or semantic gap, not as a widened Rc API search.
