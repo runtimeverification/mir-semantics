@@ -23,6 +23,22 @@ Challenge-local artifact contract:
   cleanly later.
 - Record any exceptional dependency change in the generator and evaluator logs
   before landing it.
+- Keep the proof coverage map in
+  `docs/verify-rust-std/challenges/0012-nonzero/success-criteria.md`.
+
+Proof harnesses currently in scope:
+
+- `new.rs` - Part 1 harness for `NonZero::new`
+- `new_unchecked.rs` - Part 1 harness for `NonZero::new_unchecked`
+- `from_mut.rs` - Part 1 harness for `NonZero::from_mut`
+- `count_ones.rs` - Part 2 seed harness for `NonZero::count_ones`
+
+Control reproducer:
+
+- `transmute_wrapper_u8.rs` - transparent-wrapper control used to separate
+  generic same-size transmute support from the exact `u8 -> Option<NonZeroU8>`
+  niche-cast frontier. This file is not a published `NonZero` verification
+  target.
 
 Status board:
 
@@ -39,3 +55,5 @@ Artifact progress:
   - `from_mut.rs`
 - Part 2 low-risk seed:
   - `count_ones.rs`
+- Control repro:
+  - `transmute_wrapper_u8.rs`
