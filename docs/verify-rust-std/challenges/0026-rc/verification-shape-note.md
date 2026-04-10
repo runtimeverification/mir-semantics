@@ -75,4 +75,3 @@ This is the smallest shape that matches the repo rules, the 0011 precedent, and 
 ## Minimal Next Implementation Step
 
 Add a symbolic `Rc::from_raw_in` proof entrypoint that reuses the stable `MaybeUninit` witness helper and is collected as a verification harness, while keeping the existing frontier file as the separate regression reproducer.
-
