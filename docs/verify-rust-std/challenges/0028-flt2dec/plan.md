@@ -9,7 +9,7 @@ Next generator task:
 Generator acceptance evidence:
 - The probe file path in `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec`.
 - The exact command(s) used to rerun it.
-- The first pass/fail result with the precise failure mode.
+- The first pass/fail result with the precise failure mode, now from a replay-based collector that asserts the current probe replay fails at the copied frontier.
 - A note saying whether the result stays in copied `digits_to_dec_str` control flow after the `buf.len()` simplification, advances into actual decimal-point-path logic, or exposes a genuine backend limit.
 - A pointer back to `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md` so the probe evidence is auditable against the published function list.
 

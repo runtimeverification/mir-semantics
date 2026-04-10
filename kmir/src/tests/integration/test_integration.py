@@ -125,8 +125,19 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     VERIFY_RUST_STD_0028_FILES,
     ids=[spec.stem for spec in VERIFY_RUST_STD_0028_FILES],
 )
-def test_verify_rust_std(rs_file: Path) -> None:
-    assert rs_file.exists()
+def test_verify_rust_std(rs_file: Path, kmir: KMIR, tmp_path: Path) -> None:
+    prove_opts = ProveOpts(
+        rs_file,
+        proof_dir=tmp_path,
+        smir=False,
+        start_symbol='main',
+        terminate_on_thunk=True,
+        reload=True,
+        fail_fast=True,
+        max_depth=200,
+    )
+    apr_proof = kmir.prove_program(prove_opts)
+    assert apr_proof.failed
 
 
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)

@@ -8,6 +8,7 @@
 - Current checkpoint: the restored-prefix rerun keeps `&buf[..exp]` in place, the suffix stub remains narrow, and the exact frontier is still the copied `if exp >= buf.len()` select at `digits_to_dec_str_probe.rs:76`.
 - The saved-proof audit for the unchanged taken-arm specialization reaches the terminal target leaf `#EndProgram ~> .K` via `/tmp/0028-digits-to-dec-str-current-proof`.
 - The current branch evidence is still challenge-local rather than module-wide: the proof at `/tmp/0028-digits-to-dec-str-prefixslice-proof` ends with `ProofStatus.FAILED`, `nodes: 9`, `failing: 1`, `vacuous: 2`, `stuck: 1`, `terminal: 1`, and its first concrete leaf is the copied `if exp >= buf.len()` branch select in `digits_to_dec_str`.
+- The branch-local discoverability check now replays that same probe with `kmir.prove_program` and asserts the proof still fails at the copied frontier instead of only checking for file presence.
 
 ## Evidence gathered
 
