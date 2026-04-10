@@ -11,8 +11,9 @@
   `carrying_mul_u8` slice is complete, the follow-up `unchecked_mul_u8`
   slice also passed without any support changes, and the new
   `unchecked_mul_u16` slice passed as well, and `unchecked_mul_u32` now also
-  passes on this branch. The next concrete target, if the generator continues
-  in the same file, is `unchecked_mul_u64`.
+  passes on this branch. The latest branch-local `unchecked_shl_u8` proof
+  also passed, so the next concrete target in the same file is
+  `unchecked_shl_u16`.
 
 ## Evidence gathered
 
@@ -233,3 +234,8 @@
   no terminal proof result was captured before interruption, no new frontier
   was established, stray `tmp.*` artifacts were removed, and no code changes
   were kept.
+- 2026-04-10: Direct proof follow-up run completed with
+  `ProofStatus.PASSED` for `unchecked_shl_u8` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u8 --reload --fail-fast --max-workers 1`.
+  The summary reported `nodes: 7`, `pending: 0`, `failing: 0`, `stuck: 0`,
+  `terminal: 3`.
