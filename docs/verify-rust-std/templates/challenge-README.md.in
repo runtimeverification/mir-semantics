@@ -22,6 +22,10 @@ Challenge-local artifact contract:
 - Maintain a branch-local Success Criteria coverage table that names each
   published function or target plus its artifact path, current status,
   specification scope, and notes.
+- PR descriptions should not separate "Verification entrypoints" from "Success
+  Criteria Coverage". Instead, each function/target entry should carry its own
+  harness path, start symbol, reproducer note, current status, and blocker
+  note together.
 - Distinguish verification harnesses from frontier reproducers or fail
   harnesses. Concrete-value reproducers do not count as verification.
 - Keep changes organized so proof or semantic commits can be cherry-picked

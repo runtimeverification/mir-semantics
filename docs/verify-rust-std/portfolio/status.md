@@ -14,6 +14,9 @@ Last orchestrator checkpoint: 2026-04-10 UTC
   reproducers do not count as verification.
 - Draft PR descriptions, challenge-local docs, and portfolio trackers must all
   expose per-function coverage status, blocker class, and replay commands.
+- PR descriptions should present coverage per function/target, with the
+  verification entrypoint embedded into that same function section or table row
+  rather than split into a separate top-level section.
 
 ## Portfolio Trackers
 

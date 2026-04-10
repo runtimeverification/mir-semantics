@@ -22,6 +22,9 @@ Ownership:
 - Record concrete evidence paths and rerun commands.
 - Check that the branch and draft PR both expose a current Success Criteria
   coverage table.
+- Fail closed if the PR description keeps verification entrypoints separate
+  from per-function coverage instead of embedding the relevant harness/start
+  symbol/reproducer details into each function entry.
 - Fail closed if a concrete witness test is being counted as verification
   without a symbolic or contract-shaped proof harness.
 
