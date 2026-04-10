@@ -5,7 +5,7 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, ten direct proof slices pass on the branch, and the latest
+  exist, twelve direct proof slices pass on the branch, and the latest
   evaluator refresh before this slice left the challenge `IN PROGRESS` at
   `2.9 / 3` pending a broader reassessment. The planner-selected
   `carrying_mul_u8` slice is complete, the follow-up `unchecked_mul_u8`
@@ -32,7 +32,7 @@
 - `unchecked_mul.rs` and its fail artifact are already present in the same
   challenge-local harness set, so the next cheapest remaining Part 1 slice is
   `unchecked_mul_u8`.
-- The branch now has eleven passing direct proof slices
+- The branch now has twelve passing direct proof slices
   (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
   `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`, and
@@ -198,7 +198,7 @@
 - If the generator continues in the same file, the next concrete target is
   the next available `unchecked_mul_*` width beyond `u64`, if any is present
   in the branch-local harness.
-- Evaluator should reassess whether the branch’s eleven direct proof passes
+- Evaluator should reassess whether the branch’s twelve direct proof passes
   across Part 1 and Part 2 materially change the non-float readiness signal,
   while keeping the remaining float blocker tied to the precise
   `fabsf32` / `fabsf64` frontier.
