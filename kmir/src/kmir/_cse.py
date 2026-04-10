@@ -1425,13 +1425,14 @@ def _prove_callee_summary(
                 return term
 
             _no_bb_idx = KApply('noBasicBlockIdx_BODY_MaybeBasicBlockIdx', ())
-            _empty_stack = list_empty()
             patched_k_cell = _patch_k_cell_call_target(init_cterm.cell('K_CELL'))
             patched_config = set_cell(init_cterm.config, 'K_CELL', patched_k_cell)
             patched_config = set_cell(patched_config, 'TARGET_CELL', _no_bb_idx)
-            patched_config = set_cell(patched_config, 'STACK_CELL', _empty_stack)
+            # Keep <stack> intact: Value::Reference offsets depend on stack depth.
+            # Clearing stack breaks references. The callee will unwind through
+            # caller frames but endprogram-return fires at the noBasicBlockIdx frame.
             init_cterm = CTerm(patched_config, init_cterm.constraints)
-            _LOGGER.info('CSE: patched <target>=noBasicBlockIdx and <stack>=empty for %s', name)
+            _LOGGER.info('CSE: patched <target>=noBasicBlockIdx (kept stack) for %s', name)
 
         # Callee proofs use make_call_config which sets <target> = noBasicBlockIdx.
         # Inner function calls via termCallFunction set someBasicBlockIdx, so inner
