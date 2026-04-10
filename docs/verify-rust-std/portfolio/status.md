@@ -15,28 +15,32 @@ The portfolio is complete only when every published challenge is in one of:
 
 ## Current Batch
 
-- `0011-floats-ints` -> `IN PROGRESS` (`2.97 / 3`)
-- `0028-flt2dec` -> `IN PROGRESS` (`2.0 / 3`)
+- `0011-floats-ints` -> `IN PROGRESS` (`2.98 / 3`)
+- `0028-flt2dec` -> `IN PROGRESS` (`1.9 / 3`)
 - `0026-rc` -> `IN PROGRESS` (`1.7 / 3`)
 
 ## Current Active State
 
-- `0011-floats-ints`: twelve branch-local proof slices now pass
+- `0011-floats-ints`: thirteen branch-local proof slices now pass
   (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
   `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`,
-  `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`); float
+  `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`,
+  `unchecked_shl_u16`); float
   `to_int_unchecked` remains blocked by the precise `fabsf32` / `fabsf64`
   frontier, and the latest `unchecked_shr` diagnostics found no smaller
   branch-worthy subcase than `unchecked_shr_u8`, with the family collapsing to
-  the same `binOpShrUnchecked` surface; the refreshed planner now parks
-  `unchecked_shr` and retargets the next bounded slice to `unchecked_shl_u16`.
-- `0028-flt2dec`: the current taken-arm specialization for
-  `b"1234", exp = 2, frac_digits = 3` now has saved-proof evidence reaching
-  terminal `#EndProgram ~> .K` on path `1 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 2`;
-  the active task is no longer to clear the copied `if exp < buf.len()` select,
-  but to restore one real decimal-point-path step and expose the first
-  unproven `flt2dec`-owned successor beyond that terminal slice.
+  the same `binOpShrUnchecked` surface; the refreshed planner keeps
+  `unchecked_shr` parked and retargets the next bounded slice to
+  `unchecked_shl_u32`.
+- `0028-flt2dec`: restoring the real prefix slice `&buf[..exp]` invalidates
+  the earlier saved terminal taken-arm slice and moves the first validated
+  stuck leaf to the copied `if exp >= buf.len()` `#selectBlock` at
+  `digits_to_dec_str_probe.rs:76`, with predicate
+  `#applyBinOp ( binOpGe , 2 , #applyUnOp ( unOpPtrMetadata , ... ) )`; this is
+  still copied `flt2dec` control flow, not a backend float leaf, and the next
+  bounded task is to simplify only that `buf.len()` test and record the first
+  leaf beyond it.
 - `0026-rc`: the first contract/entrypoint audit is committed, a direct
   `Rc::from_raw_in` witness harness now exists, and the current blocker has
   been narrowed to a direct-witness `CastKind::Transmute` leaf; the latest
@@ -60,12 +64,12 @@ The portfolio is complete only when every published challenge is in one of:
 
 - Resume the current batch: `0011-floats-ints`, `0028-flt2dec`, `0026-rc`.
 - Restart priority inside the current batch:
-  1. `0028-flt2dec`: starting from the terminal taken-arm slice, restore one
-     real decimal-point-path operation and record the first unproven
-     `flt2dec`-owned successor beyond the current `#EndProgram ~> .K` proof.
-  2. `0011-floats-ints`: run `unchecked_shl_u16` to completion with a scoped
+  1. `0011-floats-ints`: run `unchecked_shl_u32` to completion with a scoped
      `kmir prove-rs` rerun, then reassess whether the remaining non-float
      breadth is finally narrow enough for a stronger verdict.
+  2. `0028-flt2dec`: keep the restored real prefix slice in place, simplify
+     only the copied `if exp >= buf.len()` test so `buf.len()` becomes concrete
+     for `b"1234", exp = 2`, and capture the first leaf beyond that select.
   3. `0026-rc`: replace the unstable `Box::write(...)` witness setup with a
      stable `MaybeUninit` plus raw-write / cast-free projection path that keeps
      the same `System` provenance.
@@ -74,12 +78,12 @@ The portfolio is complete only when every published challenge is in one of:
 
 ## Batch Selection Rationale
 
-- `0011-floats-ints`: now sits at `2.97 / 3`; the remaining non-float gap is
+- `0011-floats-ints`: now sits at `2.98 / 3`; the remaining non-float gap is
   narrower than before, but the current evidence still needs one more bounded
   `unchecked_shl` extension before a stronger verdict is justified.
 - `0028-flt2dec`: continues to yield reusable probe-narrowing patterns and is
-  now the active challenge most likely to turn a challenge-local probe into the
-  first post-terminal `flt2dec`-owned successor path.
+  still producing reusable probe-narrowing patterns, but the restored-prefix
+  slice shows the branch is not yet past copied control-flow scaffolding.
 - `0026-rc`: the refcount family still matters for `0027-arc`, but current
   evidence says its next leverage point is a stable witness rewrite rather than
   immediate API expansion.
@@ -115,9 +119,10 @@ Rationale:
 - The observed live-agent cap remains `6`, which forced repeated close/reopen
   cycles for planner/generator/evaluator passes.
 - In the latest cycle, `0011` and `0028` both produced new committed evidence:
-  `0011` added `unchecked_shl_u8` and completed `unchecked_shr` diagnostics,
-  while `0028` upgraded the taken-arm specialization to a saved-proof terminal
-  slice at `#EndProgram ~> .K`.
+  `0011` extended the `unchecked_shl` family with a passing `unchecked_shl_u16`
+  slice and then retargeted to `unchecked_shl_u32`, while `0028` restored the
+  real prefix slice and moved the frontier to the copied
+  `if exp >= buf.len()` select at line 76.
 - `0026` still remains bottlenecked on the witness-construction path: the
   newest `MaybeUninit` rewrite attempt failed before proof construction because
   `Box::write(...)` is unstable on this toolchain, so the restart point below
