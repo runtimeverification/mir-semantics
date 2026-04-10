@@ -5,6 +5,9 @@
 - Branch: `verify-rust-std/reexec-0028-flt2dec`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec`
 - Status at planner handoff: the first `digits_to_dec_str` probe had already run, the latest bypass removed the `MaybeUninit::slice_assume_init_ref` return-path helper, and the new frontier is now the probe's own guard path.
+- Current checkpoint: the probe has been rewritten to isolate the taken decimal-point arm for the single `b"1234", exp = 2, frac_digits = 3` case, and `rustc` still compiles it cleanly.
+- The follow-up proof rerun was launched with `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-takenarm-proof --max-depth 200 --reload`, but it was interrupted before a fresh leaf summary was captured.
+- Because no post-edit leaf was recorded, the last validated boundary remains the copied `if exp < buf.len()` `#selectBlock` at `digits_to_dec_str_probe.rs:58`.
 
 ## Evidence gathered
 
@@ -114,6 +117,9 @@
   is a stuck `#selectBlock` inside `digits_to_dec_str` on the `if exp < buf.len()`
   branch. This is the next exact frontier after the probe-local guard checks
   were bypassed.
+- The taken-arm specialization keeps the same concrete case but removes that
+  branch select from the active path. The proof rerun did not finish before the
+  turn was interrupted, so the exact post-edit leaf is still unknown.
 
 ## Next handoff
 
@@ -130,3 +136,6 @@
   rerun was interrupted before a new leaf summary was captured. No new frontier
   was introduced, and the last established boundary remains the copied
   `if exp < buf.len()` select at `dec/digits_to_dec_str_probe.rs:58`.
+- Current-turn checkpoint update: the branch-specializing rewrite is now in
+  place, but the interrupted proof rerun means the smallest exact blocker is
+  still the unvalidated post-edit frontier, not a newly recorded leaf.

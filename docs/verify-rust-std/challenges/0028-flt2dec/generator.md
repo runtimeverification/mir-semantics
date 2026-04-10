@@ -82,6 +82,11 @@ Ownership:
   again, but now the first concrete leaf is the `buf[0]` bounds check inserted
   by `assert!(buf[0] > b'0')` at `dec/digits_to_dec_str_probe.rs:44`, with a
   sibling leaf on the `assert!(!buf.is_empty())` panic path at line 43.
+- The next narrowing step specialized the probe to the taken decimal-point arm
+  for the single concrete `b"1234", exp = 2, frac_digits = 3` case so the
+  copied `if exp < buf.len()` select is no longer active in the proof path.
+  The probe still compiles, but the follow-up proof rerun was interrupted
+  before it reported a new leaf.
 
 ## Files Touched
 
@@ -169,6 +174,17 @@ Ownership:
   on the `if exp < buf.len()` branch, with the active path `1 -> 3 -> 4 -> 7`.
   This is an inference from the leaf shape and the source location around
   `dec/digits_to_dec_str_probe.rs:58`.
+- `rustc kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs -o /tmp/digits_to_dec_str_probe_0028_takenarm`
+  succeeded after the taken-arm specialization.
+- `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-takenarm-proof --max-depth 200 --reload`
+  was started, but it was interrupted before the proof returned a fresh leaf
+  summary. During that run, `llvm-kompile-codegen` was still emitting
+  `tmp.*` artifacts under the worktree.
+- The `tmp.*` artifacts were removed after stopping the background proof
+  process.
+- Because no post-edit proof result exists yet, the frontier move is
+  unvalidated and the last confirmed boundary remains the copied
+  `if exp < buf.len()` select at `digits_to_dec_str_probe.rs:58`.
 - Current-turn checkpoint: the probe compiled again, and a new proof rerun was
   started, but it was intentionally interrupted before a fresh leaf summary was
   captured. No new frontier was established this turn; the last validated

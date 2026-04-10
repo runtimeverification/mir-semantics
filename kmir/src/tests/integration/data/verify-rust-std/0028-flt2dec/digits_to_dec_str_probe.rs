@@ -9,6 +9,24 @@ fn probe_decimal_point_case(_buf: &[u8], _exp: usize) -> (&'static [u8], &'stati
     (b"12", b"34")
 }
 
+fn digits_to_dec_str_decimal_point_case<'a>(
+    buf: &'a [u8],
+    exp: usize,
+    frac_digits: usize,
+    parts: &'a mut [MaybeUninit<Part<'a>>],
+) -> &'a [Part<'a>] {
+    let (prefix, suffix) = probe_decimal_point_case(buf, exp);
+    parts[0] = MaybeUninit::new(Part::Copy(prefix));
+    parts[1] = MaybeUninit::new(Part::Copy(b"."));
+    parts[2] = MaybeUninit::new(Part::Copy(suffix));
+    if frac_digits > buf.len() - exp {
+        parts[3] = MaybeUninit::new(Part::Zero(frac_digits - (buf.len() - exp)));
+        initialized_parts(4)
+    } else {
+        initialized_parts(3)
+    }
+}
+
 fn initialized_parts<'a>(len: usize) -> &'a [Part<'a>] {
     match len {
         2 => {
@@ -55,18 +73,7 @@ fn digits_to_dec_str<'a>(
         }
     } else {
         let exp = exp as usize;
-        if exp < buf.len() {
-            let (prefix, suffix) = probe_decimal_point_case(buf, exp);
-            parts[0] = MaybeUninit::new(Part::Copy(prefix));
-            parts[1] = MaybeUninit::new(Part::Copy(b"."));
-            parts[2] = MaybeUninit::new(Part::Copy(suffix));
-            if frac_digits > buf.len() - exp {
-                parts[3] = MaybeUninit::new(Part::Zero(frac_digits - (buf.len() - exp)));
-                initialized_parts(4)
-            } else {
-                initialized_parts(3)
-            }
-        } else {
+        if exp >= buf.len() {
             parts[0] = MaybeUninit::new(Part::Copy(buf));
             parts[1] = MaybeUninit::new(Part::Zero(exp - buf.len()));
             if frac_digits > 0 {
@@ -76,6 +83,8 @@ fn digits_to_dec_str<'a>(
             } else {
                 initialized_parts(2)
             }
+        } else {
+            digits_to_dec_str_decimal_point_case(buf, exp, frac_digits, parts)
         }
     }
 }
