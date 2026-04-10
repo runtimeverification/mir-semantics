@@ -9,7 +9,7 @@ challenge_id	slug	state	batch_slot	note
 0008	smallsort	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0009	duration	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0010	string	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
-0011	floats-ints	IN PROGRESS	active	ten proof slices now pass including unchecked_mul_u8 unchecked_mul_u16 and unchecked_mul_u32; score 2.95/3; float path still blocked by fabsf32/fabsf64 frontier; next action is unchecked_mul_u64
+0011	floats-ints	IN PROGRESS	active	eleven proof slices now pass including unchecked_mul_u8 unchecked_mul_u16 unchecked_mul_u32 and unchecked_mul_u64; score 2.96/3; float path still blocked by fabsf32/fabsf64 frontier; next action is unchecked_shl_u8
 0012	nonzero	BLOCKED	terminal	exact blocker: u8->Option<NonZeroU8> still stops at top-level castKindTransmute thunk after SMIR-confirmed zero-niche inspection and two failed matcher attempts; next action is lookupTy(TY_TO) or lower-level byte/layout transmute work
 0013	cstr	BLOCKED	terminal	exact blocker: donor-linked SMIR name qualification breaks start_symbol lookup in make_call_config before donated CStr::from_bytes_with_nul body can execute; next action is root-name-preserving donor-link plumbing
 0014	convert-num	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
@@ -24,7 +24,7 @@ challenge_id	slug	state	batch_slot	note
 0023	vec-pt1	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0024	vec-pt2	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0025	vecdeque	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
-0026	rc	IN PROGRESS	active	contract-map.md covers all 12 public unsafe Rc APIs; direct Rc::from_raw_in witness now bottoms out at a direct-witness CastKind::Transmute leaf; score 1.7/3; next action is smaller raw-memory/System-provenance witness
+0026	rc	IN PROGRESS	active	contract-map.md covers all 12 public unsafe Rc APIs; direct Rc::from_raw_in witness still bottoms out at a direct-witness CastKind::Transmute leaf; latest raw-memory witness rerun rebuilt missing kdist targets but produced no new node before interruption; score 1.7/3; next action is smaller raw-memory/System-provenance witness
 0027	arc	BOOTSTRAP	next-batch	next reuse target after 0026 because Arc shares the same refcounting pattern family
-0028	flt2dec	IN PROGRESS	active	probes cleared helper equality MaybeUninit return path and top-level guards; current frontier is copied if-exp-lt-buf-len branch select in digits_to_dec_str_probe.rs; score 1.9/3; next action is isolate the taken arm and classify the first leaf beyond that select
+0028	flt2dec	IN PROGRESS	active	probes cleared helper equality MaybeUninit return path and top-level guards; current validated frontier remains the copied if-exp-lt-buf-len branch select in digits_to_dec_str_probe.rs; latest taken-arm probe was checkpointed without a new leaf; score 1.9/3; next action is isolate the taken arm and classify the first leaf beyond that select
 0029	boxed	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
