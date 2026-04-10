@@ -192,6 +192,12 @@ Ownership:
   started, but it was intentionally interrupted before a fresh leaf summary was
   captured. No new frontier was established this turn; the last validated
   boundary remains the copied `if exp < buf.len()` branch select.
+- Current-turn checkpoint: the taken-arm rerun was launched again with
+  `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-takenarm-proof2 --max-depth 200 --reload`, but it was interrupted before a fresh leaf or boundary was reported.
+- No new frontier moved this turn; the smallest exact blocker remains the
+  copied `if exp < buf.len()` select at `digits_to_dec_str_probe.rs:58`, and
+  the next step stays the same until a post-select leaf or real `flt2dec`
+  boundary is observed.
 
 ## Commit Inventory
 

@@ -141,3 +141,5 @@
   still the unvalidated post-edit frontier, not a newly recorded leaf.
 - Latest interrupted rerun: `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-takenarm-proof --max-depth 200 --reload` did not complete before interruption, no new leaf was captured, and no code changes were kept from that attempt.
 - The last confirmed blocker remains the copied `if exp < buf.len()` `#selectBlock` at `digits_to_dec_str_probe.rs:58`.
+- Current-turn checkpoint: `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-takenarm-proof2 --max-depth 200 --reload` was launched again on the taken-arm specialization, but it was interrupted before a fresh leaf or boundary was reported.
+- Because no post-edit leaf was captured this turn, the frontier did not move; the smallest exact blocker is still the copied `if exp < buf.len()` select in `digits_to_dec_str_probe.rs:58`.
