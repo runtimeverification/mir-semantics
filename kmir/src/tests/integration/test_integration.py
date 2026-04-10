@@ -73,6 +73,9 @@ PROVE_SHOW_SPECS = [
     'ptr-cast-array-to-singleton-wrapped-array-fail',
 ]
 
+VERIFY_RUST_STD_0026_RC_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std' / '0026-rc').resolve(strict=True)
+VERIFY_RUST_STD_0026_RC_FILES = list(VERIFY_RUST_STD_0026_RC_DIR.glob('*.rs'))
+
 
 @pytest.mark.parametrize(
     'rs_file',
@@ -113,6 +116,26 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
             assert apr_proof.passed
         else:
             assert apr_proof.failed
+
+
+@pytest.mark.parametrize(
+    'rs_file',
+    VERIFY_RUST_STD_0026_RC_FILES,
+    ids=[spec.stem for spec in VERIFY_RUST_STD_0026_RC_FILES],
+)
+def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    should_fail = rs_file.stem.endswith('fail')
+
+    if update_expected_output:
+        pytest.skip()
+
+    prove_opts = ProveOpts(rs_file, smir=False, terminate_on_thunk=True)
+    apr_proof = kmir.prove_program(prove_opts)
+
+    if not should_fail:
+        assert apr_proof.passed
+    else:
+        assert apr_proof.failed
 
 
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)

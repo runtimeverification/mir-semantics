@@ -15,6 +15,11 @@ build:
 .PHONY: test
 test: test-unit test-integration smir-parse-tests
 
+.PHONY: test-verify-rust-std
+test-verify-rust-std: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_integration.py --maxfail=1 --verbose \
+		--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal -k test_verify_rust_std $(TEST_ARGS)
+
 ##################################################
 # for integration tests: build stable-mir-json in-tree
 
