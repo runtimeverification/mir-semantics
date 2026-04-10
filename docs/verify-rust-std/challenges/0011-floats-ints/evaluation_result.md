@@ -12,7 +12,7 @@
 
 | Criterion | Score | Rationale |
 | --- | --- | --- |
-| Published success criteria are mapped to concrete artifacts | 3 | The branch maps the challenge families to `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/` harnesses, the `show/*.expected` float frontier, and the challenge docs. |
+| Published success criteria are mapped to concrete artifacts | 3 | `docs/verify-rust-std/challenges/0011-floats-ints/success_criteria.md` maps each published function family to a harness, frontier artifact, or explicit blocker, with the supporting files under `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/`. |
 | Challenge-book rules are satisfied | 3 | Work remains challenge-local, reviewable, and automation-backed; no stdlib runtime logic was modified. |
 | Safety conditions are modeled faithfully | 3 | The float and integer obligations are separated, and the float blocker is tied to specific stuck intrinsics rather than a vague unsupported-floats claim. |
 | Undefined behavior obligations are covered | 2 | The non-float proof matrix is expanding, but the full set of integer widths and all float obligations are not yet proven. |
@@ -30,10 +30,15 @@
 - Dedicated branch, worktree, and draft PR exist.
 - Challenge-local planner, generator, and workpad artifacts exist and were
   updated on the challenge branch.
+- `docs/verify-rust-std/challenges/0011-floats-ints/success_criteria.md`
+  provides a persistent published-requirements-to-artifacts map.
 - The published challenge scope is mapped to concrete artifacts in
   `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/`,
   including the non-float method harnesses and the float
   `to_int_unchecked-fail` harness.
+- `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/README.md`
+  now frames the files as verification harnesses and fail/frontier harnesses,
+  with exact replay commands and pointers to `show/*.expected`.
 - Reproducible commands and their outcomes are recorded in `generator.md`
   and `workpad.md`.
 - Fifteen direct proof slices now complete end-to-end on the branch:
@@ -78,11 +83,10 @@
 
 ## Evidence
 
-- The latest proof-pass commit is `fe0bafed17621a59c88528d449bad92b06227fdc`
-  (`docs: checkpoint unchecked_shl_u64`).
-- The latest plan update is `8abba7dc` (`docs(verify-rust-std): retarget 0011
-  to unchecked_mul_u64`), which moves the next generator target to
-  `unchecked_mul_u64`.
+- `docs/verify-rust-std/challenges/0011-floats-ints/success_criteria.md`
+  maps the published challenge page directly to the current branch artifacts.
+- `docs/verify-rust-std/challenges/0011-floats-ints/plan.md`
+  keeps the next technical step on `unchecked_shl_u128`.
 - `generator.md` records the completed proof runs for
   `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
@@ -93,7 +97,7 @@
 - `workpad.md` records the same fifteen passing slices and keeps the float blocker
   separate from the integer proof work.
 - `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/README.md`
-  lists the published non-float APIs and the float harness set.
+  records the harness roles and the replay commands used for local and CI runs.
 - The float frontier is shown directly in:
   - `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/show/to_int_unchecked-fail.to_int_unchecked_f32_i32.expected`
   - `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/show/to_int_unchecked-fail.to_int_unchecked_f64_i64.expected`
@@ -102,8 +106,9 @@
 
 ## Next Action Required To Improve State
 
-- Attack the float frontier directly by reducing the `to_int_unchecked`
-  failure to the precise `fabsf32` / `fabsf64` stuck intrinsic path, then rerun
-  the narrow float harnesses from the challenge branch and reassess whether the
-  remaining work is still blocked by backend capability rather than by
-  challenge-local proof coverage.
+- Resume the non-float proof expansion with `unchecked_shl_u128` using the
+  existing harness at
+  `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs`.
+  Keep `unchecked_shr` parked unless a new observation justifies reopening its
+  shared `binOpShrUnchecked` frontier, and keep the float blocker isolated in
+  `to_int_unchecked-fail` until backend float support changes.

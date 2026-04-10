@@ -19,10 +19,26 @@
   `unchecked_shr` discovery check that still collects exactly one case, and
   the smallest proof slice (`unchecked_shr_u8`) was interrupted before any
   terminal proof status was emitted.
+- The challenge now also has a persistent success-criteria map at
+  `docs/verify-rust-std/challenges/0011-floats-ints/success_criteria.md`,
+  which ties each published function family to a harness, fail/frontier
+  artifact, or explicit blocker.
+- The harness README now describes these files as verification harnesses and
+  fail/frontier harnesses, not as generic tests, and records exact local and
+  CI-friendly replay commands.
+- Existing discoverability is already in place through `make
+  test-verify-rust-std`, the `test_verify_rust_std` pytest collector, and the
+  normal integration workflow. No extra workflow shard was added in this
+  audit-only refresh.
+- The next technical step remains `unchecked_shl_u128`. `unchecked_shr`
+  remains parked, and the float blocker stays isolated in `to_int_unchecked-fail`.
 
 ## Evidence gathered
 
 - Challenge 11 on the verify-rust-std site is resolved and lists three concrete requirement families: Part 1 integer methods, Part 2 safe APIs, and Part 3 float-to-int conversion.
+- `success_criteria.md` now mirrors those published requirement families and
+  records the current branch status for each method family in one auditable
+  table.
 - PR #985 states that the integer-method portion and the safe APIs were intended to complete, while Part 3 is blocked by missing KMIR float-value support.
 - PR #985’s visible review context is thin; the only public review signal currently accessible is an LGTM comment, so the blocker signal comes from the PR body and the branch-local float artifacts.
 - PR #985’s file list confirms that `wrapping_shl` relied on the already-ported
@@ -75,6 +91,9 @@
 - Do not escalate to backend changes from this slice; it passed cleanly, so
   the next step is evaluator/planner reassessment rather than widening scope
   inside this generator turn.
+- Do not add dedicated workflow wiring in this audit slice; the branch already
+  has the dedicated make target and collector, and the existing integration
+  workflow already executes the same collector indirectly.
 
 ## Reusable rubric patterns for evaluator
 
@@ -218,9 +237,8 @@
 - The planner-selected `unchecked_mul_u64` slice is complete and passed.
 - The planner-selected `unchecked_shl_u16` slice is complete and passed.
 - The planner-selected `unchecked_shl_u32` slice is complete and passed.
-- If the generator continues in the same file, the next concrete target is
-  the next available `unchecked_mul_*` width beyond `u64`, if any is present
-  in the branch-local harness.
+- The new success-criteria artifact should be treated as the authoritative
+  coverage map for future evaluator and generator handoffs.
 - Evaluator should reassess whether the branch’s fourteen direct proof passes
   across Part 1 and Part 2 materially change the non-float readiness signal,
   while keeping the remaining float blocker tied to the precise
@@ -228,9 +246,10 @@
 - If the planner delegates another generator slice after that reassessment, it
   should choose a new explicit non-float target rather than revisiting the
   now-completed `carrying_mul_u8` slice.
-- Exact next step from this checkpoint: hold on `unchecked_shr`; the
-  diagnostics did not produce a branch-worthy frontier change, so do not queue
-  another proof run unless a new bound or a new observation is introduced.
+- Exact next technical step from this checkpoint: run `unchecked_shl_u128`.
+  Keep `unchecked_shr` parked; its diagnostics did not produce a branch-worthy
+  frontier change, so do not queue another `unchecked_shr` proof run unless a
+  new bound or a new observation is introduced.
 
 ## Evaluator Note
 
