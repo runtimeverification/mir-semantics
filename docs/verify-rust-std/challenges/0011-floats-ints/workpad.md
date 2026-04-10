@@ -72,10 +72,7 @@
 ## Failed-attempt log
 
 - 2026-04-10: Latest branch-local attempt started
-  `kmir prove-rs ... --start-symbol unchecked_shl_u8`, but the run was
-  interrupted before any terminal proof result was captured. No new frontier
-  was established, stray `tmp.*` artifacts from the interrupted attempt were
-  removed, and no code changes were kept.
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u16 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u16 --reload --fail-fast --max-workers 1`, but the run exited with status `143` before any terminal proof result was captured. No new frontier was established, and no code changes were kept.
 - 2026-04-09: First filtered run used
   `-k '0011-floats-ints and unchecked_add'` and matched zero cases in pytest
   parametrization (`no tests ran`, exit 5).
