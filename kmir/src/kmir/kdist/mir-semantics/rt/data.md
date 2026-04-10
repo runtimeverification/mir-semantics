@@ -1412,41 +1412,7 @@ Boolean values can also be cast to Integers (encoding `true` as `1`).
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
-Casts involving `Float` values: `IntToFloat`, `FloatToInt`, and `FloatToFloat`.
-
-```k
-  // IntToFloat: convert integer to float with the target float type's precision
-  rule <k> #cast(Integer(VAL, _WIDTH, _SIGNEDNESS), castKindIntToFloat, _, TY)
-          => Float(
-               Int2Float(VAL,
-                 #significandBits(#floatTypeOf(lookupTy(TY))),
-                 #exponentBits(#floatTypeOf(lookupTy(TY)))),
-               #bitWidth(#floatTypeOf(lookupTy(TY)))
-             )
-          ...
-        </k>
-      [preserves-definedness]
-
-  // FloatToInt: truncate float towards zero and convert to integer
-  rule <k> #cast(Float(VAL, _WIDTH), castKindFloatToInt, _, TY)
-          => #intAsType(Float2Int(VAL), 128, #intTypeOf(lookupTy(TY)))
-          ...
-        </k>
-      requires #isIntType(lookupTy(TY))
-      [preserves-definedness]
-
-  // FloatToFloat: round float to the target float type's precision
-  rule <k> #cast(Float(VAL, _WIDTH), castKindFloatToFloat, _, TY)
-          => Float(
-               roundFloat(VAL,
-                 #significandBits(#floatTypeOf(lookupTy(TY))),
-                 #exponentBits(#floatTypeOf(lookupTy(TY)))),
-               #bitWidth(#floatTypeOf(lookupTy(TY)))
-             )
-          ...
-        </k>
-      [preserves-definedness]
-```
+Casts involving `Float` values are currently not implemented.
 
 ### Casts between pointer types
 
@@ -2043,20 +2009,6 @@ are correct.
   rule onInt(binOpRem, X, Y)          => X %Int Y requires Y =/=Int 0 [preserves-definedness]
   // operation undefined otherwise
 
-  // performs the given operation on IEEE 754 floats
-  // Note: Rust's float % is truncating remainder: x - trunc(x/y) * y
-  // This differs from K's %Float which is IEEE 754 remainder (round to nearest).
-  syntax Float ::= onFloat( BinOp, Float, Float ) [function]
-  // -------------------------------------------------------
-  rule onFloat(binOpAdd, X, Y)          => X +Float Y [preserves-definedness]
-  rule onFloat(binOpAddUnchecked, X, Y) => X +Float Y [preserves-definedness]
-  rule onFloat(binOpSub, X, Y)          => X -Float Y [preserves-definedness]
-  rule onFloat(binOpSubUnchecked, X, Y) => X -Float Y [preserves-definedness]
-  rule onFloat(binOpMul, X, Y)          => X *Float Y [preserves-definedness]
-  rule onFloat(binOpMulUnchecked, X, Y) => X *Float Y [preserves-definedness]
-  rule onFloat(binOpDiv, X, Y)          => X /Float Y [preserves-definedness]
-  rule onFloat(binOpRem, X, Y)          => X -Float (Y *Float truncFloat(X /Float Y)) [preserves-definedness]
-
   // error cases for isArithmetic(BOP):
   // * arguments must be Numbers
 
@@ -2125,18 +2077,6 @@ are correct.
     // infinite precision result must equal truncated result
      andBool truncate(onInt(BOP, ARG1, ARG2), WIDTH, Unsigned) ==Int onInt(BOP, ARG1, ARG2)
     [preserves-definedness]
-
-  // Float arithmetic: Rust never emits CheckedBinaryOp for floats (only BinaryOp),
-  // so the checked flag is always false here. See rustc_const_eval/src/interpret/operator.rs:
-  // binary_float_op returns a plain value, not a (value, overflow) pair.
-  rule #applyBinOp(
-          BOP,
-          Float(ARG1, WIDTH),
-          Float(ARG2, WIDTH),
-          false)
-    => Float(onFloat(BOP, ARG1, ARG2), WIDTH)
-    requires isArithmetic(BOP)
-    [preserves-definedness]
 ```
 
 #### Comparison operations
@@ -2173,14 +2113,6 @@ The argument types must be the same for all comparison operations, however this 
   rule cmpOpBool(binOpGe,  X, Y) => cmpOpBool(binOpLe, Y, X)
   rule cmpOpBool(binOpGt,  X, Y) => cmpOpBool(binOpLt, Y, X)
 
-  syntax Bool ::= cmpOpFloat ( BinOp, Float, Float ) [function]
-  rule cmpOpFloat(binOpEq,  X, Y) => X  ==Float Y
-  rule cmpOpFloat(binOpLt,  X, Y) => X   <Float Y
-  rule cmpOpFloat(binOpLe,  X, Y) => X  <=Float Y
-  rule cmpOpFloat(binOpNe,  X, Y) => X =/=Float Y
-  rule cmpOpFloat(binOpGe,  X, Y) => X  >=Float Y
-  rule cmpOpFloat(binOpGt,  X, Y) => X   >Float Y
-
   // error cases for isComparison and binOpCmp:
   // * arguments must be numbers or Bool
 
@@ -2208,19 +2140,9 @@ The argument types must be the same for all comparison operations, however this 
         BoolVal(cmpOpBool(OP, VAL1, VAL2))
     requires isComparison(OP)
     [priority(60), preserves-definedness] // OP known to be a comparison
-
-  rule #applyBinOp(OP, Float(VAL1, WIDTH), Float(VAL2, WIDTH), _)
-      =>
-        BoolVal(cmpOpFloat(OP, VAL1, VAL2))
-    requires isComparison(OP)
-    [preserves-definedness] // OP known to be a comparison
 ```
 
-Types that are equivlance relations can implement [Eq](https://doc.rust-lang.org/std/cmp/trait.Eq.html),
-and then they may implement [Ord](https://doc.rust-lang.org/std/cmp/trait.Ord.html) for a total ordering.
-For types that implement `Ord` the `cmp` method must be implemented which can compare any two elements respective to their total ordering.
-Here we provide the `binOpCmp` for `Bool` and `Int` operation which returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`),
-indicating `LE`, `EQ`, or `GT`.
+The `binOpCmp` operation returns `-1`, `0`, or `+1` (the behaviour of Rust's `std::cmp::Ordering as i8`), indicating `LE`, `EQ`, or `GT`.
 
 ```k
   syntax Int ::= cmpInt  ( Int , Int )  [function , total]
@@ -2255,11 +2177,7 @@ The semantics of the operation in this case is to wrap around (with the given bi
         ...
         </k>
 
-  rule <k> #applyUnOp(unOpNeg, Float(VAL, WIDTH))
-          =>
-            Float(--Float VAL, WIDTH)
-        ...
-        </k>
+  // TODO add rule for Floats once they are supported.
 ```
 
 The `unOpNot` operation works on boolean and integral values, with the usual semantics for booleans and a bitwise semantics for integral values (overflows cannot occur).
