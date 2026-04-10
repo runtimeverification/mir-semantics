@@ -15,7 +15,7 @@ The portfolio is complete only when every published challenge is in one of:
 
 ## Current Batch
 
-- `0026-rc` -> `IN PROGRESS` (`1.7 / 3`)
+- `0026-rc` -> `IN PROGRESS` (`1.9 / 3`)
 - `0028-flt2dec` -> `IN PROGRESS` (`1.9 / 3`)
 - `0027-arc` -> `IN PROGRESS` (`2.0 / 3`)
 
