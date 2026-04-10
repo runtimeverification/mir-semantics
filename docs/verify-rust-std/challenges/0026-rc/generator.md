@@ -34,6 +34,8 @@ Ownership:
 - 2026-04-09: Rewrote `kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs` to remove the `Rc::new_in` / `Rc::into_raw` detour. The harness now allocates a local `#[repr(C)] RcInnerWitness<u32>` under `System`, takes the raw pointer to its `value` field, and passes that pointer directly to `Rc::from_raw_in`.
 - 2026-04-09: The rewritten harness no longer hits `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`; instead, the proof frontier moves to a terminal state whose `<k>` begins with `thunk(_)_RT-DATA_Value_Evaluation(#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty(..., CastKind::Transmute, ...))`.
 - 2026-04-09: Current decision: stop at this exact boundary. Do not widen into `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in` until the direct witness is reduced further or the cast leaf is discharged.
+- 2026-04-10: Restored the worktree to `HEAD`, removed `tmp.*` artifacts, rebuilt the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets, and restarted `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk`.
+- 2026-04-10: That rerun was interrupted before any new proof leaf or terminal node was captured. No new frontier was established, and no code change was kept.
 
 ## Files Touched
 
@@ -54,6 +56,7 @@ Ownership:
 - `sed -n '1,240p' /tmp/rc-from-raw-in-proof/rc-from-raw-in.main/proof.json`
 - `sed -n '1,260p' /tmp/rc-from-raw-in-proof/rc-from-raw-in.main/kcfg/nodes/3.json`
 - `sed -n '1,260p' /tmp/rc-from-raw-in-proof/rc-from-raw-in.main/kcfg/nodes/4.json`
+- `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk`
 
 ## Commit Inventory
 

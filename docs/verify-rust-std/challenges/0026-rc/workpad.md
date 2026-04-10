@@ -5,6 +5,8 @@
 - Branch: `verify-rust-std/reexec-0026-rc`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
 - Local status: first audit slice committed in `87a669dc`; the `Rc::from_raw_in` root harness has now been rewritten to use a direct `System`-backed witness struct instead of `Rc::new_in`, with proof artifacts in `/tmp/rc-from-raw-in-proof`.
+- Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
+- Interrupt outcome: no new frontier was established and no code change was kept from that attempt.
 
 ## Confirmed Inputs
 
@@ -50,6 +52,7 @@
   - `proof.json` / `kcfg/nodes/3.json`
   - `proof.json` / `kcfg/nodes/4.json`
 - Leaf 4 is now a terminal proof state whose `<k>` begins with `thunk(_)_RT-DATA_Value_Evaluation(#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty(..., CastKind::Transmute, ...))`.
+- The interrupted `raw-memory-witness` rerun used `/tmp/rc-from-raw-in-proof-rawalloc3` but did not reach a new leaf or terminal node before being stopped.
 
 ## Selected First Tranche
 
