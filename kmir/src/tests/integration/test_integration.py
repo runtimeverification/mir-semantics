@@ -388,6 +388,20 @@ def test_cse_online_autoreuse_reuses_same_callsite_after_learning(
     monkeypatch.delenv('KMIR_CSE_SUMMARY_GENERATION')
 
 
+def test_cse_reference_return_reference_delta(kmir: KMIR, tmp_path: Path) -> None:
+    from kmir._cse import cse_prove
+
+    rs_file = PROVE_DIR / 'cse-reference-delta.rs'
+    summary_dir = tmp_path / 'summaries'
+    proof_dir = tmp_path / 'cse'
+
+    cse_opts = ProveOpts(rs_file, cse=True, summary_dir=summary_dir, proof_dir=proof_dir)
+    cse_result = cse_prove(cse_opts)
+    assert cse_result.final_proof is not None
+    assert cse_result.final_proof.passed
+    assert cse_result.dynamic_summary_hits.get('field_from_ref', 0) >= 1
+
+
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)
 MULTI_CRATE_TESTS = list(MULTI_CRATE_DIR.glob('*/main-crate'))
 

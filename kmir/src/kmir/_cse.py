@@ -16,7 +16,7 @@ from pyk.kast.outer import KFlatModule, KRule
 from pyk.kast.prelude.collections import list_empty
 from pyk.proof.reachability import APRProof
 
-from .kmir import KMIR, kmir_cterm_symbolic
+from .kmir import KMIRCSESemantics, KMIR, kmir_cterm_symbolic
 from .smir import SMIRInfo, Ty
 
 if TYPE_CHECKING:
@@ -852,6 +852,77 @@ def _build_call_summary_target_k_cell(observed_call_cterm: CTerm) -> KInner | No
     return None
 
 
+def _deref_value(value: KInner, *, locals_cell: KInner, stack_cell: KInner | None = None) -> KInner | None:
+    if KMIRCSESemantics._is_reference_term(value):
+        return KMIRCSESemantics._reference_deref(value, locals_cell, stack_cell)
+    return value
+
+
+def _extract_reference_delta_summary(proof: APRProof) -> dict[str, object]:
+    callee_init = proof.kcfg.node(proof.init)
+    callee_locals_cell = callee_init.cterm.cell('LOCALS_CELL')
+    callee_stack_cell = callee_init.cterm.cell('STACK_CELL')
+    callee_arg_items = KMIRCSESemantics._list_items(callee_locals_cell)
+
+    input_patterns: list[dict[str, object]] = []
+    arg_refs: list[KInner | None] = []
+    for arg_idx, callee_arg_item in enumerate(callee_arg_items[1:]):
+        callee_arg = KMIRCSESemantics._extract_value_from_typed(callee_arg_item)
+        if callee_arg is None:
+            input_patterns.append({'arg_idx': arg_idx, 'pattern_kind': 'value', 'pattern': None})
+            arg_refs.append(None)
+            continue
+        if KMIRCSESemantics._is_reference_term(callee_arg):
+            input_patterns.append(
+                {
+                    'arg_idx': arg_idx,
+                    'pattern_kind': 'deref',
+                    'pattern': _deref_value(callee_arg, locals_cell=callee_locals_cell, stack_cell=callee_stack_cell),
+                }
+            )
+            arg_refs.append(callee_arg)
+            continue
+        input_patterns.append({'arg_idx': arg_idx, 'pattern_kind': 'value', 'pattern': callee_arg})
+        arg_refs.append(None)
+
+    covers = [cover for cover in proof.kcfg.covers() if cover.target.id == proof.target]
+    paths: dict[int, dict[str, object]] = {}
+    for cover in covers:
+        node = cover.source
+        retval = KMIRCSESemantics._extract_return_value(node.cterm.cell('RETVAL_CELL'))
+        path_data: dict[str, object] = {
+            'constraints': tuple(node.cterm.constraints),
+            'return_value': {'kind': 'unit'},
+            'side_effects': (),
+        }
+
+        if KMIRCSESemantics._is_reference_term(retval):
+            base_arg_idx = None
+            projection_delta: tuple[KInner, ...] | None = None
+            for arg_idx, arg_ref in enumerate(arg_refs):
+                if arg_ref is None:
+                    continue
+                projection_delta = KMIRCSESemantics._compute_reference_delta(arg_ref, retval)
+                if projection_delta is None:
+                    continue
+                base_arg_idx = arg_idx
+                break
+            path_data['return_value'] = {
+                'kind': 'reference',
+                'base_arg_idx': base_arg_idx,
+                'projection_delta': projection_delta,
+            }
+        elif retval is not None:
+            path_data['return_value'] = {
+                'kind': 'value',
+                'value': retval,
+            }
+
+        paths[node.id] = path_data
+
+    return {'input_patterns': tuple(input_patterns), 'paths': paths}
+
+
 def _generate_frontier_summary_rules(
     *,
     proof: APRProof,
@@ -1361,13 +1432,6 @@ def _prove_callee_summary(
             if observed_call_cterm is not None:
                 init_cterm = observed_call_cterm
                 _LOGGER.info('CSE: using observed call-site cterm for %s', name)
-
-        # When using observed_call_cterm, the init state contains the CALLER's
-        # stack frames and <target> = someBasicBlockIdx(...).  This causes the
-        # callee's return to match termReturnSome (not endprogram-return),
-        # continuing execution into the caller and capturing the WRONG return
-        # value in RETVAL_CELL.  Fix: override <target> to noBasicBlockIdx and
-        # clear <stack> so the callee's return triggers endprogram-return.
             else:
                 from .kast import SymbolicMode, make_call_config
 
@@ -1379,68 +1443,9 @@ def _prove_callee_summary(
                 )
                 init_cterm = CTerm(call_cfg.config, list(call_cfg.constraints))
 
-        # When using observed_call_cterm, the init state contains the CALLER's
-        # stack frames and <target> = someBasicBlockIdx(...).  This causes the
-        # callee's return to match termReturnSome (not endprogram-return),
-        # continuing execution into the caller and capturing the WRONG return
-        # value in RETVAL_CELL.  Fix: override <target> to noBasicBlockIdx and
-        # clear <stack> so the callee's return triggers endprogram-return.
-        if observed_call_cterm is not None:
-            from pyk.kast.manip import set_cell
-
-            def _patch_k_cell_call_target(term: KInner) -> KInner:
-                if isinstance(term, KSequence) and term.items:
-                    head = _patch_k_cell_call_target(term.items[0])
-                    if head is term.items[0]:
-                        return term
-                    return KSequence((head, *term.items[1:]))
-                if not isinstance(term, KApply):
-                    return term
-
-                if term.label.name == '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator':
-                    if not term.args:
-                        return term
-                    terminator = term.args[0]
-                    if (
-                        isinstance(terminator, KApply)
-                        and terminator.label.name == 'terminator(_,_)_BODY_Terminator_TerminatorKind_Span'
-                    ):
-                        call_kind = terminator.args[0] if len(terminator.args) > 0 else None
-                        if (
-                            isinstance(call_kind, KApply)
-                            and call_kind.label.name == 'TerminatorKind::Call'
-                            and len(call_kind.args) >= 5
-                        ):
-                            patched_call_kind = call_kind.let(
-                                args=(call_kind.args[0], call_kind.args[1], call_kind.args[2], _no_bb_idx, call_kind.args[4])
-                            )
-                            patched_terminator = terminator.let(
-                                args=(patched_call_kind, *terminator.args[1:])
-                            )
-                            return term.let(args=(patched_terminator,))
-
-                if '#execTerminatorCall' in term.label.name and len(term.args) >= 5:
-                    return term.let(args=(term.args[0], term.args[1], term.args[2], term.args[3], _no_bb_idx, *term.args[5:]))
-
-                return term
-
-            _no_bb_idx = KApply('noBasicBlockIdx_BODY_MaybeBasicBlockIdx', ())
-            patched_k_cell = _patch_k_cell_call_target(init_cterm.cell('K_CELL'))
-            patched_config = set_cell(init_cterm.config, 'K_CELL', patched_k_cell)
-            patched_config = set_cell(patched_config, 'TARGET_CELL', _no_bb_idx)
-            # Keep <stack> intact: Value::Reference offsets depend on stack depth.
-            # Clearing stack breaks references. The callee will unwind through
-            # caller frames but endprogram-return fires at the noBasicBlockIdx frame.
-            init_cterm = CTerm(patched_config, init_cterm.constraints)
-            _LOGGER.info('CSE: patched <target>=noBasicBlockIdx (kept stack) for %s', name)
-
-        # Callee proofs use make_call_config which sets <target> = noBasicBlockIdx.
-        # Inner function calls via termCallFunction set someBasicBlockIdx, so inner
-        # returns match termReturnSome/None and work normally.  The outermost callee
-        # return matches endprogram-return (requires noBasicBlockIdx) → #EndProgram.
-        # Using target_k_cell=None makes apr_proof_from_smir use #EndProgram as target.
-        # Reuse extracts the return value from RETVAL_CELL (set by endprogram-return).
-        target_k_cell = None
+        # Keep full caller stack context for reference offsets in observed
+        # callees, and target the caller continuation for return.
+        target_k_cell = _build_call_summary_target_k_cell(observed_call_cterm) if observed_call_cterm is not None else None
 
         with kmir_cterm_symbolic(
             kmir_callee.definition,
@@ -1616,6 +1621,18 @@ def _prove_callee_summary(
                 summary_kind='frontier',
             )
             return proof
+
+        try:
+            reference_delta_summary = _extract_reference_delta_summary(proof)
+            setattr(proof, '_cse_reference_delta_summary', reference_delta_summary)
+            _LOGGER.info(
+                'CSE: built reference-delta summary for %s with %d path%s',
+                name,
+                len(reference_delta_summary.get('paths', {})),
+                's' if len(reference_delta_summary.get('paths', {})) != 1 else '',
+            )
+        except Exception as summary_error:
+            _LOGGER.warning('CSE: failed reference-delta summary extraction for %s: %s', name, summary_error)
 
         status_str = 'PASSED' if proof.passed else f'PARTIAL ({len(covers)} paths ok, {len(stuck_nodes)} stuck)'
         print(f'[CSE] {name}: {status_str} in {elapsed:.1f}s', flush=True)
@@ -1933,6 +1950,16 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
                 effective_proof_dir = summary_callee_proof_dir
             if effective_proof_dir is not None:
                 callee_proof = APRProof.read_proof_data(effective_proof_dir, callee_label)
+                if detail.summary_kind == 'return':
+                    try:
+                        setattr(callee_proof, '_cse_reference_delta_summary', _extract_reference_delta_summary(callee_proof))
+                    except Exception as summary_error:
+                        _LOGGER.warning(
+                            'CSE: failed to rebuild reference-delta summary for %s from %s: %s',
+                            callee_name,
+                            effective_proof_dir,
+                            summary_error,
+                        )
                 if detail.summary_kind == 'frontier' and detail.summary_path is not None:
                     frontier_node_ids = _load_frontier_summary_node_ids(detail.summary_path)
                     if frontier_node_ids:
@@ -1991,7 +2018,17 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
                     digest = _hashlib.sha256(raw_label.encode()).hexdigest()[:12]
                     callee_label = callee_label[:200] + '_' + digest
                 if APRProof.proof_data_exists(callee_label, callee_proof_dir_path):
-                    return APRProof.read_proof_data(callee_proof_dir_path, callee_label)
+                    proof = APRProof.read_proof_data(callee_proof_dir_path, callee_label)
+                    try:
+                        setattr(proof, '_cse_reference_delta_summary', _extract_reference_delta_summary(proof))
+                    except Exception as summary_error:
+                        _LOGGER.warning(
+                            'CSE: failed to rebuild reference-delta summary for %s from %s: %s',
+                            name,
+                            callee_proof_dir_path,
+                            summary_error,
+                        )
+                    return proof
         proof = _prove_callee_summary(
             ty=ty,
             name=name,

@@ -533,6 +533,7 @@ class KMIRCSESemantics(KMIRSemantics):
 
         callee_init = callee_proof.kcfg.node(callee_proof.init)
         callee_locals = callee_init.cterm.cell('LOCALS_CELL')
+        callee_stack = callee_init.cterm.cell('STACK_CELL')
         callee_arg_items = self._list_items(callee_locals)
 
         caller_locals = caller_cterm.cell('LOCALS_CELL')
@@ -547,9 +548,28 @@ class KMIRCSESemantics(KMIRSemantics):
             if callee_local_idx >= len(callee_arg_items) or caller_value is None:
                 continue
             callee_typed_val = callee_arg_items[callee_local_idx]
-            for var_name, var_node in self._extract_free_vars(callee_typed_val):
+            callee_pattern = self._extract_value_from_typed(callee_typed_val)
+            match_value = caller_value
+            if callee_pattern is not None and self._is_reference_term(callee_pattern):
+                if not self._is_reference_term(caller_value):
+                    continue
+                callee_pattern = self._reference_deref(callee_pattern, callee_locals, callee_stack)
+                match_value = self._deref_caller_reference(caller_cterm, caller_value)
+                if callee_pattern is None or match_value is None:
+                    continue
+            elif callee_pattern is None:
+                callee_pattern = callee_typed_val
+
+            item_subst = callee_pattern.match(match_value)
+            if item_subst is not None:
+                for var_name, value in item_subst.items():
+                    existing = subst.get(var_name)
+                    if existing is None or existing == value:
+                        subst[var_name] = value
+
+            for var_name, var_node in self._extract_free_vars(callee_pattern):
                 sort_name = var_node.sort.name if isinstance(var_node, KVariable) and var_node.sort else None
-                unwrapped = self._unwrap_value_for_sort(caller_value, sort_name)
+                unwrapped = self._unwrap_value_for_sort(match_value, sort_name)
                 # Only substitute if the unwrapped value has matching sort
                 if self._sort_matches(unwrapped, sort_name):
                     subst[var_name] = unwrapped
@@ -572,9 +592,21 @@ class KMIRCSESemantics(KMIRSemantics):
                 caller_val = self._extract_value_from_typed(item)
                 if caller_val is None:
                     continue
-                unwrapped = self._unwrap_value_for_sort(caller_val, sort_name)
-                if self._sort_matches(unwrapped, sort_name):
-                    subst[var_name] = unwrapped
+                search_values = [caller_val]
+                if self._is_reference_term(caller_val):
+                    deref_val = self._deref_caller_reference(caller_cterm, caller_val)
+                    if deref_val is not None:
+                        search_values.append(deref_val)
+                if any(
+                    self._sort_matches(self._unwrap_value_for_sort(candidate, sort_name), sort_name)
+                    for candidate in search_values
+                ):
+                    matched_value = next(
+                        self._unwrap_value_for_sort(candidate, sort_name)
+                        for candidate in search_values
+                        if self._sort_matches(self._unwrap_value_for_sort(candidate, sort_name), sort_name)
+                    )
+                    subst[var_name] = matched_value
                     break
 
         return subst
@@ -630,6 +662,362 @@ class KMIRCSESemantics(KMIRSemantics):
                 values.append(None)
 
         return values
+
+    @staticmethod
+    def _is_reference_term(term: KInner) -> bool:
+        return isinstance(term, KApply) and term.label.name == 'Value::Reference' and len(term.args) == 4
+
+    @staticmethod
+    def _reference_parts(reference: KInner) -> tuple[KInner, KInner, KInner, KInner] | None:
+        if not KMIRCSESemantics._is_reference_term(reference):
+            return None
+        return reference.args[0], reference.args[1], reference.args[2], reference.args[3]
+
+    @staticmethod
+    def _reference_place_parts(place: KInner) -> tuple[KInner, KInner] | None:
+        if not isinstance(place, KApply) or place.label.name != 'place' or len(place.args) != 2:
+            return None
+        local = place.args[0]
+        projs = place.args[1]
+        if not isinstance(local, KApply) or local.label.name != 'local' or len(local.args) != 1 or not isinstance(local.args[0], KToken):
+            return None
+        return local, projs
+
+    @staticmethod
+    def _reference_local_index(reference: KInner) -> int | None:
+        parts = KMIRCSESemantics._reference_parts(reference)
+        if parts is None:
+            return None
+        _, place, _, _ = parts
+        place_parts = KMIRCSESemantics._reference_place_parts(place)
+        if place_parts is None:
+            return None
+        local_term, _ = place_parts
+        local_token = local_term.args[0]
+        try:
+            return int(local_token.token)
+        except ValueError:
+            return None
+
+    @staticmethod
+    def _reference_offset(reference: KInner) -> int | None:
+        parts = KMIRCSESemantics._reference_parts(reference)
+        if parts is None:
+            return None
+        offset_term = parts[0]
+        if not isinstance(offset_term, KToken):
+            return None
+        try:
+            return int(offset_term.token)
+        except ValueError:
+            return None
+
+    @staticmethod
+    def _extract_projection_elems(projections: KInner) -> tuple[KInner, ...] | None:
+        if isinstance(projections, KApply):
+            if projections.label.name == 'ProjectionElems::empty':
+                return ()
+            if projections.label.name == '_List_':
+                if len(projections.args) != 2:
+                    return None
+                first, rest = projections.args
+                if isinstance(first, KApply) and first.label.name == 'ListItem':
+                    rest_elems = KMIRCSESemantics._extract_projection_elems(rest)
+                    if rest_elems is None:
+                        return None
+                    return (first.args[0],) + rest_elems
+                if isinstance(first, KVariable):
+                    # Symbolic tail/list case: cannot concretely split.
+                    return None
+                return None
+            if 'ProjectionElems::append' in projections.label.name and len(projections.args) == 2:
+                lhs = KMIRCSESemantics._extract_projection_elems(projections.args[0])
+                rhs = KMIRCSESemantics._extract_projection_elems(projections.args[1])
+                if lhs is None or rhs is None:
+                    return None
+                return lhs + rhs
+            if projections.label.name.endswith('::Cons') and len(projections.args) >= 2:
+                head = projections.args[0]
+                tail = projections.args[1]
+                if not isinstance(head, KApply) or not head.label.name.startswith('ProjectionElem::'):
+                    return None
+                tail_elems = KMIRCSESemantics._extract_projection_elems(tail)
+                if tail_elems is None:
+                    return None
+                return (head,) + tail_elems
+        return None
+
+    @staticmethod
+    def _build_projection_elems(projections: tuple[KInner, ...]) -> KInner:
+        result = KApply('ProjectionElems::empty', ())
+        for proj in reversed(projections):
+            result = KApply('_List_', (KApply('ListItem', (proj,)), result))
+        return result
+
+    @staticmethod
+    def _append_projection_elems(base_projection: KInner, suffix: tuple[KInner, ...] | list[KInner]) -> KInner | None:
+        base_elems = KMIRCSESemantics._extract_projection_elems(base_projection)
+        if base_elems is None:
+            return None
+        return KMIRCSESemantics._build_projection_elems(base_elems + tuple(suffix))
+
+    @staticmethod
+    def _projection_suffix(target: KInner, base: KInner) -> tuple[KInner, ...] | None:
+        target_elems = KMIRCSESemantics._extract_projection_elems(target)
+        base_elems = KMIRCSESemantics._extract_projection_elems(base)
+        if target_elems is None or base_elems is None:
+            return None
+        if len(base_elems) > len(target_elems):
+            return None
+        for i, base_elem in enumerate(base_elems):
+            if base_elem != target_elems[i]:
+                return None
+        return target_elems[len(base_elems):]
+
+    @staticmethod
+    def _apply_projection_to_value(value: KInner, projection_elem: KInner) -> KInner | None:
+        if not isinstance(projection_elem, KApply):
+            return None
+        label = projection_elem.label.name
+        if label.startswith('ProjectionElem::Field') and isinstance(value, KApply) and value.label.name == 'Value::Aggregate':
+            if len(value.args) != 2:
+                return None
+            fields = KMIRCSESemantics._list_items(value.args[1])
+            try:
+                index = projection_elem.args[0]
+            except IndexError:
+                return None
+            if not isinstance(index, KToken):
+                return None
+            try:
+                idx = int(index.token)
+            except ValueError:
+                return None
+            if idx < 0 or idx >= len(fields):
+                return None
+            return fields[idx]
+        if label.startswith('ProjectionElem::ConstantIndex') and isinstance(value, KApply) and value.label.name == 'Value::Range':
+            if len(value.args) != 1:
+                return None
+            items = KMIRCSESemantics._list_items(value.args[0])
+            if len(projection_elem.args) < 1:
+                return None
+            idx_term = projection_elem.args[0]
+            from_end = False
+            if len(projection_elem.args) >= 3 and isinstance(projection_elem.args[2], KToken):
+                from_end = projection_elem.args[2].token == 'true'
+            if len(projection_elem.args) >= 1 and isinstance(idx_term, KToken):
+                try:
+                    idx = int(idx_term.token)
+                except ValueError:
+                    return None
+            else:
+                return None
+            if not items:
+                return None
+            if from_end:
+                idx = len(items) - 1 - idx
+            if idx < 0 or idx >= len(items):
+                return None
+            return items[idx]
+        return None
+
+    @staticmethod
+    def _deref_value_with_projections(value: KInner, projections: KInner) -> KInner | None:
+        projection_elems = KMIRCSESemantics._extract_projection_elems(projections)
+        if projection_elems is None:
+            return None
+        current = value
+        for proj in projection_elems:
+            current = KMIRCSESemantics._apply_projection_to_value(current, proj)
+            if current is None:
+                return None
+        return current
+
+    @staticmethod
+    def _reference_deref(reference: KInner, locals_cell: KInner, stack_cell: KInner | None = None) -> KInner | None:
+        parts = KMIRCSESemantics._reference_parts(reference)
+        if parts is None:
+            return None
+        offset_term, place, _mut, _metadata = parts
+        if not isinstance(offset_term, KToken):
+            return None
+        try:
+            offset = int(offset_term.token)
+        except ValueError:
+            return None
+        place_parts = KMIRCSESemantics._reference_place_parts(place)
+        if place_parts is None:
+            return None
+        local_term, projections = place_parts
+        local_token = local_term.args[0]
+        try:
+            local_idx = int(local_token.token)
+        except ValueError:
+            return None
+
+        target_locals = locals_cell
+        if offset > 0:
+            if stack_cell is None:
+                return None
+            stack_items = KMIRCSESemantics._list_items(stack_cell)
+            frame_index = offset - 1
+            if frame_index < 0 or frame_index >= len(stack_items):
+                return None
+            frame = stack_items[frame_index]
+            if not isinstance(frame, KApply) or not frame.label.name.startswith('StackFrame') or len(frame.args) < 5:
+                return None
+            target_locals = frame.args[4]
+        if local_idx < 0:
+            return None
+        local_items = KMIRCSESemantics._list_items(target_locals)
+        if local_idx >= len(local_items):
+            return None
+        typed = KMIRCSESemantics._extract_value_from_typed(local_items[local_idx])
+        if typed is None:
+            return None
+        return KMIRCSESemantics._deref_value_with_projections(typed, projections)
+
+    @classmethod
+    def _compute_reference_delta(cls, base_ref: KInner, result_ref: KInner) -> tuple[KInner, ...] | None:
+        base_parts = cls._reference_parts(base_ref)
+        result_parts = cls._reference_parts(result_ref)
+        if base_parts is None or result_parts is None:
+            return None
+        base_offset, base_place, _base_mut, _base_metadata = base_parts
+        result_offset, result_place, _result_mut, _result_metadata = result_parts
+        if base_offset != result_offset:
+            return None
+        base_place_parts = cls._reference_place_parts(base_place)
+        result_place_parts = cls._reference_place_parts(result_place)
+        if base_place_parts is None or result_place_parts is None:
+            return None
+        base_local, base_projs = base_place_parts
+        result_local, result_projs = result_place_parts
+        if base_local != result_local:
+            return None
+        return cls._projection_suffix(result_projs, base_projs)
+
+    def _deref_caller_reference(self, caller_cterm: CTerm, reference: KInner) -> KInner | None:
+        return self._reference_deref(reference, caller_cterm.cell('LOCALS_CELL'), caller_cterm.cell('STACK_CELL'))
+
+    @staticmethod
+    def _rebase_reference_return(
+        caller_ref: KInner,
+        *,
+        projection_delta: tuple[KInner, ...] | None = None,
+    ) -> KInner | None:
+        caller_parts = KMIRCSESemantics._reference_parts(caller_ref)
+        if caller_parts is None:
+            return None
+        caller_offset, caller_place, caller_mut, caller_metadata = caller_parts
+        caller_place_parts = KMIRCSESemantics._reference_place_parts(caller_place)
+        if caller_place_parts is None:
+            return None
+        caller_local, caller_projs = caller_place_parts
+        adjusted_projs = caller_projs
+        if projection_delta is not None:
+            adjusted_projs = KMIRCSESemantics._append_projection_elems(caller_projs, projection_delta)
+            if adjusted_projs is None:
+                return None
+        new_place = KApply('place', (caller_local, adjusted_projs))
+        # Keep the caller reference's offset/mutability/location, and extend its
+        # projection path by the inferred return delta.
+        return caller_ref.let(args=(caller_offset, new_place, caller_mut, caller_metadata))
+
+    @staticmethod
+    def _build_reference_summary_metadata(
+        callee_init: CTerm,
+        summary_nodes: list['KCFG.Node'],
+    ) -> dict[str, object]:
+        arg_local_cells = KMIRCSESemantics._list_items(callee_init.cterm.cell('LOCALS_CELL'))
+        callee_locals_cell = callee_init.cterm.cell('LOCALS_CELL')
+        callee_stack_cell = callee_init.cterm.cell('STACK_CELL')
+
+        arg_patterns: list[KInner | None] = []
+        arg_refs: list[KInner | None] = []
+        for callee_arg_idx in range(1, len(arg_local_cells)):
+            callee_arg_item = arg_local_cells[callee_arg_idx]
+            callee_arg = KMIRCSESemantics._extract_value_from_typed(callee_arg_item)
+            if callee_arg is None:
+                arg_patterns.append(None)
+                arg_refs.append(None)
+                continue
+            if KMIRCSESemantics._is_reference_term(callee_arg):
+                arg_refs.append(callee_arg)
+                deref = KMIRCSESemantics._reference_deref(callee_arg, callee_locals_cell, callee_stack_cell)
+                arg_patterns.append(deref)
+            else:
+                arg_patterns.append(callee_arg)
+                arg_refs.append(None)
+
+        branch_metadata: dict[int, dict[str, object]] = {}
+        for node in summary_nodes:
+            constraints = tuple(node.cterm.constraints)
+            retval = KMIRCSESemantics._extract_return_value(node.cterm.cell('RETVAL_CELL'))
+            return_kind = 'unit'
+            return_value = retval
+            base_arg_index = None
+            branch_meta: dict[str, object] = {
+                'constraints': constraints,
+                'return_kind': return_kind,
+                'return_value': return_value,
+            }
+
+            if KMIRCSESemantics._is_reference_term(retval):
+                return_kind = 'reference'
+                base_arg_index = None
+                delta = None
+                return_parts = KMIRCSESemantics._reference_parts(retval)
+                return_offset = KMIRCSESemantics._reference_offset(retval)
+                return_local_idx = KMIRCSESemantics._reference_local_index(retval)
+                return_place = return_parts[1] if return_parts is not None else None
+                return_projs = None
+                if return_parts is not None:
+                    return_projs = return_parts[1].args[1]
+
+                if return_place is not None and return_offset is not None and return_local_idx is not None:
+                    for arg_idx, arg_ref in enumerate(arg_refs):
+                        if arg_ref is None:
+                            continue
+                        if not KMIRCSESemantics._is_reference_term(arg_ref):
+                            continue
+                        if KMIRCSESemantics._reference_local_index(arg_ref) != return_local_idx:
+                            continue
+                        if KMIRCSESemantics._reference_offset(arg_ref) != return_offset:
+                            continue
+                        arg_parts = KMIRCSESemantics._reference_parts(arg_ref)
+                        if arg_parts is None:
+                            continue
+                        arg_place = arg_parts[1]
+                        if arg_place.label.name != 'place' or return_place.label.name != 'place':
+                            continue
+                        arg_projs = arg_place.args[1]
+                        delta = KMIRCSESemantics._projection_suffix(return_projs, arg_projs) if return_projs is not None else None
+                        base_arg_index = arg_idx
+                        break
+
+                branch_meta.update(
+                    {
+                        'return_kind': return_kind,
+                        'return_reference': retval,
+                        'return_delta': delta,
+                        'base_arg_index': base_arg_index,
+                    }
+                )
+            elif retval is not None:
+                return_kind = 'value'
+                return_value = retval
+                branch_meta.update(
+                    {
+                        'return_kind': return_kind,
+                        'return_value': return_value,
+                    }
+                )
+
+            branch_metadata[node.id] = branch_meta
+
+        return {'arg_patterns': tuple(arg_patterns), 'arg_refs': tuple(arg_refs), 'branches': branch_metadata}
 
     @staticmethod
     def _flatten_operands(args_operand: KInner) -> list[KInner]:
@@ -1080,36 +1468,174 @@ class KMIRCSESemantics(KMIRSemantics):
         from pyk.kast.inner import Subst
 
         callee_init = callee_proof.kcfg.node(callee_proof.init)
-        callee_init_locals = callee_init.cterm.cell('LOCALS_CELL')
         caller_locals = c.cell('LOCALS_CELL')
-
-        subst_map: dict[str, KInner] = {}
-        callee_items = self._list_items(callee_init_locals)
         caller_items = self._list_items(caller_locals)
 
-        operand_indices = self._extract_arg_local_indices(_args_operand)
-        for arg_num, caller_local_idx in enumerate(operand_indices):
-            callee_local_idx = arg_num + 1
-            if caller_local_idx < 0:
-                continue  # Non-local operand (e.g., Constant)
-            if callee_local_idx < len(callee_items) and caller_local_idx < len(caller_items):
-                item_subst = callee_items[callee_local_idx].match(caller_items[caller_local_idx])
-                if item_subst is not None:
-                    subst_map.update(item_subst)
+        use_reference_delta_summary = (
+            summary_mode == 'return'
+            and use_direct_return_poststates
+            and isinstance(getattr(callee_proof, '_cse_reference_delta_summary', None), dict)
+            and len(summary_nodes) == len(summary_edges)
+        )
+        summary_return_meta: dict[str, object] | None = getattr(callee_proof, '_cse_reference_delta_summary', None)
+        reference_substs: list[dict[str, KInner] | None] = []
+        reference_returns: list[KInner | None] = []
+        path_metadata: dict[int, dict[str, object]] = {}
+        input_patterns: tuple[dict[str, object], ...] = ()
+
+        if use_reference_delta_summary and summary_return_meta is not None:
+            raw_input_patterns = summary_return_meta.get('input_patterns')
+            raw_paths = summary_return_meta.get('paths')
+            if isinstance(raw_input_patterns, tuple) and isinstance(raw_paths, dict):
+                input_patterns = raw_input_patterns
+                path_metadata = raw_paths
+            else:
+                use_reference_delta_summary = False
+
+        if use_reference_delta_summary:
+            caller_arg_values = self._extract_arg_values(_args_operand, caller_items)
+            for summary_node in summary_nodes:
+                branch_meta = path_metadata.get(summary_node.id)
+                if not isinstance(branch_meta, dict):
+                    reference_substs.append(None)
+                    reference_returns.append(None)
+                    continue
+
+                arg_subst_map: dict[str, KInner] = {}
+                match_ok = True
+                for pattern_entry in input_patterns:
+                    if not isinstance(pattern_entry, dict):
+                        match_ok = False
+                        break
+                    arg_idx = pattern_entry.get('arg_idx')
+                    pattern_kind = pattern_entry.get('pattern_kind', 'value')
+                    arg_pattern = pattern_entry.get('pattern')
+                    if not isinstance(arg_idx, int) or arg_idx < 0 or arg_idx >= len(caller_arg_values):
+                        if arg_pattern is None:
+                            continue
+                        match_ok = False
+                        break
+                    if arg_pattern is None:
+                        continue
+                    caller_value = caller_arg_values[arg_idx]
+                    if caller_value is None:
+                        match_ok = False
+                        break
+                    if pattern_kind == 'deref':
+                        if not self._is_reference_term(caller_value):
+                            match_ok = False
+                            break
+                        caller_value = self._deref_caller_reference(c, caller_value)
+                        if caller_value is None:
+                            match_ok = False
+                            break
+                    var_subst = arg_pattern.match(caller_value)
+                    if var_subst is None:
+                        match_ok = False
+                        break
+                    for name, value in var_subst.items():
+                        existing = arg_subst_map.get(name)
+                        if existing is not None and existing != value:
+                            match_ok = False
+                            break
+                        arg_subst_map[name] = value
+                    if not match_ok:
+                        break
+
+                if not match_ok:
                     _LOGGER.info(
-                        f'CSE: arg {arg_num}: callee[{callee_local_idx}].match(caller[{caller_local_idx}]) '
-                        f'= {list(item_subst.keys())}'
+                        f'CSE: branch {summary_node.id} failed reference-aware callee arg matching for ty({func_ty})'
                     )
+                    reference_substs.append(None)
+                    reference_returns.append(None)
+                    continue
+
+                branch_subst = Subst(arg_subst_map)
+                return_term: KInner | None = None
+                raw_return = branch_meta.get('return_value')
+                if isinstance(raw_return, dict) and raw_return.get('kind') == 'reference':
+                    base_arg_index = raw_return.get('base_arg_idx')
+                    delta = raw_return.get('projection_delta')
+                    if (
+                        not isinstance(base_arg_index, int)
+                        or base_arg_index < 0
+                        or base_arg_index >= len(caller_arg_values)
+                        or not isinstance(delta, tuple)
+                    ):
+                        _LOGGER.info(
+                            f'CSE: branch {summary_node.id} missing reference return delta for ty({func_ty})'
+                        )
+                        reference_substs.append(None)
+                        reference_returns.append(None)
+                        continue
+                    caller_base_ref = caller_arg_values[base_arg_index]
+                    if not self._is_reference_term(caller_base_ref):
+                        reference_substs.append(None)
+                        reference_returns.append(None)
+                        continue
+                    caller_return_ref = self._rebase_reference_return(caller_base_ref, projection_delta=tuple(delta))
+                    if caller_return_ref is None:
+                        reference_substs.append(None)
+                        reference_returns.append(None)
+                        continue
+                    return_term = caller_return_ref
+                elif isinstance(raw_return, dict) and raw_return.get('kind') == 'value':
+                    raw_return_value = raw_return.get('value')
+                    if isinstance(raw_return_value, KInner):
+                        return_term = branch_subst(raw_return_value)
+                else:
+                    return_term = None
+                reference_substs.append(arg_subst_map)
+                reference_returns.append(return_term)
+
+            use_reference_delta_summary = any(subst is not None for subst in reference_substs)
+
+        if not use_reference_delta_summary:
+            reference_substs = []
+            reference_returns = []
+
+        if use_reference_delta_summary:
+            subst_map: dict[str, KInner] = {}
+            for subst in reference_substs:
+                if subst is not None:
+                    subst_map.update(subst)
+        else:
+            subst_map = self._build_arg_substitution(c, _args_operand, callee_proof)
 
         subst = Subst(subst_map)
+
         caller_var_names = self._cterm_var_names(c)
         required_var_names: set[str] = set()
         for i, summary_node in enumerate(summary_nodes):
             if summary_mode == 'return' and use_direct_return_poststates:
                 target_cterm = summary_edges[i].csubst(summary_target_node.cterm)
-                required_var_names.update(self._free_var_names(subst(target_cterm.config)))
-                for constraint in target_cterm.constraints:
-                    required_var_names.update(self._free_var_names(subst(constraint)))
+                if use_reference_delta_summary:
+                    branch_meta = path_metadata.get(summary_node.id)
+                    if not isinstance(branch_meta, dict):
+                        continue
+                    if i >= len(reference_substs) or reference_substs[i] is None:
+                        continue
+                    branch_subst = Subst(reference_substs[i])
+                    required_var_names.update(self._free_var_names(branch_subst(target_cterm.config)))
+                    for constraint in target_cterm.constraints:
+                        required_var_names.update(self._free_var_names(branch_subst(constraint)))
+                    path_constraints = branch_meta.get('constraints')
+                    if isinstance(path_constraints, tuple):
+                        for cstr in path_constraints:
+                            required_var_names.update(self._free_var_names(branch_subst(cstr)))
+                    raw_return = branch_meta.get('return_value')
+                    if isinstance(raw_return, dict) and raw_return.get('kind') == 'reference':
+                        ret_ref = reference_returns[i] if i < len(reference_returns) else None
+                        if ret_ref is not None:
+                            required_var_names.update(self._free_var_names(ret_ref))
+                    elif isinstance(raw_return, dict):
+                        raw_return_value = raw_return.get('value')
+                        if isinstance(raw_return_value, KInner):
+                            required_var_names.update(self._free_var_names(branch_subst(raw_return_value)))
+                else:
+                    required_var_names.update(self._free_var_names(subst(target_cterm.config)))
+                    for constraint in target_cterm.constraints:
+                        required_var_names.update(self._free_var_names(subst(constraint)))
             elif summary_mode == 'return' and not use_direct_return_poststates:
                 retval = summary_node.cterm.cell('RETVAL_CELL')
                 retval_subst = subst(retval)
@@ -1167,10 +1693,34 @@ class KMIRCSESemantics(KMIRSemantics):
         for i, summary_node in enumerate(summary_nodes):
             if summary_mode == 'return' and use_direct_return_poststates:
                 target_cterm = summary_edges[i].csubst(summary_target_node.cterm)
-                candidate = CTerm(
-                    subst(target_cterm.config),
-                    c.constraints + tuple(subst(cst) for cst in target_cterm.constraints),
-                )
+                if use_reference_delta_summary and i < len(reference_substs):
+                    branch_subst_map = reference_substs[i]
+                    if branch_subst_map is None:
+                        continue
+                    branch_subst = Subst(branch_subst_map)
+                    branch_meta = path_metadata.get(summary_node.id)
+                    if not isinstance(branch_meta, dict):
+                        continue
+                    return_term = reference_returns[i]
+
+                    candidate_config = branch_subst(target_cterm.config)
+                    if return_term is not None:
+                        candidate_config = Subst({'CSE_SUMMARY_RETVAL': return_term})(candidate_config)
+
+                    target_constraints = tuple(branch_subst(constraint) for constraint in target_cterm.constraints)
+                    path_constraints = branch_meta.get('constraints')
+                    if isinstance(path_constraints, tuple):
+                        target_constraints = target_constraints + tuple(branch_subst(c) for c in path_constraints)
+                    candidate = CTerm(
+                        candidate_config,
+                        c.constraints
+                        + target_constraints,
+                    )
+                else:
+                    candidate = CTerm(
+                        subst(target_cterm.config),
+                        c.constraints + tuple(subst(cst) for cst in target_cterm.constraints),
+                    )
             elif summary_mode == 'return' and not use_direct_return_poststates:
                 retval_cell = summary_node.cterm.cell('RETVAL_CELL')
                 ret_value = self._extract_return_value(retval_cell)
