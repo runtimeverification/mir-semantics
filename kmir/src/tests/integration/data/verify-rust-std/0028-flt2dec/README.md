@@ -30,7 +30,7 @@ Status board:
 - Planner: success criteria table published
 - Generator: checkpointed at the minimal `digits_to_dec_str_probe.rs` frontier
 - Evaluator: captured in `docs/verify-rust-std/challenges/0028-flt2dec/evaluation_result.md`
-- Draft PR: not created
+- Draft PR: pending
 
 Current minimal reproducer:
 
