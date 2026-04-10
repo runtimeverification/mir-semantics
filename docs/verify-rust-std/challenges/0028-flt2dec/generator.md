@@ -180,6 +180,9 @@ Ownership:
   was started, but it was interrupted before the proof returned a fresh leaf
   summary. During that run, `llvm-kompile-codegen` was still emitting
   `tmp.*` artifacts under the worktree.
+- The latest interrupted rerun used the same command above, did not complete
+  before interruption, and captured no new leaf summary. No code changes from
+  that attempt were kept.
 - The `tmp.*` artifacts were removed after stopping the background proof
   process.
 - Because no post-edit proof result exists yet, the frontier move is

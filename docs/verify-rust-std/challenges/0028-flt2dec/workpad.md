@@ -139,3 +139,5 @@
 - Current-turn checkpoint update: the branch-specializing rewrite is now in
   place, but the interrupted proof rerun means the smallest exact blocker is
   still the unvalidated post-edit frontier, not a newly recorded leaf.
+- Latest interrupted rerun: `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-takenarm-proof --max-depth 200 --reload` did not complete before interruption, no new leaf was captured, and no code changes were kept from that attempt.
+- The last confirmed blocker remains the copied `if exp < buf.len()` `#selectBlock` at `digits_to_dec_str_probe.rs:58`.
