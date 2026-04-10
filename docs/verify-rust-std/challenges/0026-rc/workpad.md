@@ -7,6 +7,7 @@
 - Local status: first audit slice committed in `87a669dc`; the `Rc::from_raw_in` root harness has now been rewritten to use a direct `System`-backed witness struct instead of `Rc::new_in`, with proof artifacts in `/tmp/rc-from-raw-in-proof`.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.
+- Latest blocker checkpoint: the newest `MaybeUninit`-backed witness attempt for `kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs` passed `git diff --check -- kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs` but failed before proof construction with `error[E0658]: use of unstable library feature 'box_uninit_write'` at `Box::write(...)`; no proof leaf or terminal node was reached and no code changes were retained.
 
 ## Confirmed Inputs
 
@@ -33,6 +34,7 @@
 - The rewritten root harness no longer calls `Rc::new_in`; it allocates a `repr(C)` `RcInnerWitness<u32>` under `System`, converts it to a raw pointer, and feeds `Rc::from_raw_in` directly from the witness value field.
 - The previous `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` blocker is gone.
 - The new frontier is the direct witness path itself, which terminates in `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` with `CastKind::Transmute` rather than inside `Rc::new_in`.
+- The latest `MaybeUninit` witness revision never reached proof construction because `Box::write(...)` is still gated behind unstable library feature `box_uninit_write`.
 
 ## Audit Result
 
@@ -53,6 +55,7 @@
   - `proof.json` / `kcfg/nodes/4.json`
 - Leaf 4 is now a terminal proof state whose `<k>` begins with `thunk(_)_RT-DATA_Value_Evaluation(#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty(..., CastKind::Transmute, ...))`.
 - The interrupted `raw-memory-witness` rerun used `/tmp/rc-from-raw-in-proof-rawalloc3` but did not reach a new leaf or terminal node before being stopped.
+- The later `MaybeUninit`-backed witness attempt never reached proof construction and therefore produced no proof leaf or terminal node.
 
 ## Selected First Tranche
 

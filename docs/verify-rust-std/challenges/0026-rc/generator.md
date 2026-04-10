@@ -36,6 +36,7 @@ Ownership:
 - 2026-04-09: Current decision: stop at this exact boundary. Do not widen into `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in` until the direct witness is reduced further or the cast leaf is discharged.
 - 2026-04-10: Restored the worktree to `HEAD`, removed `tmp.*` artifacts, rebuilt the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets, and restarted `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk`.
 - 2026-04-10: That rerun was interrupted before any new proof leaf or terminal node was captured. No new frontier was established, and no code change was kept.
+- 2026-04-10: Tried a `MaybeUninit`-backed witness revision for `rc-from-raw-in.rs`; `git diff --check -- kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs` passed, but `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs --proof-dir /tmp/rc-from-raw-in-proof-maybeuninit --verbose --terminate-on-thunk` failed before proof construction with `error[E0658]: use of unstable library feature 'box_uninit_write'` at `Box::write(...)`. No proof leaf or terminal node was reached and no code changes were kept.
 
 ## Files Touched
 
@@ -53,6 +54,8 @@ Ownership:
 - `nl -ba /home/zhaoji/.rustup/toolchains/nightly-2024-11-29-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/alloc/src/rc.rs | sed -n '3048,3278p'`
 - `git diff --check -- docs/verify-rust-std/challenges/0026-rc/contract-map.md docs/verify-rust-std/challenges/0026-rc/workpad.md`
 - `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs --proof-dir /tmp/rc-from-raw-in-proof --verbose --terminate-on-thunk`
+- `git diff --check -- kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs`
+- `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs --proof-dir /tmp/rc-from-raw-in-proof-maybeuninit --verbose --terminate-on-thunk`
 - `sed -n '1,240p' /tmp/rc-from-raw-in-proof/rc-from-raw-in.main/proof.json`
 - `sed -n '1,260p' /tmp/rc-from-raw-in-proof/rc-from-raw-in.main/kcfg/nodes/3.json`
 - `sed -n '1,260p' /tmp/rc-from-raw-in-proof/rc-from-raw-in.main/kcfg/nodes/4.json`
