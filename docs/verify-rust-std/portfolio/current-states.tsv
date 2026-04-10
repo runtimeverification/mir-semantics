@@ -9,7 +9,7 @@ challenge_id	slug	state	batch_slot	note
 0008	smallsort	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0009	duration	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
 0010	string	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch
-0011	floats-ints	IN PROGRESS	active	thirteen proof slices now pass including unchecked_mul_u8 unchecked_mul_u16 unchecked_mul_u32 unchecked_mul_u64 unchecked_shl_u8 and unchecked_shl_u16; score 2.98/3; float path still blocked by precise fabsf32/fabsf64 frontier; unchecked_shr diagnostics found no smaller branch-worthy subcase than unchecked_shr_u8 and collapsed to the same binOpShrUnchecked surface; next action is unchecked_shl_u32
+0011	floats-ints	IN PROGRESS	active	fourteen proof slices now pass including unchecked_mul_u8 unchecked_mul_u16 unchecked_mul_u32 unchecked_mul_u64 unchecked_shl_u8 unchecked_shl_u16 and unchecked_shl_u32; score 2.98/3; float path still blocked by precise fabsf32/fabsf64 frontier; unchecked_shr diagnostics found no smaller branch-worthy subcase than unchecked_shr_u8 and collapsed to the same binOpShrUnchecked surface; next action is unchecked_shl_u64
 0012	nonzero	BLOCKED	terminal	exact blocker: u8->Option<NonZeroU8> still stops at top-level castKindTransmute thunk after SMIR-confirmed zero-niche inspection and two failed matcher attempts; next action is lookupTy(TY_TO) or lower-level byte/layout transmute work
 0013	cstr	BLOCKED	terminal	exact blocker: donor-linked SMIR name qualification breaks start_symbol lookup in make_call_config before donated CStr::from_bytes_with_nul body can execute; next action is root-name-preserving donor-link plumbing
 0014	convert-num	BOOTSTRAP	idle	bootstrap docs exist; waiting for future batch

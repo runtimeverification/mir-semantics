@@ -21,18 +21,18 @@ The portfolio is complete only when every published challenge is in one of:
 
 ## Current Active State
 
-- `0011-floats-ints`: thirteen branch-local proof slices now pass
+- `0011-floats-ints`: fourteen branch-local proof slices now pass
   (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
   `carrying_mul_u8`, `unchecked_mul_u8`, `unchecked_mul_u16`,
   `unchecked_mul_u32`, `unchecked_mul_u64`, `unchecked_shl_u8`,
-  `unchecked_shl_u16`); float
+  `unchecked_shl_u16`, `unchecked_shl_u32`); float
   `to_int_unchecked` remains blocked by the precise `fabsf32` / `fabsf64`
   frontier, and the latest `unchecked_shr` diagnostics found no smaller
   branch-worthy subcase than `unchecked_shr_u8`, with the family collapsing to
   the same `binOpShrUnchecked` surface; the refreshed planner keeps
   `unchecked_shr` parked and retargets the next bounded slice to
-  `unchecked_shl_u32`.
+  `unchecked_shl_u64`.
 - `0028-flt2dec`: restoring the real prefix slice `&buf[..exp]` invalidates
   the earlier saved terminal taken-arm slice and moves the first validated
   stuck leaf to the copied `if exp >= buf.len()` `#selectBlock` at
@@ -64,7 +64,7 @@ The portfolio is complete only when every published challenge is in one of:
 
 - Resume the current batch: `0011-floats-ints`, `0028-flt2dec`, `0026-rc`.
 - Restart priority inside the current batch:
-  1. `0011-floats-ints`: run `unchecked_shl_u32` to completion with a scoped
+  1. `0011-floats-ints`: run `unchecked_shl_u64` to completion with a scoped
      `kmir prove-rs` rerun, then reassess whether the remaining non-float
      breadth is finally narrow enough for a stronger verdict.
   2. `0028-flt2dec`: keep the restored real prefix slice in place, simplify
@@ -119,8 +119,9 @@ Rationale:
 - The observed live-agent cap remains `6`, which forced repeated close/reopen
   cycles for planner/generator/evaluator passes.
 - In the latest cycle, `0011` and `0028` both produced new committed evidence:
-  `0011` extended the `unchecked_shl` family with a passing `unchecked_shl_u16`
-  slice and then retargeted to `unchecked_shl_u32`, while `0028` restored the
+  `0011` extended the `unchecked_shl` family through a passing
+  `unchecked_shl_u32` slice and then retargeted to `unchecked_shl_u64`, while
+  `0028` restored the
   real prefix slice and moved the frontier to the copied
   `if exp >= buf.len()` select at line 76.
 - `0026` still remains bottlenecked on the witness-construction path: the
