@@ -4,7 +4,7 @@
 
 - Branch: `verify-rust-std/reexec-0026-rc`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
-- Local status: first audit slice committed in `87a669dc`; the `Rc::from_raw_in` root harness has now been rewritten to use a direct `System`-backed witness struct instead of `Rc::new_in`, with proof artifacts in `/tmp/rc-from-raw-in-proof`.
+- Local status: first audit slice committed in `87a669dc`; the `Rc::from_raw_in` root harness remains the current branch frontier, and the same evidence is now mirrored by the challenge-local file `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.
 - Latest blocker checkpoint: the newest `MaybeUninit`-backed witness attempt for `kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs` passed `git diff --check -- kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs` but failed before proof construction with `error[E0658]: use of unstable library feature 'box_uninit_write'` at `Box::write(...)`; no proof leaf or terminal node was reached and no code changes were retained.
@@ -14,6 +14,7 @@
 - Challenge page: `https://github.com/model-checking/verify-rust-std/blob/main/doc/src/challenges/0026-rc.md`
 - Tracking issue: `#382`
 - Artifact directory: `kmir/src/tests/integration/data/verify-rust-std/0026-rc`
+- Success table: `docs/verify-rust-std/challenges/0026-rc/success-criteria.md`
 - Public guidance: issue #382 comments indicate most contracts were already written by the original contributor, with a possible remaining dependency on the Kani update referenced as `model-checking/kani#4427`.
 
 ## Next Action
@@ -39,6 +40,7 @@
 ## Audit Result
 
 - Contract map recorded in `docs/verify-rust-std/challenges/0026-rc/contract-map.md`.
+- Success criteria recorded in `docs/verify-rust-std/challenges/0026-rc/success-criteria.md`.
 - Source basis pinned to `nightly-2024-11-29` `alloc/src/rc.rs` from the local toolchain.
 - The 12 public `unsafe` APIs fall into four invariant families:
   - raw pointer recovery and refcount transition: 8 APIs
@@ -48,8 +50,8 @@
 
 ## Proof Frontier
 
-- Harness: `kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs`
-- Validation command: `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs --proof-dir /tmp/rc-from-raw-in-proof --verbose --terminate-on-thunk`
+- Harness: `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`
+- Validation command: `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs --proof-dir /tmp/rc-from-raw-in-frontier-proof --verbose --terminate-on-thunk`
 - Frontier evidence:
   - `proof.json` / `kcfg/nodes/3.json`
   - `proof.json` / `kcfg/nodes/4.json`

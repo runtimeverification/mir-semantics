@@ -8,9 +8,10 @@ Overall score: `1.7/3`
 
 - Goal: verify `Rc` and `Weak`, the reference-counted cell implementation in `alloc::rc`.
 - Published success criteria: annotate and verify the safety contracts for the 12 listed public `unsafe` APIs, prove or contract at least 75% of the listed internal unsafe functions, and keep the proofs limited to primitive `T` inputs and standard-library allocators (`Global`/`System`).
+- Current success table: `docs/verify-rust-std/challenges/0026-rc/success-criteria.md` tracks the public surface explicitly and summarizes the internal unsafe list by invariant cluster in `contract-map.md`.
 - Challenge-specific UB obligations: exclude dangling or misaligned pointer access, UB via compiler intrinsics, mutation of immutable bytes, and invalid values.
 - Additional published safety conditions: `decrement_strong_count` does not need a proof that the count is greater than zero at call time, and `assume_init` may not be fully expressible in the current type system.
-- Current branch state: the `Rc::from_raw_in` root harness has been rewritten to a direct `System`-backed witness shape, but the proof frontier still terminates at a `CastKind::Transmute` leaf.
+- Current branch state: the `Rc::from_raw_in` root harness is mirrored by the challenge-local frontier file `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`, but the proof frontier still terminates at a `CastKind::Transmute` leaf.
 
 ## Scorecard
 
@@ -20,11 +21,11 @@ Overall score: `1.7/3`
 | Challenge-book rules are satisfied | 2 | The branch stays challenge-local, uses the documented `kmir` prove/show commands, and avoids stdlib runtime changes. | The current evidence is still evaluator-record evidence, not a completed PR with passing proof/test results. |
 | Safety conditions are modeled faithfully | 2 | `contract-map.md` captures the source SAFETY summaries for allocator provenance, one-shot ownership recovery, aliasing, and type-identity conditions. | The models remain descriptive; they have not yet been validated by a successful proof. |
 | Undefined behavior obligations are covered | 2 | `contract-map.md` names the UB families and separates the raw-pointer/refcount tranche from `assume_init`, `get_mut_unchecked`, and `downcast_unchecked`. | None of the UB obligations have been discharged against the backend; they are only tracked and triaged. |
-| Evidence is reproducible | 2 | The branch records exact validation commands, proof-dir locations, and the terminal `proof.json` / `kcfg/nodes/4.json` evidence for the direct-witness frontier. | The current root harness still stalls before a passing proof, so the evidence is reproducible but not yet successful. |
-| Scope is challenge-local and cherry-pickable | 3 | The committed work stays inside `docs/verify-rust-std/challenges/0026-rc` plus one harness file under `kmir/src/tests/integration/data/prove-rs/`. | None for this slice. |
+| Evidence is reproducible | 2 | The branch records exact validation commands, proof-dir locations, the challenge-local frontier harness, and the terminal `proof.json` / `kcfg/nodes/4.json` evidence for the direct-witness frontier. | The current root harness still stalls before a passing proof, so the evidence is reproducible but not yet successful. |
+| Scope is challenge-local and cherry-pickable | 3 | The committed work stays inside `docs/verify-rust-std/challenges/0026-rc` plus the challenge-local harness file under `kmir/src/tests/integration/data/verify-rust-std/0026-rc/`. | None for this slice. |
 | Review feedback patterns are incorporated | 1 | The latest plan update narrows the next step to the exact harness shape problem rather than widening to unrelated `Rc` APIs. | No external review thread or repeated solution-pattern feedback is yet reflected in a broader evaluator pattern. |
 | Residual risk is explicit | 3 | The workpad, generator record, and rewrite commit all name the concrete direct-witness leaf and the narrow follow-up. | The blocker is explicit, but the fix is not yet implemented. |
-| Public unsafe API surface is fully mapped | 2 | `contract-map.md` lists all 12 public `unsafe` functions and classifies each into a tranche or wrapper follow-on. | Mapping exists, but the tranche has not been proven and the internal-unsafe target remains open. |
+| Public unsafe API surface is fully mapped | 2 | `contract-map.md` and `success-criteria.md` list all 12 public `unsafe` functions and classify each into a tranche or wrapper follow-on. | Mapping exists, but the tranche has not been proven and the internal-unsafe target remains open. |
 | Raw-pointer/refcount tranche is isolated | 3 | `contract-map.md` and `plan.md` both select `Rc::from_raw_in`, `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, and `Weak::from_raw_in` as the first proof roots. | None for tranche selection. |
 | Challenge-specific UB obligations are explicit | 3 | The UB families are named in `contract-map.md` and summarized again in `plan.md` and `workpad.md`. | None for explicitness; only discharge is missing. |
 | External dependency risk is named precisely | 1 | `generator.md` still preserves the earlier note that a Kani update may be relevant, but the current blocker is now recorded as a harness-shape failure in `Rc::from_raw_in`. | No upstream dependency has been proven necessary for this blocker, and the possible Kani dependency is not yet tied to a specific API failure. |
@@ -33,6 +34,7 @@ Overall score: `1.7/3`
 ## Satisfied Criteria
 
 - The public `unsafe` surface is fully enumerated and split into a usable tranche.
+- The public `unsafe` surface is fully enumerated in the new success table and split into a usable tranche.
 - The raw-pointer/refcount family is isolated as the first lever.
 - The current blocker is named precisely enough to keep the next step narrow.
 - Evidence stays local to the challenge branch.
