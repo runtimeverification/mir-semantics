@@ -20,6 +20,10 @@ Ownership:
 - Incorporate patterns from resolved challenges, existing solution PRs, and
   review comments.
 - Record concrete evidence paths and rerun commands.
+- Check that the branch and draft PR both expose a current Success Criteria
+  coverage table.
+- Fail closed if a concrete witness test is being counted as verification
+  without a symbolic or contract-shaped proof harness.
 
 ## Scorecard
 

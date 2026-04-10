@@ -21,6 +21,8 @@ Ownership:
 - Published success criteria:
 - Challenge-specific UB obligations:
 - Additional safety conditions from source docs or SAFETY comments:
+- Expected verification harness shape per published target:
+- Expected frontier reproducer or fail-harness shape, if needed:
 
 ## Scope Contract
 

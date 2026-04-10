@@ -19,9 +19,12 @@ submission-ready.
 | Criterion | Critical | Initial expectation |
 | --- | --- | --- |
 | Published success criteria are mapped to concrete artifacts | yes | Every required function, module, or property is traced to harnesses, proofs, tests, or explicit blockers. |
+| Success-criteria coverage is auditable in the branch and PR | yes | Each published target is tracked in a `Function | Location | Status | Specification | Notes`-style table, and the draft PR body mirrors the current coverage state. |
 | Challenge-book rules are satisfied | yes | The work is automated, reviewable in a PR, uses approved tooling, and does not change standard-library runtime logic unless externally justified. |
 | Safety conditions are modeled faithfully | yes | SAFETY comments and standard-library docs are reflected in contracts, assumptions, and harness inputs without over-constraining away real risk. |
 | Undefined behavior obligations are covered | yes | The challenge-specific UB list plus any additional published safety obligations are checked or explicitly blocked with evidence. |
+| Verification harnesses are distinguished from reproducers | yes | Proof artifacts use symbolic or contract-shaped entrypoints for the API under verification; concrete-value frontier files are labeled as reproducers or fail harnesses rather than counted as verification. |
+| Semantic blockers are reduced before fixes | no | When semantics get stuck, the branch carries the smallest useful reproducer before attempting a semantic repair or broader harness. |
 | Evidence is reproducible | yes | Commands, target files, expected output, and proof/test results are recorded so another agent or reviewer can rerun them. |
 | Scope is challenge-local and cherry-pickable | yes | Commits are intentional, unrelated churn is avoided, and any exceptional cross-repo change is justified. |
 | Review feedback patterns are incorporated | no | Prior review comments on similar work are reflected in naming, test organization, and explanation quality. |
@@ -32,6 +35,7 @@ submission-ready.
 Each evaluator must append challenge-specific criteria for:
 
 - the exact published success criteria from the challenge page
+- a per-target coverage table that matches the draft PR description
 - challenge-specific UB obligations
 - challenge-specific artifact expectations
 - review patterns learned from prior solution PRs and comments

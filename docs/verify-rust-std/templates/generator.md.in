@@ -25,6 +25,10 @@ Ownership:
 ## Work Log
 
 - Bootstrap record created by orchestrator.
+- When a semantic frontier is encountered, first record the smallest useful
+  reproducer before attempting a fix.
+- Keep proof harnesses and concrete frontier reproducers in separate files when
+  they serve different audit purposes.
 
 ## Files Touched
 

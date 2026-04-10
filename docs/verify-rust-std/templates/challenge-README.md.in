@@ -19,6 +19,11 @@ Challenge-local artifact contract:
 
 - Place harnesses, tests, expected output, and supporting files in this
   directory.
+- Maintain a branch-local Success Criteria coverage table that names each
+  published function or target plus its artifact path, current status,
+  specification scope, and notes.
+- Distinguish verification harnesses from frontier reproducers or fail
+  harnesses. Concrete-value reproducers do not count as verification.
 - Keep changes organized so proof or semantic commits can be cherry-picked
   cleanly later.
 - Record any exceptional dependency change in the generator and evaluator logs
