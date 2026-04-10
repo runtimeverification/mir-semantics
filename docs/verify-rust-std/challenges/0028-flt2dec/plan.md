@@ -4,7 +4,7 @@ Current objective:
 - Reconfirm the challenge requirements, then retarget the next probe so it removes the copied-function `if exp < buf.len()` branch select at `digits_to_dec_str_probe.rs:58` and lets the same case advance toward `flt2dec`-owned logic or a genuine backend limit.
 
 Next generator task:
-- Rewrite the challenge-local `digits_to_dec_str` probe so the concrete `b"1234", exp = 2, frac_digits = 3` case forces the copied `if exp < buf.len()` taken arm directly, then rerun only enough proof to expose the first post-select leaf or the first real `flt2dec` body boundary.
+- Make the challenge-local `digits_to_dec_str` probe expose the post-select control flow cheaply: keep the `b"1234", exp = 2, frac_digits = 3` case, but add the smallest possible branch-specific trace or guard so the copied `if exp < buf.len()` `#selectBlock` at `digits_to_dec_str_probe.rs:58` is resolved once and the next leaf after it is captured without another blind full-depth rerun.
 
 Generator acceptance evidence:
 - The probe file path in `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec`.
@@ -15,7 +15,7 @@ Generator acceptance evidence:
 Plan slices:
 1. Reconfirm the published function list, safety obligations, and UB exclusions from the challenge page.
 2. Specialize the narrowed `digits_to_dec_str` harness so the single concrete case bypasses the copied `if exp < buf.len()` branch select as a blind rerun target and instead lands on the next control-flow step cheaply.
-3. Rerun just that specialized probe and record the first concrete boundary it reaches, classifying it as `flt2dec`-owned logic or a backend limit if it finally escapes the wrapper.
+3. Rerun only the minimally instrumented probe and record the first concrete boundary it reaches, classifying it as `flt2dec`-owned logic or a backend limit if it finally escapes the wrapper.
 
 Stop conditions:
 - Stop at `blocked` only if the follow-up probe reproduces the known float-value backend gap with direct evidence.
