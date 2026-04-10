@@ -6,7 +6,7 @@
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
 - Draft PR: exists.
 - Evaluator: active / in progress.
-- Local status: first audit slice committed in `87a669dc`; the branch now has a symbolic `Rc::from_raw_in` proof harness plus a smaller challenge-local reproducer for the transmute frontier, and the proof result for the correct symbol is still frontier-only.
+- Local status: first audit slice committed in `87a669dc`; latest generator commit is `fa4b34d8`; the branch now has a symbolic `Rc::from_raw_in` proof harness plus a smaller challenge-local reproducer for the transmute frontier, and the proof result for the correct symbol is still frontier-only.
 - Local status: the challenge-local reproducer has now been minimized one step further by removing the audit-only `assert_eq!`; the frontier remains the same helper-level `CastKind::Transmute` leaf.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.

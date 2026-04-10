@@ -75,7 +75,7 @@ Ownership:
 
 - `87a669dc` `docs(verify-rust-std): map challenge 0026 rc contracts`
 - `7abe7dcd` `test(verify-rust-std): seed rc from_raw_in root harness`
-- `pending` `test(verify-rust-std): rewrite rc from_raw_in root harness to stable MaybeUninit witness`
+- `fa4b34d8` `test(verify-rust-std): minimize 0026 rc frontier reproducer`
 
 ## Blockers
 
