@@ -76,6 +76,10 @@ Ownership:
 - 2026-04-10: Completed the next Part 1 proof slice end-to-end with
   `kmir prove-rs` for `unchecked_mul_u64`; the existing harness and
   multiplication support were already sufficient on this branch.
+- 2026-04-10: Started the next branch-local Part 1 attempt with
+  `kmir prove-rs` for `unchecked_shl_u8`, but the run was interrupted before a
+  terminal proof result was captured; no new frontier was established, stray
+  `tmp.*` artifacts were removed, and no code changes were kept.
 
 ## Files Touched
 
