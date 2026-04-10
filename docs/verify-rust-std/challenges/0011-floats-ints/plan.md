@@ -4,7 +4,7 @@ Current objective:
 - Move Challenge 11 toward a terminal portfolio state by adding the next narrow Part 1 unsafe-method proof slice on the current branch, now that `unchecked_shl_u8` has passed and the latest evaluator result at `05ebb42f` still rates the branch `IN PROGRESS` at `2.97 / 3` because the remaining gap is breadth in the integer/safe-API matrix, while preserving the float blocker as a separate, explicitly evidenced terminal constraint.
 
 Next generator task:
-- Prove `unchecked_shl_u16` end-to-end with a scoped `kmir prove-rs` run on `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs`, then record whether the branch now has another passing Part 1 arithmetic slice beyond `unchecked_mul_u8`, `unchecked_mul_u16`, `unchecked_mul_u32`, `unchecked_mul_u64`, add/neg/sub, `unchecked_shl_u8`, and the already-passing Part 2 slices.
+- First reconfirm the `unchecked_shl` harness wiring with a cheap scoped discovery check (`pytest --collect-only -k "unchecked_shl and not fail"`), then only schedule another `kmir prove-rs` retry for `unchecked_shl_u16` if the case is still present and the retry can be bounded differently from the previous exit-143 attempt.
 
 Generator acceptance evidence:
 - A concrete mapping from each published requirement to an artifact or an explicit blocker.
@@ -13,10 +13,10 @@ Generator acceptance evidence:
 
 Plan slices:
 1. Reconfirm the published function list and success criteria from the challenge page and PR #985.
-2. Execute one new Part 1 proof slice, starting with `unchecked_shl_u16`, to continue widening the integer matrix on the already-validated shift path without broadening scope.
-3. Hand the evaluator a refreshed frontier classification that distinguishes the remaining integer and safe-API breadth from the float-capability blocker.
+2. Reconfirm the `unchecked_shl` case wiring cheaply, then retry `unchecked_shl_u16` only if the discovery step shows the slice is still available and the retry can be made meaningfully more bounded than the previous long-running blind attempt.
+3. Hand the evaluator a refreshed frontier classification that distinguishes the remaining integer and safe-API breadth from the float-capability blocker once the next bounded action produces new evidence.
 
 Stop conditions:
-- Stop at `BLOCKED` if the `unchecked_shl_u8` proof reveals an uncovered backend or harness defect that prevents any new Part 1 evidence.
-- Stop after recording the `unchecked_shl_u8` outcome and hand the evaluator the updated frontier; do not widen the slice in the same delegation.
+- Stop at `BLOCKED` if the discovery check shows `unchecked_shl_u16` is no longer collected or the harness wiring has regressed.
+- Stop after the exit-143 `unchecked_shl_u16` attempt is recorded; do not repeat the same long-running proof blindly without a new bound or a new observation.
 - Continue only if a concrete technical subtask remains with measurable value and can be delegated without broadening scope.
