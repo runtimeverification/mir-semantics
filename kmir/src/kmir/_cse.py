@@ -1956,9 +1956,24 @@ def cse_prove(opts: ProveOpts) -> CSEResult:
     ]
     dynamic_break_targets = {*opts.break_on_function, *dynamic_summary_names, *observed_runtime_names}
     if observe_only_mode:
-        dynamic_break_targets.update(name for ty in callee_order if (name := _ty_to_name(smir_info, ty)) is not None)
+        dynamic_break_targets.update(
+            name
+            for ty in callee_order
+            if (name := _ty_to_name(smir_info, ty)) is not None
+            and _has_body(smir_info, ty)
+            and _should_skip_cse_summary(name, start_symbol=start_name) is None
+        )
     if online_autoreuse_mode:
-        dynamic_break_targets.update(name for ty in callee_order if (name := _ty_to_name(smir_info, ty)) is not None)
+        # Only break on summary-worthy callees (not low_value_helper, has body).
+        # Breaking on ALL callees (169+) causes catastrophic overhead in
+        # #functionNameMatchesEnv string matching on every function call.
+        dynamic_break_targets.update(
+            name
+            for ty in callee_order
+            if (name := _ty_to_name(smir_info, ty)) is not None
+            and _has_body(smir_info, ty)
+            and _should_skip_cse_summary(name, start_symbol=start_name) is None
+        )
     dynamic_break_on_function = sorted(dynamic_break_targets)
     # Don't include summary-rules.json as extra_modules — they cause
     # NDBranch explosion in the booster and trigger expensive re-kompile.
