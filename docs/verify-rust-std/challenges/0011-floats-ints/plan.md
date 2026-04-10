@@ -1,7 +1,7 @@
 # Execution Plan: Challenge 0011
 
 Current objective:
-- Move Challenge 11 toward a terminal portfolio state by adding the next narrow Part 1 unsafe-method proof slice on the current branch, now that `unchecked_shl_u8` has passed and the latest evaluator result at `71b2d625` still rates the branch `IN PROGRESS` at `2.96 / 3`, while preserving the float blocker as a separate, explicitly evidenced terminal constraint.
+- Move Challenge 11 toward a terminal portfolio state by adding the next narrow Part 1 unsafe-method proof slice on the current branch, now that `unchecked_shl_u8` has passed and the latest evaluator result at `05ebb42f` still rates the branch `IN PROGRESS` at `2.97 / 3` because the remaining gap is breadth in the integer/safe-API matrix, while preserving the float blocker as a separate, explicitly evidenced terminal constraint.
 
 Next generator task:
 - Prove `unchecked_shl_u16` end-to-end with a scoped `kmir prove-rs` run on `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs`, then record whether the branch now has another passing Part 1 arithmetic slice beyond `unchecked_mul_u8`, `unchecked_mul_u16`, `unchecked_mul_u32`, `unchecked_mul_u64`, add/neg/sub, `unchecked_shl_u8`, and the already-passing Part 2 slices.
@@ -13,7 +13,6 @@ Generator acceptance evidence:
 
 Plan slices:
 1. Reconfirm the published function list and success criteria from the challenge page and PR #985.
-2. Execute one new Part 1 proof slice, starting with `unchecked_shl_u8`, to continue widening the integer matrix on the already-validated shift path without broadening scope.
 2. Execute one new Part 1 proof slice, starting with `unchecked_shl_u16`, to continue widening the integer matrix on the already-validated shift path without broadening scope.
 3. Hand the evaluator a refreshed frontier classification that distinguishes the remaining integer and safe-API breadth from the float-capability blocker.
 
