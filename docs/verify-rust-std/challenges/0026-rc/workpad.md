@@ -6,10 +6,10 @@
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
 - Draft PR: exists.
 - Evaluator: active / in progress.
-- Local status: first audit slice committed in `87a669dc`; the `Rc::from_raw_in` root harness remains the current branch frontier, and the same evidence is now mirrored by the challenge-local file `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`.
+- Local status: first audit slice committed in `87a669dc`; the `Rc::from_raw_in` root harness and the challenge-local mirror now both use the stable `MaybeUninit` + raw-write witness shape in `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.
-- Latest blocker checkpoint: the newest `MaybeUninit`-backed witness attempt for `kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs` passed `git diff --check -- kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs` but failed before proof construction with `error[E0658]: use of unstable library feature 'box_uninit_write'` at `Box::write(...)`; no proof leaf or terminal node was reached and no code changes were retained.
+- Latest blocker checkpoint: the stable `MaybeUninit` witness attempt for `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs` reached proof construction but still failed at the same terminal direct-witness `CastKind::Transmute` leaf; node 4 in `/tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit` captures the current frontier.
 
 ## Confirmed Inputs
 
@@ -35,9 +35,10 @@
 - Do not expand into code or proof implementation from this file.
 - Use this workpad to record the chosen tranche before any generator work starts.
 - The rewritten root harness no longer calls `Rc::new_in`; it allocates a `repr(C)` `RcInnerWitness<u32>` under `System`, converts it to a raw pointer, and feeds `Rc::from_raw_in` directly from the witness value field.
+- The rewritten root harness now allocates a `repr(C)` `RcInnerWitness<u32>` through `Box::new_uninit_in(System)` and a raw `ptr::write`, then feeds `Rc::from_raw_in` directly from the witness value field.
 - The previous `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` blocker is gone.
-- The new frontier is the direct witness path itself, which terminates in `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` with `CastKind::Transmute` rather than inside `Rc::new_in`.
-- The latest `MaybeUninit` witness revision never reached proof construction because `Box::write(...)` is still gated behind unstable library feature `box_uninit_write`.
+- The new frontier is still the direct witness path itself, which terminates in `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` with `CastKind::Transmute` rather than inside `Rc::new_in`.
+- The latest stable `MaybeUninit` witness revision now reaches proof construction, but it still does not move past the terminal cast leaf.
 
 ## Audit Result
 
@@ -53,13 +54,12 @@
 ## Proof Frontier
 
 - Harness: `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`
-- Validation command: `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs --proof-dir /tmp/rc-from-raw-in-frontier-proof --verbose --terminate-on-thunk`
+- Validation command: `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs --proof-dir /tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit --verbose --terminate-on-thunk`
 - Frontier evidence:
   - `proof.json` / `kcfg/nodes/3.json`
   - `proof.json` / `kcfg/nodes/4.json`
-- Leaf 4 is now a terminal proof state whose `<k>` begins with `thunk(_)_RT-DATA_Value_Evaluation(#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty(..., CastKind::Transmute, ...))`.
-- The interrupted `raw-memory-witness` rerun used `/tmp/rc-from-raw-in-proof-rawalloc3` but did not reach a new leaf or terminal node before being stopped.
-- The later `MaybeUninit`-backed witness attempt never reached proof construction and therefore produced no proof leaf or terminal node.
+- Leaf 4 remains a terminal proof state whose `<k>` begins with `thunk(_)_RT-DATA_Value_Evaluation(#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty(..., CastKind::Transmute, ...))`.
+- The stable `MaybeUninit` proof run used `/tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit` and still did not move past the cast leaf.
 
 ## Selected First Tranche
 

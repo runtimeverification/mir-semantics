@@ -13,10 +13,9 @@ struct RcInnerWitness<T> {
 }
 
 fn main() {
-    let inner = Box::new_in(
-        RcInnerWitness { strong: Cell::new(1), weak: Cell::new(1), value: 7u32 },
-        System,
-    );
+    let mut inner = Box::new_uninit_in(System);
+    unsafe { inner.as_mut_ptr().write(RcInnerWitness { strong: Cell::new(1), weak: Cell::new(1), value: 7u32 }) };
+    let inner = unsafe { inner.assume_init() };
     let inner = Box::into_raw(inner);
     let ptr = unsafe { std::ptr::addr_of!((*inner).value) };
 
