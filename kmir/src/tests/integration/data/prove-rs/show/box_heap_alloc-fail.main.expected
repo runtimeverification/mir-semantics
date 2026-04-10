@@ -3,10 +3,15 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (199 steps)
-└─ 3 (stuck, leaf)
-    #execIntrinsic ( IntrinsicFunction ( symbol ( "volatile_load" ) ) , operandConst
-    span: 32
+│  (73 steps)
+├─ 3
+│   #cast ( Integer ( 4 , 64 , false ) , castKindTransmute , ty ( 29 ) , ty ( 50 ) )
+│   span: 186
+│
+│  (1 step)
+└─ 4 (leaf, terminal)
+    thunk ( #cast ( Integer ( 4 , 64 , false ) , castKindTransmute , ty ( 29 ) , ty
+    span: 186
 
 
 ┌─ 2 (root, leaf, target, terminal)

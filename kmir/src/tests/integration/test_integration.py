@@ -41,9 +41,6 @@ PROVE_START_SYMBOLS = {
     'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
-PROVE_TERMINATE_ON_THUNK = [
-    'closure-staged',
-]
 PROVE_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
@@ -90,8 +87,7 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     if update_expected_output and not should_show:
         pytest.skip()
 
-    should_terminate_on_thunk = rs_file.stem in PROVE_TERMINATE_ON_THUNK
-    prove_opts = ProveOpts(rs_file, smir=is_smir, terminate_on_thunk=should_terminate_on_thunk)
+    prove_opts = ProveOpts(rs_file, smir=is_smir, terminate_on_thunk=True)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
@@ -292,12 +288,6 @@ VERIFY_RUST_STD_START_SYMBOLS = {
         'unchecked_neg_i64',
         'unchecked_neg_i128',
     ],
-    'to_int_unchecked-fail': [
-        'to_int_unchecked_f16_i8',
-        'to_int_unchecked_f32_i32',
-        'to_int_unchecked_f64_i64',
-        'to_int_unchecked_f128_i128',
-    ],
 }
 VERIFY_RUST_STD_SHOW_SPECS = [
     'unchecked_add-fail',
@@ -306,7 +296,6 @@ VERIFY_RUST_STD_SHOW_SPECS = [
     'unchecked_shl-fail',
     'unchecked_shr-fail',
     'unchecked_neg-fail',
-    'to_int_unchecked-fail',
 ]
 
 
@@ -624,17 +613,6 @@ EXEC_DATA = [
 ]
 
 
-# Tests containing float values that the pure kore-exec haskell backend cannot handle.
-# The haskell backend has no Float builtins (no Float.hs in kore/src/Kore/Builtin/),
-# so kore-exec crashes with "missing hook FLOAT.int2float" at Evaluator.hs:377.
-# The booster avoids this by delegating Float evaluation to the LLVM shared library
-# via simplifyTerm in booster/library/Booster/LLVM.hs.
-EXEC_SMIR_SKIP_HASKELL = {
-    'structs-tuples',
-    'struct-field-update',
-}
-
-
 @pytest.mark.parametrize('symbolic', [False, True], ids=['llvm', 'haskell'])
 @pytest.mark.parametrize(
     'test_case',
@@ -647,9 +625,7 @@ def test_exec_smir(
     update_expected_output: bool,
     tmp_path: Path,
 ) -> None:
-    name, input_json, output_kast, depth = test_case
-    if symbolic and name in EXEC_SMIR_SKIP_HASKELL:
-        pytest.skip('haskell-backend lacks FLOAT hooks')
+    _, input_json, output_kast, depth = test_case
     smir_info = SMIRInfo.from_file(input_json)
     kmir_backend = KMIR.from_kompiled_kore(smir_info, target_dir=tmp_path, symbolic=symbolic)
     result = kmir_backend.run_smir(smir_info, depth=depth)
@@ -890,3 +866,40 @@ def test_schema_kapply_parse(
     json_data, expected_term, expected_sort = test_case
 
     assert parser.parse_mir_json(json_data, expected_sort.name) == (expected_term, expected_sort)
+
+
+ARITH_SMIR = PROVE_DIR / 'arith.smir.json'
+
+
+def test_reduce_standalone() -> None:
+    """Test that kmir reduce correctly prunes SMIR items by reachability."""
+    smir_data = json.loads(ARITH_SMIR.read_text())
+    info = SMIRInfo(smir_data)
+    assert len(info.items) == 11
+
+    # Single root 'add' — should keep 1 item
+    reduced_add = info.reduce_to('add')
+    assert len(reduced_add.items) == 1
+
+    # Single root 'mul' — should keep 1 item (independent from add)
+    reduced_mul = info.reduce_to('mul')
+    assert len(reduced_mul.items) == 1
+
+    # Multiple roots — should keep strictly more than either alone
+    reduced_multi = info.reduce_to(['add', 'mul'])
+    assert len(reduced_multi.items) == 2
+
+    # 'main' calls both add and mul — should keep all 3
+    reduced_main = info.reduce_to('main')
+    assert len(reduced_main.items) == 3
+
+    # Roundtrip: save reduced SMIR and reload it
+    with tempfile.NamedTemporaryFile(suffix='.smir.json', delete=False, mode='w') as f:
+        f.write(json.dumps(reduced_multi._smir))
+        reduced_path = Path(f.name)
+
+    try:
+        reloaded = SMIRInfo(json.loads(reduced_path.read_text()))
+        assert len(reloaded.items) == 2
+    finally:
+        reduced_path.unlink()

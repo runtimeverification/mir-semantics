@@ -30,10 +30,11 @@ Unsigned only: u8, u16, u32, u64
 
 ## Part 3: Float to Integer Conversion
 
-TODO: Currently floats are unsupported. However there the required harnesses are
-added to `to_int_unchecked-fail.rs`, once they are passing this file should be
-renamed to `to_int_unchecked.rs` and tests that demonstrate KMIR catching `UB`
-should be added to `to_int_unchecked-fail.rs`.
+TODO: Currently floats are unsupported. The required harnesses are stored in
+`to_int_unchecked-fail.txt` (renamed from `.rs` to exclude from tests). Once
+float support is added, this file should be renamed to `to_int_unchecked.rs`
+and tests that demonstrate KMIR catching `UB` should be added to
+`to_int_unchecked-fail.rs`.
 
 Types: f16, f32, f64, f128
 
