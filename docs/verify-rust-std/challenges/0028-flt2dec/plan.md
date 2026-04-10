@@ -1,23 +1,23 @@
 # Execution Plan: Challenge 0028
 
 Current objective:
-- Reconfirm the challenge requirements, then treat the saved taken-arm artifact as cleared scaffolding and retarget the next probe so it advances from `#EndProgram ~> .K` into the smallest remaining `flt2dec`-owned successor path, without reopening the copied-function guard and branch-select setup.
+- Reconfirm the challenge requirements, then retarget the next probe from the restored-prefix frontier at the copied `if exp >= buf.len()` branch in `digits_to_dec_str_probe.rs:76` so the same single case advances past that control-flow test without widening beyond one exact simplification target.
 
 Next generator task:
-- Keep the `b"1234", exp = 2, frac_digits = 3` case and the taken-arm specialization, but replace the branch-select-only target with the narrowest challenge-local probe that reaches the next unproven `flt2dec`-owned step after the terminal `#EndProgram ~> .K` leaf, rather than restoring any of the already-cleared wrapper guards or raw-slice helpers.
+- Keep the restored real prefix slice `&buf[..exp]`, keep the suffix stub in place, and rewrite only the copied `if exp >= buf.len()` check so `buf.len()` is fixed to the concrete single-case value for `b"1234", exp = 2`; then rerun and capture the first leaf beyond that branch select.
 
 Generator acceptance evidence:
 - The probe file path in `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec`.
 - The exact command(s) used to rerun it.
 - The first pass/fail result with the precise failure mode.
-- A note saying whether the result stays at the taken-arm `#EndProgram ~> .K` artifact, advances into actual `flt2dec` body logic, or exposes a genuine backend limit.
+- A note saying whether the result stays in copied `digits_to_dec_str` control flow after the `buf.len()` simplification, advances into actual decimal-point-path logic, or exposes a genuine backend limit.
 
 Plan slices:
 1. Reconfirm the published function list, safety obligations, and UB exclusions from the challenge page.
-2. Preserve the taken-arm specialization for the single concrete `digits_to_dec_str` case, but narrow the probe to the first unproven `flt2dec`-owned successor after the terminal `#EndProgram ~> .K` leaf, avoiding any return to the copied wrapper guards or branch-select scaffolding.
-3. Rerun only that minimally generalized probe and record the first concrete boundary it reaches, classifying it as `flt2dec`-owned logic or a backend limit once it actually leaves the already-cleared taken-arm artifact.
+2. Preserve the restored real prefix slice and the single concrete `digits_to_dec_str` case, but simplify only the copied `if exp >= buf.len()` control-flow test so the active path no longer depends on `#applyUnOp ( unOpPtrMetadata , ... )` for `buf.len()`.
+3. Rerun only that minimally simplified probe and record the first concrete boundary it reaches, classifying it as copied `flt2dec` control flow, decimal-point-path logic, or a backend limit.
 
 Stop conditions:
-- Stop at `blocked` only if the follow-up probe reproduces a real backend float gap with direct evidence from the new successor path.
-- Stop at `in progress` if the follow-up probe reaches further into `flt2dec` and yields a concrete next slice beyond the cleared `#EndProgram ~> .K` artifact.
-- Do not widen scope until the next post-terminal leaf has been captured with evidence and the probe has stayed out of the already-cleared branch-select scaffolding.
+- Stop at `blocked` only if the follow-up probe reproduces a real backend float gap with direct evidence after the `buf.len()` branch test has been simplified away.
+- Stop at `in progress` if the follow-up probe reaches further into the decimal-point path and yields a concrete next slice beyond the copied `if exp >= buf.len()` select.
+- Do not widen scope to restore the real suffix slice or other operations until the first post-select leaf has been captured with evidence.
