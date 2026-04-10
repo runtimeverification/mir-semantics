@@ -9,8 +9,8 @@
 - Success criteria map: `docs/verify-rust-std/challenges/0027-arc/success-criteria.md`
 - Challenge-local README: `kmir/src/tests/integration/data/verify-rust-std/0027-arc/README.md`
 - Current state: the first verification-shaped `Arc::from_raw_in` harness has
-  been added, and the bounded proof attempt has now recorded a frontier at
-  leaf `4` inside `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`.
+  been added, and the smallest concrete frontier reproducer for the same leaf
+  has been split into its own file.
 
 ## Confirmed Inputs
 
@@ -33,12 +33,13 @@
 ## First Intended Split
 
 - Verification harness target: `arc-from-raw-in.rs`
-- Frontier reproducer target: reserved for the first semantic blocker if the
-  proof harness does not reach the intended target cleanly
+- Frontier reproducer target: `arc-from-raw-in-frontier-fail.rs`
 - Proof focus: `Arc::from_raw_in` first, then the refcount recovery spine it
   enables
 - Reproducer focus: capture the smallest meaningful semantic blocker in a
-  challenge-local file without counting it as verification
+  challenge-local file without counting it as verification; the current file
+  is smaller than the verification harness because it fixes the payload and
+  uses `main`
 
 ## Planning Notes
 
@@ -58,6 +59,7 @@
 - Result: `ProofStatus.FAILED`
 - Frontier: leaf `4`, stuck at `castKindTransmute` in
   `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`
-- Next generator step is to keep this first slice as the verification harness
-  and, if a smaller reproducer becomes useful later, split the same frontier
-  into a separate challenge-local file without widening scope.
+- New reproducer command:
+  `timeout 900s uv --project kmir run -- kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0027-arc/kmir/src/tests/integration/data/verify-rust-std/0027-arc/arc-from-raw-in-frontier-fail.rs --start-symbol main --proof-dir /tmp/arc-from-raw-in-frontier-proof-0027 --verbose --terminate-on-thunk`
+- Next generator step is to validate the reproducer confirms the same leaf
+  without widening the proof harness.

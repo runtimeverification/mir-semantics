@@ -33,7 +33,7 @@ Challenge-local artifact contract:
 Status board:
 
 - Planner: bootstrap complete
-- Generator: proof harness added; bounded proof attempt recorded frontier leaf `4`
+- Generator: proof harness added; frontier reproducer split recorded
 - Evaluator: bootstrap complete
 - Draft PR: not created
 
@@ -44,3 +44,7 @@ Proof evidence:
 - Result: `ProofStatus.FAILED`
 - Frontier leaf: `4`
 - Frontier site: `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`
+- Frontier reproducer: `arc-from-raw-in-frontier-fail.rs`
+- Frontier reproducer start symbol: `main`
+- Frontier reproducer note: smaller than the symbolic harness because it fixes
+  the payload and uses `main`

@@ -75,7 +75,7 @@ Bootstrapping plan for Challenge 0027 (`Arc`):
 | Sprint | Intended slice | Acceptance check | Status |
 | --- | --- | --- | --- |
 | 0 | Bootstrap challenge understanding | Requirements, safety obligations, and first tranche recorded | complete |
-| 1 | Raw-recovery root | `Arc::from_raw_in` has a selected verification shape and a separate reproducer policy | pending |
+| 1 | Raw-recovery root | `Arc::from_raw_in` has a selected verification shape and a separate reproducer file | in progress |
 | 2 | Refcount spine | `Arc::increment_strong_count_in`, `Arc::decrement_strong_count_in`, `Weak::from_raw_in` follow the root | pending |
 | 3 | Wrapper layer | Thin `Global` wrappers are queued only after the allocator-general roots are stable | pending |
 
@@ -100,4 +100,3 @@ Bootstrapping plan for Challenge 0027 (`Arc`):
 ## History
 
 - Bootstrap record created by orchestrator.
-

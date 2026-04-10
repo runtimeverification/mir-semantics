@@ -75,8 +75,10 @@ PROVE_SHOW_SPECS = [
 
 VERIFY_RUST_STD_0027_ARC_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std' / '0027-arc').resolve(strict=True)
 VERIFY_RUST_STD_0027_ARC_PROOF_FILES = [VERIFY_RUST_STD_0027_ARC_DIR / 'arc-from-raw-in.rs']
+VERIFY_RUST_STD_0027_ARC_FRONTIER_FILES = [VERIFY_RUST_STD_0027_ARC_DIR / 'arc-from-raw-in-frontier-fail.rs']
 VERIFY_RUST_STD_0027_ARC_START_SYMBOLS = {
     'arc-from-raw-in': ['verify_arc_from_raw_in'],
+    'arc-from-raw-in-frontier-fail': ['main'],
 }
 
 
@@ -174,6 +176,24 @@ def test_verify_rust_std_0027_arc(rs_file: Path, kmir: KMIR, update_expected_out
         prove_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_program(prove_opts)
         assert apr_proof.passed
+
+
+@pytest.mark.parametrize(
+    'rs_file',
+    VERIFY_RUST_STD_0027_ARC_FRONTIER_FILES,
+    ids=[spec.stem for spec in VERIFY_RUST_STD_0027_ARC_FRONTIER_FILES],
+)
+def test_verify_rust_std_0027_arc_frontier(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    if update_expected_output:
+        pytest.skip()
+
+    prove_opts = ProveOpts(rs_file, smir=False, terminate_on_thunk=True)
+    start_symbols = VERIFY_RUST_STD_0027_ARC_START_SYMBOLS.get(rs_file.stem, ['main'])
+
+    for start_symbol in start_symbols:
+        prove_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_program(prove_opts)
+        assert apr_proof.failed
 
 
 EXEC_DATA_DIR = (Path(__file__).parent / 'data' / 'exec-smir').resolve(strict=True)
