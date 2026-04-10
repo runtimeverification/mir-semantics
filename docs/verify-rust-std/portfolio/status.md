@@ -17,32 +17,36 @@ The portfolio is complete only when every published challenge is in one of:
 
 - `0026-rc` -> `IN PROGRESS` (`1.7 / 3`)
 - `0028-flt2dec` -> `IN PROGRESS` (`1.9 / 3`)
-- `0027-arc` -> `IN PROGRESS` (`1.5 / 3`)
+- `0027-arc` -> `IN PROGRESS` (`1.8 / 3`)
 
 ## Current Active State
 
 - `0026-rc`: the branch now has a verification-shaped symbolic proof harness
-  `rc-from-raw-in.rs` plus a separate minimal frontier reproducer
+  `rc-from-raw-in.rs` plus a canonical one-line frontier reproducer
   `rc-new-in-frontier-fail.rs` and the broader audit reproducer
   `rc-from-raw-in-frontier-fail.rs`; the correct proof target
-  `verify_rc_from_raw_in` still reaches the same `CastKind::Transmute`
-  frontier at node 4 inside
-  `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`, so
-  the challenge remains `IN PROGRESS`.
+  `verify_rc_from_raw_in` and the one-line reproducer still reach the same
+  `CastKind::Transmute` frontier at node 4 inside
+  `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` at
+  `library/core/src/alloc/layout.rs:140`, so the challenge remains
+  `IN PROGRESS`.
 - `0028-flt2dec`: success table, stronger replay collector, and explicit CI
   discoverability now exist; the copied `if exp >= buf.len()` select was
   passed; the new first leaf is deeper in `core::slice::index` at
   `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index`
-  (`slice_end_index_len_fail`); score remains `1.9 / 3`; next action is to
-  reduce that new slice-index frontier.
+  (`slice_end_index_len_fail`); score remains `1.9 / 3`; evaluator evidence
+  now confirms the current probe is already minimal enough, so the next action
+  is to classify or fix that slice-index frontier rather than keep shrinking
+  the reproducer.
 - `0027-arc`: activated into the current batch because it is the strongest
   reuse candidate from `0026-rc`; the first symbolic proof harness for
-  `Arc::from_raw_in` now exists, and the bounded proof attempt records a
-  frontier at leaf `4` inside
+  `Arc::from_raw_in` now exists, and it is now paired with a dedicated
+  smaller frontier reproducer `arc-from-raw-in-frontier-fail.rs`, which still
+  records the same leaf `4` inside
   `Box::<alloc::sync::ArcInner<u32>, std::alloc::System>::new_uninit_in`.
-  The challenge is now `IN PROGRESS`, not bootstrap, and the next action is
-  to split the smallest dedicated reproducer or narrow the witness one more
-  step.
+  The challenge remains `IN PROGRESS` at `1.8 / 3`, and the next action is to
+  use that reproducer to validate any shared fix candidate before widening the
+  Arc tranche.
 
 ## Cross-Challenge Semantic Pattern
 
@@ -50,8 +54,9 @@ The portfolio is complete only when every published challenge is in one of:
   proof-harness symbols are correct and challenge-local, but witness
   construction still bottoms out at a helper-level `CastKind::Transmute`
   frontier inside allocator-backed `*_new_uninit_in` / `try_new_uninit_in`
-  paths. This is now the highest-leverage shared semantic pattern in the
-  active batch.
+  paths. `0026` is now the canonical lead reproducer because its current
+  frontier case is one line long; `0027` is the follower validation branch for
+  the same semantic family.
 
 ## Newly Terminal This Run
 
@@ -75,15 +80,15 @@ The portfolio is complete only when every published challenge is in one of:
 - Restart priority inside the current batch:
   1. `0026-rc`: continue from the split proof-harness / reproducer shape and
      attack the remaining `CastKind::Transmute` leaf reached by
-     `verify_rc_from_raw_in`, starting from the minimal
+     `verify_rc_from_raw_in`, starting from the canonical one-line
      `rc-new-in-frontier-fail.rs` witness.
-  2. `0028-flt2dec`: keep the restored real prefix slice in place, simplify
-     the current `core::slice::index` reproducer one step further, and capture
-     the first leaf beyond
-     `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index`.
-  3. `0027-arc`: preserve `arc-from-raw-in.rs` as the verification harness and
-     split the smallest challenge-local reproducer for the shared
-     `CastKind::Transmute` leaf.
+  2. `0027-arc`: preserve `arc-from-raw-in.rs` as the verification harness and
+     use `arc-from-raw-in-frontier-fail.rs` to validate any shared fix
+     candidate for the helper-level transmute family.
+  3. `0028-flt2dec`: stop shrinking the probe and classify or fix
+     `slice_end_index_len_fail` at
+     `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` on the
+     restored `&buf[..exp]` path.
 - `0011` is now terminal and should not be returned to the active batch unless
   the user explicitly reopens it.
 - `0012` and `0013` are terminal and should not be returned to the active batch
@@ -93,14 +98,15 @@ The portfolio is complete only when every published challenge is in one of:
 
 - `0026-rc`: the refcount family still matters for `0027-arc`, and the current
   leverage point is now sharper because the proof harness / reproducer split is
-  correct and the frontier is isolated to the direct `CastKind::Transmute`
-  leaf on the proper symbol.
+  correct and the frontier is isolated to a canonical one-line reproducer on
+  the proper symbol.
 - `0028-flt2dec`: the copied branch select is no longer the frontier; the
-  current leverage point is the deeper `core::slice::index` failure.
+  current leverage point is the deeper `core::slice::index` failure, and the
+  evaluator has now confirmed the existing probe is already minimal enough.
 - `0027-arc`: activated immediately after `0011` closed because it is the
   strongest reuse target from the `Rc` raw-pointer / refcount contract family,
-  and it now confirms the shared allocator-helper transmute blocker family
-  rather than remaining at bootstrap.
+  and it now confirms the shared allocator-helper transmute blocker family with
+  a dedicated reproducer rather than remaining at bootstrap.
 
 ## Exact Next Batch If Interrupted After The Current Batch
 
@@ -136,10 +142,10 @@ Rationale:
 - The observed live-agent cap remains `6`, which forced repeated close/reopen
   cycles for planner/generator/evaluator passes.
 - In the latest cycle, `0011` was closed by user direction as superseded by
-  `#985`, `0026` corrected its artifact shape so the active proof now targets
-  `verify_rc_from_raw_in` rather than `main`, `0027` advanced from bootstrap
-  to its first evidence-bearing `Arc::from_raw_in` proof frontier, and `0028`
-  remains parked on the deeper `core::slice::index` frontier.
+  `#985`, `0026` reduced its canonical helper reproducer to a single line,
+  `0027` added a dedicated Arc-side frontier reproducer and updated plan/eval
+  accordingly, and `0028` confirmed its current probe is already minimal
+  enough, so further work should target `slice_end_index_len_fail` itself.
 - If this run stops here, treat that as an external runtime/tool constraint for
   this turn, not as a challenge-level terminal verdict.
 
