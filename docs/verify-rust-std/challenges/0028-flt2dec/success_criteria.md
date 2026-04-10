@@ -7,7 +7,7 @@ Source basis:
 
 | Function | Location | Status | Specification | Notes |
 | --- | --- | --- | --- | --- |
-| `digits_to_dec_str` | `core::num::flt2dec` | `partial` | Safe body of the decimal-digit formatter | Branch evidence exists only for the challenge-local `digits_to_dec_str_probe.rs` frontier; the exact copied `if exp >= buf.len()` select is still the current boundary. |
+| `digits_to_dec_str` | `core::num::flt2dec` | `partial` | Safe body of the decimal-digit formatter | Branch evidence exists only for the challenge-local `digits_to_dec_str_probe.rs` frontier; replay confirmation on `/tmp/0028-digits-to-dec-str-minslice-proof` still stops at `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`), so the current smallest reproducible boundary is the `slice_end_index_len_fail` leaf after the copied `if exp >= buf.len()` select. |
 | `digits_to_exp_str` | `core::num::flt2dec` | `not started` | Safe body of the exponent-format formatter | No branch-local proof artifact yet. |
 | `to_shortest_str` | `core::num::flt2dec` | `not started` | Safe body of the shortest-string formatter | No branch-local proof artifact yet. |
 | `to_shortest_exp_str` | `core::num::flt2dec` | `not started` | Safe body of the shortest-exponent formatter | No branch-local proof artifact yet. |

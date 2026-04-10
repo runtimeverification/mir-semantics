@@ -1,10 +1,10 @@
 # Execution Plan: Challenge 0028
 
 Current objective:
-- Reconfirm the published success criteria table, then reduce the new `core::slice::index` frontier at `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`) to the smallest challenge-local reproducer that still preserves the post-select path.
+- Reconfirm the published success criteria table, then keep the current challenge-local reproducer at the `core::slice::index` frontier `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`) unless a smaller reproducer can preserve the same post-select path.
 
 Next generator task:
-- Keep the restored real prefix slice `&buf[..exp]`, keep the suffix stub in place, and trim only the current post-select slice-index path so the next replay still preserves the challenge-local frontier while shrinking the reproducer.
+- Re-run the existing proof/show evidence against `/tmp/0028-digits-to-dec-str-minslice-proof`, then stop shrinking if the first leaf is still `slice_end_index_len_fail` at `Range<usize>::index`; otherwise record the newly smaller reproducer and its exact first leaf.
 
 Generator acceptance evidence:
 - The probe file path in `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec`.
@@ -19,6 +19,6 @@ Plan slices:
 3. Rerun only that minimally trimmed probe and record the first concrete boundary it reaches, classifying it as copied `flt2dec` control flow, decimal-point-path logic, a backend limit, or the underlying slice-index helper.
 
 Stop conditions:
-- Stop at `blocked` only if the follow-up probe reproduces a real backend float gap with direct evidence after the `buf.len()` branch test has been simplified away.
-- Stop at `in progress` if the follow-up probe reaches further into the decimal-point path and yields a concrete next slice beyond the copied `if exp >= buf.len()` select.
+- Stop at `blocked` only if a smaller reproducer exposes a new backend or library boundary with direct evidence after the `buf.len()` branch test has been simplified away.
+- Stop at `in progress` if the replay still lands on `slice_end_index_len_fail` at `Range<usize>::index` and no smaller challenge-local reproducer is found.
 - Do not widen scope to restore the real suffix slice or other operations until the first post-select leaf has been captured with evidence.

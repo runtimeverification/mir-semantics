@@ -28,7 +28,7 @@ Challenge-local artifact contract:
 Status board:
 
 - Planner: success criteria table published
-- Generator: checkpointed at the minimal `digits_to_dec_str_probe.rs` frontier
+- Generator: confirmed minimal `digits_to_dec_str_probe.rs` frontier for now
 - Evaluator: captured in `docs/verify-rust-std/challenges/0028-flt2dec/evaluation_result.md`
 - Draft PR: open
 
@@ -42,6 +42,9 @@ Current minimal reproducer:
   (`library/core/src/slice/index.rs:440`), with the proof stopping on the
   concrete `slice_end_index_len_fail` leaf after the copied branch condition
   is simplified for the single `b"1234", exp = 2` case.
+- Replay evidence from `/tmp/0028-digits-to-dec-str-minslice-proof` confirms
+  that the smallest current reproducer still stops at the same
+  `Range<usize>::index` leaf, so the branch-local frontier is stable for now.
 
 Replay commands:
 

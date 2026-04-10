@@ -6,6 +6,7 @@
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec`
 - Status at planner handoff: the challenge-local minimal reproducer is the copied `digits_to_dec_str_probe.rs` frontier, and the branch-local evidence is now being audited against `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md`.
 - Current checkpoint: the restored-prefix rerun keeps `&buf[..exp]` in place, the suffix stub remains narrow, and the exact frontier is now the underlying `core::slice::index` leaf `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` at `library/core/src/slice/index.rs:440`.
+- Replay confirmation from `/tmp/0028-digits-to-dec-str-minslice-proof`: `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-minslice-proof --statistics --leaves` still reports the same leaf at `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`), so the current reproducer is already the smallest evidence-bearing frontier for now.
 - The saved-proof audit for the unchanged taken-arm specialization reaches the terminal target leaf `#EndProgram ~> .K` via `/tmp/0028-digits-to-dec-str-current-proof`.
 - The current branch evidence is still challenge-local rather than module-wide: the proof at `/tmp/0028-digits-to-dec-str-prefixslice-step2-proof` ends with `ProofStatus.FAILED`, `nodes: 10`, `failing: 3`, `vacuous: 0`, `stuck: 3`, `terminal: 1`, and the frontier has moved into the underlying `core::slice::index` path at `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`) after concretizing the copied branch test.
 - The branch-local discoverability check now replays that same probe with `kmir.prove_program` and asserts the proof still fails at the copied frontier instead of only checking for file presence.
@@ -139,6 +140,9 @@
 - The next exact narrowing step, if continued, is to focus on the copied
   `digits_to_dec_str` branch select at `if exp >= buf.len()` rather than
   reopening the already-bypassed wrapper preconditions.
+- The next generator decision is to preserve this reproducer as the current
+  minimum unless a smaller replay can keep the same post-select path while
+  moving the first leaf past `core::slice::index`.
 - Current-turn checkpoint: the probe compiled again, but the follow-up proof
   rerun was interrupted before a new leaf summary was captured. No new frontier
   was introduced, and the last established boundary remains the copied
