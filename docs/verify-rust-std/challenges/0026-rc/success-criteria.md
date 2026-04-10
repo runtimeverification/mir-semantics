@@ -23,4 +23,3 @@ so the audit trail stays compact without losing traceability.
 | `Rc<dyn Any,A:Allocator>::downcast_unchecked` | `alloc::rc` | Not started | The stored value must really be of the requested dynamic type. | Separate dynamic-type reasoning from the raw-pointer tranche. |
 | `Weak<T:?Sized>::from_raw` | `alloc::rc` | Pending wrapper follow-on | Thin `Global` specialization of `Weak<T:?Sized,A:Allocator>::from_raw_in`. | Wrapper coverage depends on the allocator-general weak root. |
 | `Weak<T:?Sized,A:Allocator>::from_raw_in` | `alloc::rc` | Not started | Raw pointer must come from `Weak::into_raw`, retain one weak token, and match allocator provenance. | Strong count may already be zero; this is the weak-token recovery root. |
-
