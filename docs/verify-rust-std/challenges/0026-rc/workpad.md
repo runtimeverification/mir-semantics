@@ -6,10 +6,10 @@
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
 - Draft PR: exists.
 - Evaluator: active / in progress.
-- Local status: first audit slice committed in `87a669dc`; the `Rc::from_raw_in` root harness and the challenge-local mirror now both use the stable `MaybeUninit` + raw-write witness shape in `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`.
+- Local status: first audit slice committed in `87a669dc`; the current `Rc::from_raw_in` files still capture a concrete witness, and the next step is to split that witness into a symbolic verification harness plus the temporary frontier reproducer.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.
-- Latest blocker checkpoint: the stable `MaybeUninit` witness attempt for `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs` reached proof construction but still failed at the same terminal direct-witness `CastKind::Transmute` leaf; node 4 in `/tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit` captures the current frontier.
+- Latest blocker checkpoint: the stable `MaybeUninit` witness attempt for `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs` reached proof construction but still failed at the same terminal direct-witness `CastKind::Transmute` leaf; node 4 in `/tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit` captures the current frontier. That file should now be treated as a temporary reproducer only.
 
 ## Confirmed Inputs
 
@@ -39,6 +39,7 @@
 - The previous `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` blocker is gone.
 - The new frontier is still the direct witness path itself, which terminates in `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` with `CastKind::Transmute` rather than inside `Rc::new_in`.
 - The latest stable `MaybeUninit` witness revision now reaches proof construction, but it still does not move past the terminal cast leaf.
+- That concrete witness is a temporary reproducer, not the final verification harness shape.
 
 ## Audit Result
 
@@ -80,6 +81,12 @@
 - Four proof roots advance eight of the twelve public `unsafe` contracts because the stable `Global` APIs are thin wrappers over the allocator-general `_in` bodies.
 - `Rc::increment_strong_count_in` and `Rc::decrement_strong_count_in` both depend on successful ownership recovery from `Rc::from_raw_in`, so the tranche has one clear dependency spine.
 - The remaining four public `unsafe` APIs would immediately widen scope into initialization, aliasing, or dynamic-type reasoning.
+
+## Verification Shape
+
+- Research note: `docs/verify-rust-std/challenges/0026-rc/verification-shape-note.md`
+- The current `rc-from-raw-in-frontier-fail.rs` is only a temporary frontier reproducer.
+- The next implementation step is to split the witness into a symbolic proof entrypoint and a separate frontier reproducer.
 
 ## Known Soft Risks
 

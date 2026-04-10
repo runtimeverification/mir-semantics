@@ -2,7 +2,7 @@
 
 ## Objective
 
-Turn the published `Rc`/`Weak` challenge requirements into one auditable success-criteria table plus one challenge-local frontier harness, so the generator can start from the highest-leverage API cluster instead of spreading across the whole `alloc::rc` surface.
+Turn the published `Rc`/`Weak` challenge requirements into a verification-shaped harness plan: a symbolic contract harness for `Rc::from_raw_in` plus a separate temporary frontier reproducer, so the generator can start from the highest-leverage API cluster instead of spreading across the whole `alloc::rc` surface.
 
 ## Confirmed Contract Surface
 
@@ -15,16 +15,16 @@ Turn the published `Rc`/`Weak` challenge requirements into one auditable success
 
 ## Single Next Technical Subtask
 
-The stable `MaybeUninit`-backed `System` allocation witness is now in place in both the root harness and the challenge-local frontier mirror, using raw memory writes (`MaybeUninit` plus `ptr::write`) and cast-free field projection to preserve the allocator/raw-pointer pair. The remaining exact boundary is the terminal `#cast(..., CastKind::Transmute, ...)` leaf that still appears in node 4.
+Introduce the smallest verification-shaped `Rc::from_raw_in` proof entrypoint, symbolic over the primitive payload value, that reuses the stable `MaybeUninit` witness helper and is collected as a dedicated proof harness. Keep `rc-from-raw-in-frontier-fail.rs` as the temporary frontier reproducer only.
 
 ## Why This Comes First
 
-The old `Rc::new_in` / `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` detour is already gone. The unstable `Box::write(...)` blocker is gone too; the current proof still terminates at the same transmute leaf, so the narrowest useful follow-up remains to keep this exact raw-memory witness shape and chase the cast frontier instead of widening into `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in`.
+The old `Rc::new_in` / `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` detour is already gone. The unstable `Box::write(...)` blocker is gone too, but the current file is still a concrete witness driver. The narrowest useful follow-up is to split the witness into a symbolic proof entrypoint plus a separate frontier reproducer, rather than widening into `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in`.
 
 ## Exit Criteria
 
 - The success table in `docs/verify-rust-std/challenges/0026-rc/success-criteria.md` stays aligned with the public `unsafe` surface and the branch-local evidence.
-- The `Rc::from_raw_in` challenge-local harness no longer needs the `Box::new_in` witness wrapper to establish the raw pointer.
-- The witness setup uses a raw `MaybeUninit`-backed `System` allocation path, avoids unstable library calls like `Box::write`, and still terminates at the committed `CastKind::Transmute` leaf.
-- The existing `System` provenance is preserved in the root harness and mirrored by the challenge-local frontier file.
+- The `Rc::from_raw_in` challenge-local frontier file is clearly demoted to a temporary reproducer, not the verification target.
+- The verification-shaped harness should be symbolic over the payload value, keep `System` concrete, and prove the preconditions around the stable `MaybeUninit` witness helper.
+- The frontier reproducer remains separate until the new proof entrypoint is in place and collected.
 - Any remaining blocker is recorded as a precise backend dependency or semantic gap, not as a widened Rc API search.
