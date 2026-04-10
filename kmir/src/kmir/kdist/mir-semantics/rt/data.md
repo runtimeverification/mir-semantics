@@ -148,7 +148,7 @@ We ensure that any projections of the copy operation are traversed appropriately
 
 ```k
   rule <k> operandCopy(place(local(I), PROJECTIONS))
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts, .ProjectionElems)
         ~> #readProjection(false)
         ...
        </k>
@@ -164,7 +164,7 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
 ```k
   rule <k> operandMove(place(local(I), PROJECTIONS))
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts, .ProjectionElems)
         ~> #readProjection(true)
        ...
        </k>
@@ -201,7 +201,7 @@ If we are setting a value at a `Place` which has `Projection`s in it, then we mu
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL)
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJ, .Contexts)
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJ, .Contexts, .ProjectionElems)
         ~> #writeProjection(VAL)
        ...
        </k>
@@ -240,33 +240,37 @@ There are different kinds of `ProjectionElem`s:
 - Casting values (`OpaqueCast` or `Downcast` - variant narrowing) and `Subtype`ing
 
 Read and write operations to places that include (a chain of) projections are handled by a special rewrite symbol `#traverseProjection`.
-This helper does the projection lookup and maintains the context chain along the lookup path, then passes control back to `#readProjection` and `#writeProjection`/`#setMoved`.
+This helper separates two different concerns that used to be conflated:
+
+- `Contexts` record only the inverse structural updates needed for write-back (`#buildUpdate`)
+- the final `ProjectionElems` argument accumulates the forward surface place path used when rebuilding references and pointers
+
 A `Deref` projection in the projections list changes the target of the write operation, while `Field` updates change the value that is being written (updating just one field of it), recursively.
 
 ```k
-  syntax KItem ::= #traverseProjection ( WriteTo , Value, ProjectionElems, Contexts )
+  syntax KItem ::= #traverseProjection ( WriteTo , Value, ProjectionElems, Contexts, ProjectionElems )
                  | #readProjection ( Bool )
                  | #writeProjection ( Value )
                  | "#writeMoved"
 
-  rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
-  rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
+  rule <k> #traverseProjection(_, VAL, .ProjectionElems, _, _) ~> #readProjection(false) => VAL ... </k>
+  rule <k> #traverseProjection(_, VAL, .ProjectionElems, _, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
 
-  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS, _PATH)
         ~> #writeProjection(NEW)
         => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
        ...
        </k>
      [preserves-definedness] // valid context ensured upon context construction
 
-  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS, _PATH)
         ~> #writeMoved
         => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
        ...
        </k>
      [preserves-definedness] // valid context ensured upon context construction
 
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS, _PATH)
         ~> #writeProjection(NEW)
         => .K
         ...
@@ -284,7 +288,7 @@ A `Deref` projection in the projections list changes the target of the write ope
      andBool isStackFrame(STACK[FRAME -Int 1])
      [preserves-definedness] // valid context ensured upon context construction
 
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS, _PATH)
         ~> #writeMoved
         => .K
         ...
@@ -314,11 +318,12 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
                    | toStack ( Int , Local )
                    | toAlloc ( AllocId )
 
-  // retains information about the value that was deconstructed by a projection
+  // retains information about the value that was deconstructed by a projection.
+  // These frames are only used for write-back reconstruction.
   syntax Context ::= CtxField( VariantIdx, List, Int , Ty )
                    | CtxFieldUnion( FieldIdx, Value, Ty )
                    | CtxIndex( List , Int ) // array index constant or has been read before
-                   | CtxRangeHead( List ) // internal helper for projecting through the head element of a range
+                   | CtxRangeHead( List ) // inverse frame for the implicit head-element selection on a range
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
                    | "CtxWrapStruct" // special context adding a singleton Aggregate(0, _) around a value
@@ -383,11 +388,12 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     [preserves-definedness] // valid list indexing and sort checked
 
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
-  syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
                            | consP ( ProjectionElem , ProjectionElems ) [function, total]
+                           | #pushProjection ( ProjectionElems , ProjectionElem ) [function, total]
   // ----------------------------------------------------------------------------------------
   rule appendP(.ProjectionElems, TAIL) => TAIL
   rule appendP(X:ProjectionElem REST:ProjectionElems, TAIL) => consP(X, appendP(REST, TAIL))
+  rule #pushProjection(PROJS, PROJ) => appendP(PROJS, PROJ .ProjectionElems)
   // default
   rule consP(      PROJ      ,           .ProjectionElems           ) => PROJ .ProjectionElems
   rule consP(      PROJ      ,   P:ProjectionElem PS:ProjectionElems) => PROJ (P PS)
@@ -395,11 +401,9 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule consP(projectionElemSingletonArray, projectionElemConstantIndex(0, 0, false) PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemConstantIndex(0, 0, false), projectionElemSingletonArray PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) PS:ProjectionElems) => PS [priority(40)]
-  rule consP(PointerOffset(OFF, ORIGIN_LENGTH), projectionElemConstantIndex(0, 0, false) PS:ProjectionElems)
-    => PointerOffset(OFF, ORIGIN_LENGTH) PS [priority(40)]
   // this rule is not valid if the original pointee has more than one field
   // rule consP(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct PS:ProjectionElems) => PS [priority(40)]
-  // HACK: special rule which munges together constant-indexing and offset projections 
+  // Canonicalize an appended pointer offset against an already indexed place path.
   rule consP( projectionElemConstantIndex(I, 0, false), PointerOffset(OFF, _SIZE) PS) => projectionElemConstantIndex(I +Int OFF, 0, false) PS [priority(40)]
     // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
   rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
@@ -462,13 +466,15 @@ This is done without consideration of the validity of the Downcast[^downcast].
              DEST,
              Aggregate(IDX, ARGS),
              projectionElemField(fieldIdx(I), TY) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              getValue(ARGS, I),
              PROJS,
-             CtxField(IDX, ARGS, I, TY) CTXTS
+             CtxField(IDX, ARGS, I, TY) CTXTS,
+             #pushProjection(PATH, projectionElemField(fieldIdx(I), TY))
            )
         ...
         </k>
@@ -480,13 +486,15 @@ This is done without consideration of the validity of the Downcast[^downcast].
              DEST,
              Aggregate(_, ARGS),
              projectionElemDowncast(IDX) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              Aggregate(IDX, ARGS),
              PROJS,
-             CTXTS
+             CTXTS,
+             #pushProjection(PATH, projectionElemDowncast(IDX))
            )
        ...
        </k>
@@ -503,9 +511,16 @@ The situation typically arises when the stored value is a pointer (`NonNull`) bu
              DEST,
              VALUE,
              projectionElemWrapStruct PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
-        => #traverseProjection(DEST, Aggregate(variantIdx(0), ListItem(VALUE)), PROJS, CtxWrapStruct CTXTS) ... </k>
+        => #traverseProjection(
+             DEST,
+             Aggregate(variantIdx(0), ListItem(VALUE)),
+             PROJS,
+             CtxWrapStruct CTXTS,
+             #pushProjection(PATH, projectionElemWrapStruct)
+           ) ... </k>
     [preserves-definedness, priority(100)]
 ```
 
@@ -522,13 +537,15 @@ or reference reconstruction.
              DEST,
              Range(ListItem(Aggregate(V_IDX, ARGS)) REST:List),
              projectionElemField(fieldIdx(I), TY) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              getValue(ARGS, I),
              PROJS,
-             CtxField(V_IDX, ARGS, I, TY) CtxRangeHead(ListItem(Aggregate(V_IDX, ARGS)) REST) CTXTS
+             CtxField(V_IDX, ARGS, I, TY) CtxRangeHead(ListItem(Aggregate(V_IDX, ARGS)) REST) CTXTS,
+             #pushProjection(PATH, projectionElemField(fieldIdx(I), TY))
            )
         ...
         </k>
@@ -540,13 +557,15 @@ or reference reconstruction.
              DEST,
              Range(ListItem(Union(FIELD_IDX, ARG)) REST:List),
              projectionElemField(FIELD_IDX, TY) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              ARG,
              PROJS,
-             CtxFieldUnion(FIELD_IDX, ARG, TY) CtxRangeHead(ListItem(Union(FIELD_IDX, ARG)) REST) CTXTS
+             CtxFieldUnion(FIELD_IDX, ARG, TY) CtxRangeHead(ListItem(Union(FIELD_IDX, ARG)) REST) CTXTS,
+             #pushProjection(PATH, projectionElemField(FIELD_IDX, TY))
            )
         ...
         </k>
@@ -560,13 +579,15 @@ or reference reconstruction.
              DEST,
              Union(FIELD_IDX, ARG),
              projectionElemField(FIELD_IDX, TY) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              ARG,
              PROJS,
-             CtxFieldUnion(FIELD_IDX, ARG, TY) CTXTS
+             CtxFieldUnion(FIELD_IDX, ARG, TY) CTXTS,
+             #pushProjection(PATH, projectionElemField(FIELD_IDX, TY))
            )
         ...
         </k>
@@ -587,13 +608,15 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
              DEST,
              Range(ELEMENTS),
              projectionElemIndex(local(LOCAL)) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              getValue(ELEMENTS, #expectUsize(getValue(LOCALS, LOCAL))),
              PROJS,
-             CtxIndex(ELEMENTS, #expectUsize(getValue(LOCALS, LOCAL))) CTXTS
+             CtxIndex(ELEMENTS, #expectUsize(getValue(LOCALS, LOCAL))) CTXTS,
+             #pushProjection(PATH, projectionElemConstantIndex(#expectUsize(getValue(LOCALS, LOCAL)), 0, false))
            )
         ...
         </k>
@@ -609,13 +632,15 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
              DEST,
              Range(ELEMENTS),
              projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              getValue(ELEMENTS, OFFSET),
              PROJS,
-             CtxIndex(ELEMENTS, OFFSET) CTXTS
+             CtxIndex(ELEMENTS, OFFSET) CTXTS,
+             #pushProjection(PATH, projectionElemConstantIndex(OFFSET, 0, false))
            )
         ...
         </k>
@@ -627,13 +652,15 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
              DEST,
              Range(ELEMENTS),
              projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              getValue(ELEMENTS, OFFSET),
              PROJS,
-             CtxIndex(ELEMENTS, MINLEN -Int OFFSET) CTXTS
+             CtxIndex(ELEMENTS, MINLEN -Int OFFSET) CTXTS,
+             #pushProjection(PATH, projectionElemConstantIndex(MINLEN -Int OFFSET, 0, false))
            )
         ...
         </k>
@@ -658,13 +685,15 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
              DEST,
              Range(ELEMENTS),
              projectionElemSubslice(START, END, false) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              Range(range(ELEMENTS, START, size(ELEMENTS) -Int END)),
              PROJS,
-             CtxSubslice(ELEMENTS, START, END) CTXTS
+             CtxSubslice(ELEMENTS, START, END) CTXTS,
+             #pushProjection(PATH, projectionElemSubslice(START, END, false))
            )
         ...
         </k>
@@ -677,13 +706,15 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
              DEST,
              Range(ELEMENTS),
              projectionElemSubslice(START, END, true) PROJS, // END from end of ELEMS
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              Range(range(ELEMENTS, START, END)),
              PROJS,
-             CtxSubslice(ELEMENTS, START, size(ELEMENTS) -Int END) CTXTS
+             CtxSubslice(ELEMENTS, START, size(ELEMENTS) -Int END) CTXTS,
+             #pushProjection(PATH, projectionElemSubslice(START, size(ELEMENTS) -Int END, false))
            )
         ...
         </k>
@@ -696,13 +727,15 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
              DEST,
              VAL,
              PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              #rangeView(VAL),
              PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS,
-             CTXTS
+             CTXTS,
+             PATH
            )
         ...
         </k>
@@ -712,17 +745,21 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
   rule <k> #traverseProjection(
              DEST,
              Range(ELEMENTS),
-             PointerOffset(OFFSET, _ORIGIN_LENGTH) PROJS, // TODO: seems strange to not use the ORIGIN_LENGTH...
-             CTXTS
+             PointerOffset(OFFSET, _ORIGIN_LENGTH) PROJS,
+             CTXTS,
+             PATH
            )
         => #traverseProjection(
              DEST,
              Range(range(ELEMENTS, OFFSET, 0)),
              PROJS,
-             CtxPointerOffset(ELEMENTS, OFFSET, size(ELEMENTS)) CTXTS
+             CtxPointerOffset(ELEMENTS, OFFSET, size(ELEMENTS)) CTXTS,
+             #pushProjection(PATH, PointerOffset(OFFSET, size(ELEMENTS)))
            )
         ...
         </k>
+    // After earlier projections have been applied, the current range is the offset origin
+    // we want to preserve for both write-back and reference/path reconstruction.
     requires 0 <=Int OFFSET andBool OFFSET <=Int size(ELEMENTS)
     [preserves-definedness] // Offset checked to be in range for ELEMENTS
 ```
@@ -745,8 +782,8 @@ An attempt to read more elements than the length of the accessed array is undefi
   syntax KItem ::= #derefTruncate ( MetadataSize , ProjectionElems )
   // ----------------------------------------------------------------------------------------
   // values other than `Range` do not have metadata anyway, they are passed along unchanged
-  rule <k> #traverseProjection( DEST,         VAL                , .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadataSize, PROJS)
-        => #traverseProjection(DEST, VAL, PROJS, CTXTS)
+  rule <k> #traverseProjection( DEST,         VAL                , .ProjectionElems, CTXTS, PATH) ~> #derefTruncate(noMetadataSize, PROJS)
+        => #traverseProjection(DEST, VAL, PROJS, CTXTS, PATH)
         ...
        </k>
     requires notBool isRange(VAL)
@@ -758,36 +795,40 @@ An attempt to read more elements than the length of the accessed array is undefi
   rule isRange( _OTHER ) => false [owise]
 
   // staticSize metadata requires an array of suitable length and truncates it
-  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
-        => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
+  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS, PATH) ~> #derefTruncate(staticSize(SIZE), PROJS)
+        => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS, PATH)
         ...
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
   // dynamicSize metadata requires an array of suitable length and truncates it
-  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize(SIZE), PROJS)
-        => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
+  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS, PATH) ~> #derefTruncate(dynamicSize(SIZE), PROJS)
+        => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS, PATH)
         ...
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
   // If an array was projected to but no metadata is available, use the head element
-  rule <k> #traverseProjection( DEST, Range(ListItem(VAL) _:List), .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadataSize, PROJS)
-        => #traverseProjection(DEST, VAL, PROJS, CTXTS)
+  rule <k> #traverseProjection( DEST, Range(ListItem(VAL) _:List), .ProjectionElems, CTXTS, PATH) ~> #derefTruncate(noMetadataSize, PROJS)
+        => #traverseProjection(DEST, VAL, PROJS, CTXTS, PATH)
         ...
        </k>
     [preserves-definedness]
 
+  // Deref restarts traversal from the referred place. The previous update contexts and
+  // accumulated path belong to the pointer value itself, not to the pointee, so both reset.
   // Ref, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
              _DEST,
              Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
-             _CTXTS
+             _CTXTS,
+             _PATH
            )
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
              appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts
+             .Contexts,
+             .ProjectionElems
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -803,13 +844,15 @@ An attempt to read more elements than the length of the accessed array is undefi
              _DEST,
              Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
-             _CTXTS
+             _CTXTS,
+             _PATH
            )
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
              PLACEPROJ, // apply reference projections with pointer offset
-             .Contexts
+             .Contexts,
+             .ProjectionElems
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -825,13 +868,15 @@ An attempt to read more elements than the length of the accessed array is undefi
              _DEST,
              Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
-             _CTXTS
+             _CTXTS,
+             _PATH
            )
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
              appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts
+             .Contexts,
+             .ProjectionElems
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -848,13 +893,15 @@ An attempt to read more elements than the length of the accessed array is undefi
              _DEST,
              Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
-             _CTXTS
+             _CTXTS,
+             _PATH
            )
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
              PLACEPROJ,
-             .Contexts
+             .Contexts,
+             .ProjectionElems
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -871,13 +918,15 @@ An attempt to read more elements than the length of the accessed array is undefi
              _DEST,
              PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
-             _CTXTS
+             _CTXTS,
+             _PATH
            )
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
              appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts // previous contexts obsolete
+             .Contexts, // previous contexts obsolete
+             .ProjectionElems
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -893,13 +942,15 @@ An attempt to read more elements than the length of the accessed array is undefi
              _DEST,
              PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
-             _CTXTS
+             _CTXTS,
+             _PATH
            )
         => #traverseProjection(
             toStack(OFFSET, LOCAL),
              #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
              PLACEPROJ, // apply reference projections
-             .Contexts // add pointer offset context
+             .Contexts, // add pointer offset context
+             .ProjectionElems
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
          ...
@@ -915,13 +966,15 @@ An attempt to read more elements than the length of the accessed array is undefi
              _DEST,
              PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
-             _CTXTS
+             _CTXTS,
+             _PATH
            )
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
              appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts // previous contexts obsolete
+             .Contexts, // previous contexts obsolete
+             .ProjectionElems
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -938,13 +991,15 @@ An attempt to read more elements than the length of the accessed array is undefi
              _DEST,
              PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
-             _CTXTS
+             _CTXTS,
+             _PATH
            )
         => #traverseProjection(
              toLocal(I),
              getValue(LOCALS, I),
              PLACEPROJ, // apply reference projections
-             .Contexts // add pointer offset context
+             .Contexts, // add pointer offset context
+             .ProjectionElems
            )
           ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -966,13 +1021,15 @@ even though this could be supported.
              _DEST,
              AllocRef(ALLOC_ID, ALLOC_PROJS, metadata(METADATA_SIZE, _PTR_OFFSET, _)), // FIXME can this be offset?
              projectionElemDeref PROJS,
-             _CTXTS
+             _CTXTS,
+             _PATH
            )
         => #traverseProjection(
              toAlloc(ALLOC_ID),
              {lookupAlloc(ALLOC_ID)}:>Value,
              ALLOC_PROJS, // alloc projections
-             .Contexts // previous contexts obsolete
+             .Contexts, // previous contexts obsolete
+             .ProjectionElems
            )
           ~> #derefTruncate(METADATA_SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
@@ -1273,24 +1330,6 @@ As references are sometimes created by dereferencing other references or pointer
 This eliminates any `Deref` projections from the place, and also resolves `Index` projections to `ConstantIndex` ones.
 
 ```k
-  // reconstructs projections stored as context (used for Rvalues Ref and AddressOf )
-  syntax ProjectionElems ::= #projectionsFor( Contexts )                   [function, total]
-                           | #projectionsFor( Contexts , ProjectionElems ) [function, total]
-  // ----------------------------------------------------------------------------------------
-  rule #projectionsFor(CTXS) => #projectionsFor(CTXS, .ProjectionElems)
-  rule #projectionsFor(       .Contexts          , PROJS) => PROJS
-  rule #projectionsFor(CtxField(_, _, I, TY) CTXS, PROJS) => #projectionsFor(CTXS,     projectionElemField(fieldIdx(I), TY) PROJS)
-  rule #projectionsFor(CtxIndex(_, 0) CtxPointerOffset(_, OFFSET, ORIGIN_LENGTH) CTXS, PROJS)
-      => #projectionsFor(CtxPointerOffset(.List, OFFSET, ORIGIN_LENGTH) CTXS, PROJS)
-    [priority(40)]
-  rule #projectionsFor(       CtxIndex(_, I) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemConstantIndex(I, 0, false) PROJS)
-  rule #projectionsFor(    CtxRangeHead(_) CTXS, PROJS) => #projectionsFor(CTXS, PROJS)
-  rule #projectionsFor( CtxSubslice(_, I, J) CTXS, PROJS) => #projectionsFor(CTXS,      projectionElemSubslice(I, J, false) PROJS)
-  // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
-  rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
-  rule #projectionsFor(CtxFieldUnion(F_IDX, _, TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(F_IDX, TY) PROJS)
-  rule #projectionsFor(  CtxWrapStruct       CTXS, PROJS) => #projectionsFor(CTXS,                 projectionElemWrapStruct PROJS)
-
   // Borrowing a zero-sized local that is still `NewLocal`: initialise it, then reuse the regular rule.
   rule <k> rvalueRef(REGION, KIND, place(local(I), PROJS))
         => #setLocalValue(
@@ -1311,7 +1350,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
     [preserves-definedness] // valid list indexing checked, zero-sized locals materialise trivially
 
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts, .ProjectionElems)
         ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO: Sus on this rule
        ...
        </k>
@@ -1323,8 +1362,8 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   syntax KItem ::= #forRef( Mutability , Metadata )
 
   // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
-  rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forRef(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
-        => #mkRef(DEST, #projectionsFor(CTXTS), MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE) )
+  rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, _CTXTS, PATH) ~> #forRef(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
+        => #mkRef(DEST, PATH, MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE) )
         ...
       </k>
 
@@ -1370,7 +1409,7 @@ The operation typically creates a pointer with empty metadata.
 
   rule <k> rvalueAddressOf(MUT, place(local(I), PROJS))
          =>
-           #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
+           #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts, .ProjectionElems)
           ~> #forPtr(MUT, metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO These initial values might get overwrote
            // we should use #alignOf to emulate the address
        ...
@@ -1381,8 +1420,8 @@ The operation typically creates a pointer with empty metadata.
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
 
   // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
-  rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forPtr(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
-        => #mkPtr(DEST, #projectionsFor(CTXTS), MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE))
+  rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, _CTXTS, PATH) ~> #forPtr(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
+        => #mkPtr(DEST, PATH, MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE))
         ...
       </k>
 

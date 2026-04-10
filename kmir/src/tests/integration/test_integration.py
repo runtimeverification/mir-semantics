@@ -52,7 +52,6 @@ PROVE_SHOW_SPECS = [
     'checked_arithmetic-fail',
     'offset-u8-fail',
     'pointer-cast-length-test-fail',
-    'niche-enum',
     'assume-cheatcode-conflict-fail',
     'raw-ptr-cast-fail',
     'transmute-u8-to-enum-fail',
