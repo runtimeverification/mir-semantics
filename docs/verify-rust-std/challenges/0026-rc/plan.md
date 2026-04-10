@@ -15,15 +15,15 @@ Turn the published `Rc`/`Weak` challenge requirements into one concrete proof-or
 
 ## Single Next Technical Subtask
 
-Replace the current `RcInnerWitness<u32>` field-address witness with a raw `MaybeUninit`-backed `System` allocation witness that computes the target pointer through explicit raw provenance operations (`addr_of!` / `cast`-free field projection) so the harness can keep the same allocator/raw-pointer pair without re-entering the committed `#cast(..., CastKind::Transmute, ...)` leaf.
+Replace the current `RcInnerWitness<u32>` field-address witness with a stable `MaybeUninit`-backed `System` allocation witness that writes the witness value through raw memory operations (`MaybeUninit` plus `ptr::write` or equivalent stable pointer writes, not `Box::write`) and then computes the target pointer through explicit raw provenance operations (`addr_of!` / cast-free field projection) so the harness can keep the same allocator/raw-pointer pair without re-entering the committed `#cast(..., CastKind::Transmute, ...)` leaf.
 
 ## Why This Comes First
 
-The old `Rc::new_in` / `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` detour is already gone. The remaining blocker is now the witness-construction path itself, which terminates in a `#cast(..., CastKind::Transmute, ...)` leaf, so the narrowest useful follow-up is to swap in a cast-free raw-memory witness instead of widening into `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in`.
+The old `Rc::new_in` / `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` detour is already gone. The remaining blocker is now the witness-construction path itself: the attempted `MaybeUninit` route fails before proof construction because `Box::write(...)` is unstable on this toolchain, so the narrowest useful follow-up is to keep the raw-memory witness shape but switch to stable pointer writes instead of widening into `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in`.
 
 ## Exit Criteria
 
 - The `Rc::from_raw_in` harness no longer needs the `Box::new_in` witness wrapper to establish the raw pointer.
-- The witness setup uses a raw `MaybeUninit`-backed `System` allocation path and no longer introduces the committed `CastKind::Transmute` leaf.
+- The witness setup uses a raw `MaybeUninit`-backed `System` allocation path, avoids unstable library calls like `Box::write`, and no longer introduces the committed `CastKind::Transmute` leaf.
 - The existing `System` provenance is preserved in the root harness.
 - Any remaining blocker is recorded as a precise backend dependency or semantic gap, not as a widened Rc API search.
