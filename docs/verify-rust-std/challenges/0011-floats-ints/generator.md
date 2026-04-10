@@ -100,6 +100,13 @@ Ownership:
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shr.rs --start-symbol unchecked_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shr-u8 --reload --fail-fast --max-workers 1`.
   The run was interrupted before any terminal proof result was emitted, so no
   new frontier was established.
+- 2026-04-10: Ran a diagnostics-only pass over
+  `kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shr.rs`
+  and the matching `show/unchecked_shr-fail.*.expected` artifacts. The harness
+  has no smaller split point than `unchecked_shr_u8`, and the expected outputs
+  all reduce to the same `binOpShrUnchecked` frontier plus the
+  `ARG_UINT2:Int >=Int 0` guard. No narrower branch-worthy subcase was found,
+  so another proof run is not justified from this checkpoint alone.
 
 ## Files Touched
 
@@ -257,6 +264,20 @@ Ownership:
     still collected, but this slice did not reach a proof verdict and no new
     frontier was established.
 
+25. Command:
+    `nl -ba kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shr.rs | sed -n '1,220p'`
+    Result:
+    confirmed the harness has ten top-level wrappers and the smallest callable
+    subcase is `unchecked_shr_u8` at lines 16-21.
+
+26. Command:
+    `for f in kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/show/unchecked_shr-fail.*.expected; do rg -n "#freezer|#free|thunk|constraint|truncate|modInt|binOpShrUnchecked" "$f"; done`
+    Result:
+    confirmed the unsigned `u8` expected output reaches
+    `#applyBinOp ( binOpShrUnchecked ... ) ~> #freezer`, while the wider
+    unsigned cases and all signed cases remain on the same frontier shape with
+    the same `ARG_UINT2:Int >=Int 0` constraint.
+
 ## Commit Inventory
 
 - `2e09185c` — `feat(verify-rust-std): port challenge 0011 harnesses and runner`
@@ -275,5 +296,6 @@ Ownership:
   stack; the ported expected outputs still include stuck frontiers on float
   intrinsics (e.g., `fabsf32`, `fabsf64`) in
   `to_int_unchecked-fail.*.expected`.
-- The current smallest `unchecked_shr_u8` proof slice did not complete before
-  interruption, so the branch still lacks fresh proof evidence for that family.
+- `unchecked_shr` diagnostics did not uncover a smaller branch-worthy target
+  than `unchecked_shr_u8`; the family is still collected, but this checkpoint
+  is evidence-only and does not justify another proof rerun yet.

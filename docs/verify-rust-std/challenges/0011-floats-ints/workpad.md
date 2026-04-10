@@ -36,6 +36,9 @@
 - `unchecked_mul.rs` and its fail artifact are already present in the same
   challenge-local harness set, so the next cheapest remaining Part 1 slice is
   `unchecked_mul_u8`.
+- `unchecked_shr.rs` is a single-file harness with ten wrappers and no smaller
+  split points; the smallest callable subcase is `unchecked_shr_u8` at lines
+  16-21, so there is no narrower diagnostic target inside the harness itself.
 - The branch now has twelve passing direct proof slices
   (`unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`,
@@ -208,6 +211,9 @@
 - If the planner delegates another generator slice after that reassessment, it
   should choose a new explicit non-float target rather than revisiting the
   now-completed `carrying_mul_u8` slice.
+- Exact next step from this checkpoint: hold on `unchecked_shr`; the
+  diagnostics did not produce a branch-worthy frontier change, so do not queue
+  another proof run unless a new bound or a new observation is introduced.
 
 ## Evaluator Note
 
@@ -250,7 +256,12 @@
   `test_verify_rust_std[unchecked_shr]` using:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shr and not fail" -q`.
   The family is still present in collection.
-- 2026-04-10: Smallest available `unchecked_shr` proof slice was started with
-  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shr.rs --start-symbol unchecked_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shr-u8 --reload --fail-fast --max-workers 1`,
-  but the run was interrupted before a terminal proof result was captured.
-  No new frontier was established.
+- 2026-04-10: Diagnostic pass over `unchecked_shr.rs` and the matching
+  `show/unchecked_shr-fail.*.expected` files showed that the harness already
+  bottoms out at `unchecked_shr_u8`; the other widths are only width variants
+  of the same `binOpShrUnchecked` frontier. The smallest observed frontier is
+  the `unchecked_shr_u8` expected state, which reaches
+  `#applyBinOp ( binOpShrUnchecked , Integer ( ARG_UINT1:Int , 8 , false ) ,
+  Integer ... ) ~> #freezer` with the `ARG_UINT2:Int >=Int 0` constraint.
+  No narrower branch-worthy subcase was found, so another proof run is not
+  justified from this checkpoint alone.
