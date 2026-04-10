@@ -1,0 +1,30 @@
+challenge_id	slug	blocker_class	confidence	note
+0001	core-transmutation	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0002	intrinsics-memory	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0003	pointer-arithmentic	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0004	btree-node	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0005	linked-list	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0006	nonnull	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0007	atomic-types	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0008	smallsort	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0009	duration	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0010	string	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0011	floats-ints	CLOSED	terminal	closed per user direction as superseded by PR #985
+0012	nonzero	UNKNOWN	medium	exact blocker is the `u8 -> Option<NonZeroU8>` niche-cast path; generic same-size transmute is already green
+0013	cstr	MIR_SEMANTICS	medium	donor-linked body supply breaks root start-symbol lookup in current linker/proof-setup plumbing
+0014	convert-num	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0015	intrinsics-simd	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0016	iter	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0017	slice	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0018	slice-iter	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0019	rawvec	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0020	str-pattern-pt1	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0021	str-pattern-pt2	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0022	str-iter	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0023	vec-pt1	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0024	vec-pt2	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0025	vecdeque	UNCLASSIFIED	none	not run under v2 harness sweep yet
+0026	rc	MIR_SEMANTICS	high	current frontier is `#setUpCalleeData(... symbol(\"malloc\"), body: noBody)` after a repo-local K rule moved the earlier transmute blocker
+0027	arc	MIR_SEMANTICS	high	current frontier matches `0026` after replaying the same repo-local K rule
+0028	flt2dec	MIR_SEMANTICS	medium	current frontier is a concrete `AllocRef` dereference in K projection semantics; no formatter-owned leaf reached yet
+0029	boxed	UNCLASSIFIED	none	not run under v2 harness sweep yet

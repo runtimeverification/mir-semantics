@@ -2,6 +2,28 @@
 
 Last orchestrator checkpoint: 2026-04-10 UTC
 
+## V2 Operating Mode
+
+- Phase order is now breadth-first:
+  1. quickly define challenge-local proof harnesses and per-function coverage
+     tables across the portfolio,
+  2. run those harnesses to obtain the first real frontier or passing result,
+  3. classify failures by likely owning repository,
+  4. only then prioritize deeper shared semantic fixes.
+- Proof harnesses and minimal reproducers must remain separate. Concrete-value
+  reproducers do not count as verification.
+- Draft PR descriptions, challenge-local docs, and portfolio trackers must all
+  expose per-function coverage status, blocker class, and replay commands.
+
+## Portfolio Trackers
+
+- Harness coverage:
+  `docs/verify-rust-std/portfolio/harness_coverage.tsv`
+- Blocker classification:
+  `docs/verify-rust-std/portfolio/blocker_classification.tsv`
+- Shared blocker families:
+  `docs/verify-rust-std/portfolio/shared_blockers.md`
+
 ## Terminal-State Rule
 
 The portfolio is complete only when every published challenge is in one of:
@@ -18,6 +40,16 @@ The portfolio is complete only when every published challenge is in one of:
 - `0026-rc` -> `IN PROGRESS` (`1.9 / 3`)
 - `0028-flt2dec` -> `IN PROGRESS` (`1.9 / 3`)
 - `0027-arc` -> `IN PROGRESS` (`2.0 / 3`)
+
+## Current Breadth-First Priority
+
+- Keep the current technical batch (`0026`, `0027`, `0028`) because it is
+  already producing frontier movement.
+- In parallel, backfill missing per-function coverage docs on already-active
+  blocked challenges (`0012`, `0013`).
+- Then start the first harness-sweep wave on bootstrap challenges with the best
+  expected leverage for reusable patterns:
+  `0029-boxed`, `0001-core-transmutation`, `0014-convert-num`.
 
 ## Current Active State
 
@@ -55,6 +87,12 @@ The portfolio is complete only when every published challenge is in one of:
   `0026` remains the canonical lead reproducer because its current frontier
   case is one line long; `0027` is the follower validation branch for the same
   allocator-body family.
+- `0012-nonzero` remains a separate niche-cast family until a lower-level
+  byte/layout path or `lookupTy(TY_TO)`-shape explanation is available.
+- `0013-cstr` remains a linker/body-supply plumbing family until donor-linked
+  root-name preservation is repaired.
+- `0028-flt2dec` currently exposes a concrete `AllocRef` dereference frontier
+  in library scaffolding rather than a formatter-owned leaf.
 
 ## Newly Terminal This Run
 
@@ -74,7 +112,7 @@ The portfolio is complete only when every published challenge is in one of:
 
 ## Exact Restart Point If The Run Stops Now
 
-- Resume the current batch: `0026-rc`, `0028-flt2dec`, `0027-arc`.
+- Resume the current technical batch: `0026-rc`, `0028-flt2dec`, `0027-arc`.
 - Restart priority inside the current batch:
   1. `0026-rc`: continue from the split proof-harness / reproducer shape and
      attack the remaining node `3` allocator-body frontier reached by
@@ -89,6 +127,11 @@ The portfolio is complete only when every published challenge is in one of:
   the user explicitly reopens it.
 - `0012` and `0013` are terminal and should not be returned to the active batch
   unless the user explicitly asks to reopen blocked challenges.
+- In parallel with the technical batch, continue the v2 harness-sweep queue:
+  1. backfill per-function coverage docs for `0012-nonzero` and `0013-cstr`
+  2. launch harness-definition work on `0029-boxed`
+  3. then `0001-core-transmutation`
+  4. then `0014-convert-num`
 
 ## Batch Selection Rationale
 
@@ -105,21 +148,23 @@ The portfolio is complete only when every published challenge is in one of:
   and it now confirms the shared allocator-helper transmute blocker family with
   a dedicated reproducer rather than remaining at bootstrap.
 
-## Exact Next Batch If Interrupted After The Current Batch
+## Next Harness-Sweep Queue
 
+- `0029-boxed`
+- `0001-core-transmutation`
 - `0014-convert-num`
 - `0015-intrinsics-simd`
-- `0001-core-transmutation`
+- `0016-iter`
 
 Rationale:
 
-- `0014-convert-num` is the next numeric-conversion challenge that can reuse
-  the widening / conversion findings from `0011`.
-- `0015-intrinsics-simd` is still unstarted but is a better next candidate than
-  the remaining bootstrap queue once the current batch yields another terminal
-  verdict.
-- `0001-core-transmutation` is a stronger generic fallback than reopening
-  already-active `0027-arc` in the next-batch list.
+- `0029-boxed` can reuse allocator/raw-pointer patterns already active in
+  `0026` and `0027`.
+- `0001-core-transmutation` is the strongest reusable transmute-family target
+  once the portfolio has explicit coverage tables everywhere.
+- `0014-convert-num` and `0015-intrinsics-simd` are still bootstrap-only and
+  benefit from early harness definition before deeper semantic work.
+- `0016-iter` is the next breadth-first candidate after the initial sweep set.
 
 ## Portfolio Inventory
 
@@ -133,6 +178,9 @@ Rationale:
 - The portfolio rubric and templates now require explicit Success Criteria
   coverage tables, a verification-harness versus frontier-reproducer split,
   and minimal reproducer evidence before semantic fixes.
+- The v2 operating mode additionally requires per-function harness/spec
+  coverage to be visible in branch docs, PR descriptions, and portfolio-level
+  trackers before deeper semantic diagnosis is treated as complete.
 - Long proof / linkage loops on `0012-nonzero` and `0013-cstr` required
   checkpoint-style finishes to avoid leaving dirty experimental state in the
   worktrees.

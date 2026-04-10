@@ -1,0 +1,30 @@
+challenge_id	slug	harness_state	note
+0001	core-transmutation	none	bootstrap docs exist but no per-function proof harness table or challenge-local harness files yet
+0002	intrinsics-memory	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0003	pointer-arithmentic	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0004	btree-node	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0005	linked-list	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0006	nonnull	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0007	atomic-types	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0008	smallsort	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0009	duration	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0010	string	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0011	floats-ints	closed	closed per user direction; not part of v2 harness sweep
+0012	nonzero	partial	part 1/2 seed harnesses exist (`new`, `new_unchecked`, `from_mut`, `count_ones`) plus a niche-cast control, but no full coverage table yet
+0013	cstr	partial	`from_ptr`, `from_bytes_with_nul_unchecked`, and `clone_to_uninit` harnesses exist, but nine safe methods and `strlen` are still absent
+0014	convert-num	none	bootstrap docs exist but no per-function proof harness table or harness files yet
+0015	intrinsics-simd	none	bootstrap docs exist but no per-function proof harness table or harness files yet
+0016	iter	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0017	slice	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0018	slice-iter	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0019	rawvec	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0020	str-pattern-pt1	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0021	str-pattern-pt2	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0022	str-iter	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0023	vec-pt1	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0024	vec-pt2	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0025	vecdeque	none	bootstrap docs exist but no challenge-local proof harnesses yet
+0026	rc	partial	verification harness plus minimal and broader reproducers exist for the raw-pointer tranche only
+0027	arc	partial	verification harness plus dedicated reproducer exist for the raw-pointer tranche only
+0028	flt2dec	partial	minimal challenge-local probe exists for `digits_to_dec_str`, but no broader per-function harness set yet
+0029	boxed	none	bootstrap docs exist but no per-function proof harness table or harness files yet
