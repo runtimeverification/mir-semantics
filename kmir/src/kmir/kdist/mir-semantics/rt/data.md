@@ -266,41 +266,61 @@ A `Deref` projection in the projections list changes the target of the write ope
        </k>
      [preserves-definedness] // valid context ensured upon context construction
 
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toFrame(FRAMEID, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeProjection(NEW)
+        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
+       ...
+       </k>
+       <currentFrame>
+         <frameId> FRAMEID </frameId>
+         <locals> LOCALS </locals>
+         ...
+       </currentFrame>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid context ensured upon context construction
+
+  rule <k> #traverseProjection(toFrame(FRAMEID, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+        ~> #writeMoved
+        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(Moved, CONTEXTS))
+       ...
+       </k>
+       <currentFrame>
+         <frameId> FRAMEID </frameId>
+         <locals> LOCALS </locals>
+         ...
+       </currentFrame>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid context ensured upon context construction
+
+  rule <k> #traverseProjection(toFrame(FRAMEID, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW)
         => .K
         ...
        </k>
-       <stack> STACK
-            => STACK[(FRAME -Int 1) <-
-                      #updateStackLocal(
-                        {STACK[FRAME -Int 1]}:>StackFrame,
-                        I,
-                        #adjustRef(#buildUpdate(NEW, CONTEXTS), 0 -Int FRAME)
-                      )
-                    ]
-       </stack>
-    requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
-     andBool isStackFrame(STACK[FRAME -Int 1])
-     [preserves-definedness] // valid context ensured upon context construction
+       <currentFrame>
+         <frameId> CURRENT_FRAME_ID </frameId>
+         ...
+       </currentFrame>
+       <stack> STACK => #updateStackLocalByFrameId(STACK, FRAMEID, I, #buildUpdate(NEW, CONTEXTS)) </stack>
+    requires FRAMEID =/=Int CURRENT_FRAME_ID
+     andBool #stackFrameHasTypedLocal(FRAMEID, I, STACK)
+    [preserves-definedness] // valid context ensured upon context construction
 
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toFrame(FRAMEID, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeMoved
         => .K
         ...
        </k>
-       <stack> STACK
-            => STACK[(FRAME -Int 1) <-
-                      #updateStackLocal(
-                        {STACK[FRAME -Int 1]}:>StackFrame,
-                        I,
-                        #adjustRef(#buildUpdate(Moved, CONTEXTS), 0 -Int FRAME)
-                      ) // TODO retain Ty and Mutability from _ORIGINAL
-                    ]
-       </stack>
-    requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
-     andBool isStackFrame(STACK[FRAME -Int 1])
-     [preserves-definedness] // valid context ensured upon context construction
+       <currentFrame>
+         <frameId> CURRENT_FRAME_ID </frameId>
+         ...
+       </currentFrame>
+       <stack> STACK => #updateStackLocalByFrameId(STACK, FRAMEID, I, #buildUpdate(Moved, CONTEXTS)) </stack>
+    requires FRAMEID =/=Int CURRENT_FRAME_ID
+     andBool #stackFrameHasTypedLocal(FRAMEID, I, STACK)
+    [preserves-definedness] // valid context ensured upon context construction
 
   // allocations should not be written to, therefore no rule for `toAlloc`
 ```
@@ -311,7 +331,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 ```k
   // stores the target of the write operation, which may change when references are dereferenced.
   syntax WriteTo ::= toLocal ( Int )
-                   | toStack ( Int , Local )
+                   | toFrame ( Int , Local )
                    | toAlloc ( AllocId )
 
   // retains information about the value that was deconstructed by a projection
@@ -369,6 +389,10 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
 
+  syntax Int ::= frameIdOf ( StackFrame ) [function, total]
+  // -------------------------------------------------------
+  rule frameIdOf(StackFrame(FRAMEID, _, _, _, _, _)) => FRAMEID
+
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
                            | consP ( ProjectionElem , ProjectionElems ) [function, total]
@@ -390,40 +414,69 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemFromZST, projectionElemToZST PS:ProjectionElems) => PS [priority(40)]
 
-  syntax Value ::= #localFromFrame ( StackFrame, Local, Int ) [function]
+  syntax Bool ::= #stackFrameHasTypedLocal ( Int, Int, List ) [function, total]
+  // -------------------------------------------------------------------------
+  rule #stackFrameHasTypedLocal(FRAMEID, I, ListItem(StackFrame(FRAMEID, _, _, _, _, LOCALS)) _)
+    => false
+    requires I <Int 0 orBool size(LOCALS) <=Int I
+  rule #stackFrameHasTypedLocal(FRAMEID, I, ListItem(StackFrame(FRAMEID, _, _, _, _, LOCALS)) _)
+    => isTypedValue(LOCALS[I])
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+  rule #stackFrameHasTypedLocal(FRAMEID, I, ListItem(StackFrame(OTHER, _, _, _, _, _)) REST)
+    => #stackFrameHasTypedLocal(FRAMEID, I, REST)
+    requires FRAMEID =/=Int OTHER
+  rule #stackFrameHasTypedLocal(_, _, _) => false [owise]
 
-  rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef(getValue(LOCALS, I), OFFSET)
+  syntax Value ::= #stackFrameLocalById ( Int, Int, List ) [function]
+  // ---------------------------------------------------------------
+  rule #stackFrameLocalById(FRAMEID, I, ListItem(StackFrame(FRAMEID, _, _, _, _, LOCALS)) _)
+    => getValue(LOCALS, I)
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
+  rule #stackFrameLocalById(FRAMEID, I, ListItem(StackFrame(OTHER, _, _, _, _, _)) REST)
+    => #stackFrameLocalById(FRAMEID, I, REST)
+    requires FRAMEID =/=Int OTHER
 
-  syntax Value ::= #adjustRef (Value, Int ) [function, total]
-  // --------------------------------------------------------
-  rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT, META), OFFSET)
-    => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT, META)
-  rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT, META), OFFSET)
-    => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT, META)
-  rule #adjustRef(Aggregate(IDX, ARGS), OFFSET)
-    => Aggregate(IDX, #mapOffset(ARGS, OFFSET))
-  rule #adjustRef(Range(ELEMS), OFFSET)
-    => Range(#mapOffset(ELEMS, OFFSET))
-  rule #adjustRef(TL, _) => TL [owise]
+  syntax List ::= #updateStackLocalByFrameId ( List, Int, Int, Value ) [function]
+  // ----------------------------------------------------------------------------
+  rule #updateStackLocalByFrameId(ListItem(FRAME:StackFrame) REST, FRAMEID, I, VAL)
+    => ListItem(#updateStackLocal(FRAME, I, VAL)) REST
+    requires frameIdOf(FRAME) ==Int FRAMEID
+  rule #updateStackLocalByFrameId(ListItem(FRAME:StackFrame) REST, FRAMEID, I, VAL)
+    => ListItem(FRAME) #updateStackLocalByFrameId(REST, FRAMEID, I, VAL)
+    requires frameIdOf(FRAME) =/=Int FRAMEID
+  rule #updateStackLocalByFrameId(.List, _, _, _) => .List
 
-  syntax List ::= #mapOffset ( List, Int ) [function, total]
-  // -------------------------------------------------------
-  rule #mapOffset(.List, _)
-    => .List
-  rule #mapOffset(ListItem(ELEM:Value) REST, OFFSET)
-    => ListItem(#adjustRef(ELEM, OFFSET)) #mapOffset(REST, OFFSET)
-  rule #mapOffset(OTHER, _)
-    => OTHER [owise] // should not happen
+  syntax Bool ::= #localInFrameId ( Int, Int, Int, List, List ) [function, total]
+  // ---------------------------------------------------------------------------
+  rule #localInFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, _STACK)
+    => false
+    requires FRAMEID ==Int CURRENT_FRAME_ID
+     andBool (I <Int 0 orBool size(LOCALS) <=Int I)
+  rule #localInFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, _STACK)
+    => isTypedValue(LOCALS[I])
+    requires FRAMEID ==Int CURRENT_FRAME_ID
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+  rule #localInFrameId(FRAMEID, I, CURRENT_FRAME_ID, _LOCALS, STACK)
+    => #stackFrameHasTypedLocal(FRAMEID, I, STACK)
+    requires FRAMEID =/=Int CURRENT_FRAME_ID
 
-  syntax Value ::= #incrementRef ( Value )  [function, total]
-                 | #decrementRef ( Value )  [function, total]
-  // --------------------------------------------------------
-  rule #incrementRef(TL) => #adjustRef(TL, 1)
-  rule #decrementRef(TL) => #adjustRef(TL, -1)
+  syntax Value ::= #localFromFrameId ( Int, Int, Int, List, List ) [function]
+  // -------------------------------------------------------------------------
+  rule #localFromFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, _STACK)
+    => getValue(LOCALS, I)
+    requires FRAMEID ==Int CURRENT_FRAME_ID
+     andBool 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness] // valid list indexing checked
+  rule #localFromFrameId(FRAMEID, I, CURRENT_FRAME_ID, _LOCALS, STACK)
+    => #stackFrameLocalById(FRAMEID, I, STACK)
+    requires FRAMEID =/=Int CURRENT_FRAME_ID
+     andBool #stackFrameHasTypedLocal(FRAMEID, I, STACK)
 
   syntax Int ::= originSize ( MetadataSize ) [function, total]
   // ---------------------------------------------------------------------
@@ -669,11 +722,11 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
 
 #### References
 
-A `Deref` projection operates on `Reference`s or pointers (`PtrLocal`) that refer to locals in the same or
-an enclosing stack frame, indicated by the stack height in the value.
+A `Deref` projection operates on `Reference`s or pointers (`PtrLocal`) that refer to locals in the current
+stack frame or another live stack frame, identified by the frame id stored in the value.
 `Deref` reads the referred place (and may proceed with further projections).
-In the simplest case, the reference refers to a local in the same stack frame (height 0), which is directly read.
-If the offset height is greater than zero, the stack element is accessed.
+If the stored frame id matches the current frame, the local is read directly.
+Otherwise the target frame is found in the stack by its id.
 
 Pointers and references may carry metadata indicating a _size_ (`dynamicSize`).
 If present, the `Deref` is expected to access a _slice_ and the size determines how many elements are read from it.
@@ -716,184 +769,108 @@ An attempt to read more elements than the length of the accessed array is undefi
        </k>
     [preserves-definedness]
 
-  // Ref, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
+  // Ref, frame id, 0 < PTR_OFFSET
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             Reference(FRAMEID, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             toFrame(FRAMEID, local(I)),
+             #localFromFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, STACK),
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))),
              .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(SIZE, PROJS)
         ...
         </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
+       <currentFrame>
+         <frameId> CURRENT_FRAME_ID </frameId>
+         <locals> LOCALS </locals>
+         ...
+       </currentFrame>
+       <stack> STACK </stack>
+    requires #localInFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, STACK)
      andBool 0 <Int PTR_OFFSET
     [preserves-definedness]
 
-  // Ref, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
+  // Ref, frame id, 0 == PTR_OFFSET
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             Reference(FRAMEID, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             PLACEPROJ, // apply reference projections with pointer offset
-             .Contexts
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-        ...
-        </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool PTR_OFFSET ==Int 0
-    [preserves-definedness]
-
-  // Ref, 0 == OFFSET, 0 < PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool 0 <Int PTR_OFFSET
-    [preserves-definedness]
-
-  // Ref, 0 == OFFSET, 0 == PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
+             toFrame(FRAMEID, local(I)),
+             #localFromFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, STACK),
              PLACEPROJ,
              .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(SIZE, PROJS)
         ...
         </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
+       <currentFrame>
+         <frameId> CURRENT_FRAME_ID </frameId>
+         <locals> LOCALS </locals>
+         ...
+       </currentFrame>
+       <stack> STACK </stack>
+    requires #localInFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, STACK)
      andBool PTR_OFFSET ==Int 0
     [preserves-definedness]
 
-  // Ptr, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
+  // Ptr, frame id, 0 < PTR_OFFSET
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             PtrLocal(FRAMEID, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts // previous contexts obsolete
+             toFrame(FRAMEID, local(I)),
+             #localFromFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, STACK),
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))),
+             .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(SIZE, PROJS)
         ...
         </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
+       <currentFrame>
+         <frameId> CURRENT_FRAME_ID </frameId>
+         <locals> LOCALS </locals>
+         ...
+       </currentFrame>
+       <stack> STACK </stack>
+    requires #localInFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, STACK)
      andBool 0 <Int PTR_OFFSET
     [preserves-definedness]
 
-  // Ptr, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
+  // Ptr, frame id, 0 == PTR_OFFSET
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             PtrLocal(FRAMEID, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             PLACEPROJ, // apply reference projections
-             .Contexts // add pointer offset context
+             toFrame(FRAMEID, local(I)),
+             #localFromFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, STACK),
+             PLACEPROJ,
+             .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(SIZE, PROJS)
          ...
         </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
+       <currentFrame>
+         <frameId> CURRENT_FRAME_ID </frameId>
+         <locals> LOCALS </locals>
+         ...
+       </currentFrame>
+       <stack> STACK </stack>
+    requires #localInFrameId(FRAMEID, I, CURRENT_FRAME_ID, LOCALS, STACK)
      andBool PTR_OFFSET ==Int 0
-    [preserves-definedness]
-
-  // Ptr, 0 == OFFSET, 0 < PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts // previous contexts obsolete
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool 0 <Int PTR_OFFSET
-    [preserves-definedness]
-
-  // Ptr, 0 == OFFSET, 0 == PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
-             PLACEPROJ, // apply reference projections
-             .Contexts // add pointer offset context
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool 0 ==Int PTR_OFFSET
     [preserves-definedness]
 ```
 
@@ -1258,7 +1235,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
 
   syntax KItem ::= #forRef( Mutability , Metadata )
 
-  // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
+  // once traversal is finished, reconstruct the last projections and the reference frame/local, and possibly read the size
   rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forRef(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
         => #mkRef(DEST, #projectionsFor(CTXTS), MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE) )
         ...
@@ -1266,11 +1243,15 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
 
   syntax Evaluation ::= #mkRef( WriteTo , ProjectionElems , Mutability , Metadata ) // [function, total]
   // -----------------------------------------------------------------------------------------------
-  // Create Reference for local variable (stack depth 0, no offset)
-  rule <k> #mkRef(       toLocal(I)     , PROJS, MUT, META) => Reference(   0  , place(local(I), PROJS), MUT, META) ... </k>
+  // Create Reference for local variable in the current frame
+  rule <k> #mkRef(toLocal(I), PROJS, MUT, META) => Reference(CURRENT_FRAME_ID, place(local(I), PROJS), MUT, META) ... </k>
+       <currentFrame>
+         <frameId> CURRENT_FRAME_ID </frameId>
+         ...
+       </currentFrame>
 
-  // Create Reference for stack frame variable (stack depth OFFSET, with pointer offset)
-  rule <k> #mkRef(toStack(OFFSET, LOCAL), PROJS, MUT, META) => Reference(OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
+  // Create Reference for a local variable in another frame
+  rule <k> #mkRef(toFrame(FRAMEID, LOCAL), PROJS, MUT, META) => Reference(FRAMEID, place(LOCAL, PROJS), MUT, META) ... </k>
 
   // Create AllocRef for heap allocation (assumed zero offset, no offset concept for heap)
   rule <k> #mkRef(toAlloc(ALLOC_ID)     , PROJS,  _ , META) => AllocRef(ALLOC_ID, PROJS, META) ... </k>
@@ -1316,7 +1297,7 @@ The operation typically creates a pointer with empty metadata.
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
 
-  // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
+  // once traversal is finished, reconstruct the last projections and the pointer frame/local, and possibly read the size
   rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forPtr(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
         => #mkPtr(DEST, #projectionsFor(CTXTS), MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE))
         ...
@@ -1324,8 +1305,12 @@ The operation typically creates a pointer with empty metadata.
 
   syntax Evaluation ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , Metadata ) // [function, total]
   // ------------------------------------------------------------------------------------------
-  rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, META) ... </k>
-  rule <k> #mkPtr(toStack(STACK_OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(STACK_OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
+  rule <k> #mkPtr(toLocal(I), PROJS, MUT, META) => PtrLocal(CURRENT_FRAME_ID, place(local(I), PROJS), MUT, META) ... </k>
+       <currentFrame>
+         <frameId> CURRENT_FRAME_ID </frameId>
+         ...
+       </currentFrame>
+  rule <k> #mkPtr(toFrame(FRAMEID, LOCAL), PROJS, MUT, META) => PtrLocal(FRAMEID, place(LOCAL, PROJS), MUT, META) ... </k>
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
@@ -1353,7 +1338,7 @@ a special rule for this case is applied with higher priority.
 
   syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(Reference(STACK_OFFSET, PLACE, _, META), MUT) => PtrLocal(STACK_OFFSET, PLACE, MUT, META)
+  rule refToPtrLocal(Reference(FRAMEID, PLACE, _, META), MUT) => PtrLocal(FRAMEID, PLACE, MUT, META)
 ```
 
 ## Type casts

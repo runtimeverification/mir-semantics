@@ -44,13 +44,13 @@ The special `Moved` value represents values that have been used and should not b
                    // value, bit-width               for f16-f128
                  | Reference( Int , Place , Mutability , Metadata )
                                                           [symbol(Value::Reference)]
-                   // stack depth (initially 0), place, borrow kind, metadata (size, pointer offset, origin size)
+                   // frame id, place, borrow kind, metadata (size, pointer offset, origin size)
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
                  | PtrLocal( Int , Place , Mutability, Metadata )
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a local TypedValue (on the stack)
-                   // fields are the same as in Reference
+                   // fields are the same as in Reference; the Int is the target frame id
                  | FunPtr ( Ty )
                    // function pointer, created by operandConstant only. Ty is a key in the function table
                  | AllocRef ( AllocId , ProjectionElems , Metadata )

@@ -213,15 +213,15 @@ value is the value in local `_0`, and will go to the _destination_ in
 the `LOCALS` of the caller's stack frame. Execution continues with the
 context of the enclosing stack frame, at the _target_.
 
-If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
-NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
+References and pointers already carry stable frame ids, so returning from a call does not require
+rewriting the returned value when the callee frame is popped.
 
 If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
   rule [termReturnSome]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
+           #setLocalValue(DEST, VAL) ~> #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -442,7 +442,8 @@ where the returned result should go.
 
 The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the old locals (`OLDLOCALS` below), and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references.
 
-An operand may be a `Reference` (the only way a function could access another function call's `local` variables). For this case, the stack height in the `Reference` must be incremented because a stack frame is added.
+An operand may be a `Reference` (the only way a function could access another function call's `local`
+variables). With frame-id-based references, argument passing forwards the reference unchanged.
 
 ```k
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
@@ -499,7 +500,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
+           #setLocalValue(place(local(IDX), .ProjectionElems), getValue(CALLERLOCALS, I))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, _, CALLERLOCALS)) _:List </stack>
@@ -511,7 +512,7 @@ An operand may be a `Reference` (the only way a function could access another fu
   // TODO: This is not safe, need to add more checks to this.
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), _)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
+           #setLocalValue(place(local(IDX), .ProjectionElems), getValue(CALLERLOCALS, I))
         ...
        </k>
        <stack> (ListItem(StackFrame(_, _, _, _, _, CALLERLOCALS) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
@@ -578,7 +579,7 @@ Therefore a heuristics is used here:
                 _SPAN
               )
          =>
-           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
+           #setLocalValue(place(local(1), .ProjectionElems), getValue(LOCALS, CLOSURE))
         ~> #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
@@ -631,7 +632,7 @@ Therefore a heuristics is used here:
   rule <k> #setTupleArgs(_, .List ) => .K ... </k>
 
   rule <k> #setTupleArgs(IDX, ListItem(VAL) REST:List)
-        => #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(VAL)) ~> #setTupleArgs(IDX +Int 1, REST)
+        => #setLocalValue(place(local(IDX), .ProjectionElems), VAL) ~> #setTupleArgs(IDX +Int 1, REST)
         ...
        </k>
 ```

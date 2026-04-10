@@ -224,9 +224,10 @@ def _make_symbolic_call_config(
         'EXPOSEDSET_CELL',
         'GENERATEDCOUNTER_CELL',
     )
+    symbolic_init_subst = {cell: init_subst[cell] for cell in symbolic_init_cells if cell in init_subst}
     subst = Subst(
         {
-            **{cell: init_subst[cell] for cell in symbolic_init_cells},
+            **symbolic_init_subst,
             'K_CELL': fn_data.call_terminator,
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),

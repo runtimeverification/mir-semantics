@@ -75,7 +75,7 @@
       ListItem ( Integer ( 44 , 8 , false ) )
       ListItem ( Integer ( 222 , 8 , false ) )
       ListItem ( Integer ( 214 , 8 , false ) ) ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 1 , place (... local: local ( 4 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( dynamicSize ( 4 ) , 0 , dynamicSize ( 4 ) ) ) , ty ( 32 ) , mutabilityNot ) )
+      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 4 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( dynamicSize ( 4 ) , 0 , dynamicSize ( 4 ) ) ) , ty ( 32 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 69 ) , mutabilityMut ) )
       ListItem ( typedValue ( Moved , ty ( 69 ) , mutabilityMut ) )
       ListItem ( typedValue ( Integer ( 1923567076 , 32 , true ) , ty ( 28 ) , mutabilityNot ) )
