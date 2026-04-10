@@ -24,20 +24,41 @@ Ownership:
 
 ## Work Log
 
-- Bootstrap record created by orchestrator.
+- 2026-04-10: Added the first branch-local breadth-first harness sweep for
+  Challenge 14:
+  - `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/nonzero_from.rs`
+  - `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/nonzero_try_from.rs`
+  - `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/to_int_unchecked.rs`
+- 2026-04-10: Added the branch-local success-criteria coverage table so each
+  macro family has an auditable row with a harness file and start symbol.
+- 2026-04-10: Updated the challenge README to separate proof harnesses from
+  minimal reproducers and to include replay / CI commands.
 
 ## Files Touched
 
-- None yet.
+- `docs/verify-rust-std/challenges/0014-convert-num/success-criteria.md`
+- `docs/verify-rust-std/challenges/0014-convert-num/planner.md`
+- `docs/verify-rust-std/challenges/0014-convert-num/generator.md`
+- `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/README.md`
+- `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/nonzero_from.rs`
+- `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/nonzero_try_from.rs`
+- `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/to_int_unchecked.rs`
 
 ## Validation Evidence
 
-- None yet.
+- `deps/.stable-mir-json/release.sh -Zno-codegen` succeeded for:
+  - `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/nonzero_from.rs`
+  - `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/nonzero_try_from.rs`
+  - `kmir/src/tests/integration/data/verify-rust-std/0014-convert-num/to_int_unchecked.rs`
+- A targeted `kmir prove-rs` run was started for
+  `verify_nonzero_from_u8_to_u16`; it has not yet been allowed to settle into a
+  recorded frontier state.
 
 ## Commit Inventory
 
-- None yet.
+- Pending first commit.
 
 ## Blockers
 
-- Waiting for planner contract and evaluator baseline.
+- No semantic blocker recorded yet.
+- The first proof replay is still pending frontier classification.
