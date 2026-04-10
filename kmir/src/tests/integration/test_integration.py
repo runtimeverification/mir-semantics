@@ -302,7 +302,7 @@ VERIFY_RUST_STD_SHOW_SPECS = [
 @pytest.mark.parametrize(
     'rs_file',
     VERIFY_RUST_STD_FILES,
-    ids=[spec.stem for spec in VERIFY_RUST_STD_FILES],
+    ids=[f'{spec.parent.name}/{spec.stem}' for spec in VERIFY_RUST_STD_FILES],
 )
 def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
