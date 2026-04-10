@@ -11,7 +11,7 @@ Overall score: `1.7/3`
 - Current success table: `docs/verify-rust-std/challenges/0026-rc/success-criteria.md` tracks the public surface explicitly and summarizes the internal unsafe list by invariant cluster in `contract-map.md`.
 - Challenge-specific UB obligations: exclude dangling or misaligned pointer access, UB via compiler intrinsics, mutation of immutable bytes, and invalid values.
 - Additional published safety conditions: `decrement_strong_count` does not need a proof that the count is greater than zero at call time, and `assume_init` may not be fully expressible in the current type system.
-- Current branch state: the active `verify-rust-std/reexec-0026-rc` branch has a draft PR, a symbolic `Rc::from_raw_in` proof harness in `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs`, and a separate frontier reproducer in `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`; the correct proof symbol `verify_rc_from_raw_in` still fails at the same `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` `CastKind::Transmute` frontier.
+- Current branch state: the active `verify-rust-std/reexec-0026-rc` branch has a draft PR, a symbolic `Rc::from_raw_in` proof harness in `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs`, a smaller minimal reproducer in `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs`, and a broader frontier reproducer in `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`; the correct proof symbol `verify_rc_from_raw_in` still fails at the same `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` `CastKind::Transmute` frontier.
 
 ## Scorecard
 
@@ -42,13 +42,13 @@ Overall score: `1.7/3`
 ## Missing Criteria
 
 - No proof/test has succeeded yet for `Rc::from_raw_in`.
-- The root harness no longer depends on `Rc::new_in` or `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`, but it still stalls at the transmute leaf after proof construction.
+- The symbolic proof harness is separated from the frontier reproducer, but it still stalls at the `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` transmute leaf.
 - The internal-unsafe 75% requirement is still unmapped.
 - None of the challenge UB obligations are discharged, only documented.
 
 ## Blockers
 
-- The rewritten root harness now reaches a terminal direct-witness `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` thunk with `CastKind::Transmute` even after the stable `MaybeUninit` witness swap.
+- The current proof frontier is the `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` thunk with `CastKind::Transmute`.
 - That failure is still a harness-shape problem, not a semantic failure in the `Rc::from_raw_in` body.
 - Until the direct witness is shrunk further or the cast leaf is discharged, the tranche cannot advance to `Rc::increment_strong_count_in`, `Rc::decrement_strong_count_in`, or `Weak::from_raw_in`.
 

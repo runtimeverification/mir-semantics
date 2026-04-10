@@ -6,10 +6,10 @@
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
 - Draft PR: exists.
 - Evaluator: active / in progress.
-- Local status: first audit slice committed in `87a669dc`; the branch now has a symbolic `Rc::from_raw_in` proof harness plus the temporary frontier reproducer, and the proof result for the correct symbol is still frontier-only.
+- Local status: first audit slice committed in `87a669dc`; the branch now has a symbolic `Rc::from_raw_in` proof harness plus a smaller challenge-local reproducer for the transmute frontier, and the proof result for the correct symbol is still frontier-only.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.
-- Latest blocker checkpoint: the stable `MaybeUninit` frontier reproducer still fails at the same terminal direct-witness `CastKind::Transmute` leaf, and the symbolic proof harness `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs` also fails at the `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` transmute frontier when run with `--start-symbol verify_rc_from_raw_in`. That file should now be treated as a temporary reproducer only.
+- Latest blocker checkpoint: the smaller challenge-local reproducer `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs` fails at the same terminal `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` transmute frontier, and the symbolic proof harness `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs` still fails there when run with `--start-symbol verify_rc_from_raw_in`. The older `rc-from-raw-in-frontier-fail.rs` remains a broader reproducer only.
 
 ## Confirmed Inputs
 
@@ -85,7 +85,7 @@
 ## Verification Shape
 
 - Research note: `docs/verify-rust-std/challenges/0026-rc/verification-shape-note.md`
-- The current `rc-from-raw-in-frontier-fail.rs` is only a temporary frontier reproducer.
+- The smallest reproducer is `rc-new-in-frontier-fail.rs`; `rc-from-raw-in-frontier-fail.rs` remains a broader frontier reproducer.
 - The next implementation step is to split the witness into a symbolic proof entrypoint and a separate frontier reproducer.
 
 ## Known Soft Risks

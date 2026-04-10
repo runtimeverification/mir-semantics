@@ -25,6 +25,7 @@ The old `Rc::new_in` / `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_ne
 
 - The success table in `docs/verify-rust-std/challenges/0026-rc/success-criteria.md` stays aligned with the public `unsafe` surface and the branch-local evidence.
 - The `Rc::from_raw_in` challenge-local frontier file is clearly demoted to a temporary reproducer, not the verification target.
+- The smallest challenge-local reproducer for the current transmute frontier is `rc-new-in-frontier-fail.rs`; the broader `rc-from-raw-in-frontier-fail.rs` remains available for audit context.
 - The verification-shaped harness should be symbolic over the payload value, keep `System` concrete, and prove the preconditions around the stable `MaybeUninit` witness helper.
 - The frontier reproducer remains separate until the new proof entrypoint is in place and collected.
 - Any remaining blocker is recorded as a precise backend dependency or semantic gap, not as a widened Rc API search.

@@ -22,19 +22,22 @@ Current verification tranche:
 - Immediate wrapper follow-ons: `Rc::from_raw`, `Rc::increment_strong_count`, `Rc::decrement_strong_count`, and `Weak::from_raw`.
 - The remaining public `unsafe` APIs stay out of tranche 1 and are tracked as separate initialization, aliasing, or dynamic-type work.
 - Symbolic proof harness: `rc-from-raw-in.rs`
-- Temporary frontier reproducer: `rc-from-raw-in-frontier-fail.rs`
+- Minimal frontier reproducer: `rc-new-in-frontier-fail.rs`
+- Broader frontier reproducer: `rc-from-raw-in-frontier-fail.rs`
 
 Current frontier:
 
 - Proof harness: `rc-from-raw-in.rs` with `#[no_mangle] pub fn verify_rc_from_raw_in(value: u32)`
 - Root repro mirror: `../../prove-rs/rc-from-raw-in.rs`
-- Frontier summary: the direct `Rc::from_raw_in` witness still terminates at the current `CastKind::Transmute` leaf.
+- Frontier summary: the minimal reproducer and the symbolic proof harness both terminate at the current `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` `CastKind::Transmute` leaf.
 
 How to run:
 
 - Exact proof command for the symbolic harness:
   `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs --start-symbol verify_rc_from_raw_in --proof-dir /tmp/rc-from-raw-in-proof --verbose --terminate-on-thunk`
-- Exact proof command:
+- Exact proof command for the minimal reproducer:
+  `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs --proof-dir /tmp/rc-new-in-frontier-proof --verbose --terminate-on-thunk`
+- Exact proof command for the broader reproducer:
   `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs --proof-dir /tmp/rc-from-raw-in-frontier-proof --verbose --terminate-on-thunk`
 - Narrow collector:
   `make test-verify-rust-std`
@@ -44,7 +47,7 @@ How to run:
 
 How this maps to the success table:
 
-- `Rc::from_raw_in` now has both a symbolic proof harness and a separate frontier reproducer.
+- `Rc::from_raw_in` now has a symbolic proof harness plus a smaller minimal reproducer and a broader reproducer.
 - The four wrapper rows are pending the allocator-general root proof.
 - The remaining public `unsafe` APIs are still unstarted and remain tracked in the success table and contract map.
 
@@ -58,6 +61,6 @@ Status board:
 
 - Branch: active on `verify-rust-std/reexec-0026-rc`
 - Proof harness: `rc-from-raw-in.rs`
-- Frontier: challenge-local minimal reproducer exists at `rc-from-raw-in-frontier-fail.rs`
+- Frontier: minimal reproducer exists at `rc-new-in-frontier-fail.rs`; broader reproducer exists at `rc-from-raw-in-frontier-fail.rs`
 - Evaluator: active / in progress
 - Draft PR: exists

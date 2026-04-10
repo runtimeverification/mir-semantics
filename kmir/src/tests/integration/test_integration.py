@@ -76,7 +76,10 @@ PROVE_SHOW_SPECS = [
 
 VERIFY_RUST_STD_0026_RC_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std' / '0026-rc').resolve(strict=True)
 VERIFY_RUST_STD_0026_RC_PROOF_FILES = [VERIFY_RUST_STD_0026_RC_DIR / 'rc-from-raw-in.rs']
-VERIFY_RUST_STD_0026_RC_FRONTIER_FILES = [VERIFY_RUST_STD_0026_RC_DIR / 'rc-from-raw-in-frontier-fail.rs']
+VERIFY_RUST_STD_0026_RC_FRONTIER_FILES = [
+    VERIFY_RUST_STD_0026_RC_DIR / 'rc-from-raw-in-frontier-fail.rs',
+    VERIFY_RUST_STD_0026_RC_DIR / 'rc-new-in-frontier-fail.rs',
+]
 VERIFY_RUST_STD_0026_RC_START_SYMBOLS = {
     'rc-from-raw-in': ['verify_rc_from_raw_in'],
 }
