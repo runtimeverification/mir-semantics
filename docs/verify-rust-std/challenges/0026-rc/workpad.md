@@ -7,6 +7,7 @@
 - Draft PR: exists.
 - Evaluator: active / in progress.
 - Local status: first audit slice committed in `87a669dc`; the branch now has a symbolic `Rc::from_raw_in` proof harness plus a smaller challenge-local reproducer for the transmute frontier, and the proof result for the correct symbol is still frontier-only.
+- Local status: the challenge-local reproducer has now been minimized one step further by removing the audit-only `assert_eq!`; the frontier remains the same helper-level `CastKind::Transmute` leaf.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.
 - Latest blocker checkpoint: the smaller challenge-local reproducer `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs` fails at the same terminal `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` transmute frontier, and the symbolic proof harness `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs` still fails there when run with `--start-symbol verify_rc_from_raw_in`. The older `rc-from-raw-in-frontier-fail.rs` remains a broader reproducer only.
@@ -39,6 +40,7 @@
 - The previous `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` blocker is gone.
 - The new frontier is still the direct witness path itself, which terminates in `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` with `CastKind::Transmute` rather than inside `Rc::new_in`.
 - The latest stable `MaybeUninit` witness revision now reaches proof construction, but it still does not move past the terminal cast leaf.
+- The smallest current reproducer is `rc-new-in-frontier-fail.rs` with only `let _ = Rc::new_in(7u32, System);`; this is still a concrete reproducer, not the verification harness.
 - That concrete witness is a temporary reproducer, not the final verification harness shape.
 
 ## Audit Result
@@ -61,6 +63,7 @@
   - `proof.json` / `kcfg/nodes/4.json`
 - Leaf 4 remains a terminal proof state whose `<k>` begins with `thunk(_)_RT-DATA_Value_Evaluation(#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty(..., CastKind::Transmute, ...))`.
 - The stable `MaybeUninit` proof run used `/tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit` and still did not move past the cast leaf.
+- The minimized `Rc::new_in` reproducer proof run used `/tmp/rc-new-in-frontier-proof-mini` and still stopped at the same `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` / `CastKind::Transmute` frontier at node 4.
 
 ## Selected First Tranche
 

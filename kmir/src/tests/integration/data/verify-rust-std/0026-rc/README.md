@@ -22,14 +22,14 @@ Current verification tranche:
 - Immediate wrapper follow-ons: `Rc::from_raw`, `Rc::increment_strong_count`, `Rc::decrement_strong_count`, and `Weak::from_raw`.
 - The remaining public `unsafe` APIs stay out of tranche 1 and are tracked as separate initialization, aliasing, or dynamic-type work.
 - Symbolic proof harness: `rc-from-raw-in.rs`
-- Minimal frontier reproducer: `rc-new-in-frontier-fail.rs`
+- Minimal frontier reproducer: `rc-new-in-frontier-fail.rs` (minimized to `let _ = Rc::new_in(7u32, System);`)
 - Broader frontier reproducer: `rc-from-raw-in-frontier-fail.rs`
 
 Current frontier:
 
 - Proof harness: `rc-from-raw-in.rs` with `#[no_mangle] pub fn verify_rc_from_raw_in(value: u32)`
 - Root repro mirror: `../../prove-rs/rc-from-raw-in.rs`
-- Frontier summary: the minimal reproducer and the symbolic proof harness both terminate at the current `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` `CastKind::Transmute` leaf.
+- Frontier summary: the minimized minimal reproducer and the symbolic proof harness both terminate at the current `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` `CastKind::Transmute` leaf.
 
 How to run:
 
@@ -47,7 +47,7 @@ How to run:
 
 How this maps to the success table:
 
-- `Rc::from_raw_in` now has a symbolic proof harness plus a smaller minimal reproducer and a broader reproducer.
+- `Rc::from_raw_in` now has a symbolic proof harness plus a minimized minimal reproducer and a broader reproducer.
 - The four wrapper rows are pending the allocator-general root proof.
 - The remaining public `unsafe` APIs are still unstarted and remain tracked in the success table and contract map.
 
@@ -61,6 +61,6 @@ Status board:
 
 - Branch: active on `verify-rust-std/reexec-0026-rc`
 - Proof harness: `rc-from-raw-in.rs`
-- Frontier: minimal reproducer exists at `rc-new-in-frontier-fail.rs`; broader reproducer exists at `rc-from-raw-in-frontier-fail.rs`
+- Frontier: minimized minimal reproducer exists at `rc-new-in-frontier-fail.rs`; broader reproducer exists at `rc-from-raw-in-frontier-fail.rs`
 - Evaluator: active / in progress
 - Draft PR: exists

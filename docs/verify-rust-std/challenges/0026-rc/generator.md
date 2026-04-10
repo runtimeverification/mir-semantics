@@ -37,15 +37,19 @@ Ownership:
 - 2026-04-10: Restored the worktree to `HEAD`, removed `tmp.*` artifacts, rebuilt the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets, and restarted `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk`.
 - 2026-04-10: That rerun was interrupted before any new proof leaf or terminal node was captured. No new frontier was established, and no code change was kept.
 - 2026-04-10: Replaced the unstable `Box::write(...)` witness path with a stable `Box::new_uninit_in(System)` + raw `ptr::write` + `assume_init` witness in both `kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs` and the challenge-local mirror `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`. Running `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs --proof-dir /tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit --verbose --terminate-on-thunk` reached proof construction but still terminated at the same `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` / `CastKind::Transmute` frontier in node 4. No semantic fix was introduced.
-- 2026-04-10: Added `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs` as the smallest challenge-local reproducer for the current `Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` transmute frontier. Running `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs --proof-dir /tmp/rc-new-in-frontier-proof --verbose --terminate-on-thunk` still failed, and the terminal node 4 shows the same `#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation_CastKind_MaybeTy_Ty` / `CastKind::Transmute` leaf. No semantic fix was introduced.
+- 2026-04-10: Minimized `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs` further by removing the audit-only `assert_eq!` and leaving only `let _ = Rc::new_in(7u32, System);`. Running `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs --proof-dir /tmp/rc-new-in-frontier-proof-mini --verbose --terminate-on-thunk` still failed with `ProofStatus.FAILED`, nodes `4`, and the same `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` `CastKind::Transmute` frontier. No semantic fix was introduced.
+- 2026-04-10: Captured the exact frontier for the minimized witness with `uv --project kmir run kmir show rc-new-in-frontier-fail.main --proof-dir /tmp/rc-new-in-frontier-proof-mini --nodes 4 --full-printer`. Node 4 still shows the terminal `thunk(#cast(Integer ( 8 , 64 , false ), castKindTransmute, ty ( 20 ), ty ( 23 )))` leaf inside `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in`. No semantic fix was introduced.
 
 ## Files Touched
 
 - `docs/verify-rust-std/challenges/0026-rc/contract-map.md`
 - `docs/verify-rust-std/challenges/0026-rc/workpad.md`
 - `docs/verify-rust-std/challenges/0026-rc/generator.md`
+- `docs/verify-rust-std/challenges/0026-rc/success-criteria.md`
 - `kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs`
+- `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs`
 - `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`
+- `kmir/src/tests/integration/data/verify-rust-std/0026-rc/README.md`
 
 ## Validation Evidence
 
@@ -57,12 +61,15 @@ Ownership:
 - `git diff --check -- docs/verify-rust-std/challenges/0026-rc/contract-map.md docs/verify-rust-std/challenges/0026-rc/workpad.md`
 - `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/prove-rs/rc-from-raw-in.rs --proof-dir /tmp/rc-from-raw-in-proof --verbose --terminate-on-thunk`
 - `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs --proof-dir /tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit --verbose --terminate-on-thunk`
+- `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-new-in-frontier-fail.rs --proof-dir /tmp/rc-new-in-frontier-proof-mini --verbose --terminate-on-thunk`
 - `sed -n '1,240p' /tmp/rc-from-raw-in-proof/rc-from-raw-in.main/proof.json`
 - `sed -n '1,260p' /tmp/rc-from-raw-in-proof/rc-from-raw-in.main/kcfg/nodes/3.json`
 - `sed -n '1,260p' /tmp/rc-from-raw-in-proof/rc-from-raw-in.main/kcfg/nodes/4.json`
 - `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk`
 - `sed -n '1,240p' /tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit/rc-from-raw-in-frontier-fail.main/proof.json`
 - `sed -n '1,260p' /tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit/rc-from-raw-in-frontier-fail.main/kcfg/nodes/4.json`
+- `sed -n '1,240p' /tmp/rc-new-in-frontier-proof-mini/rc-new-in-frontier-fail.main/proof.json`
+- `kmir show rc-new-in-frontier-fail.main --proof-dir /tmp/rc-new-in-frontier-proof-mini --nodes 4 --full-printer`
 
 ## Commit Inventory
 
