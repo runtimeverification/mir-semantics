@@ -4,6 +4,8 @@
 
 - Branch: `verify-rust-std/reexec-0026-rc`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
+- Draft PR: exists.
+- Evaluator: active / in progress.
 - Local status: first audit slice committed in `87a669dc`; the `Rc::from_raw_in` root harness remains the current branch frontier, and the same evidence is now mirrored by the challenge-local file `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.

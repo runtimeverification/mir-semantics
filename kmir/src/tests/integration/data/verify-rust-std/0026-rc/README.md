@@ -51,7 +51,7 @@ Challenge-local artifact contract:
 
 Status board:
 
-- Planner: not started
-- Generator: waiting for planner and evaluator baselines
-- Evaluator: not started
-- Draft PR: not created
+- Branch: active on `verify-rust-std/reexec-0026-rc`
+- Frontier: challenge-local minimal reproducer exists at `rc-from-raw-in-frontier-fail.rs`
+- Evaluator: active / in progress
+- Draft PR: exists

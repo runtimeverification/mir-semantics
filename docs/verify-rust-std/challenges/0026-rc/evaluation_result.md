@@ -11,7 +11,7 @@ Overall score: `1.7/3`
 - Current success table: `docs/verify-rust-std/challenges/0026-rc/success-criteria.md` tracks the public surface explicitly and summarizes the internal unsafe list by invariant cluster in `contract-map.md`.
 - Challenge-specific UB obligations: exclude dangling or misaligned pointer access, UB via compiler intrinsics, mutation of immutable bytes, and invalid values.
 - Additional published safety conditions: `decrement_strong_count` does not need a proof that the count is greater than zero at call time, and `assume_init` may not be fully expressible in the current type system.
-- Current branch state: the `Rc::from_raw_in` root harness is mirrored by the challenge-local frontier file `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`, but the proof frontier still terminates at a `CastKind::Transmute` leaf.
+- Current branch state: the active `verify-rust-std/reexec-0026-rc` branch has a draft PR and mirrors the `Rc::from_raw_in` frontier in `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs`, but the proof frontier still terminates at a `CastKind::Transmute` leaf.
 
 ## Scorecard
 
