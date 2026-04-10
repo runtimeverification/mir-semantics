@@ -5,15 +5,14 @@
 - Branch: `verify-rust-std/reexec-0011-floats-ints`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0011-floats-ints`
 - Status after generator slice: the challenge-local docs and ported artifacts
-  exist, twelve direct proof slices pass on the branch, and the latest
+  exist, thirteen direct proof slices pass on the branch, and the latest
   evaluator refresh before this slice left the challenge `IN PROGRESS` at
   `2.9 / 3` pending a broader reassessment. The planner-selected
   `carrying_mul_u8` slice is complete, the follow-up `unchecked_mul_u8`
   slice also passed without any support changes, and the new
   `unchecked_mul_u16` slice passed as well, and `unchecked_mul_u32` now also
   passes on this branch. The latest branch-local `unchecked_shl_u8` proof
-  also passed, and the scoped discovery check for `unchecked_shl` still
-  collects the case, so the next bounded move remains `unchecked_shl_u16`.
+  also passed, and the branch-local `unchecked_shl_u16` replay now passes too.
   The current checkpoint adds a cheap `unchecked_shr` discovery check that
   still collects exactly one case, and the smallest proof slice
   (`unchecked_shr_u8`) was interrupted before any terminal proof status was
@@ -178,6 +177,13 @@
   `kmir prove-rs`; `unchecked_mul_u64` passed without any new support changes,
   widening the integer evidence one step further while preserving the existing
   float blocker boundary.
+- Re-executed the next unchecked-shl slice directly with `kmir prove-rs`;
+  `unchecked_shl_u16` passed without any new support changes, and the replay
+  in `/tmp/kmir-0011-unchecked-shl-u16` reached terminal
+  `#EndProgram ~> .K` on both split paths with branches on
+  `core::num::<impl u16>::checked_shl` and constraints including
+  `notBool ARG_UINT2:Int <Int 16`, `ARG_UINT2:Int <Int 16`, and
+  `ARG_UINT2:Int >=Int 0`.
 
 ## Evidence for next evaluator step
 
@@ -187,8 +193,8 @@
 - Validation now includes branch-local passing proof evidence in two published
   requirement families:
   `unchecked_add_u8`, `unchecked_neg_i8`, `unchecked_sub_u8`,
-  `unchecked_mul_u8`, `unchecked_mul_u16`, `unchecked_mul_u32`, and
-  `unchecked_mul_u64` pass in Part 1, and
+  `unchecked_mul_u8`, `unchecked_mul_u16`, `unchecked_mul_u32`,
+  `unchecked_mul_u64`, and `unchecked_shl_u16` pass in Part 1, and
   `wrapping_shl_u8`, `wrapping_shr_u8`, `widening_mul_u8`, plus
   `carrying_mul_u8` pass in Part 2.
 - Float blocker signal remains present in ported evidence:
@@ -201,10 +207,11 @@
 - The planner-selected `unchecked_mul_u16` slice is complete and passed.
 - The planner-selected `unchecked_mul_u32` slice is complete and passed.
 - The planner-selected `unchecked_mul_u64` slice is complete and passed.
+- The planner-selected `unchecked_shl_u16` slice is complete and passed.
 - If the generator continues in the same file, the next concrete target is
   the next available `unchecked_mul_*` width beyond `u64`, if any is present
   in the branch-local harness.
-- Evaluator should reassess whether the branch’s twelve direct proof passes
+- Evaluator should reassess whether the branch’s thirteen direct proof passes
   across Part 1 and Part 2 materially change the non-float readiness signal,
   while keeping the remaining float blocker tied to the precise
   `fabsf32` / `fabsf64` frontier.
@@ -247,11 +254,19 @@
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u8 --reload --fail-fast --max-workers 1`.
   The summary reported `nodes: 7`, `pending: 0`, `failing: 0`, `stuck: 0`,
   `terminal: 3`.
+- 2026-04-10: Direct proof replay completed with `ProofStatus.PASSED` for
+  `unchecked_shl_u16` using:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u16 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u16 --reload --fail-fast --max-workers 1`.
+  The replay in `/tmp/kmir-0011-unchecked-shl-u16` reached terminal
+  `#EndProgram ~> .K` on both split paths. Branches were observed on
+  `core::num::<impl u16>::checked_shl`, with constraints including
+  `notBool ARG_UINT2:Int <Int 16`, `ARG_UINT2:Int <Int 16`, and
+  `ARG_UINT2:Int >=Int 0`.
 - 2026-04-10: Scoped discovery check for the next `unchecked_shl` sibling
   collected exactly `test_verify_rust_std[unchecked_shl]` using:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shl and not fail" -q`.
-  The target is still present in collection, so the next bounded move remains
-  `unchecked_shl_u16`.
+  The target is still present in collection, so this family is now checkpointed
+  through `unchecked_shl_u16`.
 - 2026-04-10: Scoped discovery check for `unchecked_shr` collected exactly
   `test_verify_rust_std[unchecked_shr]` using:
   `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shr and not fail" -q`.

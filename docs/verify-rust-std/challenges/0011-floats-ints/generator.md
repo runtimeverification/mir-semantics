@@ -245,11 +245,18 @@ Ownership:
 
 21. Command:
     `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_mul.rs --start-symbol unchecked_mul_u64 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-mul-u64 --reload --fail-fast --max-workers 1`
+    Result:
+    passed with `ProofStatus.PASSED`; summary reported `nodes: 7`,
+    `pending: 0`, `failing: 0`, `stuck: 0`, `terminal: 3`.
 22. Command:
     `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u16 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u16 --reload --fail-fast --max-workers 1`
     Result:
-    exited with status `143`; no terminal proof result was captured, no new
-    frontier was established, and no code changes were kept.
+    passed with `ProofStatus.PASSED`; replay in
+    `/tmp/kmir-0011-unchecked-shl-u16` reached terminal `#EndProgram ~> .K`
+    on both split paths. Branches were observed on
+    `core::num::<impl u16>::checked_shl`, with constraints including
+    `notBool ARG_UINT2:Int <Int 16`, `ARG_UINT2:Int <Int 16`, and
+    `ARG_UINT2:Int >=Int 0`.
 
 23. Command:
     `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shr and not fail" -q`
