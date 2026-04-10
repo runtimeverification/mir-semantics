@@ -259,3 +259,22 @@ Ownership:
   terminal slice but is still not in backend float logic. The new blocker is
   the copied `if exp >= buf.len()` branch test at line 76, where `buf.len()`
   no longer simplifies to the concrete `4` for this single case.
+
+- The newest semantics-side pass moved the frontier again: the proof now
+  fails in a single `#traverseProjection` leaf on a concrete `AllocRef`
+  dereference at `library/core/src/slice/index.rs:440`, not on the earlier
+  thunked unsize cast. That is the first post-cast frontier shift this cycle.
+
+## Success Criteria Coverage
+
+| Function | Location | Status | Specification | Notes |
+| --- | --- | --- | --- | --- |
+| `digits_to_dec_str` | `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs` | `frontier moved` | `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md` | The current probe still only covers one function, but the proof now reaches a concrete `AllocRef` deref leaf instead of the earlier thunked unsize cast. |
+
+## Validation Evidence
+
+- `make build` succeeded after the `rt/data.md` update that added a narrow `AllocRef` / `unOpPtrMetadata` frontier rule for the challenge-local thunked unsize cast.
+- `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec/kmir run -- kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec/kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-flt2dec-fixed-proof2 --max-depth 200 --reload`
+  ended with `ProofStatus.FAILED`, `nodes: 5`, `failing: 1`, `stuck: 1`, `terminal: 1`.
+- `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec/kmir run -- kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-flt2dec-fixed-proof2 --statistics --leaves`
+  reports the new first leaf as `#traverseProjection ( toLocal ( 2 ) , AllocRef ( allocId ( 8 ) , .ProjectionElems , metadata ( staticSize ( 4 ) , 0 , staticSize ( 4 ) ) ) , projectionElemDeref .ProjectionElems , .Contexts )`.

@@ -4,7 +4,7 @@ Current objective:
 - Reconfirm the published success criteria table, then keep the current challenge-local reproducer at the `core::slice::index` frontier `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`) unless a smaller reproducer can preserve the same post-select path.
 
 Next generator task:
-- Re-run the existing proof/show evidence against `/tmp/0028-digits-to-dec-str-minslice-proof`, then stop shrinking if the first leaf is still `slice_end_index_len_fail` at `Range<usize>::index`; otherwise record the newly smaller reproducer and its exact first leaf.
+- Re-run the existing proof/show evidence against the current challenge-local probe, then stop shrinking if the first leaf is still the `Range<usize>::index` frontier; otherwise record the newly smaller reproducer and its exact first leaf.
 
 Generator acceptance evidence:
 - The probe file path in `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec`.
@@ -17,6 +17,7 @@ Plan slices:
 1. Reconfirm the published function list, safety obligations, and UB exclusions from the challenge page.
 2. Preserve the restored real prefix slice and the single concrete `digits_to_dec_str` case, but trim only the current post-select slice-index path so the active path stays challenge-local.
 3. Rerun only that minimally trimmed probe and record the first concrete boundary it reaches, classifying it as copied `flt2dec` control flow, decimal-point-path logic, a backend limit, or the underlying slice-index helper.
+4. If the frontier moves past `slice_end_index_len_fail`, keep the smallest discovered reproducer and update the success-criteria coverage notes to reflect the new proof frontier rather than shrinking again.
 
 Stop conditions:
 - Stop at `blocked` only if a smaller reproducer exposes a new backend or library boundary with direct evidence after the `buf.len()` branch test has been simplified away.

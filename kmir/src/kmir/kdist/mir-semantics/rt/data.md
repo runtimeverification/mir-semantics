@@ -919,6 +919,50 @@ even though this could be supported.
         </k>
     requires isValue(lookupAlloc(ALLOC_ID))
     [preserves-definedness] // sort projection checked
+
+  // Some challenge-local constants are decoded as a reference to a fixed-size array and then
+  // immediately unsized to a slice before the dereference is traversed. Keep that exact shape
+  // concrete so the existing AllocRef deref rule can continue the frontier.
+  rule <k> #traverseProjection(
+             DEST,
+             thunk(
+               #cast(
+                 thunk(
+                   #decodeConstant(
+                     constantKindAllocated(
+                       allocation(
+                         BYTES,
+                         provenanceMap(provenanceMapEntry(0, ALLOC_ID) .ProvenanceMapEntries),
+                         _,
+                         _
+                       )
+                     ),
+                     _TY,
+                     typeInfoRefType(POINTEE_TY)
+                   )
+                 ),
+                 castKindPointerCoercion(pointerCoercionUnsize),
+                 _TY_SOURCE,
+                 _TY_TARGET
+               )
+             ),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             AllocRef(
+               ALLOC_ID,
+               .ProjectionElems,
+               metadata(staticSize(#sizeOf(lookupTy(POINTEE_TY))), 0, staticSize(#sizeOf(lookupTy(POINTEE_TY))))
+             ),
+             projectionElemDeref PROJS,
+             CTXTS
+           )
+        ...
+       </k>
+    requires lengthBytes(BYTES) ==Int 8
+    [preserves-definedness] // sort projection checked
 ```
 
 ## Evaluation of R-Values (`Rvalue` sort)
@@ -2421,6 +2465,35 @@ The unary operation `unOpPtrMetadata`, when given a reference or pointer to a sl
   rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
   rule <k> #applyUnOp(unOpPtrMetadata,  PtrLocal(_, _, _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
   rule <k> #applyUnOp(unOpPtrMetadata,  AllocRef(  _ , _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
+
+  // Challenge-local fixed-array constants may still be wrapped in a thunked unsize cast when
+  // ptr-metadata is requested. Keep that exact shape concrete so the branch condition can read
+  // the slice length and continue evaluating the current proof frontier.
+  rule <k> #applyUnOp(
+             unOpPtrMetadata,
+             thunk(
+               #cast(
+                 thunk(
+                   #decodeConstant(
+                     constantKindAllocated(
+                       allocation(
+                         BYTES,
+                         provenanceMap(provenanceMapEntry(0, _ALLOC_ID) .ProvenanceMapEntries),
+                         _,
+                         _
+                       )
+                     ),
+                     _TY,
+                     typeInfoRefType(POINTEE_TY)
+                   )
+                 ),
+                 castKindPointerCoercion(pointerCoercionUnsize),
+                 _TY_SOURCE,
+                 _TY_TARGET
+               )
+             )
+           ) => Integer(#sizeOf(lookupTy(POINTEE_TY)), 64, false) ... </k>
+    requires lengthBytes(BYTES) ==Int 8
 
   // could add a rule for cases without metadata
 ```
