@@ -1,23 +1,23 @@
 # Execution Plan: Challenge 0028
 
 Current objective:
-- Reconfirm the challenge requirements, then retarget the next probe so it removes the copied-function `if exp < buf.len()` branch select at `digits_to_dec_str_probe.rs:58` and lets the same case advance toward `flt2dec`-owned logic or a genuine backend limit.
+- Reconfirm the challenge requirements, then treat the saved taken-arm artifact as cleared scaffolding and retarget the next probe so it advances from `#EndProgram ~> .K` into the smallest remaining `flt2dec`-owned successor path, without reopening the copied-function guard and branch-select setup.
 
 Next generator task:
-- Make the challenge-local `digits_to_dec_str` probe expose the post-select control flow cheaply: keep the `b"1234", exp = 2, frac_digits = 3` case, but add the smallest possible branch-specific trace or guard so the copied `if exp < buf.len()` `#selectBlock` at `digits_to_dec_str_probe.rs:58` is resolved once and the next leaf after it is captured without another blind full-depth rerun.
+- Keep the `b"1234", exp = 2, frac_digits = 3` case and the taken-arm specialization, but replace the branch-select-only target with the narrowest challenge-local probe that reaches the next unproven `flt2dec`-owned step after the terminal `#EndProgram ~> .K` leaf, rather than restoring any of the already-cleared wrapper guards or raw-slice helpers.
 
 Generator acceptance evidence:
 - The probe file path in `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec`.
 - The exact command(s) used to rerun it.
 - The first pass/fail result with the precise failure mode.
-- A note saying whether the result is still wrapper-artifact-bound, has advanced into the actual `flt2dec` body, or has exposed a genuine backend limit.
+- A note saying whether the result stays at the taken-arm `#EndProgram ~> .K` artifact, advances into actual `flt2dec` body logic, or exposes a genuine backend limit.
 
 Plan slices:
 1. Reconfirm the published function list, safety obligations, and UB exclusions from the challenge page.
-2. Specialize the narrowed `digits_to_dec_str` harness so the single concrete case bypasses the copied `if exp < buf.len()` branch select as a blind rerun target and instead lands on the next control-flow step cheaply.
-3. Rerun only the minimally instrumented probe and record the first concrete boundary it reaches, classifying it as `flt2dec`-owned logic or a backend limit if it finally escapes the wrapper.
+2. Preserve the taken-arm specialization for the single concrete `digits_to_dec_str` case, but narrow the probe to the first unproven `flt2dec`-owned successor after the terminal `#EndProgram ~> .K` leaf, avoiding any return to the copied wrapper guards or branch-select scaffolding.
+3. Rerun only that minimally generalized probe and record the first concrete boundary it reaches, classifying it as `flt2dec`-owned logic or a backend limit once it actually leaves the already-cleared taken-arm artifact.
 
 Stop conditions:
-- Stop at `blocked` only if the follow-up probe reproduces the known float-value backend gap with direct evidence.
-- Stop at `in progress` if the follow-up probe reaches further into `flt2dec` and yields a concrete next slice.
-- Do not widen scope until the copied-function branch-select path has been forced past or the next post-select leaf has been captured with evidence.
+- Stop at `blocked` only if the follow-up probe reproduces a real backend float gap with direct evidence from the new successor path.
+- Stop at `in progress` if the follow-up probe reaches further into `flt2dec` and yields a concrete next slice beyond the cleared `#EndProgram ~> .K` artifact.
+- Do not widen scope until the next post-terminal leaf has been captured with evidence and the probe has stayed out of the already-cleared branch-select scaffolding.
