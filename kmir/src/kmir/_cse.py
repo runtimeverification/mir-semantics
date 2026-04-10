@@ -13,6 +13,7 @@ from pyk.kast.att import Atts
 from pyk.kast.inner import KApply, KAs, KInner, KRewrite, KSequence, KSort, KToken, KVariable
 from pyk.kast.manip import bottom_up, free_vars, remove_generated_cells
 from pyk.kast.outer import KFlatModule, KRule
+from pyk.kast.prelude.collections import list_empty
 from pyk.proof.reachability import APRProof
 
 from .kmir import KMIR, kmir_cterm_symbolic
@@ -1387,9 +1388,47 @@ def _prove_callee_summary(
         if observed_call_cterm is not None:
             from pyk.kast.manip import set_cell
 
+            def _patch_k_cell_call_target(term: KInner) -> KInner:
+                if isinstance(term, KSequence) and term.items:
+                    head = _patch_k_cell_call_target(term.items[0])
+                    if head is term.items[0]:
+                        return term
+                    return KSequence((head, *term.items[1:]))
+                if not isinstance(term, KApply):
+                    return term
+
+                if term.label.name == '#execTerminator(_)_KMIR-CONTROL-FLOW_KItem_Terminator':
+                    if not term.args:
+                        return term
+                    terminator = term.args[0]
+                    if (
+                        isinstance(terminator, KApply)
+                        and terminator.label.name == 'terminator(_,_)_BODY_Terminator_TerminatorKind_Span'
+                    ):
+                        call_kind = terminator.args[0] if len(terminator.args) > 0 else None
+                        if (
+                            isinstance(call_kind, KApply)
+                            and call_kind.label.name == 'TerminatorKind::Call'
+                            and len(call_kind.args) >= 5
+                        ):
+                            patched_call_kind = call_kind.let(
+                                args=(call_kind.args[0], call_kind.args[1], call_kind.args[2], _no_bb_idx, call_kind.args[4])
+                            )
+                            patched_terminator = terminator.let(
+                                args=(patched_call_kind, *terminator.args[1:])
+                            )
+                            return term.let(args=(patched_terminator,))
+
+                if '#execTerminatorCall' in term.label.name and len(term.args) >= 5:
+                    return term.let(args=(term.args[0], term.args[1], term.args[2], term.args[3], _no_bb_idx, *term.args[5:]))
+
+                return term
+
             _no_bb_idx = KApply('noBasicBlockIdx_BODY_MaybeBasicBlockIdx', ())
-            _empty_stack = KApply('.List', ())
-            patched_config = set_cell(init_cterm.config, 'TARGET_CELL', _no_bb_idx)
+            _empty_stack = list_empty()
+            patched_k_cell = _patch_k_cell_call_target(init_cterm.cell('K_CELL'))
+            patched_config = set_cell(init_cterm.config, 'K_CELL', patched_k_cell)
+            patched_config = set_cell(patched_config, 'TARGET_CELL', _no_bb_idx)
             patched_config = set_cell(patched_config, 'STACK_CELL', _empty_stack)
             init_cterm = CTerm(patched_config, init_cterm.constraints)
             _LOGGER.info('CSE: patched <target>=noBasicBlockIdx and <stack>=empty for %s', name)
