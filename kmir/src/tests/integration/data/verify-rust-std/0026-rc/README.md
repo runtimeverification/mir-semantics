@@ -34,6 +34,7 @@ How to run:
   `uv --project kmir run kmir prove /home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc/kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs --proof-dir /tmp/rc-from-raw-in-frontier-proof --verbose --terminate-on-thunk`
 - Narrow collector:
   `make test-verify-rust-std`
+- Explicit CI shard: GitHub Actions job `Verify Rust Std 0026 RC`
 - Direct pytest form:
   `uv --project kmir run pytest kmir/src/tests/integration/test_integration.py -k test_verify_rust_std -v`
 
