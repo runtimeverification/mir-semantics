@@ -42,8 +42,7 @@ The verification harness should be a dedicated proof entrypoint, ideally a named
 
 - symbolic primitive input for the `T` value, here `u32`
 - concrete `System` allocator, because the challenge limits allocators to standard-library ones
-- a small helper that constructs a `repr(C)` witness with stable `MaybeUninit` plus `ptr::write`
-- an explicit `addr_of!` / field-projection step that produces the raw pointer passed to `Rc::from_raw_in`
+- either a small helper that constructs a `repr(C)` witness with stable `MaybeUninit` plus `ptr::write`, or a direct API roundtrip through `Rc::new_in` / `Rc::into_raw` if that proves cleaner
 - postconditions that check the recovered `Rc` value and refcount
 
 The frontier reproducer should stay separate and temporary. Its job is to keep the current `CastKind::Transmute` node reproducible for audit until the verification harness can be made to prove the contract directly.
@@ -74,4 +73,4 @@ This is the smallest shape that matches the repo rules, the 0011 precedent, and 
 
 ## Minimal Next Implementation Step
 
-Add a symbolic `Rc::from_raw_in` proof entrypoint that reuses the stable `MaybeUninit` witness helper and is collected as a verification harness, while keeping the existing frontier file as the separate regression reproducer.
+Add a symbolic `Rc::from_raw_in` proof entrypoint and collect it as a verification harness, while keeping the existing frontier file as the separate regression reproducer. Use the smallest stable witness shape that proves cleanly; prefer the direct API roundtrip if the manual witness still stalls at the transmute leaf.

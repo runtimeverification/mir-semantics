@@ -40,6 +40,7 @@ PROVE_START_SYMBOLS = {
     'test_offset_from-fail': ['testing'],
     'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next': ['repro'],
+    'rc-from-raw-in': ['verify_rc_from_raw_in'],
 }
 PROVE_SHOW_SPECS = [
     'local-raw-fail',
@@ -74,7 +75,11 @@ PROVE_SHOW_SPECS = [
 ]
 
 VERIFY_RUST_STD_0026_RC_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std' / '0026-rc').resolve(strict=True)
-VERIFY_RUST_STD_0026_RC_FILES = list(VERIFY_RUST_STD_0026_RC_DIR.glob('*.rs'))
+VERIFY_RUST_STD_0026_RC_PROOF_FILES = [VERIFY_RUST_STD_0026_RC_DIR / 'rc-from-raw-in.rs']
+VERIFY_RUST_STD_0026_RC_FRONTIER_FILES = [VERIFY_RUST_STD_0026_RC_DIR / 'rc-from-raw-in-frontier-fail.rs']
+VERIFY_RUST_STD_0026_RC_START_SYMBOLS = {
+    'rc-from-raw-in': ['verify_rc_from_raw_in'],
+}
 
 
 @pytest.mark.parametrize(
@@ -120,10 +125,29 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
 
 @pytest.mark.parametrize(
     'rs_file',
-    VERIFY_RUST_STD_0026_RC_FILES,
-    ids=[spec.stem for spec in VERIFY_RUST_STD_0026_RC_FILES],
+    VERIFY_RUST_STD_0026_RC_PROOF_FILES,
+    ids=[spec.stem for spec in VERIFY_RUST_STD_0026_RC_PROOF_FILES],
 )
 def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    if update_expected_output:
+        pytest.skip()
+
+    prove_opts = ProveOpts(rs_file, smir=False, terminate_on_thunk=True)
+    start_symbols = VERIFY_RUST_STD_0026_RC_START_SYMBOLS.get(rs_file.stem, ['main'])
+
+    for start_symbol in start_symbols:
+        prove_opts.start_symbol = start_symbol
+        apr_proof = kmir.prove_program(prove_opts)
+
+        assert apr_proof.passed
+
+
+@pytest.mark.parametrize(
+    'rs_file',
+    VERIFY_RUST_STD_0026_RC_FRONTIER_FILES,
+    ids=[spec.stem for spec in VERIFY_RUST_STD_0026_RC_FRONTIER_FILES],
+)
+def test_verify_rust_std_frontier(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
 
     if update_expected_output:
@@ -132,10 +156,10 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
     prove_opts = ProveOpts(rs_file, smir=False, terminate_on_thunk=True)
     apr_proof = kmir.prove_program(prove_opts)
 
-    if not should_fail:
-        assert apr_proof.passed
-    else:
+    if should_fail:
         assert apr_proof.failed
+    else:
+        assert apr_proof.passed
 
 
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)

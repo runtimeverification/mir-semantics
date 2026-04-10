@@ -14,5 +14,4 @@ pub fn verify_rc_from_raw_in(value: u32) {
     assert_eq!(Rc::weak_count(&rc), 0);
 }
 
-fn main() {
-}
+fn main() {}

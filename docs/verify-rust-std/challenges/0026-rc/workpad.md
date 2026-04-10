@@ -6,10 +6,10 @@
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0026-rc`
 - Draft PR: exists.
 - Evaluator: active / in progress.
-- Local status: first audit slice committed in `87a669dc`; the current `Rc::from_raw_in` files still capture a concrete witness, and the next step is to split that witness into a symbolic verification harness plus the temporary frontier reproducer.
+- Local status: first audit slice committed in `87a669dc`; the branch now has a symbolic `Rc::from_raw_in` proof harness plus the temporary frontier reproducer, and the proof result for the correct symbol is still frontier-only.
 - Interrupt checkpoint: the worktree was restored to `HEAD`, `tmp.*` artifacts were removed, the missing `mir-semantics.haskell` and `mir-semantics.{llvm,llvm-library}` kdist targets were rebuilt, and `uv --project kmir run kmir prove ... --proof-dir /tmp/rc-from-raw-in-proof-rawalloc3 --verbose --terminate-on-thunk` was started but interrupted before any new proof leaf or terminal node was captured.
 - Interrupt outcome: no new frontier was established and no code change was kept from that attempt.
-- Latest blocker checkpoint: the stable `MaybeUninit` witness attempt for `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in-frontier-fail.rs` reached proof construction but still failed at the same terminal direct-witness `CastKind::Transmute` leaf; node 4 in `/tmp/rc-from-raw-in-frontier-proof-stablemaybeuninit` captures the current frontier. That file should now be treated as a temporary reproducer only.
+- Latest blocker checkpoint: the stable `MaybeUninit` frontier reproducer still fails at the same terminal direct-witness `CastKind::Transmute` leaf, and the symbolic proof harness `kmir/src/tests/integration/data/verify-rust-std/0026-rc/rc-from-raw-in.rs` also fails at the `std::boxed::Box::<std::rc::RcInner<u32>, std::alloc::System>::try_new_uninit_in` transmute frontier when run with `--start-symbol verify_rc_from_raw_in`. That file should now be treated as a temporary reproducer only.
 
 ## Confirmed Inputs
 
@@ -91,4 +91,4 @@
 ## Known Soft Risks
 
 - Challenge guidance still flags `assume_init` as potentially hard to express in the current type system, but that does not block the selected tranche.
-- The current root witness still needs a smaller direct allocator/raw-pointer shape if this proof is to advance past the `#cast` transmute leaf.
+- The symbolic root proof still needs a smaller direct allocator/raw-pointer shape if this proof is to advance past the `#cast` transmute leaf in `Box::try_new_uninit_in`.
