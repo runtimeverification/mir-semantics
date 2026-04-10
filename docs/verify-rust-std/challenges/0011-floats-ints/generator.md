@@ -91,6 +91,15 @@ Ownership:
   (`1/17 tests collected, 16 deselected`), so the next bounded move remains a
   narrow `kmir prove-rs` retry for `unchecked_shl_u16` if execution budget is
   available.
+- 2026-04-10: Ran the scoped discovery check for `unchecked_shr` on the
+  verify-rust-std integration target with:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shr and not fail" -q`.
+  Result: `test_verify_rust_std[unchecked_shr]` is still collected
+  (`1/17 tests collected, 16 deselected`), so the family remains branch-worthy.
+- 2026-04-10: Started the smallest available `unchecked_shr` proof slice with:
+  `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shr.rs --start-symbol unchecked_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shr-u8 --reload --fail-fast --max-workers 1`.
+  The run was interrupted before any terminal proof result was emitted, so no
+  new frontier was established.
 
 ## Files Touched
 
@@ -235,6 +244,19 @@ Ownership:
     exited with status `143`; no terminal proof result was captured, no new
     frontier was established, and no code changes were kept.
 
+23. Command:
+    `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shr and not fail" -q`
+    Result:
+    passed; exactly `test_verify_rust_std[unchecked_shr]` collected
+    (`1/17 collected, 16 deselected`).
+
+24. Command:
+    `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shr.rs --start-symbol unchecked_shr_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shr-u8 --reload --fail-fast --max-workers 1`
+    Result:
+    interrupted before any terminal proof result was emitted. The family is
+    still collected, but this slice did not reach a proof verdict and no new
+    frontier was established.
+
 ## Commit Inventory
 
 - `2e09185c` — `feat(verify-rust-std): port challenge 0011 harnesses and runner`
@@ -253,3 +275,5 @@ Ownership:
   stack; the ported expected outputs still include stuck frontiers on float
   intrinsics (e.g., `fabsf32`, `fabsf64`) in
   `to_int_unchecked-fail.*.expected`.
+- The current smallest `unchecked_shr_u8` proof slice did not complete before
+  interruption, so the branch still lacks fresh proof evidence for that family.
