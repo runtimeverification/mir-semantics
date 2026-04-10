@@ -12,8 +12,8 @@
   slice also passed without any support changes, and the new
   `unchecked_mul_u16` slice passed as well, and `unchecked_mul_u32` now also
   passes on this branch. The latest branch-local `unchecked_shl_u8` proof
-  also passed, so the next concrete target in the same file is
-  `unchecked_shl_u16`.
+  also passed, and the scoped discovery check for `unchecked_shl` still
+  collects the case, so the next bounded move remains `unchecked_shl_u16`.
 
 ## Evidence gathered
 
@@ -236,3 +236,8 @@
   `timeout 900s uv --project kmir run -- kmir prove-rs kmir/src/tests/integration/data/verify-rust-std/0011-floats-ints/unchecked_shl.rs --start-symbol unchecked_shl_u8 --terminate-on-thunk --proof-dir /tmp/kmir-0011-unchecked-shl-u8 --reload --fail-fast --max-workers 1`.
   The summary reported `nodes: 7`, `pending: 0`, `failing: 0`, `stuck: 0`,
   `terminal: 3`.
+- 2026-04-10: Scoped discovery check for the next `unchecked_shl` sibling
+  collected exactly `test_verify_rust_std[unchecked_shl]` using:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shl and not fail" -q`.
+  The target is still present in collection, so the next bounded move remains
+  `unchecked_shl_u16`.

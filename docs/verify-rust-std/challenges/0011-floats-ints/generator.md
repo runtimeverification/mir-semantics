@@ -84,6 +84,13 @@ Ownership:
   with `kmir prove-rs` for `unchecked_shl_u8`; the existing harness and shift
   support were already sufficient on this branch, and the next sibling width is
   now `unchecked_shl_u16`.
+- 2026-04-10: Ran the scoped discovery check for `unchecked_shl` on the
+  verify-rust-std integration target with:
+  `uv --project kmir run -- pytest kmir/src/tests/integration/test_integration.py::test_verify_rust_std --collect-only -k "unchecked_shl and not fail" -q`.
+  Result: `test_verify_rust_std[unchecked_shl]` is still collected
+  (`1/17 tests collected, 16 deselected`), so the next bounded move remains a
+  narrow `kmir prove-rs` retry for `unchecked_shl_u16` if execution budget is
+  available.
 
 ## Files Touched
 
