@@ -1517,18 +1517,9 @@ def _prove_callee_summary(
                 max_depth=opts.max_depth,
                 max_iterations=cse_callee_max_iterations,
             )
+            # No return cut-points: they block ALL returns including inner
+            # function returns, causing 0 returns in callee proofs.
             callee_cut_points: list[str] = []
-            if target_k_cell is not None and not _is_end_program_k(target_k_cell):
-                callee_cut_points.extend(
-                    [
-                        'KMIR-CONTROL-FLOW.termReturnSome',
-                        'KMIR-CONTROL-FLOW.termReturnNone',
-                        'KMIR-CONTROL-FLOW.endprogram-return',
-                        'KMIR-CONTROL-FLOW.endprogram-no-return',
-                        'RT-DATA.#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation2-heat',
-                        'RT-DATA.#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation2-cool',
-                    ]
-                )
             _prove_sequential(
                 kmir_callee,
                 proof,
