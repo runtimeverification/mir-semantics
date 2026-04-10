@@ -318,11 +318,18 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   syntax Context ::= CtxField( VariantIdx, List, Int , Ty )
                    | CtxFieldUnion( FieldIdx, Value, Ty )
                    | CtxIndex( List , Int ) // array index constant or has been read before
+                   | CtxRangeHead( List ) // internal helper for projecting through the head element of a range
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
                    | "CtxWrapStruct" // special context adding a singleton Aggregate(0, _) around a value
 
   syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
+
+  // PointerOffset operates on a canonical range view. Bare values are treated as a
+  // singleton range instead of bouncing between `VAL` and `Range(ListItem(VAL))`.
+  syntax Value ::= #rangeView ( Value ) [function, total]
+  rule #rangeView(Range(ELEMS)) => Range(ELEMS)
+  rule #rangeView(VAL) => Range(ListItem(VAL)) requires notBool isRange(VAL)
 
   syntax Contexts ::= List{Context, ""}
 
@@ -342,6 +349,12 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule #buildUpdate(VAL, CtxIndex(ELEMS, I) CTXS)
       => #buildUpdate(Range(ELEMS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
+
+  rule #buildUpdate(VAL, CtxRangeHead(ELEMS) CTXS)
+      => #buildUpdate(Range(ELEMS[0 <- VAL]), CTXS)
+    requires 0 <Int size(ELEMS)
+     andBool isValue(ELEMS[0])
+    [preserves-definedness] // head element existence checked upon context construction
 
   // we don't expect an update to happen on an entire _subslice_ but define a rule for it anyway
   rule #buildUpdate(Range(INNER), CtxSubslice(ELEMS, START, END) CTXS)
@@ -382,6 +395,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule consP(projectionElemSingletonArray, projectionElemConstantIndex(0, 0, false) PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemConstantIndex(0, 0, false), projectionElemSingletonArray PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) PS:ProjectionElems) => PS [priority(40)]
+  rule consP(PointerOffset(OFF, ORIGIN_LENGTH), projectionElemConstantIndex(0, 0, false) PS:ProjectionElems)
+    => PointerOffset(OFF, ORIGIN_LENGTH) PS [priority(40)]
   // this rule is not valid if the original pointee has more than one field
   // rule consP(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct PS:ProjectionElems) => PS [priority(40)]
   // HACK: special rule which munges together constant-indexing and offset projections 
@@ -497,28 +512,45 @@ The situation typically arises when the stored value is a pointer (`NonNull`) bu
 A somewhat dual case to this rule can occur when a pointer into an array of data elements has been offset and is then dereferenced.
 The dereferenced pointer may either point to a subslice or to a single element (depending on context).
 Therefore, a field projection may be found which has to be applied to the head element of an array.
-The following rule resolves this situation by using the head element.
+The following rules resolve this situation by using the head element while
+retaining an internal `CtxRangeHead(...)` context, so writes still rebuild the
+enclosing range without leaking a synthetic `ConstantIndex(0)` into later place
+or reference reconstruction.
 
 ```k
   rule <k> #traverseProjection(
              DEST,
-             Range(ListItem(Aggregate(_, _) #as VALUE) _REST:List),
-             projectionElemField(IDX, TY) PROJS,
+             Range(ListItem(Aggregate(V_IDX, ARGS)) REST:List),
+             projectionElemField(fieldIdx(I), TY) PROJS,
              CTXTS
            )
-        => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
-    [preserves-definedness, priority(100)]
+        => #traverseProjection(
+             DEST,
+             getValue(ARGS, I),
+             PROJS,
+             CtxField(V_IDX, ARGS, I, TY) CtxRangeHead(ListItem(Aggregate(V_IDX, ARGS)) REST) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int I andBool I <Int size(ARGS)
+     andBool isValue(ARGS[I])
+    [preserves-definedness] // valid list indexing checked
 
-  // Temporary bridge rule: after PointerOffset lifts a single value to Range(ListItem(...)),
-  // unwrap a Union head element so the existing Union + Field rules below can keep running.
   rule <k> #traverseProjection(
              DEST,
-             Range(ListItem(Union(_, _) #as VALUE) _REST:List),
-             projectionElemField(IDX, TY) PROJS,
+             Range(ListItem(Union(FIELD_IDX, ARG)) REST:List),
+             projectionElemField(FIELD_IDX, TY) PROJS,
              CTXTS
            )
-        => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
-    [preserves-definedness, priority(100)]
+        => #traverseProjection(
+             DEST,
+             ARG,
+             PROJS,
+             CtxFieldUnion(FIELD_IDX, ARG, TY) CtxRangeHead(ListItem(Union(FIELD_IDX, ARG)) REST) CTXTS
+           )
+        ...
+        </k>
+    [preserves-definedness]
 ```
 
 #### Unions
@@ -660,8 +692,6 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
      andBool START <=Int size(ELEMENTS) -Int END
     [preserves-definedness] // Indexes checked to be in range for ELEMENTS
 
-  // Temporary bridge rule: PointerOffset is implemented below in terms of Range slicing, so
-  // lift a single non-Range value to Range(ListItem(...)) to reuse that shared path.
   rule <k> #traverseProjection(
              DEST,
              VAL,
@@ -670,7 +700,7 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
            )
         => #traverseProjection(
              DEST,
-             Range(ListItem(VAL)),
+             #rangeView(VAL),
              PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS,
              CTXTS
            )
@@ -1250,7 +1280,11 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   rule #projectionsFor(CTXS) => #projectionsFor(CTXS, .ProjectionElems)
   rule #projectionsFor(       .Contexts          , PROJS) => PROJS
   rule #projectionsFor(CtxField(_, _, I, TY) CTXS, PROJS) => #projectionsFor(CTXS,     projectionElemField(fieldIdx(I), TY) PROJS)
+  rule #projectionsFor(CtxIndex(_, 0) CtxPointerOffset(_, OFFSET, ORIGIN_LENGTH) CTXS, PROJS)
+      => #projectionsFor(CtxPointerOffset(.List, OFFSET, ORIGIN_LENGTH) CTXS, PROJS)
+    [priority(40)]
   rule #projectionsFor(       CtxIndex(_, I) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemConstantIndex(I, 0, false) PROJS)
+  rule #projectionsFor(    CtxRangeHead(_) CTXS, PROJS) => #projectionsFor(CTXS, PROJS)
   rule #projectionsFor( CtxSubslice(_, I, J) CTXS, PROJS) => #projectionsFor(CTXS,      projectionElemSubslice(I, J, false) PROJS)
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
