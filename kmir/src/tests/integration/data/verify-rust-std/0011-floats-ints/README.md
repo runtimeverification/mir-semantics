@@ -53,6 +53,7 @@ in `docs/verify-rust-std/challenges/0011-floats-ints/success_criteria.md`.
 
 - The branch already has the dedicated `test-verify-rust-std` make target and
   the `test_verify_rust_std` pytest collector.
-- `.github/workflows/test.yml` currently reaches the same collector through the
-  normal integration suite (`make test-integration`), so this artifact refresh
-  does not add another dedicated workflow shard.
+- `.github/workflows/test.yml` now exposes an explicit `Verify Rust Std` job
+  that runs `make test-verify-rust-std PARALLEL=6`, so reviewers can see this
+  collector directly in GitHub Actions instead of inferring it from the general
+  integration suite.
