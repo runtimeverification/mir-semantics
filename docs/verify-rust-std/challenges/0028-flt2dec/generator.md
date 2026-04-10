@@ -87,6 +87,15 @@ Ownership:
   copied `if exp < buf.len()` select is no longer active in the proof path.
   The probe still compiles, but the follow-up proof rerun was interrupted
   before it reported a new leaf.
+- The current slice restores the first real decimal-point-path operation from
+  upstream `digits_to_dec_str`: the prefix now uses `&buf[..exp]` while the
+  suffix remains the challenge-local stub `b"34"`. This is the smallest change
+  that puts one real taken-arm slice operation back on the active path.
+- That one-operation restoration breaks the previously saved terminal proof.
+  The next validated frontier is a stuck `#selectBlock` in the copied
+  `digits_to_dec_str` body at `dec/digits_to_dec_str_probe.rs:76`,
+  corresponding to `if exp >= buf.len()`, before the restored slice result is
+  fully consumed.
 
 ## Files Touched
 
@@ -187,6 +196,16 @@ Ownership:
   `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec/kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-current-proof --statistics --leaves`
   reaches the terminal target leaf `#EndProgram ~> .K` along path
   `1 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 2`.
+- `rustc kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs -o /tmp/digits_to_dec_str_probe_0028_prefixslice`
+  succeeded after restoring `&buf[..exp]` inside `probe_decimal_point_case`.
+- `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-prefixslice-proof --max-depth 200 --reload`
+  ended with `ProofStatus.FAILED`, `nodes: 9`, `failing: 1`, `vacuous: 2`,
+  `stuck: 1`, `terminal: 1`.
+- `uv --project kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-prefixslice-proof --statistics --leaves`
+  showed the first new concrete leaf as a stuck `#selectBlock` in
+  `digits_to_dec_str` at `dec/digits_to_dec_str_probe.rs:76`, on the condition
+  `if exp >= buf.len()`. The stuck predicate is
+  `#applyBinOp ( binOpGe , 2 , #applyUnOp ( unOpPtrMetadata , ... ) )`.
 - The `tmp.*` artifacts were removed after stopping the background proof
   process.
 - Because no post-edit proof result exists yet, the frontier move is
@@ -236,3 +255,7 @@ Ownership:
   copied `digits_to_dec_str` control flow at the `if exp < buf.len()` branch
   select, so the next exact narrowing step should focus there if this slice is
   continued.
+- After restoring the real prefix slice, the frontier moves off the saved
+  terminal slice but is still not in backend float logic. The new blocker is
+  the copied `if exp >= buf.len()` branch test at line 76, where `buf.len()`
+  no longer simplifies to the concrete `4` for this single case.

@@ -8,6 +8,20 @@
 - Current checkpoint: the probe has been rewritten to isolate the taken decimal-point arm for the single `b"1234", exp = 2, frac_digits = 3` case, and `rustc` still compiles it cleanly.
 - The follow-up proof rerun was launched with `uv --project kmir run kmir prove kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec/digits_to_dec_str_probe.rs --proof-dir /tmp/0028-digits-to-dec-str-takenarm-proof --max-depth 200 --reload`, but it was interrupted before a fresh leaf summary was captured.
 - Because no post-edit leaf was recorded, the last validated boundary remains the copied `if exp < buf.len()` `#selectBlock` at `digits_to_dec_str_probe.rs:58`.
+- The saved-proof audit for the unchanged taken-arm specialization reaches the
+  terminal target leaf `#EndProgram ~> .K` via
+  `/tmp/0028-digits-to-dec-str-current-proof`.
+- The latest generator slice restores the real decimal-point prefix operation
+  `&buf[..exp]` inside `probe_decimal_point_case` while still stubbing the
+  suffix as `b"34"`.
+- That prefix-slice rerun no longer reaches the terminal saved slice. The new
+  proof at `/tmp/0028-digits-to-dec-str-prefixslice-proof` ends with
+  `ProofStatus.FAILED`, `nodes: 9`, `failing: 1`, `vacuous: 2`, `stuck: 1`,
+  `terminal: 1`.
+- Its first concrete leaf is a stuck `#selectBlock` back in the copied
+  `digits_to_dec_str` body at `dec/digits_to_dec_str_probe.rs:76`,
+  corresponding to `if exp >= buf.len()`, with the unsimplified predicate
+  `#applyBinOp ( binOpGe , 2 , #applyUnOp ( unOpPtrMetadata , ... ) )`.
 
 ## Evidence gathered
 
@@ -120,6 +134,9 @@
 - The taken-arm specialization keeps the same concrete case but removes that
   branch select from the active path. The proof rerun did not finish before the
   turn was interrupted, so the exact post-edit leaf is still unknown.
+- Restoring the real prefix slice `&buf[..exp]` is enough to break the saved
+  terminal slice. The first new concrete leaf is not inside slice indexing yet;
+  it is the copied `if exp >= buf.len()` select itself at line 76.
 
 ## Next handoff
 
@@ -145,3 +162,9 @@
 - Because no post-edit leaf was captured this turn, the frontier did not move; the smallest exact blocker is still the copied `if exp < buf.len()` select in `digits_to_dec_str_probe.rs:58`.
 - Audit note: this turn recorded only the interrupted taken-arm rerun above; there is no fresh proof leaf to promote, so the work remains checkpointed at the same copied branch select.
 - Saved-proof audit: `uv --project /home/zhaoji/projs/mir-semantics-vrs/challenges/0028-flt2dec/kmir run kmir show digits_to_dec_str_probe.main --proof-dir /tmp/0028-digits-to-dec-str-current-proof --statistics --leaves` now reaches the terminal target leaf `#EndProgram ~> .K` on path `1 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 2`. No source changes were made in that turn; this note records the proof-artifact success for branch-local auditing only.
+- Current frontier update: with the restored real prefix slice, the first exact
+  boundary is now the stuck `if exp >= buf.len()` `#selectBlock` at
+  `dec/digits_to_dec_str_probe.rs:76`, not the older taken-arm terminal slice.
+- The next exact narrowing step is to keep the real `&buf[..exp]` restoration
+  in place and determine why `buf.len()` no longer simplifies to the concrete
+  `4` at that branch test before restoring additional decimal-point operations.
