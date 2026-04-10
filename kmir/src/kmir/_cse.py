@@ -1360,6 +1360,13 @@ def _prove_callee_summary(
             if observed_call_cterm is not None:
                 init_cterm = observed_call_cterm
                 _LOGGER.info('CSE: using observed call-site cterm for %s', name)
+
+        # When using observed_call_cterm, the init state contains the CALLER's
+        # stack frames and <target> = someBasicBlockIdx(...).  This causes the
+        # callee's return to match termReturnSome (not endprogram-return),
+        # continuing execution into the caller and capturing the WRONG return
+        # value in RETVAL_CELL.  Fix: override <target> to noBasicBlockIdx and
+        # clear <stack> so the callee's return triggers endprogram-return.
             else:
                 from .kast import SymbolicMode, make_call_config
 
@@ -1370,6 +1377,22 @@ def _prove_callee_summary(
                     mode=SymbolicMode(),
                 )
                 init_cterm = CTerm(call_cfg.config, list(call_cfg.constraints))
+
+        # When using observed_call_cterm, the init state contains the CALLER's
+        # stack frames and <target> = someBasicBlockIdx(...).  This causes the
+        # callee's return to match termReturnSome (not endprogram-return),
+        # continuing execution into the caller and capturing the WRONG return
+        # value in RETVAL_CELL.  Fix: override <target> to noBasicBlockIdx and
+        # clear <stack> so the callee's return triggers endprogram-return.
+        if observed_call_cterm is not None:
+            from pyk.kast.manip import set_cell
+
+            _no_bb_idx = KApply('noBasicBlockIdx_BODY_MaybeBasicBlockIdx', ())
+            _empty_stack = KApply('.List', ())
+            patched_config = set_cell(init_cterm.config, 'TARGET_CELL', _no_bb_idx)
+            patched_config = set_cell(patched_config, 'STACK_CELL', _empty_stack)
+            init_cterm = CTerm(patched_config, init_cterm.constraints)
+            _LOGGER.info('CSE: patched <target>=noBasicBlockIdx and <stack>=empty for %s', name)
 
         # Callee proofs use make_call_config which sets <target> = noBasicBlockIdx.
         # Inner function calls via termCallFunction set someBasicBlockIdx, so inner
