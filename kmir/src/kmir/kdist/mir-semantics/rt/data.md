@@ -1659,6 +1659,11 @@ These are essentially `#[repr(transparent)]` but are `#[repr(rust)]` by default 
 thus there are no compiler optimisations to remove the transmute (there would be otherwise for downcast).
 The layout is the same for the wrapped type and so the cast in either direction is sound.
 
+Multi-layer transparent wrappers (e.g. `NonZero<u8>` which is `NonZero<u8>` -> `NonZeroU8Inner` -> `u8`)
+are handled by recursive decomposition: each layer is unwrapped (or wrapped) one step at a time.
+The `#transparentDepth` function (defined in `types.md`) determines whether a type has nested
+transparent wrapping requiring recursive treatment.
+
 ```k
   // Up: T -> Wrapper(T)
   rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
@@ -1675,6 +1680,32 @@ The layout is the same for the wrapped type and so the cast in either direction 
           ...
         </k>
       requires {#transparentFieldTy(lookupTy(TY_SOURCE))}:>Ty ==K TY_TARGET
+
+  // Multi-layer Up: T -> Wrapper_N(...Wrapper_1(T)...)
+  // When the target is a transparent wrapper whose field type is NOT the source,
+  // recursively cast into the inner wrapper first, then wrap.
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            Aggregate(variantIdx(0), ListItem(
+              #cast(VAL, castKindTransmute, TY_SOURCE, {#transparentFieldTy(lookupTy(TY_TARGET))}:>Ty)
+            ))
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_TARGET)) =/=K TyUnknown
+       andBool #transparentFieldTy(lookupTy(TY_TARGET)) =/=K TY_SOURCE
+       andBool #transparentDepth(lookupTy(TY_TARGET)) >Int 1
+
+  // Multi-layer Down: Wrapper_N(...Wrapper_1(T)...) -> T
+  // When the source is a transparent wrapper whose field type is NOT the target,
+  // unwrap one layer and recursively cast the inner value.
+  rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            #cast(VAL, castKindTransmute, {#transparentFieldTy(lookupTy(TY_SOURCE))}:>Ty, TY_TARGET)
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_SOURCE)) =/=K TyUnknown
+       andBool {#transparentFieldTy(lookupTy(TY_SOURCE))}:>Ty =/=K TY_TARGET
+       andBool #transparentDepth(lookupTy(TY_SOURCE)) >Int 1
 ```
 
 Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.
@@ -1817,6 +1848,89 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
   rule #validDiscriminantAux( VAL, discriminant(mirInt(DISCRIMINANT)) REST ) => VAL ==Int DISCRIMINANT orBool #validDiscriminantAux( VAL, REST )
   rule #validDiscriminantAux( VAL, discriminant(    DISCRIMINANT    ) REST ) => VAL ==Int DISCRIMINANT orBool #validDiscriminantAux( VAL, REST )
   rule #validDiscriminantAux( _VAL, .Discriminants ) => false
+```
+
+#### Niche-encoded `Option<NonZero<T>>` transmutes
+
+The type `Option<NonZero<T>>` uses niche optimization: it has the same layout as `T` because
+the `None` variant occupies the bit pattern `0` (the "niche" value that `NonZero<T>` excludes).
+This means `transmute::<T, Option<NonZero<T>>>(v)` is valid and maps:
+- `0` to `None` (variant 0)
+- any nonzero value to `Some(NonZero<T>(v))` (variant 1)
+
+The reverse transmute `Option<NonZero<T>> -> T` extracts the underlying integer:
+- `None` maps to `0`
+- `Some(NonZero<T>(v))` maps to `v`
+
+Since the `TagEncoding::Niche` data is not yet fully represented in K (see `ty.md`),
+these rules use name-based matching on `std::option::Option<std::num::NonZero<` to
+identify the niche-encoded type pattern.
+
+```k
+  // Helper: check if a type is a niche-encoded Option<NonZero<T>>
+  syntax Bool ::= #isOptionNonZero ( TypeInfo ) [function, total]
+  // -------------------------------------------------------------
+  rule #isOptionNonZero(TI) => #typeNameIs(TI, "std::option::Option<std::num::NonZero<")
+    requires notBool #isEnumWithoutFields(TI)
+  rule #isOptionNonZero(_) => false [owise]
+
+  // Helper: get the single field type from the Some variant (variant 1) of an Option enum.
+  // For Option<NonZero<T>>, the fields Tyss has the form `.Tys : INNER_TY .Tys : .Tyss`
+  // where variant 0 (None) has no fields and variant 1 (Some) has one field.
+  syntax MaybeTy ::= #optionSomeFieldTy ( TypeInfo ) [function, total]
+  // ----------------------------------------------------------------
+  rule #optionSomeFieldTy(typeInfoEnumType(_, _, _, .Tys : INNER_TY .Tys : .Tyss, _))
+    => INNER_TY
+  rule #optionSomeFieldTy(_) => TyUnknown [owise]
+
+  // Continuation: wrap a computed Value into Option's Some variant
+  syntax KItem ::= "#wrapSomeNonZero"
+
+  // UP: Integer -> Option<NonZero<T>> (nonzero case => Some)
+  // First, reduce the inner transmute to NonZero<T>, then wrap in Some via continuation.
+  rule <k> #cast(Integer(VAL, WIDTH, SIGNED), castKindTransmute, TY_FROM, TY_TO)
+        =>
+          #cast(Integer(VAL, WIDTH, SIGNED), castKindTransmute, TY_FROM, {#optionSomeFieldTy(lookupTy(TY_TO))}:>Ty)
+          ~> #wrapSomeNonZero
+       ...
+      </k>
+    requires #isOptionNonZero(lookupTy(TY_TO))
+     andBool VAL =/=Int 0
+
+  // When the inner transmute completes (produces a Value), wrap in Some variant
+  rule <k> INNER_VAL:Value ~> #wrapSomeNonZero
+        =>
+          Aggregate(variantIdx(1), ListItem(INNER_VAL))
+       ...
+      </k>
+
+  // UP: Integer(0) -> Option<NonZero<T>> (zero case => None)
+  rule <k> #cast(Integer(0, _WIDTH, _SIGNED), castKindTransmute, _TY_FROM, TY_TO)
+        =>
+          Aggregate(variantIdx(0), .List)
+       ...
+      </k>
+    requires #isOptionNonZero(lookupTy(TY_TO))
+
+  // DOWN: Option<NonZero<T>> (Some variant) -> Integer
+  // Unwrap the Some variant's field and recursively transmute to the target integer type.
+  rule <k> #cast(Aggregate(variantIdx(1), ListItem(VAL)), castKindTransmute, TY_FROM, TY_TO)
+        =>
+          #cast(VAL, castKindTransmute, {#optionSomeFieldTy(lookupTy(TY_FROM))}:>Ty, TY_TO)
+       ...
+      </k>
+    requires #isOptionNonZero(lookupTy(TY_FROM))
+     andBool #isIntType(lookupTy(TY_TO))
+
+  // DOWN: Option<NonZero<T>> (None variant) -> Integer(0)
+  rule <k> #cast(Aggregate(variantIdx(0), .List), castKindTransmute, TY_FROM, TY_TO)
+        =>
+          #intAsType(0, #bitWidth(#numTypeOf(lookupTy(TY_TO))), #numTypeOf(lookupTy(TY_TO)))
+       ...
+      </k>
+    requires #isOptionNonZero(lookupTy(TY_FROM))
+     andBool #isIntType(lookupTy(TY_TO))
+    [preserves-definedness]
 ```
 
 When transmuting a `Range` (e.g. `[T; N] -> [U; N]`) the list of values of the range need the transmute

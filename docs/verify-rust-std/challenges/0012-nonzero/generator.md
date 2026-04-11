@@ -237,6 +237,23 @@ Ownership:
     the frontier was unchanged again: the same `ty(9) -> ty(27)`
     `castKindTransmute` thunk remained.
 
+- 2026-04-11: **MAJOR BREAKTHROUGH**: Resolved the niche-cast blocker with two
+  semantic changes to `rt/data.md`:
+  1. Multi-layer transparent transmute rules using `#transparentDepth` for
+     recursive unwrap/wrap of nested `#[repr(transparent)]` wrappers like
+     `NonZero<u8>` -> `NonZeroU8Inner` -> `u8`.
+  2. Niche-encoded `Option<NonZero<T>>` transmute rules using name-based
+     matching (`#isOptionNonZero`) with a continuation (`#wrapSomeNonZero`)
+     for correct K evaluation sequencing.
+- 2026-04-11: All Part 1 harnesses now PASS: `new.rs`, `new_unchecked.rs`,
+  `const_nonzero.rs`, `get.rs`, `transmute_wrapper_u8.rs`.
+- 2026-04-11: Added 11 new Part 2 harnesses. Passing: `bitor.rs`,
+  `signed_ops.rs`, `saturating_mul.rs`, `pow.rs` (checked_pow),
+  `checked_mul.rs`, `checked_add.rs`. Failing due to separate blockers:
+  `leading_trailing_zeros.rs` (ctlz_nonzero), `ilog2.rs` (ctlz_nonzero),
+  `unsigned_ops.rs` (ctpop), `min_max.rs` (FnOnce trait dispatch),
+  `byte_order.rs` (bswap), `saturating_add.rs` (saturating_add intrinsic).
+
 ## Commit Inventory
 
 - `a52729d7` — `fix(transmute): accept MaybeUninit reinterpretation`
@@ -249,28 +266,21 @@ Ownership:
 
 ## Blockers
 
-- No external/tooling blocker was found in this frontier-reduction slice.
-- Remaining work for Challenge 0012 is narrowed to cast semantics used by Part 1
-  `NonZero` APIs:
-  - Integer-to-wrapper transmute cast in `NonZero::new`
-  - Wrapper pointer cast in `NonZero::from_mut`
-- Current evidence shows these frontiers persist even on concrete-input `main`
-  starts, so this is not only a symbolic-branching artifact.
-- This slice sharpened the `NonZero::new` blocker further:
-  - same-size `u8 -> #[repr(transparent)] WrapU8` transmute already passes
-  - the exact `NonZero::new` shape (`u8 -> Option<NonZeroU8>`) still fails on
-    `castKindTransmute`
-  - therefore the generic same-size transmute story is not sufficient on this
-    branch; the remaining blocker is specifically integer-to-niche / NonZero
-    transmute semantics, not plain transparent-wrapper support
-- New blocker detail from this checkpoint:
-  - branch-local SMIR JSON now confirms the exact zero-niche layout for
-    `Option<NonZeroU8>`
-  - two minimal `rt/data.md` matcher attempts keyed to that layout were
-    recompiled and re-run, but the proof leaf remained the identical top-level
-    `#cast(Integer(1, 8, false), castKindTransmute, ty(9), ty(27))` thunk
-  - inference: the remaining issue is not merely identifying the niche layout
-    from SMIR JSON; either the runtime `lookupTy(TY_TO)` shape seen by the K
-    matcher differs from the JSON-level structure in a way the current rules do
-    not observe, or `castKindTransmute` needs a lower-level byte/layout-driven
-    path instead of more structural enum matching
+### RESOLVED
+
+- **Niche-cast blocker** (`castKindTransmute` for `u8 -> Option<NonZeroU8>`):
+  RESOLVED in this slice. Two new K rules handle the niche-encoded transmute
+  by name-based matching on `std::option::Option<std::num::NonZero<` and a
+  continuation pattern for correct evaluation sequencing. This unblocked ALL
+  Part 1 harnesses and most Part 2 operations.
+
+### Remaining (separate from niche-cast)
+
+- **`castKindPtrToPtr`**: Blocks `from_mut.rs`. Pointer-to-pointer cast
+  semantics not yet implemented.
+- **Missing intrinsics**: `ctlz_nonzero` (leading_zeros, ilog2), `ctpop`
+  (count_ones, is_power_of_two), `bswap` (byte_order), `saturating_add`.
+- **Trait dispatch**: `FnOnce::call_once` blocks `min_max.rs` (Ord::cmp).
+- **Niche-encoded constant decoding**: `checked_add` overflow case (returning
+  `None`) blocked by `UnableToDecode` for a byte constant `b"\x00"` that
+  represents `Option<NonZero<u8>>::None`.

@@ -6,36 +6,46 @@ and the currently recorded branch evidence.
 
 Status legend:
 
-- `proof harness` means there is a branch-local proof/spec entrypoint for the
-  function or family.
-- `control reproducer` means the file exists only to separate a semantic
-  frontier from a generic control shape.
-- `not started` means no branch-local harness/spec has been added yet.
+- `passed` means the proof harness runs to completion without errors.
 - `frontier reached` means a proof attempt has reached a concrete leaf or
   thunk frontier but has not closed.
+- `not started` means no branch-local harness/spec has been added yet.
+- `control reproducer` means the file exists only to separate a semantic
+  frontier from a generic control shape.
 
-| Function | Upstream Location | Harness/Spec File | Start Symbol | Kind | Status | Blocker Class | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `NonZeroU8::new` | `library/core/src/num/nonzero.rs` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/new.rs` | `part1_new_u8` | proof harness | frontier reached | `MIR_SEMANTICS` | Exact `u8 -> Option<NonZeroU8>` niche-cast leaf still stops at `castKindTransmute`. |
-| `NonZeroI8::new` | `library/core/src/num/nonzero.rs` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/new.rs` | `part1_new_i8` | proof harness | frontier reached | `MIR_SEMANTICS` | Same harness as `NonZeroU8::new`; branch evidence keeps the narrowed cast frontier. |
-| `NonZeroU8::new_unchecked` | `library/core/src/num/nonzero.rs` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/new_unchecked.rs` | `part1_new_unchecked_u8` | proof harness | frontier reached | `MIR_SEMANTICS` | Checked by the same branch-local Part 1 slice; still not fully closed. |
-| `NonZeroI8::new_unchecked` | `library/core/src/num/nonzero.rs` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/new_unchecked.rs` | `part1_new_unchecked_i8` | proof harness | frontier reached | `MIR_SEMANTICS` | Part 1 slice uses an `i8` mirror to keep the proof shape symmetric. |
-| `NonZeroU8::from_mut` | `library/core/src/num/nonzero.rs` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/from_mut.rs` | `part1_from_mut_u8` | proof harness | frontier reached | `MIR_SEMANTICS` | Independent frontier at `castKindPtrToPtr`. |
-| `NonZeroI8::from_mut` | `library/core/src/num/nonzero.rs` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/from_mut.rs` | `part1_from_mut_i8` | proof harness | frontier reached | `MIR_SEMANTICS` | Mirrors the `u8` slice and keeps the pointer-cast blocker visible. |
-| `NonZeroU8::count_ones` | `library/core/src/num/nonzero.rs` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/count_ones.rs` | `part2_count_ones_u8` | proof harness | frontier reached | `MIR_SEMANTICS` | Part 2 seed; checks returned `NonZero` semantics via `.get()`. |
-| `NonZeroU16::count_ones` | `library/core/src/num/nonzero.rs` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/count_ones.rs` | `part2_count_ones_u16` | proof harness | frontier reached | `MIR_SEMANTICS` | Same seed as above on a wider integer. |
-| `NonZero::<T>::from_mut_unchecked` | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | Published Part 2 API listed in planner; no branch-local harness yet. |
-| `NonZero::<T>::max` | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | Part 2 API family, still waiting on a dedicated proof slice. |
-| `NonZero::<T>::min` | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | Part 2 API family, still waiting on a dedicated proof slice. |
-| `NonZero::<T>::clamp` | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | Part 2 API family, still waiting on a dedicated proof slice. |
-| `NonZero::<T>::bitor` impls | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | Planner calls out all 3 impls; no branch-local coverage yet. |
-| `NonZero::<T>` bit operations family | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | Includes the published bit-op family beyond the current seeds. |
-| `NonZero::<T>` byte-order conversions family | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | No branch-local proof slice yet. |
-| `NonZero::<T>` arithmetic family | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | No branch-local proof slice yet. |
-| `NonZero::<T>` power family | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | Includes the review-sensitive `isqrt` / 128-bit power discussion. |
-| `NonZero::<T>` signed-only ops family | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | No branch-local proof slice yet. |
-| `NonZero::<T>` unsigned-only ops family | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | No branch-local proof slice yet. |
-| `NonZero::<T>::isqrt` | `library/core/src/num/nonzero.rs` | `n/a` | `n/a` | proof harness | not started | `UNKNOWN` | Explicitly tracked because the evaluator expects a wide-type / bounded-case decision. |
-| `u8 -> #[repr(transparent)] WrapU8` control | `n/a` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs` | `part1_transmute_wrapper_u8` | control reproducer | passed | `none` | This is a control, not a published `NonZero` target; it separates generic same-size transmute support from the `NonZero::new` niche-cast frontier. |
-| `u8 -> Option<NonZeroU8>` exact niche-cast control | `library/core/src/num/nonzero.rs` | `kmir/src/tests/integration/data/verify-rust-std/0012-nonzero/transmute_wrapper_u8.rs` | `part1_transmute_option_nonzero_u8` | control reproducer | frontier reached | `MIR_SEMANTICS` | Reproducer used to isolate the exact `NonZero::new` transmute shape. |
+## Semantic changes
 
+Two semantic rules were added to `rt/data.md` to unblock this challenge:
+
+1. **Multi-layer transparent transmute**: recursive unwrap/wrap for nested
+   `#[repr(transparent)]` wrappers (e.g. `NonZero<u8>` -> `NonZeroU8Inner` -> `u8`).
+2. **Niche-encoded `Option<NonZero<T>>` transmute**: handles the `u8 <-> Option<NonZero<u8>>`
+   cast that the Rust compiler generates for `NonZero::new_unchecked` via niche optimization.
+
+## Coverage table
+
+| Function | Harness/Spec File | Status | Blocker | Notes |
+| --- | --- | --- | --- | --- |
+| `NonZero::new` (u8, i8) | `new.rs` | **passed** | -- | Part 1. Niche-cast blocker resolved. |
+| `NonZero::new_unchecked` (u8, i8) | `new_unchecked.rs` | **passed** | -- | Part 1. Niche-cast blocker resolved. |
+| `NonZero::get` (u8, i8) | `get.rs` | **passed** | -- | Part 1/2. Multi-layer Down transmute. |
+| `NonZero::get` (const) | `const_nonzero.rs` | **passed** | -- | Part 1. Const construction bypass. |
+| `NonZero BitOr` (NZ|NZ, NZ|u8) | `bitor.rs` | **passed** | -- | Part 2 bitor. |
+| `NonZero::is_positive/is_negative` | `signed_ops.rs` | **passed** | -- | Part 2 signed-only ops. |
+| `NonZero::saturating_mul` | `saturating_mul.rs` | **passed** | -- | Part 2 arithmetic. |
+| `NonZero::checked_pow` | `pow.rs` | **passed** | -- | Part 2 powers. |
+| `NonZero::checked_mul` | `checked_mul.rs` | **passed** | -- | Part 2 arithmetic. |
+| `NonZero::checked_add` (no overflow) | `checked_add.rs` | **passed** | -- | Part 2 arithmetic. |
+| transmute control | `transmute_wrapper_u8.rs` | **passed** | -- | Control reproducer including Option<NonZero> path. |
+| `NonZero::from_mut` | `from_mut.rs` | frontier reached | `castKindPtrToPtr` | Part 1 blocker: pointer-to-pointer cast. |
+| `NonZero::leading_zeros` | `leading_trailing_zeros.rs` | frontier reached | `ctlz_nonzero` intrinsic | Part 2 blocker: missing intrinsic. |
+| `NonZero::trailing_zeros` | `leading_trailing_zeros.rs` | frontier reached | `ctlz_nonzero` intrinsic | Part 2 blocker: missing intrinsic. |
+| `NonZero::ilog2` | `ilog2.rs` | frontier reached | `ctlz_nonzero` intrinsic | Part 2 blocker: delegates to ctlz_nonzero. |
+| `NonZero::is_power_of_two` | `unsigned_ops.rs` | frontier reached | `ctpop` intrinsic | Part 2 blocker: missing intrinsic. |
+| `NonZero::count_ones` | `count_ones.rs` | frontier reached | `ctpop` intrinsic | Part 2 blocker: missing intrinsic. |
+| `NonZero::min/max` | `min_max.rs` | frontier reached | `FnOnce::call_once` | Part 2 blocker: trait dispatch for Ord::cmp. |
+| `NonZero` byte-order | `byte_order.rs` | frontier reached | `bswap` intrinsic | Part 2 blocker: missing intrinsic. |
+| `NonZero::saturating_add` | `saturating_add.rs` | frontier reached | `saturating_add` intrinsic | Part 2 blocker: missing intrinsic. |
+| `NonZero::from_mut_unchecked` | n/a | not started | -- | |
+| `NonZero::clamp` | n/a | not started | -- | |
+| `NonZero::isqrt` | n/a | not started | -- | |
