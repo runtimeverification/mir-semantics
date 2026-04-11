@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from string import Template
 from typing import TYPE_CHECKING, NamedTuple
 
 import pytest
@@ -64,33 +63,6 @@ def _patch_definition(definition: KDefinition) -> None:
     object.__setattr__(definition, '__class__', new_cls)
 
 
-def dedent(s: str) -> str:
-    from textwrap import dedent
-
-    return dedent(s).strip()
-
-
-KORE_TEMPLATE: Final = Template(dedent(r"""
-    Lbl'-LT-'generatedTop'-GT-'{}(
-        Lbl'-LT-'kmir'-GT-'{}(
-            Lbl'-LT-'k'-GT-'{}(kseq{}(inj{SortEvaluation{}, SortKItem{}}($evaluation), dotk{}())),
-            Lbl'-LT-'retVal'-GT-'{}(LblnoReturn'Unds'KMIR-CONFIGURATION'Unds'RetVal{}()),
-            Lbl'-LT-'currentFunc'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
-            Lbl'-LT-'currentFrame'-GT-'{}(
-                Lbl'-LT-'currentBody'-GT-'{}(Lbl'Stop'List{}()),
-                Lbl'-LT-'caller'-GT-'{}(Lblty{}(\dv{SortInt{}}("-1"))),
-                Lbl'-LT-'dest'-GT-'{}(Lblplace{}(Lbllocal{}(\dv{SortInt{}}("-1")),LblProjectionElems'ColnColn'empty{}())),
-                Lbl'-LT-'target'-GT-'{}(LblnoBasicBlockIdx'Unds'BODY'Unds'MaybeBasicBlockIdx{}()),
-                Lbl'-LT-'unwind'-GT-'{}(LblUnwindAction'ColnColn'Unreachable{}()),
-                Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
-            ),
-            Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
-        ),
-        Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
-    )
-"""))
-
-
 class _TestData(NamedTuple):
     test_id: str
     bytez: bytes
@@ -99,29 +71,34 @@ class _TestData(NamedTuple):
     expected: str
 
     def to_pattern(self, definition: KDefinition) -> Pattern:
-        from pyk.kore.prelude import bytes_dv
-        from pyk.kore.syntax import App
-
-        return App(
-            'LbldecodeValue',
-            (),
-            (
-                bytes_dv(self.bytez),
-                self._json_type_info_to_kore(self.type_info, definition),
-            ),
-        )
-
-    @staticmethod
-    def _json_type_info_to_kore(type_info: dict[str, Any], definition: KDefinition) -> Pattern:
+        from pyk.kast.inner import KApply, KSort, Subst
+        from pyk.kast.manip import split_config_from
+        from pyk.kast.prelude.bytes import bytesToken
+        from pyk.kast.prelude.collections import list_empty, map_empty
+        from pyk.kast.prelude.utils import token
         from pyk.konvert import kast_to_kore
 
         from kmir.parse.parser import Parser
 
         parser = Parser(definition)
-        parse_res = parser.parse_mir_json(type_info, 'TypeInfo')
+        parse_res = parser.parse_mir_json(self.type_info, 'TypeInfo')
         assert parse_res
-        term, sort = parse_res
-        return kast_to_kore(definition, term, sort)
+        type_info_term, _ = parse_res
+        evaluation = KApply('decodeValue', bytesToken(self.bytez), type_info_term)
+
+        init_config = definition.init_config(KSort('GeneratedTopCell'))
+        _, init_subst = split_config_from(init_config)
+        config = Subst(
+            {
+                **init_subst,
+                'K_CELL': evaluation,
+                'OWNEDSLOTS_CELL': list_empty(),
+                'SLOTSTORE_CELL': map_empty(),
+                'GENERATEDCOUNTER_CELL': token(0),
+            }
+        )(definition.empty_config(KSort('GeneratedTopCell')))
+
+        return kast_to_kore(definition, config, KSort('GeneratedTopCell'))
 
 
 def load_test_data() -> tuple[_TestData, ...]:
@@ -195,7 +172,6 @@ def test_decode_value(
     tmp_path: Path,
 ) -> None:
     from pyk.kore import match as km
-    from pyk.kore.parser import KoreParser
     from pyk.kore.tools import kore_print
     from pyk.ktool.krun import llvm_interpret
     from pyk.utils import chain
@@ -204,11 +180,7 @@ def test_decode_value(
         pytest.skip()
 
     # Given
-    evaluation = test_data.to_pattern(definition)
-    kore_text = KORE_TEMPLATE.substitute(evaluation=evaluation.text)
-    parser = KoreParser(kore_text)
-    init_pattern = parser.pattern()
-    assert parser.eof
+    init_pattern = test_data.to_pattern(definition)
 
     # When
     final_pattern = llvm_interpret(definition_dir=definition_dir, pattern=init_pattern)

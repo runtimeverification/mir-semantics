@@ -91,7 +91,7 @@ class AggregateValue(Value):
 
 @dataclass
 class RefValue(Value):
-    place: Place
+    place: SlotPlace
     mut: bool
     metadata: Metadata
 
@@ -106,7 +106,7 @@ class RefValue(Value):
 
 @dataclass
 class PtrLocalValue(Value):
-    place: Place
+    place: SlotPlace
     mut: bool
     metadata: Metadata
 
@@ -143,6 +143,19 @@ class Place:
         return KApply(
             'place',
             KApply('local', intToken(self.local)),
+            KApply('ProjectionElems::empty'),  # TODO
+        )
+
+
+@dataclass
+class SlotPlace:
+    slot: int
+    # projection_elems: tuple[ProjectionElem, ...]
+
+    def to_kast(self) -> KInner:
+        return KApply(
+            'slotPlace',
+            intToken(self.slot),
             KApply('ProjectionElems::empty'),  # TODO
         )
 

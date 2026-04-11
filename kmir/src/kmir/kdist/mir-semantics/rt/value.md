@@ -29,6 +29,9 @@ The special `Moved` value represents values that have been used and should not b
 `Moved` values may be overwritten with a new value but using them will halt execution.
 
 ```k
+  syntax SlotPlace ::= slotPlace ( Int , ProjectionElems ) [symbol(SlotPlace)]
+                     // runtime slot handle, projections within the pointee
+
   syntax Value ::= Integer( Int, Int, Bool )              [symbol(Value::Integer)]
                    // value, bit-width, signedness   for un/signed int
                  | BoolVal( Bool )                        [symbol(Value::BoolVal)]
@@ -42,12 +45,12 @@ The special `Moved` value represents values that have been used and should not b
                    // The Value is the data, and FieldIdx determines the type from the union's fields
                  | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
-                 | Reference( Place , Mutability , Metadata )
+                 | Reference( SlotPlace , Mutability , Metadata )
                                                           [symbol(Value::Reference)]
                    // absolute runtime slot place, borrow kind, metadata (size, pointer offset, origin size)
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
-                 | PtrLocal( Place , Mutability, Metadata )
+                 | PtrLocal( SlotPlace , Mutability, Metadata )
                                                           [symbol(Value::PtrLocal)]
                    // pointer to a runtime slot, fields are the same as in Reference
                  | FunPtr ( Ty )

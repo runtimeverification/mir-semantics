@@ -25,6 +25,7 @@ from .value import (
     PtrLocalValue,
     RangeValue,
     RefValue,
+    SlotPlace,
     StaticSize,
 )
 
@@ -200,6 +201,7 @@ def _make_concrete_call_config_with_locals(
                 'K_CELL': k_cell,
                 'OWNEDSLOTS_CELL': list_of(slot_ids),
                 'SLOTSTORE_CELL': map_of(zip(slot_ids, localvars, strict=True)),
+                'GENERATEDCOUNTER_CELL': token(len(slot_ids)),
             },
         }
     )
@@ -224,6 +226,7 @@ def _make_symbolic_call_config(
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'OWNEDSLOTS_CELL': list_of(slot_ids),
             'SLOTSTORE_CELL': map_of(zip(slot_ids, locals, strict=True)),
+            'GENERATEDCOUNTER_CELL': token(len(slot_ids)),
         },
     )
     empty_config = definition.empty_config(KSort('GeneratedTopCell'))
@@ -454,7 +457,7 @@ class _ArgGenerator:
                     KApply(
                         'Value::Reference',
                         (
-                            KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
+                            KApply('slotPlace', (token(ref), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                             metadata if metadata is not None else no_metadata,
                         ),
@@ -471,7 +474,7 @@ class _ArgGenerator:
                     KApply(
                         'Value::PtrLocal',
                         (
-                            KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
+                            KApply('slotPlace', (token(ref), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                             metadata if metadata is not None else no_metadata,
                         ),
@@ -654,13 +657,13 @@ class _RandomArgGen:
         match type_info:
             case PtrT():
                 return PtrLocalValue(
-                    place=Place(local=Local(ref)),
+                    place=SlotPlace(slot=ref),
                     mut=mut,
                     metadata=metadata,
                 )
             case RefT():
                 return RefValue(
-                    place=Place(local=Local(ref)),
+                    place=SlotPlace(slot=ref),
                     mut=mut,
                     metadata=metadata,
                 )

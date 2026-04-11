@@ -48,10 +48,10 @@
     0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
     1 |-> typedValue ( Integer ( 22 , 8 , true ) , ty ( 2 ) , mutabilityMut )
     2 |-> newLocal ( ty ( 1 ) , mutabilityNot )
-    3 |-> typedValue ( Reference ( place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 28 ) , mutabilityMut )
+    3 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityMut , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 28 ) , mutabilityMut )
     4 |-> typedValue ( Moved , ty ( 2 ) , mutabilityMut )
     5 |-> newLocal ( ty ( 29 ) , mutabilityMut )
-    6 |-> typedValue ( Reference ( place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityMut , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 28 ) , mutabilityNot )
+    6 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityMut , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 28 ) , mutabilityNot )
     7 |-> typedValue ( Moved , ty ( 2 ) , mutabilityMut )
     8 |-> newLocal ( ty ( 29 ) , mutabilityMut )
   </slotStore>

@@ -222,7 +222,7 @@ If we are setting a value at a `Place` which has `Projection`s in it, then we mu
      andBool isNewLocal(getSlot(STORE, SLOT))
     [preserves-definedness] // valid lookup checked
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL)
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL:Value)
         => #setSlotValue(#frameSlotId(SLOTS, I), VAL)
         ...
        </k>
@@ -230,7 +230,7 @@ If we are setting a value at a `Place` which has `Projection`s in it, then we mu
     requires 0 <=Int I andBool I <Int size(SLOTS)
     [preserves-definedness] // valid slot indexing checked
 
-  rule <k> #setLocalValue(place(local(I), PROJ), VAL)
+  rule <k> #setLocalValue(place(local(I), PROJ), VAL:Value)
         => #traverseProjection(toSlot(#frameSlotId(SLOTS, I)), frameValue(STORE, SLOTS, I), PROJ, .Contexts)
         ~> #writeProjection(VAL)
        ...
@@ -373,12 +373,6 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
   rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemFromZST, projectionElemToZST PS:ProjectionElems) => PS [priority(40)]
-
-  syntax Value ::= #incrementRef ( Value )  [function, total]
-                 | #decrementRef ( Value )  [function, total]
-  // --------------------------------------------------------
-  rule #incrementRef(TL) => TL
-  rule #decrementRef(TL) => TL
 
   syntax Int ::= originSize ( MetadataSize ) [function, total]
   // ---------------------------------------------------------------------
@@ -674,7 +668,7 @@ An attempt to read more elements than the length of the accessed array is undefi
 
   rule <k> #traverseProjection(
              _DEST,
-             Reference(place(local(SLOT), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             Reference(slotPlace(SLOT, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -695,7 +689,7 @@ An attempt to read more elements than the length of the accessed array is undefi
 
   rule <k> #traverseProjection(
              _DEST,
-             Reference(place(local(SLOT), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             Reference(slotPlace(SLOT, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -716,7 +710,7 @@ An attempt to read more elements than the length of the accessed array is undefi
 
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(place(local(SLOT), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             PtrLocal(slotPlace(SLOT, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -737,7 +731,7 @@ An attempt to read more elements than the length of the accessed array is undefi
 
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(place(local(SLOT), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             PtrLocal(slotPlace(SLOT, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
@@ -970,10 +964,10 @@ and an array of the indeicated size gets reconstructed if the provided metadata 
 (potentially removing an indexing operation to get the element).
 
 ```k
-  rule <k> ListItem(PtrLocal(place(LOCAL, PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) 
+  rule <k> ListItem(PtrLocal(slotPlace(SLOT, PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) 
            ListItem(Integer(LENGTH, 64, false))
            ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(place(LOCAL, removeIndexTail(PROJS)), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
+        => PtrLocal(slotPlace(SLOT, removeIndexTail(PROJS)), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
     // requires LENGTH +Int PTR_OFFSET <=Int ORIGIN_SIZE // refuse to create an invalid fat pointer
@@ -1123,7 +1117,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
 
   syntax KItem ::= #forRef( Mutability , Metadata )
 
-  // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
+  // once traversal is finished, reconstruct the last projections and the reference offset/slot, and possibly read the size
   rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forRef(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
         => #mkRef(DEST, #projectionsFor(CTXTS), MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE) )
         ...
@@ -1132,7 +1126,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   syntax Evaluation ::= #mkRef( WriteTo , ProjectionElems , Mutability , Metadata ) // [function, total]
   // -----------------------------------------------------------------------------------------------
   // Create Reference to a runtime slot.
-  rule <k> #mkRef(toSlot(SLOT), PROJS, MUT, META) => Reference(place(local(SLOT), PROJS), MUT, META) ... </k>
+  rule <k> #mkRef(toSlot(SLOT), PROJS, MUT, META) => Reference(slotPlace(SLOT, PROJS), MUT, META) ... </k>
 
   // Create AllocRef for heap allocation (assumed zero offset, no offset concept for heap)
   rule <k> #mkRef(toAlloc(ALLOC_ID)     , PROJS,  _ , META) => AllocRef(ALLOC_ID, PROJS, META) ... </k>
@@ -1179,7 +1173,7 @@ The operation typically creates a pointer with empty metadata.
      andBool isTypedValue(frameLocal(STORE, SLOTS, I))
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
 
-  // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
+  // once traversal is finished, reconstruct the last projections and the reference offset/slot, and possibly read the size
   rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forPtr(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
         => #mkPtr(DEST, #projectionsFor(CTXTS), MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE))
         ...
@@ -1187,7 +1181,7 @@ The operation typically creates a pointer with empty metadata.
 
   syntax Evaluation ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , Metadata ) // [function, total]
   // ------------------------------------------------------------------------------------------
-  rule <k> #mkPtr(toSlot(SLOT), PROJS, MUT, META) => PtrLocal(place(local(SLOT), PROJS), MUT, META) ... </k>
+  rule <k> #mkPtr(toSlot(SLOT), PROJS, MUT, META) => PtrLocal(slotPlace(SLOT, PROJS), MUT, META) ... </k>
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
@@ -1309,10 +1303,10 @@ the cast preserves the source pointer and its metadata unchanged.
 Otherwise, compute the type projection and convert metadata accordingly.
 
 ```k
-  rule <k> #cast(PtrLocal(place(LOCAL, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #cast(PtrLocal(slotPlace(SLOT, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
             PtrLocal(
-              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
+              slotPlace(SLOT, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
               MUT,
               #convertMetadata(META, lookupTy(TY_TARGET))
             )

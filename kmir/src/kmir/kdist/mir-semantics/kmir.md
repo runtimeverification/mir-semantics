@@ -220,6 +220,13 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
 ```k
   syntax KItem ::= #dropSlots(List)
 
+  // NOTE:
+  // With a map-backed <slotStore>, fresh slots are introduced under symbolic keys.
+  // Then return-time checks like isTypedValue(frameLocal(STORE, SLOTS, 0)) and
+  // isNewLocal(frameLocal(STORE, SLOTS, 0)) may fail to reduce through
+  // STORE[!SLOT <- ...], which can produce ndbranches in proofs
+  // (for example prove-rs/show/assert-true).
+
   rule <k> #dropSlots(.List) => .K ... </k>
 
   rule <k> #dropSlots(ListItem(SLOT:Int) REST) => #dropSlots(REST) ... </k>
@@ -227,7 +234,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
 
   rule [termReturnSome]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, #decrementRef(frameValue(STORE, SLOTS, 0))) ~> #dropSlots(SLOTS) ~> #execBlockIdx(TARGET)
+           #setLocalValue(DEST, frameValue(STORE, SLOTS, 0)) ~> #dropSlots(SLOTS) ~> #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -510,7 +517,7 @@ The local data has to be set up for the call, which requires information about t
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(frameValue(STORE, CALLERSLOTS, I)))
+           #setLocalValue(place(local(IDX), .ProjectionElems), frameValue(STORE, CALLERSLOTS, I))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERSLOTS)) _:List </stack>
@@ -523,7 +530,7 @@ The local data has to be set up for the call, which requires information about t
   // TODO: This is not safe, need to add more checks to this.
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), _)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(frameValue(STORE, CALLERSLOTS, I)))
+           #setLocalValue(place(local(IDX), .ProjectionElems), frameValue(STORE, CALLERSLOTS, I))
         ...
        </k>
        <stack> ListItem(StackFrame(_, _, _, _, CALLERSLOTS)) _:List </stack>
@@ -592,7 +599,7 @@ Therefore a heuristics is used here:
                 _SPAN
               )
          =>
-           #reserveSlots(NEWLOCALS) ~> #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(frameValue(STORE, CALLERSLOTS, CLOSURE)))
+           #reserveSlots(NEWLOCALS) ~> #setLocalValue(place(local(1), .ProjectionElems), frameValue(STORE, CALLERSLOTS, CLOSURE))
         ~> #setTupleArgs(2, frameValue(STORE, CALLERSLOTS, TUPLE)) ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
@@ -645,7 +652,7 @@ Therefore a heuristics is used here:
   rule <k> #setTupleArgs(_, .List ) => .K ... </k>
 
   rule <k> #setTupleArgs(IDX, ListItem(VAL) REST:List)
-        => #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(VAL)) ~> #setTupleArgs(IDX +Int 1, REST)
+        => #setLocalValue(place(local(IDX), .ProjectionElems), VAL) ~> #setTupleArgs(IDX +Int 1, REST)
         ...
        </k>
 ```

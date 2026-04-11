@@ -24,19 +24,26 @@
     <unwind>
       unwindActionContinue
     </unwind>
-    <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 1 , 32 , true ) )
-      ListItem ( BoolVal ( true ) )
-      ListItem ( thunk ( UnableToDecode ( b"33333sE@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) )
-      ListItem ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 1 , 32 , true ) )
-      ListItem ( Integer ( 10 , 32 , true ) ) ) ) ) , ty ( 28 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 27 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) )
-    </locals>
+    <ownedSlots>
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
+      ListItem ( 4 )
+    </ownedSlots>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 1 , 32 , true ) )
+    ListItem ( BoolVal ( true ) )
+    ListItem ( thunk ( UnableToDecode ( b"33333sE@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) )
+    ListItem ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 1 , 32 , true ) )
+    ListItem ( Integer ( 10 , 32 , true ) ) ) ) ) , ty ( 28 ) , mutabilityMut )
+    2 |-> typedValue ( Moved , ty ( 27 ) , mutabilityMut )
+    3 |-> typedValue ( Moved , ty ( 16 ) , mutabilityMut )
+    4 |-> typedValue ( Moved , ty ( 16 ) , mutabilityMut )
+  </slotStore>
 </kmir>

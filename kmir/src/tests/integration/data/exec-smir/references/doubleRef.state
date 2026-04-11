@@ -52,17 +52,17 @@
   <slotStore>
     0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
     1 |-> typedValue ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot )
-    2 |-> typedValue ( Reference ( place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityNot )
-    3 |-> typedValue ( Reference ( place (... local: local ( 2 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot )
+    2 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityNot )
+    3 |-> typedValue ( Reference ( slotPlace ( 2 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot )
     4 |-> typedValue ( Moved , ty ( 21 ) , mutabilityMut )
     5 |-> typedValue ( Moved , ty ( 2 ) , mutabilityMut )
     6 |-> newLocal ( ty ( 34 ) , mutabilityMut )
     7 |-> typedValue ( Moved , ty ( 21 ) , mutabilityMut )
     8 |-> typedValue ( Moved , ty ( 24 ) , mutabilityMut )
     9 |-> typedValue ( Moved , ty ( 24 ) , mutabilityMut )
-    10 |-> typedValue ( Reference ( place (... local: local ( 11 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot )
-    11 |-> typedValue ( Reference ( place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityNot )
+    10 |-> typedValue ( Reference ( slotPlace ( 11 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot )
+    11 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityNot )
     12 |-> newLocal ( ty ( 34 ) , mutabilityMut )
-    13 |-> typedValue ( Reference ( place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityMut )
+    13 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityMut )
   </slotStore>
 </kmir>

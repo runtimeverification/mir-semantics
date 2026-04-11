@@ -13,6 +13,12 @@ The entire program's return value (`retVal`) is held in a separate cell.
 
 Besides the `caller` (to return to) and `dest` and `target` to specify where the return value should be written, a `StackFrame` includes the runtime slots owned by the currently-executing function/item. Each function's MIR still accesses locals by relative `local(i)` indexes, but those are resolved through the frame's ordered slot list into stable runtime slot handles stored globally in `<slotStore>`.
 
+TODO:
+The current representation uses an explicit `ownedSlots` list together with a global map-backed `<slotStore>`.
+This interacts poorly with fresh symbolic slot ids: after `#reserveSlots`, terms like `frameLocal(STORE, SLOTS, 0)` may stay in the shape `getSlot(STORE[!SLOT <- ...], !SLOT)` instead of reducing to the just-written local.
+In proofs this can make mutually-exclusive predicates such as `isTypedValue(...)` / `isNewLocal(...)` branch nondeterministically at `return`; `prove-rs/show/assert-true` is a minimal example that grows an `ndbranch` for this reason.
+One possible follow-up is to make `<slotStore>` a `List` and allocate frame locals by appending a contiguous suffix, but that likely needs good backend support for symbolic list-tail reasoning before it is clearly better.
+
 ```k
 requires "./value.md"
 
@@ -47,6 +53,7 @@ module KMIR-CONFIGURATION
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
                   // global store of runtime stack slots
+                  // TODO: see note above about map lookup branching on fresh symbolic slot ids.
                   <slotStore> .Map </slotStore>
                 </kmir>
 ```
