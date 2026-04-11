@@ -26,7 +26,7 @@ Challenge-local artifact contract:
 
 Status board:
 
-- Planner: not started
-- Generator: waiting for planner and evaluator baselines
+- Planner: done (requirements extracted, blockers identified)
+- Generator: done (15 harnesses created, 9 pass, 5 expected-fail, 1 blocked)
 - Evaluator: not started
 - Draft PR: not created
