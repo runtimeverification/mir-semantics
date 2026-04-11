@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, NamedTuple
 
 from pyk.kast.inner import KApply, KSequence, KSort, KVariable, Subst, build_cons
 from pyk.kast.manip import free_vars, split_config_from
-from pyk.kast.prelude.collections import list_empty, list_of
+from pyk.kast.prelude.collections import list_empty, list_of, map_of
 from pyk.kast.prelude.kint import eqInt, intToken, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
@@ -192,12 +192,14 @@ def _make_concrete_call_config_with_locals(
             k_cell,
         )
 
+    slot_ids = [token(i) for i in range(len(localvars))]
     subst = Subst(
         {
             **init_subst(),
             **{
                 'K_CELL': k_cell,
-                'LOCALS_CELL': list_of(localvars),
+                'OWNEDSLOTS_CELL': list_of(slot_ids),
+                'SLOTSTORE_CELL': map_of(zip(slot_ids, localvars, strict=True)),
             },
         }
     )
@@ -215,11 +217,13 @@ def _make_symbolic_call_config(
     types: Mapping[Ty, TypeMetadata],
 ) -> tuple[KInner, list[KInner]]:
     locals, constraints = _symbolic_locals(fn_data.args, types)
+    slot_ids = [token(i) for i in range(len(locals))]
     subst = Subst(
         {
             'K_CELL': fn_data.call_terminator,
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
-            'LOCALS_CELL': list_of(locals),
+            'OWNEDSLOTS_CELL': list_of(slot_ids),
+            'SLOTSTORE_CELL': map_of(zip(slot_ids, locals, strict=True)),
         },
     )
     empty_config = definition.empty_config(KSort('GeneratedTopCell'))
@@ -450,7 +454,6 @@ class _ArgGenerator:
                     KApply(
                         'Value::Reference',
                         (
-                            token(0),  # Stack OFFSET field
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                             metadata if metadata is not None else no_metadata,
@@ -468,7 +471,6 @@ class _ArgGenerator:
                     KApply(
                         'Value::PtrLocal',
                         (
-                            token(0),
                             KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                             metadata if metadata is not None else no_metadata,
@@ -652,14 +654,12 @@ class _RandomArgGen:
         match type_info:
             case PtrT():
                 return PtrLocalValue(
-                    stack_depth=0,
                     place=Place(local=Local(ref)),
                     mut=mut,
                     metadata=metadata,
                 )
             case RefT():
                 return RefValue(
-                    stack_depth=0,
                     place=Place(local=Local(ref)),
                     mut=mut,
                     metadata=metadata,

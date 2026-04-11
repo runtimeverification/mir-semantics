@@ -29,24 +29,40 @@
     <unwind>
       unwindActionContinue
     </unwind>
-    <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 2 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Moved , ty ( 21 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 2 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 34 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 21 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 24 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 24 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 11 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 34 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityMut ) )
-    </locals>
+    <ownedSlots>
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
+      ListItem ( 4 )
+      ListItem ( 5 )
+      ListItem ( 6 )
+      ListItem ( 7 )
+      ListItem ( 8 )
+      ListItem ( 9 )
+      ListItem ( 10 )
+      ListItem ( 11 )
+      ListItem ( 12 )
+      ListItem ( 13 )
+    </ownedSlots>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> typedValue ( Integer ( 42 , 8 , true ) , ty ( 2 ) , mutabilityNot )
+    2 |-> typedValue ( Reference ( place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityNot )
+    3 |-> typedValue ( Reference ( place (... local: local ( 2 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot )
+    4 |-> typedValue ( Moved , ty ( 21 ) , mutabilityMut )
+    5 |-> typedValue ( Moved , ty ( 2 ) , mutabilityMut )
+    6 |-> newLocal ( ty ( 34 ) , mutabilityMut )
+    7 |-> typedValue ( Moved , ty ( 21 ) , mutabilityMut )
+    8 |-> typedValue ( Moved , ty ( 24 ) , mutabilityMut )
+    9 |-> typedValue ( Moved , ty ( 24 ) , mutabilityMut )
+    10 |-> typedValue ( Reference ( place (... local: local ( 11 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot )
+    11 |-> typedValue ( Reference ( place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityNot )
+    12 |-> newLocal ( ty ( 34 ) , mutabilityMut )
+    13 |-> typedValue ( Reference ( place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityMut )
+  </slotStore>
 </kmir>

@@ -22,7 +22,7 @@ Values in MIR are represented at a certain abstraction level, interpreting the g
 High-level values can be
 - a range of built-in types (signed and unsigned integer numbers, floats, `str` and `bool`)
 - built-in product type constructs (`struct`s, `enum`s, and tuples, with heterogenous component types)
-- references to a place in the current or an enclosing stack frame
+- references to a runtime slot stored in the global slot store
 - arrays and slices (with homogenous element types)
 
 The special `Moved` value represents values that have been used and should not be accessed any more.
@@ -42,15 +42,14 @@ The special `Moved` value represents values that have been used and should not b
                    // The Value is the data, and FieldIdx determines the type from the union's fields
                  | Float( Float, Int )                    [symbol(Value::Float)]
                    // value, bit-width               for f16-f128
-                 | Reference( Int , Place , Mutability , Metadata )
+                 | Reference( Place , Mutability , Metadata )
                                                           [symbol(Value::Reference)]
-                   // stack depth (initially 0), place, borrow kind, metadata (size, pointer offset, origin size)
+                   // absolute runtime slot place, borrow kind, metadata (size, pointer offset, origin size)
                  | Range( List )                          [symbol(Value::Range)]
                    // homogenous values              for array/slice
-                 | PtrLocal( Int , Place , Mutability, Metadata )
+                 | PtrLocal( Place , Mutability, Metadata )
                                                           [symbol(Value::PtrLocal)]
-                   // pointer to a local TypedValue (on the stack)
-                   // fields are the same as in Reference
+                   // pointer to a runtime slot, fields are the same as in Reference
                  | FunPtr ( Ty )
                    // function pointer, created by operandConstant only. Ty is a key in the function table
                  | AllocRef ( AllocId , ProjectionElems , Metadata )
@@ -86,14 +85,14 @@ Other types without metadata use `noMetadataSize`.
 
 ## Local variables
 
-A list `locals` of local variables of a stack frame is stored as values together
-with their type information (to enable type-checking assignments). Also, the
-`Mutability` is remembered to prevent mutation of immutable values.
+A runtime slot stores a `TypedLocal` together with its type information (to
+enable type-checking assignments). Also, the `Mutability` is remembered to
+prevent mutation of immutable values.
 
 The local variables may be actual values (`typedValue`) or uninitialised (`NewLocal`).
 
 ```k
-  // local storage of the stack frame
+  // value stored in a runtime slot
   syntax TypedLocal ::= TypedValue | NewLocal
 
   syntax TypedValue ::= typedValue ( Value , Ty , Mutability ) [symbol(typedValue)]

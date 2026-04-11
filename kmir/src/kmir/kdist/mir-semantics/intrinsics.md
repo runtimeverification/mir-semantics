@@ -89,10 +89,11 @@ Execution gets stuck (no matching rule) when operands have different types or un
 ```k
   // Raw eq: dereference operands, extract types, and delegate to typed comparison
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE, _SPAN)
-        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS),
-                                  #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS))
+        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), STORE, SLOTS),
+                                  #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), STORE, SLOTS))
        ... </k>
-       <locals> LOCALS </locals>
+       <currentFrame> <ownedSlots> SLOTS </ownedSlots> ... </currentFrame>
+       <slotStore> STORE </slotStore>
 
   // Compare values only if types are identical
   syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
@@ -112,17 +113,17 @@ Execution gets stuck (no matching rule) when operands have different types or un
   rule #withDeref(OP) => OP [owise]
 
   // Extract type from operands (locals with projections, constants, fallback to unknown)
-  syntax MaybeTy ::= #extractOperandType(Operand, List) [function, total]
-  rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
-    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
+  syntax MaybeTy ::= #extractOperandType(Operand, Map, List) [function, total]
+  rule #extractOperandType(operandCopy(place(local(I), PROJS)), STORE, SLOTS)
+       => getTyOf(tyOfLocal(frameLocal(STORE, SLOTS, I)), PROJS)
+    requires 0 <=Int I andBool I <Int size(SLOTS) andBool isTypedLocal(frameLocal(STORE, SLOTS, I))
     [preserves-definedness]
-  rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
-    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
+  rule #extractOperandType(operandMove(place(local(I), PROJS)), STORE, SLOTS)
+       => getTyOf(tyOfLocal(frameLocal(STORE, SLOTS, I)), PROJS)
+    requires 0 <=Int I andBool I <Int size(SLOTS) andBool isTypedLocal(frameLocal(STORE, SLOTS, I))
     [preserves-definedness]
-  rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _) => TY
-  rule #extractOperandType(_, _) => TyUnknown [owise]
+  rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _, _) => TY
+  rule #extractOperandType(_, _, _) => TyUnknown [owise]
 ```
 
 #### Volatile Store (`std::intrinsics::volatile_store`, `std::ptr::write_volatile`)
@@ -191,8 +192,8 @@ the second argument, so the returned difference is always positive.
 
   rule <k> 
         #ptrOffsetDiff(
-          PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF1, _)),
-          PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF2, _)),
+          PtrLocal(PLACE, _, metadata( _ , OFF1, _)),
+          PtrLocal(PLACE, _, metadata( _ , OFF2, _)),
           SIGNED_FLAG,
           DEST
        ) => #setLocalValue(DEST, Integer(OFF1 -Int OFF2, 64, SIGNED_FLAG))
@@ -202,8 +203,8 @@ the second argument, so the returned difference is always positive.
 
   rule <k> 
         #ptrOffsetDiff(
-          PtrLocal(_, _, _, _) #as PTR1,
-          PtrLocal(_, _, _, _) #as PTR2,
+          PtrLocal(_, _, _) #as PTR1,
+          PtrLocal(_, _, _) #as PTR2,
           SIGNED_FLAG,
           _DEST
        ) => #UBErrorPtrOffsetDiff(PTR1, PTR2, SIGNED_FLAG)

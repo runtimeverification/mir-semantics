@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) ) ~> .K
+    #setArgFromStack ( 1 , operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) ) ~> #setArgsFromStack ( 2 , operandConstant ( constOperand (... span: span ( 57 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x0b\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 2 ) , mutability: mutabilityMut ) ) , ty: ty ( 28 ) , id: mirConstId ( 12 ) ) ) )  .Operands ) ~> #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -24,16 +24,24 @@
     <unwind>
       unwindActionContinue
     </unwind>
-    <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 10 , 64 , false ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 11 , 16 , true ) , ty ( 28 ) , mutabilityNot ) )
-    </locals>
+    <ownedSlots>
+      ListItem ( 3 )
+      ListItem ( 4 )
+      ListItem ( 5 )
+    </ownedSlots>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-    ListItem ( typedValue ( Integer ( 10 , 64 , false ) , ty ( 26 ) , mutabilityNot ) ) ) )
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( 1 )
+    ListItem ( 2 ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( 0 ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    2 |-> typedValue ( Integer ( 10 , 64 , false ) , ty ( 26 ) , mutabilityNot )
+    3 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    4 |-> newLocal ( ty ( 26 ) , mutabilityNot )
+    5 |-> newLocal ( ty ( 28 ) , mutabilityNot )
+  </slotStore>
 </kmir>

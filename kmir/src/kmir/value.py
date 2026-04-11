@@ -91,7 +91,6 @@ class AggregateValue(Value):
 
 @dataclass
 class RefValue(Value):
-    stack_depth: int
     place: Place
     mut: bool
     metadata: Metadata
@@ -99,7 +98,6 @@ class RefValue(Value):
     def to_kast(self) -> KInner:
         return KApply(
             'Value::Reference',
-            intToken(self.stack_depth),
             self.place.to_kast(),
             KApply('Mutability::Mut') if self.mut else KApply('Mutability::Not'),
             self.metadata.to_kast(),
@@ -108,7 +106,6 @@ class RefValue(Value):
 
 @dataclass
 class PtrLocalValue(Value):
-    stack_depth: int
     place: Place
     mut: bool
     metadata: Metadata
@@ -116,7 +113,6 @@ class PtrLocalValue(Value):
     def to_kast(self) -> KInner:
         return KApply(
             'Value::PtrLocal',
-            intToken(self.stack_depth),
             self.place.to_kast(),
             KApply('Mutability::Mut') if self.mut else KApply('Mutability::Not'),
             self.metadata.to_kast(),
