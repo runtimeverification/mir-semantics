@@ -154,7 +154,7 @@ class SlotPlace:
 
     def to_kast(self) -> KInner:
         return KApply(
-            'slotPlace',
+            'SlotPlace',
             intToken(self.slot),
             KApply('ProjectionElems::empty'),  # TODO
         )

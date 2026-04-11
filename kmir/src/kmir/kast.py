@@ -455,7 +455,7 @@ class _ArgGenerator:
                     KApply(
                         'Value::Reference',
                         (
-                            KApply('slotPlace', (token(ref), KApply('ProjectionElems::empty', ()))),
+                            KApply('SlotPlace', (token(ref), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                             metadata if metadata is not None else no_metadata,
                         ),
@@ -472,7 +472,7 @@ class _ArgGenerator:
                     KApply(
                         'Value::PtrLocal',
                         (
-                            KApply('slotPlace', (token(ref), KApply('ProjectionElems::empty', ()))),
+                            KApply('SlotPlace', (token(ref), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                             metadata if metadata is not None else no_metadata,
                         ),

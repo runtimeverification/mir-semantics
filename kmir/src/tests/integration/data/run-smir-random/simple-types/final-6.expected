@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #setArgFromStack ( 1 , operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) ) ~> #setArgsFromStack ( 2 , operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  operandCopy ( place (... local: local ( 3 ) , projection: .ProjectionElems ) )  .Operands ) ~> #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 31 ) , userTy: someUserTypeAnnotationIndex ( userTypeAnnotationIndex ( 0 ) ) , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 15 ) , id: mirConstId ( 3 ) ) ) ) , args: operandCopy ( place (... local: local ( 2 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 4 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 32 ) ) ) ) ~> .K
+    #EndProgram ~> .K
   </k>
   <retVal>
     noReturn
@@ -41,10 +41,6 @@
       unwindActionContinue
     </unwind>
     <ownedSlots>
-      ListItem ( 0 )
-      ListItem ( 1 )
-      ListItem ( 2 )
-      ListItem ( 3 )
       ListItem ( 4 )
       ListItem ( 5 )
       ListItem ( 6 )
@@ -72,6 +68,10 @@
       ListItem ( 28 )
       ListItem ( 29 )
       ListItem ( 30 )
+      ListItem ( 31 )
+      ListItem ( 32 )
+      ListItem ( 33 )
+      ListItem ( 34 )
     </ownedSlots>
   </currentFrame>
   <stack>
@@ -81,36 +81,40 @@
     ListItem ( 3 ) ) )
   </stack>
   <slotStore>
-    0 |-> newLocal ( ty ( 6 ) , mutabilityMut )
-    1 |-> newLocal ( ty ( 18 ) , mutabilityNot )
-    2 |-> newLocal ( ty ( 9 ) , mutabilityNot )
-    3 |-> newLocal ( ty ( 8 ) , mutabilityNot )
-    4 |-> newLocal ( ty ( 8 ) , mutabilityNot )
-    5 |-> newLocal ( ty ( 18 ) , mutabilityMut )
-    6 |-> newLocal ( ty ( 12 ) , mutabilityMut )
-    7 |-> newLocal ( ty ( 18 ) , mutabilityMut )
-    8 |-> newLocal ( ty ( 18 ) , mutabilityMut )
-    9 |-> newLocal ( ty ( 8 ) , mutabilityMut )
-    10 |-> newLocal ( ty ( 21 ) , mutabilityMut )
-    11 |-> newLocal ( ty ( 12 ) , mutabilityMut )
+    0 |-> newLocal ( ty ( 0 ) , mutabilityNot )
+    1 |-> typedValue ( BoolVal ( true ) , ty ( 18 ) , mutabilityNot )
+    2 |-> typedValue ( Integer ( 41 , 8 , false ) , ty ( 9 ) , mutabilityNot )
+    3 |-> typedValue ( Integer ( -1023827911 , 32 , true ) , ty ( 8 ) , mutabilityNot )
+    4 |-> newLocal ( ty ( 6 ) , mutabilityMut )
+    5 |-> typedValue ( BoolVal ( true ) , ty ( 18 ) , mutabilityNot )
+    6 |-> typedValue ( Integer ( 41 , 8 , false ) , ty ( 9 ) , mutabilityNot )
+    7 |-> typedValue ( Integer ( -1023827911 , 32 , true ) , ty ( 8 ) , mutabilityNot )
+    8 |-> typedValue ( Integer ( 41 , 32 , true ) , ty ( 8 ) , mutabilityNot )
+    9 |-> typedValue ( Moved , ty ( 18 ) , mutabilityMut )
+    10 |-> newLocal ( ty ( 12 ) , mutabilityMut )
+    11 |-> typedValue ( Moved , ty ( 18 ) , mutabilityMut )
     12 |-> newLocal ( ty ( 18 ) , mutabilityMut )
-    13 |-> newLocal ( ty ( 18 ) , mutabilityMut )
-    14 |-> newLocal ( ty ( 8 ) , mutabilityMut )
-    15 |-> newLocal ( ty ( 21 ) , mutabilityMut )
-    16 |-> newLocal ( ty ( 12 ) , mutabilityMut )
+    13 |-> newLocal ( ty ( 8 ) , mutabilityMut )
+    14 |-> newLocal ( ty ( 21 ) , mutabilityMut )
+    15 |-> newLocal ( ty ( 12 ) , mutabilityMut )
+    16 |-> typedValue ( Moved , ty ( 18 ) , mutabilityMut )
     17 |-> newLocal ( ty ( 18 ) , mutabilityMut )
-    18 |-> newLocal ( ty ( 12 ) , mutabilityMut )
-    19 |-> newLocal ( ty ( 22 ) , mutabilityMut )
-    20 |-> newLocal ( ty ( 2 ) , mutabilityMut )
-    21 |-> newLocal ( ty ( 2 ) , mutabilityMut )
-    22 |-> newLocal ( ty ( 18 ) , mutabilityNot )
-    23 |-> newLocal ( ty ( 2 ) , mutabilityNot )
-    24 |-> newLocal ( ty ( 2 ) , mutabilityNot )
-    25 |-> newLocal ( ty ( 18 ) , mutabilityMut )
-    26 |-> newLocal ( ty ( 18 ) , mutabilityMut )
-    27 |-> newLocal ( ty ( 18 ) , mutabilityMut )
-    28 |-> newLocal ( ty ( 13 ) , mutabilityNot )
-    29 |-> newLocal ( ty ( 12 ) , mutabilityNot )
-    30 |-> newLocal ( ty ( 14 ) , mutabilityMut )
+    18 |-> newLocal ( ty ( 8 ) , mutabilityMut )
+    19 |-> newLocal ( ty ( 21 ) , mutabilityMut )
+    20 |-> newLocal ( ty ( 12 ) , mutabilityMut )
+    21 |-> typedValue ( Moved , ty ( 18 ) , mutabilityMut )
+    22 |-> newLocal ( ty ( 12 ) , mutabilityMut )
+    23 |-> newLocal ( ty ( 22 ) , mutabilityMut )
+    24 |-> newLocal ( ty ( 2 ) , mutabilityMut )
+    25 |-> newLocal ( ty ( 2 ) , mutabilityMut )
+    26 |-> newLocal ( ty ( 18 ) , mutabilityNot )
+    27 |-> newLocal ( ty ( 2 ) , mutabilityNot )
+    28 |-> newLocal ( ty ( 2 ) , mutabilityNot )
+    29 |-> newLocal ( ty ( 18 ) , mutabilityMut )
+    30 |-> newLocal ( ty ( 18 ) , mutabilityMut )
+    31 |-> newLocal ( ty ( 18 ) , mutabilityMut )
+    32 |-> newLocal ( ty ( 13 ) , mutabilityNot )
+    33 |-> newLocal ( ty ( 12 ) , mutabilityNot )
+    34 |-> newLocal ( ty ( 14 ) , mutabilityMut )
   </slotStore>
 </kmir>

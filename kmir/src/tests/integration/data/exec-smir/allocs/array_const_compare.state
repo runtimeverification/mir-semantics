@@ -30,23 +30,37 @@
     <unwind>
       unwindActionContinue
     </unwind>
-    <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( staticSize ( 3 ) , 0 , staticSize ( 3 ) ) ) )
-      ListItem ( AllocRef ( allocId ( 1 ) , .ProjectionElems , metadata ( staticSize ( 3 ) , 0 , staticSize ( 3 ) ) ) ) ) , ty ( 86 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( staticSize ( 3 ) , 0 , staticSize ( 3 ) ) ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( AllocRef ( allocId ( 1 ) , .ProjectionElems , metadata ( staticSize ( 3 ) , 0 , staticSize ( 3 ) ) ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 69 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 68 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 70 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 68 ) , mutabilityMut ) )
-    </locals>
+    <ownedSlots>
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
+      ListItem ( 4 )
+      ListItem ( 5 )
+      ListItem ( 6 )
+      ListItem ( 7 )
+      ListItem ( 8 )
+      ListItem ( 9 )
+      ListItem ( 10 )
+      ListItem ( 11 )
+    </ownedSlots>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( staticSize ( 3 ) , 0 , staticSize ( 3 ) ) ) )
+    ListItem ( AllocRef ( allocId ( 1 ) , .ProjectionElems , metadata ( staticSize ( 3 ) , 0 , staticSize ( 3 ) ) ) ) ) , ty ( 86 ) , mutabilityMut )
+    2 |-> typedValue ( Moved , ty ( 25 ) , mutabilityMut )
+    3 |-> typedValue ( Moved , ty ( 25 ) , mutabilityMut )
+    4 |-> typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( staticSize ( 3 ) , 0 , staticSize ( 3 ) ) ) , ty ( 25 ) , mutabilityNot )
+    5 |-> typedValue ( AllocRef ( allocId ( 1 ) , .ProjectionElems , metadata ( staticSize ( 3 ) , 0 , staticSize ( 3 ) ) ) , ty ( 25 ) , mutabilityNot )
+    6 |-> typedValue ( Moved , ty ( 30 ) , mutabilityMut )
+    7 |-> newLocal ( ty ( 69 ) , mutabilityNot )
+    8 |-> newLocal ( ty ( 68 ) , mutabilityNot )
+    9 |-> newLocal ( ty ( 70 ) , mutabilityMut )
+    10 |-> typedValue ( Moved , ty ( 30 ) , mutabilityMut )
+    11 |-> newLocal ( ty ( 68 ) , mutabilityMut )
+  </slotStore>
 </kmir>
