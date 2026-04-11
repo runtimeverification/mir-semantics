@@ -10,62 +10,52 @@ Execution context:
 
 - Branch: `verify-rust-std/reexec-0001-core-transmutation`
 - Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0001-core-transmutation`
-- Planner record: `docs/verify-rust-std/challenges/0001-core-transmutation/planner.md`
-- Generator record: `docs/verify-rust-std/challenges/0001-core-transmutation/generator.md`
-- Evaluator record: `docs/verify-rust-std/challenges/0001-core-transmutation/evaluator.md`
-- Branch-local rubric: `docs/verify-rust-std/challenges/0001-core-transmutation/rubric.md`
+- Branch-local coverage map: `docs/verify-rust-std/challenges/0001-core-transmutation/success-criteria.md`
 
-Challenge-local artifact contract:
+## Proof Harnesses (all PASSED)
 
-- Place harnesses, tests, expected output, and supporting files in this
-  directory.
-- Keep changes organized so proof or semantic commits can be cherry-picked
-  cleanly later.
-- Record any exceptional dependency change in the generator and evaluator logs
-  before landing it.
-- Keep the branch-local coverage map in
-  `docs/verify-rust-std/challenges/0001-core-transmutation/success-criteria.md`.
+### transmute (core::intrinsics)
 
-Proof harnesses currently in scope:
+- `transmute_roundtrip.rs` - Byte-array <-> u64 roundtrip with endianness checks
+- `transmute_integers.rs` - Integer roundtrips: u32/i32, u16/i16, u64/i64, u8/i8, usize/isize
+- `transmute_array_bytes.rs` - Byte array <-> u32/u16 conversions with endianness checks
+- `transmute_multi_width.rs` - u128/i128, i32/i64 byte roundtrips
+- `transmute_roundtrip_comprehensive.rs` - All integer widths byte roundtrips
+- `transmute_same_type.rs` - Identity transmute (same type)
+- `transmute_wrapper_structs.rs` - T <-> single-field wrapper struct
+- `transmute_struct_fields.rs` - repr(transparent) struct roundtrips
+- `transmute_enum.rs` - u8 -> fieldless enum (Color, Status)
+- `transmute_enum_variants.rs` - Extended enum transmute (Direction, Opcode, Bool)
 
-- `transmute_roundtrip.rs` - proof entrypoints for `core::mem::transmute`
-- `transmute_unchecked_maybeuninit.rs` - proof entrypoints for
-  `core::intrinsics::transmute_unchecked` and the `MaybeUninit` bridge
-- `maybeuninit_array_assume_init.rs` - proof entrypoint for
-  `MaybeUninit<T>::array_assume_init`
+### transmute_unchecked (core::intrinsics)
 
-Minimal reproducers / controls:
+- `transmute_unchecked_integers.rs` - Integer roundtrips via transmute_unchecked
+- `transmute_unchecked_maybeuninit_int.rs` - T -> MaybeUninit<T> via transmute_unchecked
+- `transmute_unchecked_struct.rs` - struct -> MaybeUninit<struct> via transmute_unchecked
 
-- None yet for this first breadth-first sweep. The current branch is using
-  proof-shaped harnesses first so the coverage table can be populated before
-  deeper semantic classification.
+### MaybeUninit methods (core::mem)
 
-Replay / CI commands:
+- `maybeuninit_basic.rs` - new + assume_init for u32, i64, u8, bool, usize
+- `maybeuninit_write_assume_init.rs` - Nested new/assume_init, i8, i16, i32, u128
+- `maybeuninit_assume_init_ref.rs` - Reading via assume_init_ref
+- `maybeuninit_assume_init_mut.rs` - Reading via assume_init_mut
+- `maybeuninit_struct.rs` - MaybeUninit with Point, Triple, Wrapper structs
+- `maybeuninit_init_patterns.rs` - MaybeUninit with Option, Result, arrays
 
-- Update proof expected output for the first harness sweep:
-  `cd /home/zhaoji/projs/mir-semantics-vrs/challenges/0001-core-transmutation/kmir && uv run pytest src/tests/integration/test_integration.py -v --timeout=600 -k "transmute_roundtrip or transmute_unchecked_maybeuninit or maybeuninit_array_assume_init" --update-expected-output`
-- Run the targeted verification sweep without rewriting expected output:
-  `cd /home/zhaoji/projs/mir-semantics-vrs/challenges/0001-core-transmutation/kmir && uv run pytest src/tests/integration/test_integration.py -v --timeout=600 -k "transmute_roundtrip or transmute_unchecked_maybeuninit or maybeuninit_array_assume_init"`
-- Run the full integration suite when the sweep is stable:
-  `cd /home/zhaoji/projs/mir-semantics-vrs/challenges/0001-core-transmutation/kmir && uv run pytest src/tests/integration/test_integration.py -v --timeout=600`
+## Running Proofs
 
-Validation checkpoint:
+```bash
+cd /home/zhaoji/projs/mir-semantics-vrs/challenges/0001-core-transmutation/
+# Run a single proof
+uv --directory kmir run -- kmir prove \
+    kmir/src/tests/integration/data/verify-rust-std/0001-core-transmutation/<file>.rs \
+    --verbose --terminate-on-thunk --proof-dir /tmp/kmir-0001-<name> --reload --fail-fast
+```
 
-- `transmute_roundtrip.rs`: passed and emitted show output for both start symbols.
-- `transmute_unchecked_maybeuninit.rs`: reached a backend runtime error on `FLOAT.int2float`.
-- `maybeuninit_array_assume_init.rs`: needed `#![feature(maybe_uninit_array_assume_init)]` and still fails in proof, so it remains a frontier item.
+## Known Blockers
 
-Status board:
-
-- Planner: not started
-- Generator: waiting for planner and evaluator baselines
-- Evaluator: not started
-- Draft PR: not created
-
-Artifact progress:
-
-- Primitive transmutation seeds:
-  - `transmute_roundtrip.rs`
-  - `transmute_unchecked_maybeuninit.rs`
-- MaybeUninit seed:
-  - `maybeuninit_array_assume_init.rs`
+- **TRANSMUTE_CHAR**: No rule for transmute u32 -> char (blocks from_u32_unchecked, AsciiChar)
+- **TRANSMUTE_USIZE**: No rule for transmute usize -> Alignment newtype (blocks Layout)
+- **UNION_EVAL**: #evalUnion stuck when accessing MaybeUninit array elements
+- **INTRINSIC_CTPOP**: Missing ctpop intrinsic (blocks Alignment::new)
+- **STRING_DECODE**: #decodeConstant stuck on string allocations (blocks str::as_bytes)
