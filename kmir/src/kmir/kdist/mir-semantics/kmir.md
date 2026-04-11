@@ -227,10 +227,8 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
   // STORE[!SLOT <- ...], which can produce ndbranches in proofs
   // (for example prove-rs/show/assert-true).
 
-  rule <k> #dropSlots(.List) => .K ... </k>
-
-  rule <k> #dropSlots(ListItem(SLOT:Int) REST) => #dropSlots(REST) ... </k>
-       <slotStore> STORE => STORE[SLOT <- undef] </slotStore>
+  rule <k> #dropSlots(SLOTS) => .K ... </k>
+       <slotStore> STORE => removeAll(STORE, List2Set(SLOTS)) </slotStore>
 
   rule [termReturnSome]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
@@ -307,7 +305,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
          <ownedSlots> SLOTS </ownedSlots>
          ...
        </currentFrame>
-       <slotStore> STORE </slotStore>
+       <slotStore> STORE => removeAll(STORE, List2Set(SLOTS)) </slotStore>
     requires isTypedValue(frameLocal(STORE, SLOTS, 0))
 
   rule [endprogram-no-return]:
@@ -320,7 +318,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
          <ownedSlots> SLOTS </ownedSlots>
          ...
        </currentFrame>
-       <slotStore> STORE </slotStore>
+       <slotStore> STORE => removeAll(STORE, List2Set(SLOTS)) </slotStore>
     requires isNewLocal(frameLocal(STORE, SLOTS, 0))
 ```
 
