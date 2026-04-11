@@ -60,6 +60,17 @@ More often than not, a slot or list element must be selected by index and is req
     requires 0 <=Int IDX andBool IDX <Int size(SLOTS)
      [preserves-definedness]
 
+  // Fresh callee slots are appended to the frame list and written into the store in lockstep.
+  // These simplifications let current-frame reads reduce through the most recent updates even
+  // when the slot ids themselves are symbolic fresh values.
+  rule frameLocal(_STORE[SLOT <- LOCAL], SLOTS ListItem(SLOT), size(SLOTS)) => LOCAL
+    requires isTypedLocal(LOCAL)
+    [simplification]
+
+  rule frameLocal(STORE[SLOT <- _], SLOTS ListItem(SLOT), IDX) => frameLocal(STORE, SLOTS, IDX)
+    requires 0 <=Int IDX andBool IDX <Int size(SLOTS)
+    [simplification]
+
   // indexing values out of TypedValue, runtime slots, and Value lists
   syntax Value ::= getSlotValue ( Map, Int ) [function]
                  | frameValue   ( Map, List, Int ) [function]
@@ -74,6 +85,13 @@ More often than not, a slot or list element must be selected by index and is req
   rule frameValue(STORE, SLOTS, IDX) => getSlotValue(STORE, #frameSlotId(SLOTS, IDX))
     requires 0 <=Int IDX andBool IDX <Int size(SLOTS)
      [preserves-definedness]
+
+  rule frameValue(_STORE[SLOT <- typedValue(VAL, _, _)], SLOTS ListItem(SLOT), size(SLOTS)) => VAL
+    [simplification]
+
+  rule frameValue(STORE[SLOT <- _], SLOTS ListItem(SLOT), IDX) => frameValue(STORE, SLOTS, IDX)
+    requires 0 <=Int IDX andBool IDX <Int size(SLOTS)
+    [simplification]
 
   rule getValue(VALUES, IDX) => {VALUES[IDX]}:>Value
     requires 0 <=Int IDX andBool IDX <Int size(VALUES)

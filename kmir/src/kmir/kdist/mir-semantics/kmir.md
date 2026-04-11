@@ -220,13 +220,6 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
 ```k
   syntax KItem ::= #dropSlots(List)
 
-  // NOTE:
-  // With a map-backed <slotStore>, fresh slots are introduced under symbolic keys.
-  // Then return-time checks like isTypedValue(frameLocal(STORE, SLOTS, 0)) and
-  // isNewLocal(frameLocal(STORE, SLOTS, 0)) may fail to reduce through
-  // STORE[!SLOT <- ...], which can produce ndbranches in proofs
-  // (for example prove-rs/show/assert-true).
-
   rule <k> #dropSlots(SLOTS) => .K ... </k>
        <slotStore> STORE => removeAll(STORE, List2Set(SLOTS)) </slotStore>
 
@@ -305,7 +298,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
          <ownedSlots> SLOTS </ownedSlots>
          ...
        </currentFrame>
-       <slotStore> STORE => removeAll(STORE, List2Set(SLOTS)) </slotStore>
+       <slotStore> STORE </slotStore>
     requires isTypedValue(frameLocal(STORE, SLOTS, 0))
 
   rule [endprogram-no-return]:
@@ -318,7 +311,7 @@ The call stack is not necessarily empty at this point so it is left untouched.
          <ownedSlots> SLOTS </ownedSlots>
          ...
        </currentFrame>
-       <slotStore> STORE => removeAll(STORE, List2Set(SLOTS)) </slotStore>
+       <slotStore> STORE </slotStore>
     requires isNewLocal(frameLocal(STORE, SLOTS, 0))
 ```
 
