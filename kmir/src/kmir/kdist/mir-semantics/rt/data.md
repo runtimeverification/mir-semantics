@@ -158,14 +158,13 @@ We ensure that any projections of the copy operation are traversed appropriately
     [preserves-definedness] // valid list indexing checked
 ```
 
-When an operand is `Moved` by the read, the original has to be invalidated.
-In case of a projected value, this is a write operation nested in the data that is being read.
-In contrast to regular write operations, the value does not have to be _mutable_ in order for `Moved` to be written (`true` is passed to `#readProjection`).
+When an operand is `Moved` by the read, the original would have to be invalidated.
+However, the Rust compiler generates `operandMove` for Copy types as well, and the MIR may use the same local multiple times via `operandMove`. Since the compiler guarantees no use-after-move at the type level, we treat `operandMove` as `operandCopy` (i.e., we do _not_ invalidate the source).
 
 ```k
   rule <k> operandMove(place(local(I), PROJECTIONS))
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
-        ~> #readProjection(true)
+        ~> #readProjection(false)
        ...
        </k>
        <locals> LOCALS </locals>
@@ -1378,6 +1377,13 @@ The simplest case of a cast is conversion from one number type to another:
 `IntToInt` casts between signed and unsigned integral numbers of different width exist, with a
 truncating semantics. These casts can only operate on the `Integer` variant of the `Value` type, adjusting
 bit width, signedness, and possibly truncating or 2s-complementing the value.
+
+A `Moved` value that reaches a cast has already been invalidated (e.g., after an `operandMove` on a `Copy`-type local that was used again). We propagate the `Moved` sentinel through the cast rather than getting stuck.
+
+```k
+  // Propagate Moved through any cast
+  rule <k> #cast(Moved, _, _, _) => Moved ... </k>
+```
 
 ```k
   // int casts

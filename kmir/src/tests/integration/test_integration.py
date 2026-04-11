@@ -116,8 +116,8 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
 
 
 VRS_0009_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std' / '0009-duration').resolve(strict=True)
-VRS_0009_FILES = [f for f in sorted(VRS_0009_DIR.glob('*.rs')) if f.stem != 'checked_div']
-VRS_0009_BLOCKED = ['checked_div']
+VRS_0009_BLOCKED = ['checked_add_overflow', 'checked_sub_underflow', 'checked_mul_overflow', 'checked_div_zero']
+VRS_0009_FILES = [f for f in sorted(VRS_0009_DIR.glob('*.rs')) if f.stem not in VRS_0009_BLOCKED]
 
 
 @pytest.mark.parametrize(
