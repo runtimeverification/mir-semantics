@@ -56,6 +56,10 @@ test-integration: stable-mir-json build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration --maxfail=1 --verbose \
 			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
 
+test-verify-rust-std: stable-mir-json build
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_integration.py::test_verify_rust_std --maxfail=1 --verbose \
+			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
+
 .PHONY: test-stable-mir-ui
 test-stable-mir-ui: stable-mir-json build
 	@test -n "$(RUST_DIR_ROOT)" || (echo "RUST_DIR_ROOT is required. Example: RUST_DIR_ROOT=/path/to/rust make test-stable-mir-ui"; exit 2)

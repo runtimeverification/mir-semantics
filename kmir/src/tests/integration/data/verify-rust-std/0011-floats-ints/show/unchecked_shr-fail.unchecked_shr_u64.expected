@@ -1,0 +1,35 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (56 steps)
+├─ 3
+│   #applyBinOp ( binOpShrUnchecked , Integer ( ARG_UINT1:Int , 64 , false ) , Integ
+│   span: 247
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   Integer ( ARG_UINT1:Int >>Int ARG_UINT2:Int modInt 18446744073709551616 , 64 , f
+┃  │   span: 247
+┃  │
+┃  │  (110 steps)
+┃  ├─ 6 (terminal)
+┃  │   #EndProgram ~> .K
+┃  │
+┃  ┊  constraint:
+┃  ┊      ARG_UINT2:Int >=Int 0
+┃  ┊  subst: ...
+┃  └─ 2 (leaf, target, terminal)
+┃      #EndProgram ~> .K
+┃
+┗━━┓
+   │
+   └─ 5 (leaf, terminal)
+       thunk ( #applyBinOp ( binOpShrUnchecked , Integer ( ARG_UINT1:Int , 64 , false )
+       span: 247
+
+
+
