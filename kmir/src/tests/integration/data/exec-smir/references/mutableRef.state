@@ -55,4 +55,7 @@
     7 |-> typedValue ( Moved , ty ( 2 ) , mutabilityMut )
     8 |-> newLocal ( ty ( 29 ) , mutabilityMut )
   </slotStore>
+  <nextSlot>
+    11
+  </nextSlot>
 </kmir>

@@ -90,4 +90,7 @@
     20 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
     ListItem ( Moved ) ) , ty ( 29 ) , mutabilityMut )
   </slotStore>
+  <nextSlot>
+    21
+  </nextSlot>
 </kmir>

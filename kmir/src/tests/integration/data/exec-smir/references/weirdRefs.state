@@ -94,4 +94,7 @@
     23 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityMut , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 29 ) , mutabilityMut )
     24 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityMut , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 29 ) , mutabilityMut )
   </slotStore>
+  <nextSlot>
+    25
+  </nextSlot>
 </kmir>

@@ -65,4 +65,7 @@
     12 |-> newLocal ( ty ( 34 ) , mutabilityMut )
     13 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 22 ) , mutabilityMut )
   </slotStore>
+  <nextSlot>
+    29
+  </nextSlot>
 </kmir>

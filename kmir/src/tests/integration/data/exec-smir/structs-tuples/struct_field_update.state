@@ -46,4 +46,7 @@
     3 |-> typedValue ( Moved , ty ( 16 ) , mutabilityMut )
     4 |-> typedValue ( Moved , ty ( 16 ) , mutabilityMut )
   </slotStore>
+  <nextSlot>
+    5
+  </nextSlot>
 </kmir>

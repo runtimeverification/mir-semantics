@@ -62,4 +62,7 @@
     11 |-> typedValue ( Moved , ty ( 34 ) , mutabilityMut )
     12 |-> typedValue ( Moved , ty ( 32 ) , mutabilityMut )
   </slotStore>
+  <nextSlot>
+    24
+  </nextSlot>
 </kmir>

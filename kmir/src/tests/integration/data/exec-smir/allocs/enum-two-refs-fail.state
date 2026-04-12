@@ -116,4 +116,7 @@
     37 |-> newLocal ( ty ( 25 ) , mutabilityMut )
     38 |-> newLocal ( ty ( 25 ) , mutabilityMut )
   </slotStore>
+  <nextSlot>
+    39
+  </nextSlot>
 </kmir>

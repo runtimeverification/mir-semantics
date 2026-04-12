@@ -109,6 +109,7 @@ To ensure the sort coercions above do not cause any harm, some definedness-relat
   // data coerced to sort Value is not undefined if it is of that sort
   rule #Ceil({X}:>Value) => #Ceil(X)
     requires isValue(X)                              [simplification]
+
 ```
 
 ### Evaluating Items to `Value`s
@@ -339,8 +340,15 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   syntax Contexts ::= List{Context, ""}
 
   syntax Value ::= #buildUpdate ( Value , Contexts ) [function]
+  syntax List  ::= #setRangeElem ( List , Int , Value ) [function]
   // ----------------------------------------------------------
   rule #buildUpdate(VAL, .Contexts) => VAL
+     [preserves-definedness]
+
+  rule #setRangeElem(ELEMS, IDX, VAL)
+      => ELEMS[IDX <- VAL]
+    requires 0 <=Int IDX andBool IDX <Int size(ELEMS)
+     andBool isValue(ELEMS[IDX])
      [preserves-definedness]
 
   rule #buildUpdate(VAL, CtxField(IDX, ARGS, I, _) CTXS)
@@ -352,7 +360,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
      [preserves-definedness]
 
   rule #buildUpdate(VAL, CtxIndex(ELEMS, I) CTXS)
-      => #buildUpdate(Range(ELEMS[I <- VAL]), CTXS)
+      => #buildUpdate(Range(#setRangeElem(ELEMS, I, VAL)), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
   // we don't expect an update to happen on an entire _subslice_ but define a rule for it anyway

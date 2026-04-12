@@ -199,6 +199,7 @@ def _make_concrete_call_config_with_locals(
                 'K_CELL': k_cell,
                 'OWNEDSLOTS_CELL': list_of(slot_ids),
                 'SLOTSTORE_CELL': map_of(zip(slot_ids, localvars, strict=True)),
+                'NEXTSLOT_CELL': token(len(slot_ids)),
                 'GENERATEDCOUNTER_CELL': token(len(slot_ids)),
             },
         }
@@ -224,6 +225,7 @@ def _make_symbolic_call_config(
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'OWNEDSLOTS_CELL': list_of(slot_ids),
             'SLOTSTORE_CELL': map_of(zip(slot_ids, locals, strict=True)),
+            'NEXTSLOT_CELL': token(len(slot_ids)),
             'GENERATEDCOUNTER_CELL': token(len(slot_ids)),
         },
     )

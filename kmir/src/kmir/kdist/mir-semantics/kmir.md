@@ -481,11 +481,12 @@ The local data has to be set up for the call, which requires information about t
   rule <k> #reserveSlots(.LocalDecls) => .K ... </k>
 
   rule <k> #reserveSlots(localDecl(TY, _, MUT) REST:LocalDecls) => #reserveSlots(REST) ... </k>
+       <nextSlot> NEXT:Int => NEXT +Int 1 </nextSlot>
        <currentFrame>
-         <ownedSlots> SLOTS => SLOTS ListItem(!SLOT:Int) </ownedSlots>
+         <ownedSlots> SLOTS => SLOTS ListItem(NEXT) </ownedSlots>
          ...
        </currentFrame>
-       <slotStore> STORE => STORE[!SLOT:Int <- newLocal(TY, MUT)] </slotStore>
+       <slotStore> STORE => STORE[NEXT <- newLocal(TY, MUT)] </slotStore>
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)

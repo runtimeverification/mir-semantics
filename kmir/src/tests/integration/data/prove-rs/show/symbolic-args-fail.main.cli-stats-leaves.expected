@@ -3,8 +3,4126 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: src/rust/library/std/src/rt.rs:194
 │
-│  (566 steps)
-└─ 3 (stuck, leaf)
+│  (1 step)
+├─ 3
+│   #execTerminatorCall ( ty ( -1 ) , monoItemFn ( ... name: symbol ( "main" ) , id:
+│   span: prove-rs/symbolic-args-fail.rs:40
+│
+│  (1 step)
+├─ 4
+│   #setUpCalleeData ( monoItemFn ( ... name: symbol ( "main" ) , id: defId ( 8 ) ,
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:40
+│
+│  (1 step)
+├─ 5
+│   #reserveSlots ( localDecl ( ... ty: ty ( 1 ) , span: span ( 118 ) , mut: mutabil
+│   function: main
+│   span: 118
+│
+│  (1 step)
+├─ 6
+│   #reserveSlots ( localDecl ( ... ty: ty ( 31 ) , span: span ( 119 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:40
+│
+│  (1 step)
+├─ 7
+│   #reserveSlots ( localDecl ( ... ty: ty ( 31 ) , span: span ( 120 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 8
+│   #reserveSlots ( localDecl ( ... ty: ty ( 31 ) , span: span ( 121 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 9
+│   #reserveSlots ( localDecl ( ... ty: ty ( 31 ) , span: span ( 122 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 10
+│   #reserveSlots ( localDecl ( ... ty: ty ( 25 ) , span: span ( 123 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 11
+│   #reserveSlots ( localDecl ( ... ty: ty ( 30 ) , span: span ( 124 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 12
+│   #reserveSlots ( localDecl ( ... ty: ty ( 27 ) , span: span ( 95 ) , mut: mutabil
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 13
+│   #reserveSlots ( localDecl ( ... ty: ty ( 30 ) , span: span ( 125 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 14
+│   #reserveSlots ( localDecl ( ... ty: ty ( 27 ) , span: span ( 97 ) , mut: mutabil
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 15
+│   #reserveSlots ( localDecl ( ... ty: ty ( 30 ) , span: span ( 126 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 16
+│   #reserveSlots ( localDecl ( ... ty: ty ( 27 ) , span: span ( 99 ) , mut: mutabil
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 17
+│   #reserveSlots ( localDecl ( ... ty: ty ( 30 ) , span: span ( 127 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 18
+│   #reserveSlots ( localDecl ( ... ty: ty ( 27 ) , span: span ( 101 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 19
+│   #reserveSlots ( localDecl ( ... ty: ty ( 40 ) , span: span ( 128 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 20
+│   #reserveSlots ( localDecl ( ... ty: ty ( 41 ) , span: span ( 129 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 21
+│   #reserveSlots ( localDecl ( ... ty: ty ( 1 ) , span: span ( 87 ) , mut: mutabili
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 22
+│   #reserveSlots ( localDecl ( ... ty: ty ( 28 ) , span: span ( 111 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 23
+│   #reserveSlots ( localDecl ( ... ty: ty ( 32 ) , span: span ( 112 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 24
+│   #reserveSlots ( localDecl ( ... ty: ty ( 42 ) , span: span ( 112 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 25
+│   #reserveSlots ( localDecl ( ... ty: ty ( 33 ) , span: span ( 113 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 26
+│   #reserveSlots ( localDecl ( ... ty: ty ( 34 ) , span: span ( 115 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 27
+│   #reserveSlots ( localDecl ( ... ty: ty ( 43 ) , span: span ( 114 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 28
+│   #reserveSlots ( localDecl ( ... ty: ty ( 35 ) , span: span ( 130 ) , mut: mutabi
+│   function: main
+│   span: 130
+│
+│  (1 step)
+├─ 29
+│   #reserveSlots ( localDecl ( ... ty: ty ( 44 ) , span: span ( 116 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 30
+│   #reserveSlots ( localDecl ( ... ty: ty ( 45 ) , span: span ( 117 ) , mut: mutabi
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:53
+│
+│  (1 step)
+├─ 31
+│   #reserveSlots ( .LocalDecls )
+~> #setArgsFromStack ( 1 , .Operands )
+~> #execBlo
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:40
+│
+│  (1 step)
+├─ 32
+│   #setArgsFromStack ( 1 , .Operands )
+~> #execBlock ( basicBlock ( ... statements:
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:40
+│
+│  (1 step)
+├─ 33
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:40
+│
+│  (1 step)
+├─ 34
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:40
+│
+│  (1 step)
+├─ 35
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:40
+│
+│  (1 step)
+├─ 36
+│   #setLocalValue ( place ( ... local: local ( 1 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 37
+│   rvalueAggregate ( aggregateKindAdt ( adtDef ( 9 ) , variantIdx ( 0 ) , .GenericA
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 38
+│   #readOperands ( .Operands )
+~> #mkAggregate ( aggregateKindAdt ( adtDef ( 9 ) ,
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 39
+│   #readOperandsAux ( .List , .Operands )
+~> #mkAggregate ( aggregateKindAdt ( adtD
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 40
+│   .List
+~> #mkAggregate ( aggregateKindAdt ( adtDef ( 9 ) , variantIdx ( 0 ) , .Ge
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 41
+│   Aggregate ( variantIdx ( 0 ) , .List )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KI
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 42
+│   #setLocalValue ( place ( ... local: local ( 1 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 43
+│   #setSlotValue ( 2 , Aggregate ( variantIdx ( 0 ) , .List ) )
+~> #execStmts ( sta
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 44
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 45
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 46
+│   #setLocalValue ( place ( ... local: local ( 2 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 47
+│   rvalueAggregate ( aggregateKindAdt ( adtDef ( 9 ) , variantIdx ( 1 ) , .GenericA
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 48
+│   #readOperands ( operandConstant ( constOperand ( ... span: span ( 89 ) , userTy:
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 49
+│   #readOperandsAux ( .List , operandConstant ( constOperand ( ... span: span ( 89
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 50
+│   operandConstant ( constOperand ( ... span: span ( 89 ) , userTy: noUserTypeAnnot
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:41
+│
+│  (1 step)
+├─ 51
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00" , prov
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 52
+│   Integer ( 0 , 8 , true )
+~> #readOn ( .List , .Operands )
+~> #mkAggregate ( aggr
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 53
+│   #readOperandsAux ( ListItem (Integer ( 0 , 8 , true ))
+ , .Operands )
+~> #mkAggr
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 54
+│   ListItem (Integer ( 0 , 8 , true ))
+
+~> #mkAggregate ( aggregateKindAdt ( adtDef
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 55
+│   Aggregate ( variantIdx ( 1 ) , ListItem (Integer ( 0 , 8 , true ))
+ )
+~> #freeze
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 56
+│   #setLocalValue ( place ( ... local: local ( 2 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 57
+│   #setSlotValue ( 3 , Aggregate ( variantIdx ( 1 ) , ListItem (Integer ( 0 , 8 , t
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 58
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 59
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:42
+│
+│  (1 step)
+├─ 60
+│   #setLocalValue ( place ( ... local: local ( 3 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 61
+│   rvalueAggregate ( aggregateKindAdt ( adtDef ( 9 ) , variantIdx ( 0 ) , .GenericA
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 62
+│   #readOperands ( .Operands )
+~> #mkAggregate ( aggregateKindAdt ( adtDef ( 9 ) ,
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 63
+│   #readOperandsAux ( .List , .Operands )
+~> #mkAggregate ( aggregateKindAdt ( adtD
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 64
+│   .List
+~> #mkAggregate ( aggregateKindAdt ( adtDef ( 9 ) , variantIdx ( 0 ) , .Ge
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 65
+│   Aggregate ( variantIdx ( 0 ) , .List )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KI
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 66
+│   #setLocalValue ( place ( ... local: local ( 3 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 67
+│   #setSlotValue ( 4 , Aggregate ( variantIdx ( 0 ) , .List ) )
+~> #execStmts ( sta
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 68
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 69
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 70
+│   #setLocalValue ( place ( ... local: local ( 4 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 71
+│   rvalueAggregate ( aggregateKindAdt ( adtDef ( 9 ) , variantIdx ( 1 ) , .GenericA
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 72
+│   #readOperands ( operandConstant ( constOperand ( ... span: span ( 92 ) , userTy:
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 73
+│   #readOperandsAux ( .List , operandConstant ( constOperand ( ... span: span ( 92
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 74
+│   operandConstant ( constOperand ( ... span: span ( 92 ) , userTy: noUserTypeAnnot
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:43
+│
+│  (1 step)
+├─ 75
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00" , prov
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 76
+│   Integer ( 0 , 8 , true )
+~> #readOn ( .List , .Operands )
+~> #mkAggregate ( aggr
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 77
+│   #readOperandsAux ( ListItem (Integer ( 0 , 8 , true ))
+ , .Operands )
+~> #mkAggr
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 78
+│   ListItem (Integer ( 0 , 8 , true ))
+
+~> #mkAggregate ( aggregateKindAdt ( adtDef
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 79
+│   Aggregate ( variantIdx ( 1 ) , ListItem (Integer ( 0 , 8 , true ))
+ )
+~> #freeze
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 80
+│   #setLocalValue ( place ( ... local: local ( 4 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 81
+│   #setSlotValue ( 5 , Aggregate ( variantIdx ( 1 ) , ListItem (Integer ( 0 , 8 , t
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 82
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 83
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 84
+│   #setLocalValue ( place ( ... local: local ( 5 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 85
+│   rvalueUse ( operandConstant ( constOperand ( ... span: span ( 94 ) , userTy: noU
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 86
+│   operandConstant ( constOperand ( ... span: span ( 94 ) , userTy: noUserTypeAnnot
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:44
+│
+│  (1 step)
+├─ 87
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00\x00" ,
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 88
+│   Integer ( 0 , 16 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Ev
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 89
+│   #setLocalValue ( place ( ... local: local ( 5 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 90
+│   #setSlotValue ( 6 , Integer ( 0 , 16 , false ) )
+~> #execStmts ( statement ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 91
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 92
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 93
+│   #setLocalValue ( place ( ... local: local ( 7 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 94
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindShared , place (
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 95
+│   #traverseProjection ( toSlot ( 2 ) , Aggregate ( variantIdx ( 0 ) , .List ) , .P
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 96
+│   #mkRef ( toSlot ( 2 ) , .ProjectionElems , mutabilityNot , metadata ( noMetadata
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 97
+│   Reference ( slotPlace ( 2 , .ProjectionElems ) , mutabilityNot , metadata ( noMe
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 98
+│   #setLocalValue ( place ( ... local: local ( 7 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 99
+│   #setSlotValue ( 8 , Reference ( slotPlace ( 2 , .ProjectionElems ) , mutabilityN
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 100
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 101
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:45
+│
+│  (1 step)
+├─ 102
+│   #setLocalValue ( place ( ... local: local ( 6 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 103
+│   rvalueAggregate ( aggregateKindAdt ( adtDef ( 7 ) , variantIdx ( 0 ) , genericAr
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 104
+│   #readOperands ( operandCopy ( place ( ... local: local ( 7 ) , projection: .Proj
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 105
+│   #readOperandsAux ( .List , operandCopy ( place ( ... local: local ( 7 ) , projec
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 106
+│   operandCopy ( place ( ... local: local ( 7 ) , projection: .ProjectionElems ) )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 107
+│   #traverseProjection ( toSlot ( 8 ) , Reference ( slotPlace ( 2 , .ProjectionElem
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 108
+│   Reference ( slotPlace ( 2 , .ProjectionElems ) , mutabilityNot , metadata ( noMe
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 109
+│   #readOperandsAux ( ListItem (Reference ( slotPlace ( 2 , .ProjectionElems ) , mu
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 110
+│   ListItem (Reference ( slotPlace ( 2 , .ProjectionElems ) , mutabilityNot , metad
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 111
+│   Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPlace ( 2 , .Projection
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 112
+│   #setLocalValue ( place ( ... local: local ( 6 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 113
+│   #setSlotValue ( 7 , Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPla
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 114
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 115
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 116
+│   #setLocalValue ( place ( ... local: local ( 9 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 117
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindShared , place (
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 118
+│   #traverseProjection ( toSlot ( 3 ) , Aggregate ( variantIdx ( 1 ) , ListItem (In
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 119
+│   #mkRef ( toSlot ( 3 ) , .ProjectionElems , mutabilityNot , metadata ( noMetadata
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 120
+│   Reference ( slotPlace ( 3 , .ProjectionElems ) , mutabilityNot , metadata ( noMe
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 121
+│   #setLocalValue ( place ( ... local: local ( 9 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 122
+│   #setSlotValue ( 10 , Reference ( slotPlace ( 3 , .ProjectionElems ) , mutability
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 123
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 124
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:46
+│
+│  (1 step)
+├─ 125
+│   #setLocalValue ( place ( ... local: local ( 8 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 126
+│   rvalueAggregate ( aggregateKindAdt ( adtDef ( 7 ) , variantIdx ( 0 ) , genericAr
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 127
+│   #readOperands ( operandCopy ( place ( ... local: local ( 9 ) , projection: .Proj
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 128
+│   #readOperandsAux ( .List , operandCopy ( place ( ... local: local ( 9 ) , projec
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 129
+│   operandCopy ( place ( ... local: local ( 9 ) , projection: .ProjectionElems ) )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 130
+│   #traverseProjection ( toSlot ( 10 ) , Reference ( slotPlace ( 3 , .ProjectionEle
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 131
+│   Reference ( slotPlace ( 3 , .ProjectionElems ) , mutabilityNot , metadata ( noMe
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 132
+│   #readOperandsAux ( ListItem (Reference ( slotPlace ( 3 , .ProjectionElems ) , mu
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 133
+│   ListItem (Reference ( slotPlace ( 3 , .ProjectionElems ) , mutabilityNot , metad
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 134
+│   Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPlace ( 3 , .Projection
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 135
+│   #setLocalValue ( place ( ... local: local ( 8 ) , projection: .ProjectionElems )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 136
+│   #setSlotValue ( 9 , Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPla
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 137
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 138
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 139
+│   #setLocalValue ( place ( ... local: local ( 11 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 140
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindShared , place (
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 141
+│   #traverseProjection ( toSlot ( 4 ) , Aggregate ( variantIdx ( 0 ) , .List ) , .P
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 142
+│   #mkRef ( toSlot ( 4 ) , .ProjectionElems , mutabilityNot , metadata ( noMetadata
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 143
+│   Reference ( slotPlace ( 4 , .ProjectionElems ) , mutabilityNot , metadata ( noMe
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 144
+│   #setLocalValue ( place ( ... local: local ( 11 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 145
+│   #setSlotValue ( 12 , Reference ( slotPlace ( 4 , .ProjectionElems ) , mutability
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 146
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 147
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:47
+│
+│  (1 step)
+├─ 148
+│   #setLocalValue ( place ( ... local: local ( 10 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 149
+│   rvalueAggregate ( aggregateKindAdt ( adtDef ( 7 ) , variantIdx ( 0 ) , genericAr
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 150
+│   #readOperands ( operandCopy ( place ( ... local: local ( 11 ) , projection: .Pro
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 151
+│   #readOperandsAux ( .List , operandCopy ( place ( ... local: local ( 11 ) , proje
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 152
+│   operandCopy ( place ( ... local: local ( 11 ) , projection: .ProjectionElems ) )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 153
+│   #traverseProjection ( toSlot ( 12 ) , Reference ( slotPlace ( 4 , .ProjectionEle
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 154
+│   Reference ( slotPlace ( 4 , .ProjectionElems ) , mutabilityNot , metadata ( noMe
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 155
+│   #readOperandsAux ( ListItem (Reference ( slotPlace ( 4 , .ProjectionElems ) , mu
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 156
+│   ListItem (Reference ( slotPlace ( 4 , .ProjectionElems ) , mutabilityNot , metad
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 157
+│   Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPlace ( 4 , .Projection
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 158
+│   #setLocalValue ( place ( ... local: local ( 10 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 159
+│   #setSlotValue ( 11 , Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPl
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 160
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 161
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 162
+│   #setLocalValue ( place ( ... local: local ( 13 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 163
+│   rvalueUse ( operandConstant ( constOperand ( ... span: span ( 101 ) , userTy: no
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 164
+│   operandConstant ( constOperand ( ... span: span ( 101 ) , userTy: noUserTypeAnno
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 165
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 166
+│   AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( noMetadataSize , 0 , no
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 167
+│   #setLocalValue ( place ( ... local: local ( 13 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 168
+│   #setSlotValue ( 14 , AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( no
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 169
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 170
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:48
+│
+│  (1 step)
+├─ 171
+│   #setLocalValue ( place ( ... local: local ( 12 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 172
+│   rvalueAggregate ( aggregateKindAdt ( adtDef ( 7 ) , variantIdx ( 0 ) , genericAr
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 173
+│   #readOperands ( operandCopy ( place ( ... local: local ( 13 ) , projection: .Pro
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 174
+│   #readOperandsAux ( .List , operandCopy ( place ( ... local: local ( 13 ) , proje
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 175
+│   operandCopy ( place ( ... local: local ( 13 ) , projection: .ProjectionElems ) )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 176
+│   #traverseProjection ( toSlot ( 14 ) , AllocRef ( allocId ( 0 ) , .ProjectionElem
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 177
+│   AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( noMetadataSize , 0 , no
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 178
+│   #readOperandsAux ( ListItem (AllocRef ( allocId ( 0 ) , .ProjectionElems , metad
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 179
+│   ListItem (AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( noMetadataSiz
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 180
+│   Aggregate ( variantIdx ( 0 ) , ListItem (AllocRef ( allocId ( 0 ) , .ProjectionE
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 181
+│   #setLocalValue ( place ( ... local: local ( 12 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 182
+│   #setSlotValue ( 13 , Aggregate ( variantIdx ( 0 ) , ListItem (AllocRef ( allocId
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 183
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 184
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 185
+│   #setLocalValue ( place ( ... local: local ( 14 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 186
+│   rvalueAggregate ( aggregateKindArray ( ty ( 9 ) ) , operandConstant ( constOpera
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 187
+│   #readOperands ( operandConstant ( constOperand ( ... span: span ( 103 ) , userTy
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 188
+│   #readOperandsAux ( .List , operandConstant ( constOperand ( ... span: span ( 103
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 189
+│   operandConstant ( constOperand ( ... span: span ( 103 ) , userTy: noUserTypeAnno
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 190
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x01" , prov
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 191
+│   Integer ( 1 , 8 , false )
+~> #readOn ( .List , operandConstant ( constOperand (
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 192
+│   #readOperandsAux ( ListItem (Integer ( 1 , 8 , false ))
+ , operandConstant ( con
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 193
+│   operandConstant ( constOperand ( ... span: span ( 104 ) , userTy: noUserTypeAnno
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 194
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x02" , prov
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 195
+│   Integer ( 2 , 8 , false )
+~> #readOn ( ListItem (Integer ( 1 , 8 , false ))
+ , o
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 196
+│   #readOperandsAux ( ListItem (Integer ( 1 , 8 , false ))
+ ListItem (Integer ( 2 ,
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 197
+│   operandConstant ( constOperand ( ... span: span ( 105 ) , userTy: noUserTypeAnno
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:49
+│
+│  (1 step)
+├─ 198
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x03" , prov
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 199
+│   Integer ( 3 , 8 , false )
+~> #readOn ( ListItem (Integer ( 1 , 8 , false ))
+ Lis
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 200
+│   #readOperandsAux ( ListItem (Integer ( 1 , 8 , false ))
+ ListItem (Integer ( 2 ,
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 201
+│   ListItem (Integer ( 1 , 8 , false ))
+ ListItem (Integer ( 2 , 8 , false ))
+ List
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 202
+│   Range ( ListItem (Integer ( 1 , 8 , false ))
+ ListItem (Integer ( 2 , 8 , false
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 203
+│   #setLocalValue ( place ( ... local: local ( 14 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 204
+│   #setSlotValue ( 15 , Range ( ListItem (Integer ( 1 , 8 , false ))
+ ListItem (Int
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 205
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 206
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 207
+│   #setLocalValue ( place ( ... local: local ( 15 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 208
+│   rvalueAggregate ( aggregateKindArray ( ty ( 2 ) ) , operandConstant ( constOpera
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 209
+│   #readOperands ( operandConstant ( constOperand ( ... span: span ( 107 ) , userTy
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 210
+│   #readOperandsAux ( .List , operandConstant ( constOperand ( ... span: span ( 107
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 211
+│   operandConstant ( constOperand ( ... span: span ( 107 ) , userTy: noUserTypeAnno
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 212
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x01" , prov
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 213
+│   Integer ( 1 , 8 , true )
+~> #readOn ( .List , operandConstant ( constOperand ( .
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 214
+│   #readOperandsAux ( ListItem (Integer ( 1 , 8 , true ))
+ , operandConstant ( cons
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 215
+│   operandConstant ( constOperand ( ... span: span ( 108 ) , userTy: noUserTypeAnno
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 216
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x02" , prov
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 217
+│   Integer ( 2 , 8 , true )
+~> #readOn ( ListItem (Integer ( 1 , 8 , true ))
+ , ope
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 218
+│   #readOperandsAux ( ListItem (Integer ( 1 , 8 , true ))
+ ListItem (Integer ( 2 ,
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 219
+│   operandConstant ( constOperand ( ... span: span ( 109 ) , userTy: noUserTypeAnno
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:50
+│
+│  (1 step)
+├─ 220
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x03" , prov
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 221
+│   Integer ( 3 , 8 , true )
+~> #readOn ( ListItem (Integer ( 1 , 8 , true ))
+ ListI
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 222
+│   #readOperandsAux ( ListItem (Integer ( 1 , 8 , true ))
+ ListItem (Integer ( 2 ,
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 223
+│   ListItem (Integer ( 1 , 8 , true ))
+ ListItem (Integer ( 2 , 8 , true ))
+ ListIt
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 224
+│   Range ( ListItem (Integer ( 1 , 8 , true ))
+ ListItem (Integer ( 2 , 8 , true ))
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 225
+│   #setLocalValue ( place ( ... local: local ( 15 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 226
+│   #setSlotValue ( 16 , Range ( ListItem (Integer ( 1 , 8 , true ))
+ ListItem (Inte
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 227
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 228
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 229
+│   #setLocalValue ( place ( ... local: local ( 17 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 230
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindMut ( ... kind:
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 231
+│   #traverseProjection ( toSlot ( 6 ) , Integer ( 0 , 16 , false ) , .ProjectionEle
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 232
+│   #mkRef ( toSlot ( 6 ) , .ProjectionElems , mutabilityMut , metadata ( noMetadata
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 233
+│   Reference ( slotPlace ( 6 , .ProjectionElems ) , mutabilityMut , metadata ( noMe
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 234
+│   #setLocalValue ( place ( ... local: local ( 17 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 235
+│   #setSlotValue ( 18 , Reference ( slotPlace ( 6 , .ProjectionElems ) , mutability
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 236
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 237
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 238
+│   #setLocalValue ( place ( ... local: local ( 19 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 239
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindMut ( ... kind:
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 240
+│   #traverseProjection ( toSlot ( 15 ) , Range ( ListItem (Integer ( 1 , 8 , false
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 241
+│   #mkRef ( toSlot ( 15 ) , .ProjectionElems , mutabilityMut , metadata ( staticSiz
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 242
+│   Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilityMut , metadata ( sta
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 243
+│   #setLocalValue ( place ( ... local: local ( 19 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 244
+│   #setSlotValue ( 20 , Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilit
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 245
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 246
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 247
+│   #setLocalValue ( place ( ... local: local ( 18 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 248
+│   rvalueCast ( castKindPointerCoercion ( pointerCoercionUnsize ) , operandCopy ( p
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 249
+│   #cast ( operandCopy ( place ( ... local: local ( 19 ) , projection: .ProjectionE
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 250
+│   operandCopy ( place ( ... local: local ( 19 ) , projection: .ProjectionElems ) )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 251
+│   #traverseProjection ( toSlot ( 20 ) , Reference ( slotPlace ( 15 , .ProjectionEl
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 252
+│   Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilityMut , metadata ( sta
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 253
+│   #cast ( Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilityMut , metada
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 254
+│   Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilityMut , metadata ( dyn
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 255
+│   #setLocalValue ( place ( ... local: local ( 18 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 256
+│   #setSlotValue ( 19 , Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilit
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 257
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 258
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 259
+│   #setLocalValue ( place ( ... local: local ( 20 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 260
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindShared , place (
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 261
+│   #traverseProjection ( toSlot ( 16 ) , Range ( ListItem (Integer ( 1 , 8 , true )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 262
+│   #mkRef ( toSlot ( 16 ) , .ProjectionElems , mutabilityNot , metadata ( staticSiz
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 263
+│   Reference ( slotPlace ( 16 , .ProjectionElems ) , mutabilityNot , metadata ( sta
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 264
+│   #setLocalValue ( place ( ... local: local ( 20 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 265
+│   #setSlotValue ( 21 , Reference ( slotPlace ( 16 , .ProjectionElems ) , mutabilit
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 266
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 267
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 268
+│   #setLocalValue ( place ( ... local: local ( 22 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 269
+│   rvalueAggregate ( aggregateKindArray ( ty ( 30 ) ) , operandMove ( place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 270
+│   #readOperands ( operandMove ( place ( ... local: local ( 8 ) , projection: .Proj
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 271
+│   #readOperandsAux ( .List , operandMove ( place ( ... local: local ( 8 ) , projec
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 272
+│   operandMove ( place ( ... local: local ( 8 ) , projection: .ProjectionElems ) )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 273
+│   #traverseProjection ( toSlot ( 9 ) , Aggregate ( variantIdx ( 0 ) , ListItem (Re
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 274
+│   #traverseProjection ( toSlot ( 9 ) , Aggregate ( variantIdx ( 0 ) , ListItem (Re
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 275
+│   #setSlotValue ( 9 , Moved )
+~> Aggregate ( variantIdx ( 0 ) , ListItem (Referenc
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 276
+│   Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPlace ( 3 , .Projection
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 277
+│   #readOperandsAux ( ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 278
+│   operandMove ( place ( ... local: local ( 10 ) , projection: .ProjectionElems ) )
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 279
+│   #traverseProjection ( toSlot ( 11 ) , Aggregate ( variantIdx ( 0 ) , ListItem (R
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 280
+│   #traverseProjection ( toSlot ( 11 ) , Aggregate ( variantIdx ( 0 ) , ListItem (R
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 281
+│   #setSlotValue ( 11 , Moved )
+~> Aggregate ( variantIdx ( 0 ) , ListItem (Referen
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 282
+│   Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPlace ( 4 , .Projection
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 283
+│   #readOperandsAux ( ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 284
+│   ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPlace ( 3 , .
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 285
+│   Range ( ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPlace
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 286
+│   #setLocalValue ( place ( ... local: local ( 22 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 287
+│   #setSlotValue ( 23 , Range ( ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 288
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 289
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 290
+│   #setLocalValue ( place ( ... local: local ( 21 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 291
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindMut ( ... kind:
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 292
+│   #traverseProjection ( toSlot ( 23 ) , Range ( ListItem (Aggregate ( variantIdx (
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 293
+│   #mkRef ( toSlot ( 23 ) , .ProjectionElems , mutabilityMut , metadata ( staticSiz
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 294
+│   Reference ( slotPlace ( 23 , .ProjectionElems ) , mutabilityMut , metadata ( sta
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 295
+│   #setLocalValue ( place ( ... local: local ( 21 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 296
+│   #setSlotValue ( 22 , Reference ( slotPlace ( 23 , .ProjectionElems ) , mutabilit
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 297
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 298
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 299
+│   #setLocalValue ( place ( ... local: local ( 24 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 300
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindShared , place (
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 301
+│   #traverseProjection ( toSlot ( 13 ) , Aggregate ( variantIdx ( 0 ) , ListItem (A
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 302
+│   #mkRef ( toSlot ( 13 ) , .ProjectionElems , mutabilityNot , metadata ( noMetadat
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 303
+│   Reference ( slotPlace ( 13 , .ProjectionElems ) , mutabilityNot , metadata ( noM
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 304
+│   #setLocalValue ( place ( ... local: local ( 24 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 305
+│   #setSlotValue ( 25 , Reference ( slotPlace ( 13 , .ProjectionElems ) , mutabilit
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 306
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 307
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 308
+│   #setLocalValue ( place ( ... local: local ( 23 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 309
+│   rvalueAddressOf ( mutabilityNot , place ( ... local: local ( 24 ) , projection:
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 310
+│   PtrLocal ( slotPlace ( 13 , .ProjectionElems ) , mutabilityNot , metadata ( noMe
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 311
+│   #setLocalValue ( place ( ... local: local ( 23 ) , projection: .ProjectionElems
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 312
+│   #setSlotValue ( 24 , PtrLocal ( slotPlace ( 13 , .ProjectionElems ) , mutability
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 313
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 314
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 315
+│   #execTerminatorCall ( ty ( 37 ) , monoItemFn ( ... name: symbol ( "eats_all_args
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 316
+│   #setUpCalleeData ( monoItemFn ( ... name: symbol ( "eats_all_args" ) , id: defId
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 317
+│   #reserveSlots ( localDecl ( ... ty: ty ( 1 ) , span: span ( 72 ) , mut: mutabili
+│   function: eats_all_args
+│   span: 72
+│
+│  (1 step)
+├─ 318
+│   #reserveSlots ( localDecl ( ... ty: ty ( 16 ) , span: span ( 73 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:13
+│
+│  (1 step)
+├─ 319
+│   #reserveSlots ( localDecl ( ... ty: ty ( 28 ) , span: span ( 74 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:14
+│
+│  (1 step)
+├─ 320
+│   #reserveSlots ( localDecl ( ... ty: ty ( 29 ) , span: span ( 75 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:15
+│
+│  (1 step)
+├─ 321
+│   #reserveSlots ( localDecl ( ... ty: ty ( 30 ) , span: span ( 76 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:16
+│
+│  (1 step)
+├─ 322
+│   #reserveSlots ( localDecl ( ... ty: ty ( 31 ) , span: span ( 77 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:17
+│
+│  (1 step)
+├─ 323
+│   #reserveSlots ( localDecl ( ... ty: ty ( 32 ) , span: span ( 78 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:18
+│
+│  (1 step)
+├─ 324
+│   #reserveSlots ( localDecl ( ... ty: ty ( 33 ) , span: span ( 79 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:19
+│
+│  (1 step)
+├─ 325
+│   #reserveSlots ( localDecl ( ... ty: ty ( 34 ) , span: span ( 80 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:20
+│
+│  (1 step)
+├─ 326
+│   #reserveSlots ( localDecl ( ... ty: ty ( 35 ) , span: span ( 81 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:21
+│
+│  (1 step)
+├─ 327
+│   #reserveSlots ( localDecl ( ... ty: ty ( 26 ) , span: span ( 53 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 328
+│   #reserveSlots ( localDecl ( ... ty: ty ( 26 ) , span: span ( 52 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 329
+│   #reserveSlots ( localDecl ( ... ty: ty ( 29 ) , span: span ( 52 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 330
+│   #reserveSlots ( localDecl ( ... ty: ty ( 30 ) , span: span ( 82 ) , mut: mutabil
+│   function: eats_all_args
+│   span: 82
+│
+│  (1 step)
+├─ 331
+│   #reserveSlots ( localDecl ( ... ty: ty ( 26 ) , span: span ( 59 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:28
+│
+│  (1 step)
+├─ 332
+│   #reserveSlots ( localDecl ( ... ty: ty ( 26 ) , span: span ( 56 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:28
+│
+│  (1 step)
+├─ 333
+│   #reserveSlots ( localDecl ( ... ty: ty ( 29 ) , span: span ( 56 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:28
+│
+│  (1 step)
+├─ 334
+│   #reserveSlots ( localDecl ( ... ty: ty ( 29 ) , span: span ( 61 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 335
+│   #reserveSlots ( localDecl ( ... ty: ty ( 26 ) , span: span ( 63 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 336
+│   #reserveSlots ( localDecl ( ... ty: ty ( 36 ) , span: span ( 62 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 337
+│   #reserveSlots ( localDecl ( ... ty: ty ( 2 ) , span: span ( 65 ) , mut: mutabili
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 338
+│   #reserveSlots ( localDecl ( ... ty: ty ( 26 ) , span: span ( 66 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 339
+│   #reserveSlots ( localDecl ( ... ty: ty ( 26 ) , span: span ( 65 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 340
+│   #reserveSlots ( localDecl ( ... ty: ty ( 29 ) , span: span ( 65 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 341
+│   #reserveSlots ( localDecl ( ... ty: ty ( 26 ) , span: span ( 68 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 342
+│   #reserveSlots ( localDecl ( ... ty: ty ( 26 ) , span: span ( 67 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 343
+│   #reserveSlots ( localDecl ( ... ty: ty ( 29 ) , span: span ( 67 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 344
+│   #reserveSlots ( localDecl ( ... ty: ty ( 27 ) , span: span ( 81 ) , mut: mutabil
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:21
+│
+│  (1 step)
+├─ 345
+│   #reserveSlots ( .LocalDecls )
+~> #setArgsFromStack ( 1 , operandConstant ( const
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 346
+│   #setArgsFromStack ( 1 , operandConstant ( constOperand ( ... span: span ( 85 ) ,
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 347
+│   #setArgFromStack ( 1 , operandConstant ( constOperand ( ... span: span ( 85 ) ,
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 348
+│   #setLocalValue ( place ( ... local: local ( 1 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 349
+│   operandConstant ( constOperand ( ... span: span ( 85 ) , userTy: noUserTypeAnnot
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 350
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x01\x00\x00
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 351
+│   Integer ( 1 , 32 , true )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Eva
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 352
+│   #setLocalValue ( place ( ... local: local ( 1 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 353
+│   #setSlotValue ( 28 , Integer ( 1 , 32 , true ) )
+~> #setArgsFromStack ( 2 , oper
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 354
+│   #setArgsFromStack ( 2 , operandCopy ( place ( ... local: local ( 17 ) , projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 355
+│   #setArgFromStack ( 2 , operandCopy ( place ( ... local: local ( 17 ) , projectio
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 356
+│   #setLocalValue ( place ( ... local: local ( 2 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 357
+│   #setSlotValue ( 29 , Reference ( slotPlace ( 6 , .ProjectionElems ) , mutability
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 358
+│   #setArgsFromStack ( 3 , operandConstant ( constOperand ( ... span: span ( 86 ) ,
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 359
+│   #setArgFromStack ( 3 , operandConstant ( constOperand ( ... span: span ( 86 ) ,
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 360
+│   #setLocalValue ( place ( ... local: local ( 3 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 361
+│   operandConstant ( constOperand ( ... span: span ( 86 ) , userTy: noUserTypeAnnot
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:51
+│
+│  (1 step)
+├─ 362
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x01" , prov
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 363
+│   BoolVal ( true )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 364
+│   #setLocalValue ( place ( ... local: local ( 3 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 365
+│   #setSlotValue ( 30 , BoolVal ( true ) )
+~> #setArgsFromStack ( 4 , operandMove (
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 366
+│   #setArgsFromStack ( 4 , operandMove ( place ( ... local: local ( 6 ) , projectio
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 367
+│   #setArgFromStack ( 4 , operandMove ( place ( ... local: local ( 6 ) , projection
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 368
+│   #setLocalValue ( place ( ... local: local ( 4 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 369
+│   #setSlotValue ( 31 , Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 370
+│   #setArgsFromStack ( 5 , operandMove ( place ( ... local: local ( 4 ) , projectio
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 371
+│   #setArgFromStack ( 5 , operandMove ( place ( ... local: local ( 4 ) , projection
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 372
+│   #setLocalValue ( place ( ... local: local ( 5 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 373
+│   #setSlotValue ( 32 , Aggregate ( variantIdx ( 1 ) , ListItem (Integer ( 0 , 8 ,
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 374
+│   #setArgsFromStack ( 6 , operandMove ( place ( ... local: local ( 18 ) , projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 375
+│   #setArgFromStack ( 6 , operandMove ( place ( ... local: local ( 18 ) , projectio
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 376
+│   #setLocalValue ( place ( ... local: local ( 6 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 377
+│   #setSlotValue ( 33 , Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilit
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 378
+│   #setArgsFromStack ( 7 , operandCopy ( place ( ... local: local ( 20 ) , projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 379
+│   #setArgFromStack ( 7 , operandCopy ( place ( ... local: local ( 20 ) , projectio
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 380
+│   #setLocalValue ( place ( ... local: local ( 7 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 381
+│   #setSlotValue ( 34 , Reference ( slotPlace ( 16 , .ProjectionElems ) , mutabilit
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 382
+│   #setArgsFromStack ( 8 , operandCopy ( place ( ... local: local ( 21 ) , projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 383
+│   #setArgFromStack ( 8 , operandCopy ( place ( ... local: local ( 21 ) , projectio
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 384
+│   #setLocalValue ( place ( ... local: local ( 8 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 385
+│   #setSlotValue ( 35 , Reference ( slotPlace ( 23 , .ProjectionElems ) , mutabilit
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 386
+│   #setArgsFromStack ( 9 , operandCopy ( place ( ... local: local ( 23 ) , projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 387
+│   #setArgFromStack ( 9 , operandCopy ( place ( ... local: local ( 23 ) , projectio
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 388
+│   #setLocalValue ( place ( ... local: local ( 9 ) , projection: .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 389
+│   #setSlotValue ( 36 , PtrLocal ( slotPlace ( 13 , .ProjectionElems ) , mutability
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 390
+│   #setArgsFromStack ( 10 , .Operands )
+~> #execBlock ( basicBlock ( ... statements
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 391
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 392
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 393
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:23
+│
+│  (1 step)
+├─ 394
+│   #setLocalValue ( place ( ... local: local ( 2 ) , projection: projectionElemDere
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 395
+│   rvalueCast ( castKindIntToInt , operandCopy ( place ( ... local: local ( 1 ) , p
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 396
+│   #cast ( operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 397
+│   operandCopy ( place ( ... local: local ( 1 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 398
+│   #traverseProjection ( toSlot ( 28 ) , Integer ( 1 , 32 , true ) , .ProjectionEle
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 399
+│   Integer ( 1 , 32 , true )
+~> #freezer#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluatio
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 400
+│   #cast ( Integer ( 1 , 32 , true ) , castKindIntToInt , ty ( 16 ) , ty ( 25 ) )
+~
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 401
+│   Integer ( 1 , 16 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Ev
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 402
+│   #setLocalValue ( place ( ... local: local ( 2 ) , projection: projectionElemDere
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 403
+│   #traverseProjection ( toSlot ( 29 ) , Reference ( slotPlace ( 6 , .ProjectionEle
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 404
+│   #traverseProjection ( toSlot ( 6 ) , Integer ( 0 , 16 , false ) , .ProjectionEle
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 405
+│   #traverseProjection ( toSlot ( 6 ) , Integer ( 0 , 16 , false ) , .ProjectionEle
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 406
+│   #setSlotValue ( 6 , Integer ( 1 , 16 , false ) )
+~> #execStmts ( .Statements )
+~
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 407
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 408
+│   #execTerminator ( terminator ( ... kind: terminatorKindSwitchInt ( ... discr: op
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 409
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 410
+│   operandCopy ( place ( ... local: local ( 3 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 411
+│   #traverseProjection ( toSlot ( 30 ) , BoolVal ( true ) , .ProjectionElems , .Con
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 412
+│   BoolVal ( true )
+~> #freezer#selectBlock(_,_)_KMIR-CONTROL-FLOW_KItem_SwitchTarg
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 413
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 414
+│   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 415
+│   #execBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 416
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 417
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 418
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 419
+│   #setLocalValue ( place ( ... local: local ( 10 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 420
+│   rvalueUse ( operandConstant ( constOperand ( ... span: span ( 53 ) , userTy: noU
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 421
+│   operandConstant ( constOperand ( ... span: span ( 53 ) , userTy: noUserTypeAnnot
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 422
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 423
+│   Integer ( 0 , 64 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Ev
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 424
+│   #setLocalValue ( place ( ... local: local ( 10 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 425
+│   #setSlotValue ( 37 , Integer ( 0 , 64 , false ) )
+~> #execStmts ( statement ( ..
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 426
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 427
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 428
+│   #setLocalValue ( place ( ... local: local ( 11 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 429
+│   rvalueUse ( operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noU
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 430
+│   operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noUserTypeAnnot
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 431
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x02\x00\x00
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 432
+│   Integer ( 2 , 64 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Ev
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 433
+│   #setLocalValue ( place ( ... local: local ( 11 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 434
+│   #setSlotValue ( 38 , Integer ( 2 , 64 , false ) )
+~> #execStmts ( statement ( ..
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 435
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 436
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 437
+│   #setLocalValue ( place ( ... local: local ( 12 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 438
+│   rvalueBinaryOp ( binOpLt , operandCopy ( place ( ... local: local ( 10 ) , proje
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 439
+│   #applyBinOp ( binOpLt , operandCopy ( place ( ... local: local ( 10 ) , projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 440
+│   operandCopy ( place ( ... local: local ( 10 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 441
+│   #traverseProjection ( toSlot ( 37 ) , Integer ( 0 , 64 , false ) , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 442
+│   Integer ( 0 , 64 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bi
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 443
+│   #applyBinOp ( binOpLt , Integer ( 0 , 64 , false ) , operandCopy ( place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 444
+│   operandCopy ( place ( ... local: local ( 11 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 445
+│   #traverseProjection ( toSlot ( 38 ) , Integer ( 2 , 64 , false ) , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 446
+│   Integer ( 2 , 64 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bi
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 447
+│   #applyBinOp ( binOpLt , Integer ( 0 , 64 , false ) , Integer ( 2 , 64 , false )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 448
+│   BoolVal ( true )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 449
+│   #setLocalValue ( place ( ... local: local ( 12 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 450
+│   #setSlotValue ( 39 , BoolVal ( true ) )
+~> #execStmts ( .Statements )
+~> #execTe
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 451
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: assert (
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 452
+│   #execTerminator ( terminator ( ... kind: assert ( ... cond: operandMove ( place
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 453
+│   #expect ( operandMove ( place ( ... local: local ( 12 ) , projection: .Projectio
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 454
+│   operandMove ( place ( ... local: local ( 12 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 455
+│   #traverseProjection ( toSlot ( 39 ) , BoolVal ( true ) , .ProjectionElems , .Con
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 456
+│   #traverseProjection ( toSlot ( 39 ) , BoolVal ( true ) , .ProjectionElems , .Con
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 457
+│   #setSlotValue ( 39 , Moved )
+~> BoolVal ( true )
+~> #freezer#expect(_,_,_)_KMIR-
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 458
+│   BoolVal ( true )
+~> #freezer#expect(_,_,_)_KMIR-CONTROL-FLOW_KItem_Evaluation_Bo
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 459
+│   #expect ( BoolVal ( true ) , true , assertMessageBoundsCheck ( ... len: operandM
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 460
+│   #execBlockIdx ( basicBlockIdx ( 2 ) ) ~> .K
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 461
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 462
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 463
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:25
+│
+│  (1 step)
+├─ 464
+│   #setLocalValue ( place ( ... local: local ( 8 ) , projection: projectionElemDere
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 465
+│   rvalueUse ( operandMove ( place ( ... local: local ( 4 ) , projection: .Projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 466
+│   operandMove ( place ( ... local: local ( 4 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 467
+│   #traverseProjection ( toSlot ( 31 ) , Aggregate ( variantIdx ( 0 ) , ListItem (R
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 468
+│   #traverseProjection ( toSlot ( 31 ) , Aggregate ( variantIdx ( 0 ) , ListItem (R
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 469
+│   #setSlotValue ( 31 , Moved )
+~> Aggregate ( variantIdx ( 0 ) , ListItem (Referen
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 470
+│   Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( slotPlace ( 2 , .Projection
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 471
+│   #setLocalValue ( place ( ... local: local ( 8 ) , projection: projectionElemDere
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 472
+│   #traverseProjection ( toSlot ( 35 ) , Reference ( slotPlace ( 23 , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 473
+│   #traverseProjection ( toSlot ( 23 ) , Range ( ListItem (Aggregate ( variantIdx (
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 474
+│   #traverseProjection ( toSlot ( 23 ) , Range ( ListItem (Aggregate ( variantIdx (
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 475
+│   #traverseProjection ( toSlot ( 23 ) , Aggregate ( variantIdx ( 0 ) , ListItem (R
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 476
+│   #setSlotValue ( 23 , Range ( ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 477
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 478
+│   #execTerminator ( terminator ( ... kind: terminatorKindGoto ( ... target: basicB
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:24
+│
+│  (1 step)
+├─ 479
+│   #execBlockIdx ( basicBlockIdx ( 5 ) ) ~> .K
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 480
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 481
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 482
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 483
+│   #setLocalValue ( place ( ... local: local ( 19 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 484
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindShared , place (
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 485
+│   #traverseProjection ( toSlot ( 33 ) , Reference ( slotPlace ( 15 , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 486
+│   #traverseProjection ( toSlot ( 15 ) , Range ( ListItem (Integer ( 1 , 8 , false
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 487
+│   #traverseProjection ( toSlot ( 15 ) , Range ( ListItem (Integer ( 1 , 8 , false
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 488
+│   #mkRef ( toSlot ( 15 ) , .ProjectionElems , mutabilityNot , metadata ( dynamicSi
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 489
+│   Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilityNot , metadata ( dyn
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 490
+│   #setLocalValue ( place ( ... local: local ( 19 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 491
+│   #setSlotValue ( 46 , Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilit
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 492
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 493
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 494
+│   #setLocalValue ( place ( ... local: local ( 18 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 495
+│   rvalueUnaryOp ( unOpPtrMetadata , operandMove ( place ( ... local: local ( 19 )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 496
+│   #applyUnOp ( unOpPtrMetadata , operandMove ( place ( ... local: local ( 19 ) , p
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 497
+│   operandMove ( place ( ... local: local ( 19 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 498
+│   #traverseProjection ( toSlot ( 46 ) , Reference ( slotPlace ( 15 , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 499
+│   #traverseProjection ( toSlot ( 46 ) , Reference ( slotPlace ( 15 , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 500
+│   #setSlotValue ( 46 , Moved )
+~> Reference ( slotPlace ( 15 , .ProjectionElems )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 501
+│   Reference ( slotPlace ( 15 , .ProjectionElems ) , mutabilityNot , metadata ( dyn
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 502
+│   #applyUnOp ( unOpPtrMetadata , Reference ( slotPlace ( 15 , .ProjectionElems ) ,
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 503
+│   Integer ( 3 , 64 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Ev
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 504
+│   #setLocalValue ( place ( ... local: local ( 18 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 505
+│   #setSlotValue ( 45 , Integer ( 3 , 64 , false ) )
+~> #execStmts ( statement ( ..
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 506
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 507
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 508
+│   #setLocalValue ( place ( ... local: local ( 17 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 509
+│   rvalueBinaryOp ( binOpGt , operandMove ( place ( ... local: local ( 18 ) , proje
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 510
+│   #applyBinOp ( binOpGt , operandMove ( place ( ... local: local ( 18 ) , projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 511
+│   operandMove ( place ( ... local: local ( 18 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 512
+│   #traverseProjection ( toSlot ( 45 ) , Integer ( 3 , 64 , false ) , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 513
+│   #traverseProjection ( toSlot ( 45 ) , Integer ( 3 , 64 , false ) , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 514
+│   #setSlotValue ( 45 , Moved )
+~> Integer ( 3 , 64 , false )
+~> #freezer#applyBinO
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 515
+│   Integer ( 3 , 64 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bi
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 516
+│   #applyBinOp ( binOpGt , Integer ( 3 , 64 , false ) , operandConstant ( constOper
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 517
+│   operandConstant ( constOperand ( ... span: span ( 64 ) , userTy: noUserTypeAnnot
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 518
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 519
+│   Integer ( 0 , 64 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bi
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 520
+│   #applyBinOp ( binOpGt , Integer ( 3 , 64 , false ) , Integer ( 0 , 64 , false )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 521
+│   BoolVal ( true )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 522
+│   #setLocalValue ( place ( ... local: local ( 17 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 523
+│   #setSlotValue ( 44 , BoolVal ( true ) )
+~> #execStmts ( .Statements )
+~> #execTe
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 524
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 525
+│   #execTerminator ( terminator ( ... kind: terminatorKindSwitchInt ( ... discr: op
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 526
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 527
+│   operandMove ( place ( ... local: local ( 17 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 528
+│   #traverseProjection ( toSlot ( 44 ) , BoolVal ( true ) , .ProjectionElems , .Con
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 529
+│   #traverseProjection ( toSlot ( 44 ) , BoolVal ( true ) , .ProjectionElems , .Con
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 530
+│   #setSlotValue ( 44 , Moved )
+~> BoolVal ( true )
+~> #freezer#selectBlock(_,_)_KM
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 531
+│   BoolVal ( true )
+~> #freezer#selectBlock(_,_)_KMIR-CONTROL-FLOW_KItem_SwitchTarg
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 532
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 533
+│   #selectBlock ( switchTargets ( ... branches: .Branches , otherwise: basicBlockId
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 534
+│   #execBlockIdx ( basicBlockIdx ( 6 ) ) ~> .K
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 535
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 536
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 537
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 538
+│   #setLocalValue ( place ( ... local: local ( 21 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 539
+│   rvalueUse ( operandConstant ( constOperand ( ... span: span ( 66 ) , userTy: noU
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 540
+│   operandConstant ( constOperand ( ... span: span ( 66 ) , userTy: noUserTypeAnnot
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 541
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 542
+│   Integer ( 0 , 64 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Ev
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 543
+│   #setLocalValue ( place ( ... local: local ( 21 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 544
+│   #setSlotValue ( 48 , Integer ( 0 , 64 , false ) )
+~> #execStmts ( statement ( ..
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 545
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 546
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 547
+│   #setLocalValue ( place ( ... local: local ( 22 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 548
+│   rvalueUse ( operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noU
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 549
+│   operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noUserTypeAnnot
+│   function: eats_all_args
+│   span: no-location:0
+│
+│  (1 step)
+├─ 550
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x03\x00\x00
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 551
+│   Integer ( 3 , 64 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Ev
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 552
+│   #setLocalValue ( place ( ... local: local ( 22 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 553
+│   #setSlotValue ( 49 , Integer ( 3 , 64 , false ) )
+~> #execStmts ( statement ( ..
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 554
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 555
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 556
+│   #setLocalValue ( place ( ... local: local ( 23 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 557
+│   rvalueBinaryOp ( binOpLt , operandCopy ( place ( ... local: local ( 21 ) , proje
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 558
+│   #applyBinOp ( binOpLt , operandCopy ( place ( ... local: local ( 21 ) , projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 559
+│   operandCopy ( place ( ... local: local ( 21 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 560
+│   #traverseProjection ( toSlot ( 48 ) , Integer ( 0 , 64 , false ) , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 561
+│   Integer ( 0 , 64 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bi
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 562
+│   #applyBinOp ( binOpLt , Integer ( 0 , 64 , false ) , operandCopy ( place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 563
+│   operandCopy ( place ( ... local: local ( 22 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 564
+│   #traverseProjection ( toSlot ( 49 ) , Integer ( 3 , 64 , false ) , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 565
+│   Integer ( 3 , 64 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bi
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 566
+│   #applyBinOp ( binOpLt , Integer ( 0 , 64 , false ) , Integer ( 3 , 64 , false )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 567
+│   BoolVal ( true )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 568
+│   #setLocalValue ( place ( ... local: local ( 23 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 569
+│   #setSlotValue ( 50 , BoolVal ( true ) )
+~> #execStmts ( .Statements )
+~> #execTe
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 570
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: assert (
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 571
+│   #execTerminator ( terminator ( ... kind: assert ( ... cond: operandMove ( place
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 572
+│   #expect ( operandMove ( place ( ... local: local ( 23 ) , projection: .Projectio
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 573
+│   operandMove ( place ( ... local: local ( 23 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 574
+│   #traverseProjection ( toSlot ( 50 ) , BoolVal ( true ) , .ProjectionElems , .Con
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 575
+│   #traverseProjection ( toSlot ( 50 ) , BoolVal ( true ) , .ProjectionElems , .Con
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 576
+│   #setSlotValue ( 50 , Moved )
+~> BoolVal ( true )
+~> #freezer#expect(_,_,_)_KMIR-
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 577
+│   BoolVal ( true )
+~> #freezer#expect(_,_,_)_KMIR-CONTROL-FLOW_KItem_Evaluation_Bo
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 578
+│   #expect ( BoolVal ( true ) , true , assertMessageBoundsCheck ( ... len: operandM
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 579
+│   #execBlockIdx ( basicBlockIdx ( 7 ) ) ~> .K
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 580
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 581
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 582
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 583
+│   #setLocalValue ( place ( ... local: local ( 20 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 584
+│   rvalueUse ( operandCopy ( place ( ... local: local ( 7 ) , projection: projectio
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 585
+│   operandCopy ( place ( ... local: local ( 7 ) , projection: projectionElemDeref
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 586
+│   #traverseProjection ( toSlot ( 34 ) , Reference ( slotPlace ( 16 , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 587
+│   #traverseProjection ( toSlot ( 16 ) , Range ( ListItem (Integer ( 1 , 8 , true )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 588
+│   #traverseProjection ( toSlot ( 16 ) , Range ( ListItem (Integer ( 1 , 8 , true )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 589
+│   #traverseProjection ( toSlot ( 16 ) , Integer ( 1 , 8 , true ) , .ProjectionElem
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 590
+│   Integer ( 1 , 8 , true )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Eval
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 591
+│   #setLocalValue ( place ( ... local: local ( 20 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 592
+│   #setSlotValue ( 47 , Integer ( 1 , 8 , true ) )
+~> #execStmts ( statement ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 593
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 594
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 595
+│   #setLocalValue ( place ( ... local: local ( 24 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 596
+│   rvalueUse ( operandConstant ( constOperand ( ... span: span ( 68 ) , userTy: noU
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 597
+│   operandConstant ( constOperand ( ... span: span ( 68 ) , userTy: noUserTypeAnnot
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 598
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 599
+│   Integer ( 0 , 64 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Ev
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 600
+│   #setLocalValue ( place ( ... local: local ( 24 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 601
+│   #setSlotValue ( 51 , Integer ( 0 , 64 , false ) )
+~> #execStmts ( statement ( ..
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 602
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 603
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 604
+│   #setLocalValue ( place ( ... local: local ( 25 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 605
+│   rvalueLen ( place ( ... local: local ( 6 ) , projection: projectionElemDeref  .P
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 606
+│   #lengthU64 ( operandCopy ( place ( ... local: local ( 6 ) , projection: projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 607
+│   operandCopy ( place ( ... local: local ( 6 ) , projection: projectionElemDeref
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 608
+│   #traverseProjection ( toSlot ( 33 ) , Reference ( slotPlace ( 15 , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 609
+│   #traverseProjection ( toSlot ( 15 ) , Range ( ListItem (Integer ( 1 , 8 , false
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 610
+│   #traverseProjection ( toSlot ( 15 ) , Range ( ListItem (Integer ( 1 , 8 , false
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 611
+│   Range ( ListItem (Integer ( 1 , 8 , false ))
+ ListItem (Integer ( 2 , 8 , false
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 612
+│   #lengthU64 ( Range ( ListItem (Integer ( 1 , 8 , false ))
+ ListItem (Integer ( 2
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 613
+│   Integer ( 3 , 64 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Ev
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 614
+│   #setLocalValue ( place ( ... local: local ( 25 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 615
+│   #setSlotValue ( 52 , Integer ( 3 , 64 , false ) )
+~> #execStmts ( statement ( ..
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 616
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 617
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 618
+│   #setLocalValue ( place ( ... local: local ( 26 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 619
+│   rvalueBinaryOp ( binOpLt , operandCopy ( place ( ... local: local ( 24 ) , proje
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 620
+│   #applyBinOp ( binOpLt , operandCopy ( place ( ... local: local ( 24 ) , projecti
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 621
+│   operandCopy ( place ( ... local: local ( 24 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 622
+│   #traverseProjection ( toSlot ( 51 ) , Integer ( 0 , 64 , false ) , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 623
+│   Integer ( 0 , 64 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bi
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 624
+│   #applyBinOp ( binOpLt , Integer ( 0 , 64 , false ) , operandCopy ( place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 625
+│   operandCopy ( place ( ... local: local ( 25 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 626
+│   #traverseProjection ( toSlot ( 52 ) , Integer ( 3 , 64 , false ) , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 627
+│   Integer ( 3 , 64 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bi
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 628
+│   #applyBinOp ( binOpLt , Integer ( 0 , 64 , false ) , Integer ( 3 , 64 , false )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 629
+│   BoolVal ( true )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 630
+│   #setLocalValue ( place ( ... local: local ( 26 ) , projection: .ProjectionElems
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 631
+│   #setSlotValue ( 53 , BoolVal ( true ) )
+~> #execStmts ( .Statements )
+~> #execTe
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 632
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: assert (
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 633
+│   #execTerminator ( terminator ( ... kind: assert ( ... cond: operandMove ( place
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 634
+│   #expect ( operandMove ( place ( ... local: local ( 26 ) , projection: .Projectio
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 635
+│   operandMove ( place ( ... local: local ( 26 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 636
+│   #traverseProjection ( toSlot ( 53 ) , BoolVal ( true ) , .ProjectionElems , .Con
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 637
+│   #traverseProjection ( toSlot ( 53 ) , BoolVal ( true ) , .ProjectionElems , .Con
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 638
+│   #setSlotValue ( 53 , Moved )
+~> BoolVal ( true )
+~> #freezer#expect(_,_,_)_KMIR-
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 639
+│   BoolVal ( true )
+~> #freezer#expect(_,_,_)_KMIR-CONTROL-FLOW_KItem_Evaluation_Bo
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 640
+│   #expect ( BoolVal ( true ) , true , assertMessageBoundsCheck ( ... len: operandM
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 641
+│   #execBlockIdx ( basicBlockIdx ( 8 ) ) ~> .K
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 642
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 643
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 644
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:33
+│
+│  (1 step)
+├─ 645
+│   #setLocalValue ( place ( ... local: local ( 6 ) , projection: projectionElemDere
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 646
+│   rvalueCast ( castKindIntToInt , operandMove ( place ( ... local: local ( 20 ) ,
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 647
+│   #cast ( operandMove ( place ( ... local: local ( 20 ) , projection: .ProjectionE
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 648
+│   operandMove ( place ( ... local: local ( 20 ) , projection: .ProjectionElems ) )
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 649
+│   #traverseProjection ( toSlot ( 47 ) , Integer ( 1 , 8 , true ) , .ProjectionElem
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 650
+│   #traverseProjection ( toSlot ( 47 ) , Integer ( 1 , 8 , true ) , .ProjectionElem
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 651
+│   #setSlotValue ( 47 , Moved )
+~> Integer ( 1 , 8 , true )
+~> #freezer#cast(_,_,_,
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 652
+│   Integer ( 1 , 8 , true )
+~> #freezer#cast(_,_,_,_)_RT-DATA_Evaluation_Evaluation
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 653
+│   #cast ( Integer ( 1 , 8 , true ) , castKindIntToInt , ty ( 2 ) , ty ( 9 ) )
+~> #
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 654
+│   Integer ( 1 , 8 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Eva
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 655
+│   #setLocalValue ( place ( ... local: local ( 6 ) , projection: projectionElemDere
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 656
+│   #traverseProjection ( toSlot ( 33 ) , Reference ( slotPlace ( 15 , .ProjectionEl
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 657
+│   #traverseProjection ( toSlot ( 15 ) , Range ( ListItem (Integer ( 1 , 8 , false
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 658
+│   #traverseProjection ( toSlot ( 15 ) , Range ( ListItem (Integer ( 1 , 8 , false
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 659
+│   #traverseProjection ( toSlot ( 15 ) , Integer ( 1 , 8 , false ) , .ProjectionEle
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 660
+│   #setSlotValue ( 15 , Range ( ListItem (Integer ( 1 , 8 , false ))
+ ListItem (Int
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 661
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 662
+│   #execTerminator ( terminator ( ... kind: terminatorKindGoto ( ... target: basicB
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:32
+│
+│  (1 step)
+├─ 663
+│   #execBlockIdx ( basicBlockIdx ( 9 ) ) ~> .K
+│   function: eats_all_args
+│
+│  (1 step)
+├─ 664
+│   #execBlock ( basicBlock ( ... statements: .Statements , terminator: terminator (
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:36
+│
+│  (1 step)
+├─ 665
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:36
+│
+│  (1 step)
+├─ 666
+│   #execTerminator ( terminator ( ... kind: terminatorKindReturn , span: span ( 71
+│   function: eats_all_args
+│   span: prove-rs/symbolic-args-fail.rs:36
+│
+│  (1 step)
+├─ 667
+│   #dropSlots ( ListItem (27)
+ ListItem (28)
+ ListItem (29)
+ ListItem (30)
+ ListIte
+│   function: main
+│
+│  (1 step)
+├─ 668
+│   #execBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K
+│   function: main
+│
+│  (1 step)
+├─ 669
+│   #execBlock ( basicBlock ( ... statements: .Statements , terminator: terminator (
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:53
+│
+│  (1 step)
+├─ 670
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:53
+│
+│  (1 step)
+├─ 671
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   function: main
+│   span: prove-rs/symbolic-args-fail.rs:53
+│
+│  (1 step)
+├─ 672
+│   #execTerminatorCall ( ty ( 38 ) , monoItemFn ( ... name: symbol ( "_ZN4core9pani
+│   function: main
+│   span: no-location:0
+│
+│  (1 step)
+└─ 673 (stuck, leaf)
     #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
     span: no-location:0
 
@@ -16,22 +4134,23 @@
 
 STATISTICS
 -----------
-Total nodes: 1
+Total nodes: 671
 
 Node roles (exclusive):
-  failing : 1  ids: 3
+  failing : 1  ids: 673
+  normal  : 670  ids: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 650, 651, 652, 653, 654, 655, 656, 657, 658, 659, 660, 661, 662, 663, 664, 665, 666, 667, 668, 669, 670, 671, 672
   (root nodes omitted from totals: 1, 2)
 
 Leaf paths from init:
   total leaves (non-root): 1
   reachable leaves       : 1
-  total steps            : 566
+  total steps            : 671
 
-  leaf 3: steps 566, path 1 -> 3
+  leaf 673: steps 671, path 1 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 -> 13 -> 14 -> 15 -> 16 -> 17 -> 18 -> 19 -> 20 -> 21 -> 22 -> 23 -> 24 -> 25 -> 26 -> 27 -> 28 -> 29 -> 30 -> 31 -> 32 -> 33 -> 34 -> 35 -> 36 -> 37 -> 38 -> 39 -> 40 -> 41 -> 42 -> 43 -> 44 -> 45 -> 46 -> 47 -> 48 -> 49 -> 50 -> 51 -> 52 -> 53 -> 54 -> 55 -> 56 -> 57 -> 58 -> 59 -> 60 -> 61 -> 62 -> 63 -> 64 -> 65 -> 66 -> 67 -> 68 -> 69 -> 70 -> 71 -> 72 -> 73 -> 74 -> 75 -> 76 -> 77 -> 78 -> 79 -> 80 -> 81 -> 82 -> 83 -> 84 -> 85 -> 86 -> 87 -> 88 -> 89 -> 90 -> 91 -> 92 -> 93 -> 94 -> 95 -> 96 -> 97 -> 98 -> 99 -> 100 -> 101 -> 102 -> 103 -> 104 -> 105 -> 106 -> 107 -> 108 -> 109 -> 110 -> 111 -> 112 -> 113 -> 114 -> 115 -> 116 -> 117 -> 118 -> 119 -> 120 -> 121 -> 122 -> 123 -> 124 -> 125 -> 126 -> 127 -> 128 -> 129 -> 130 -> 131 -> 132 -> 133 -> 134 -> 135 -> 136 -> 137 -> 138 -> 139 -> 140 -> 141 -> 142 -> 143 -> 144 -> 145 -> 146 -> 147 -> 148 -> 149 -> 150 -> 151 -> 152 -> 153 -> 154 -> 155 -> 156 -> 157 -> 158 -> 159 -> 160 -> 161 -> 162 -> 163 -> 164 -> 165 -> 166 -> 167 -> 168 -> 169 -> 170 -> 171 -> 172 -> 173 -> 174 -> 175 -> 176 -> 177 -> 178 -> 179 -> 180 -> 181 -> 182 -> 183 -> 184 -> 185 -> 186 -> 187 -> 188 -> 189 -> 190 -> 191 -> 192 -> 193 -> 194 -> 195 -> 196 -> 197 -> 198 -> 199 -> 200 -> 201 -> 202 -> 203 -> 204 -> 205 -> 206 -> 207 -> 208 -> 209 -> 210 -> 211 -> 212 -> 213 -> 214 -> 215 -> 216 -> 217 -> 218 -> 219 -> 220 -> 221 -> 222 -> 223 -> 224 -> 225 -> 226 -> 227 -> 228 -> 229 -> 230 -> 231 -> 232 -> 233 -> 234 -> 235 -> 236 -> 237 -> 238 -> 239 -> 240 -> 241 -> 242 -> 243 -> 244 -> 245 -> 246 -> 247 -> 248 -> 249 -> 250 -> 251 -> 252 -> 253 -> 254 -> 255 -> 256 -> 257 -> 258 -> 259 -> 260 -> 261 -> 262 -> 263 -> 264 -> 265 -> 266 -> 267 -> 268 -> 269 -> 270 -> 271 -> 272 -> 273 -> 274 -> 275 -> 276 -> 277 -> 278 -> 279 -> 280 -> 281 -> 282 -> 283 -> 284 -> 285 -> 286 -> 287 -> 288 -> 289 -> 290 -> 291 -> 292 -> 293 -> 294 -> 295 -> 296 -> 297 -> 298 -> 299 -> 300 -> 301 -> 302 -> 303 -> 304 -> 305 -> 306 -> 307 -> 308 -> 309 -> 310 -> 311 -> 312 -> 313 -> 314 -> 315 -> 316 -> 317 -> 318 -> 319 -> 320 -> 321 -> 322 -> 323 -> 324 -> 325 -> 326 -> 327 -> 328 -> 329 -> 330 -> 331 -> 332 -> 333 -> 334 -> 335 -> 336 -> 337 -> 338 -> 339 -> 340 -> 341 -> 342 -> 343 -> 344 -> 345 -> 346 -> 347 -> 348 -> 349 -> 350 -> 351 -> 352 -> 353 -> 354 -> 355 -> 356 -> 357 -> 358 -> 359 -> 360 -> 361 -> 362 -> 363 -> 364 -> 365 -> 366 -> 367 -> 368 -> 369 -> 370 -> 371 -> 372 -> 373 -> 374 -> 375 -> 376 -> 377 -> 378 -> 379 -> 380 -> 381 -> 382 -> 383 -> 384 -> 385 -> 386 -> 387 -> 388 -> 389 -> 390 -> 391 -> 392 -> 393 -> 394 -> 395 -> 396 -> 397 -> 398 -> 399 -> 400 -> 401 -> 402 -> 403 -> 404 -> 405 -> 406 -> 407 -> 408 -> 409 -> 410 -> 411 -> 412 -> 413 -> 414 -> 415 -> 416 -> 417 -> 418 -> 419 -> 420 -> 421 -> 422 -> 423 -> 424 -> 425 -> 426 -> 427 -> 428 -> 429 -> 430 -> 431 -> 432 -> 433 -> 434 -> 435 -> 436 -> 437 -> 438 -> 439 -> 440 -> 441 -> 442 -> 443 -> 444 -> 445 -> 446 -> 447 -> 448 -> 449 -> 450 -> 451 -> 452 -> 453 -> 454 -> 455 -> 456 -> 457 -> 458 -> 459 -> 460 -> 461 -> 462 -> 463 -> 464 -> 465 -> 466 -> 467 -> 468 -> 469 -> 470 -> 471 -> 472 -> 473 -> 474 -> 475 -> 476 -> 477 -> 478 -> 479 -> 480 -> 481 -> 482 -> 483 -> 484 -> 485 -> 486 -> 487 -> 488 -> 489 -> 490 -> 491 -> 492 -> 493 -> 494 -> 495 -> 496 -> 497 -> 498 -> 499 -> 500 -> 501 -> 502 -> 503 -> 504 -> 505 -> 506 -> 507 -> 508 -> 509 -> 510 -> 511 -> 512 -> 513 -> 514 -> 515 -> 516 -> 517 -> 518 -> 519 -> 520 -> 521 -> 522 -> 523 -> 524 -> 525 -> 526 -> 527 -> 528 -> 529 -> 530 -> 531 -> 532 -> 533 -> 534 -> 535 -> 536 -> 537 -> 538 -> 539 -> 540 -> 541 -> 542 -> 543 -> 544 -> 545 -> 546 -> 547 -> 548 -> 549 -> 550 -> 551 -> 552 -> 553 -> 554 -> 555 -> 556 -> 557 -> 558 -> 559 -> 560 -> 561 -> 562 -> 563 -> 564 -> 565 -> 566 -> 567 -> 568 -> 569 -> 570 -> 571 -> 572 -> 573 -> 574 -> 575 -> 576 -> 577 -> 578 -> 579 -> 580 -> 581 -> 582 -> 583 -> 584 -> 585 -> 586 -> 587 -> 588 -> 589 -> 590 -> 591 -> 592 -> 593 -> 594 -> 595 -> 596 -> 597 -> 598 -> 599 -> 600 -> 601 -> 602 -> 603 -> 604 -> 605 -> 606 -> 607 -> 608 -> 609 -> 610 -> 611 -> 612 -> 613 -> 614 -> 615 -> 616 -> 617 -> 618 -> 619 -> 620 -> 621 -> 622 -> 623 -> 624 -> 625 -> 626 -> 627 -> 628 -> 629 -> 630 -> 631 -> 632 -> 633 -> 634 -> 635 -> 636 -> 637 -> 638 -> 639 -> 640 -> 641 -> 642 -> 643 -> 644 -> 645 -> 646 -> 647 -> 648 -> 649 -> 650 -> 651 -> 652 -> 653 -> 654 -> 655 -> 656 -> 657 -> 658 -> 659 -> 660 -> 661 -> 662 -> 663 -> 664 -> 665 -> 666 -> 667 -> 668 -> 669 -> 670 -> 671 -> 672 -> 673
 
 LEAF <k> CELLS
 ---------------
-Node 3:
+Node 673:
   #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>E" ) , id: defId ( 38 ) , body: noBody ) , operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00\x17\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: provenanceMapEntry ( ... offset: 0 , allocId: allocId ( 1 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 39 ) , id: mirConstId ( 25 ) ) ) )  .Operands , span ( 117 ) ) ~> .K
   >> function: core::panicking::panic::h<hash>
   >> call span: <REPO>/kmir/src/tests/integration/data/prove-rs/symbolic-args-fail.rs:53:5

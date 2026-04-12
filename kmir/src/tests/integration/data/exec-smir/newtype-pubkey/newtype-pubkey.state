@@ -75,4 +75,7 @@
     3 |-> typedValue ( Reference ( slotPlace ( 1 , projectionElemField ( fieldIdx ( 0 ) , ty ( 31 ) )  .ProjectionElems ) , mutabilityNot , metadata ( staticSize ( 32 ) , 0 , noMetadataSize ) ) , ty ( 27 ) , mutabilityNot )
     4 |-> typedValue ( Integer ( 32 , 64 , false ) , ty ( 26 ) , mutabilityNot )
   </slotStore>
+  <nextSlot>
+    13
+  </nextSlot>
 </kmir>

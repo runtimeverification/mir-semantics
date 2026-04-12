@@ -12,6 +12,7 @@ Essential parts of the configuration:
 The entire program's return value (`retVal`) is held in a separate cell.
 
 Besides the `caller` (to return to) and `dest` and `target` to specify where the return value should be written, a `StackFrame` includes the runtime slots owned by the currently-executing function/item. Each function's MIR still accesses locals by relative `local(i)` indexes, but those are resolved through the frame's ordered slot list into stable runtime slot handles stored globally in `<slotStore>`.
+The next unused runtime slot handle is tracked in `<nextSlot>`.
 
 ```k
 requires "./value.md"
@@ -47,8 +48,8 @@ module KMIR-CONFIGURATION
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
                   // global store of runtime stack slots
-                  // TODO: see note above about map lookup branching on fresh symbolic slot ids.
                   <slotStore> .Map </slotStore>
+                  <nextSlot> 0 </nextSlot>
                 </kmir>
 ```
 
