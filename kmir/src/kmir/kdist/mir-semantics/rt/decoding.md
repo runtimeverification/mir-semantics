@@ -57,8 +57,10 @@ and arrays (where layout is trivial).
     requires #isFloatType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO)
     [preserves-definedness]
 
-  // TODO Char type
-  // rule #decodeConstant(constantKindAllocated(allocation(BYTES, _, _, _)), typeInfoPrimitiveType(primTypeChar)) => typedValue(Str(...), TY, mutabilityNot)
+  // Char type: 4 bytes, decoded as an unsigned 32-bit integer (Unicode scalar value)
+  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeChar))
+    => Integer(Bytes2Int(BYTES, LE, Unsigned), 32, false)
+    requires lengthBytes(BYTES) ==Int 4
 ```
 
 
