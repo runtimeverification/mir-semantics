@@ -1,13 +1,15 @@
 
 ┌─ 1 (root, init)
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
-│   span: <span>
+│   span: 0
 │
-│  (35 steps)
+│  (8 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toAlloc ( allocId ( 0 ) ) , StringVal ( "123" ) , .Project
-    span: <span>
+    #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+    span: 32
 
 
 ┌─ 2 (root, leaf, target, terminal)
 │   #EndProgram ~> .K
+
+

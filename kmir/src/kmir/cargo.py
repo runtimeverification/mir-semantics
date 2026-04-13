@@ -182,6 +182,9 @@ def cargo_get_smir_json(
     cwd = cwd or Path.cwd()
     smir_json_result = cwd / rs_file.with_suffix('.smir.json').name
     run_process_2(command, cwd=cwd)
+    resolved_smir_json_result = cwd / rs_file.resolve().with_suffix('.smir.json').name
+    if not smir_json_result.is_file() and resolved_smir_json_result.is_file():
+        resolved_smir_json_result.rename(smir_json_result)
     json_smir = json.loads(smir_json_result.read_text())
     _LOGGER.info(f'Loaded: {smir_json_result}')
     if save_smir:

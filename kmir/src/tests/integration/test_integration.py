@@ -49,36 +49,42 @@ PROVE_START_SYMBOLS = {
     ids=[spec.stem for spec in PROVE_FILES],
 )
 def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
-    should_fail = rs_file.stem.endswith('fail') or rs_file.stem.endswith('unsupported')
+    should_fail = rs_file.stem.endswith('fail')
+    should_show = should_fail or rs_file.stem.endswith('unsupported')
     is_smir = rs_file.suffix == '.json'
 
-    if update_expected_output and not should_fail:
+    start_symbols = ['main']
+    if rs_file.stem in PROVE_START_SYMBOLS:
+        start_symbols = PROVE_START_SYMBOLS[rs_file.stem]
+
+    if update_expected_output and not should_show:
+        for start_symbol in start_symbols:
+            expected_file = PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected'
+            assert not expected_file.is_file()
         pytest.skip()
 
     prove_opts = ProveOpts(rs_file, smir=is_smir, terminate_on_thunk=True)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
-    start_symbols = ['main']
-    if rs_file.stem in PROVE_START_SYMBOLS:
-        start_symbols = PROVE_START_SYMBOLS[rs_file.stem]
-
     for start_symbol in start_symbols:
         prove_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_program(prove_opts)
+        expected_file = PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected'
 
-        if should_fail:
-            assert apr_proof.failed
+        if should_show:
             display_opts = ShowOpts(
                 rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
             )
             shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
             show_res = '\n'.join(shower.show(apr_proof))
-            assert_or_update_show_output(
-                show_res, PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
-            )
+            assert_or_update_show_output(show_res, expected_file, update=update_expected_output)
         else:
+            assert not expected_file.is_file()
             assert apr_proof.passed
+
+        if should_fail:
+            assert apr_proof.failed
 
 
 VERIFY_RUST_STD_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std').resolve(strict=True)
