@@ -41,39 +41,6 @@ PROVE_START_SYMBOLS = {
     'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
-PROVE_SHOW_SPECS = [
-    'local-raw-unsupported',
-    'interior-mut-unsupported',
-    'interior-mut3-unsupported',
-    'iter_next_3',
-    'assert_eq_exp',
-    'bitwise-not-shift',
-    'symbolic-args-fail',
-    'symbolic-structs-fail',
-    'checked_arithmetic-fail',
-    'offset-u8-unsupported',
-    'pointer-cast-length-test-unsupported',
-    'niche-enum',
-    'assume-cheatcode-conflict-fail',
-    'raw-ptr-cast-unsupported',
-    'transmute-u8-to-enum-fail',
-    'assert-inhabited-fail',
-    'iterator-simple',
-    'unions-unsupported',
-    'transmute-maybe-uninit-unsupported',
-    'ptr-through-wrapper-unsupported',
-    'test_offset_from-fail',
-    'ref-ptr-cast-elem-unsupported',
-    'ref-ptr-cast-elem-offset-unsupported',
-    'volatile_store_static-unsupported',
-    'volatile_load_static-unsupported',
-    'box_heap_alloc-unsupported',
-    'ptr-cast-array-to-wrapper-unsupported',
-    'ptr-cast-array-to-nested-wrapper-unsupported',
-    'ptr-cast-array-to-singleton-wrapped-array-unsupported',
-]
-
-
 @pytest.mark.parametrize(
     'rs_file',
     PROVE_FILES,
@@ -81,10 +48,9 @@ PROVE_SHOW_SPECS = [
 )
 def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail') or rs_file.stem.endswith('unsupported')
-    should_show = rs_file.stem in PROVE_SHOW_SPECS
     is_smir = rs_file.suffix == '.json'
 
-    if update_expected_output and not should_show:
+    if update_expected_output and not should_fail:
         pytest.skip()
 
     prove_opts = ProveOpts(rs_file, smir=is_smir, terminate_on_thunk=True)
@@ -99,7 +65,8 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
         prove_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_program(prove_opts)
 
-        if should_show:
+        if should_fail:
+            assert apr_proof.failed
             display_opts = ShowOpts(
                 rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
             )
@@ -108,11 +75,8 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
             assert_or_update_show_output(
                 show_res, PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
             )
-
-        if not should_fail:
-            assert apr_proof.passed
         else:
-            assert apr_proof.failed
+            assert apr_proof.passed
 
 
 VERIFY_RUST_STD_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std').resolve(strict=True)
