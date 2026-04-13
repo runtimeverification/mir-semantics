@@ -375,6 +375,21 @@ per-variant layout offsets.
   rule #decodeEnumDirectTag(_, _) => -1 [owise]
 
   // ---------------------------------------------------------------------------
+  // #decodeEnumTagAtOffset: read tag bytes as an unsigned little-endian int
+  // from a field offset recorded in the enum layout.
+  // ---------------------------------------------------------------------------
+  syntax Int ::= #decodeEnumTagAtOffset ( Bytes , MachineSize , IntegerLength ) [function, total]
+  rule #decodeEnumTagAtOffset(BYTES, TAG_OFFSET, TAG_WIDTH)
+    => Bytes2Int(
+         substrBytes(BYTES, #msBytes(TAG_OFFSET), #msBytes(TAG_OFFSET) +Int #byteLength(TAG_WIDTH)),
+         LE,
+         Unsigned
+       )
+    requires lengthBytes(BYTES) >=Int (#msBytes(TAG_OFFSET) +Int #byteLength(TAG_WIDTH))
+    [preserves-definedness]
+  rule #decodeEnumTagAtOffset(_, _, _) => -1 [owise]
+
+  // ---------------------------------------------------------------------------
   // List-indexing helpers
   // ---------------------------------------------------------------------------
 
@@ -397,6 +412,27 @@ per-variant layout offsets.
   rule #byteLength(integerLengthI32 ) => 4
   rule #byteLength(integerLengthI64 ) => 8
   rule #byteLength(integerLengthI128) => 16
+
+  syntax Int ::= #mirInt ( MIRInt ) [function, total]
+  // -------------------------------------------------
+  rule #mirInt(mirInt(I)) => I
+  rule #mirInt(I:Int) => I
+
+  syntax Bool ::= #inWrappingRange ( Int , WrappingRange ) [function, total]
+                | #inWrappingRange ( Int , Int , Int )      [function, total]
+  // -------------------------------------------------------------------------
+  // WrappingRange is half-open (`start .. end`) in the scalar metadata.
+  // When `start > end`, the range wraps around the integer modulus.
+  rule #inWrappingRange(TAG, wrappingRange(START, END))
+    => #inWrappingRange(TAG, #mirInt(START), #mirInt(END))
+  rule #inWrappingRange(TAG, START, END)
+    => START <=Int TAG andBool TAG <Int END
+    requires START <=Int END
+    [preserves-definedness]
+  rule #inWrappingRange(TAG, START, END)
+    => START <=Int TAG orBool TAG <Int END
+    requires START >Int END
+    [preserves-definedness]
 
 ```
 
@@ -438,6 +474,72 @@ Any pointer or reference would have a very different encoding in KMIR, not a non
        )
     => Aggregate(variantIdx(0), .List)
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned)
+```
+
+For niche-encoded `Option<T>`-style enums with two variants, stable-mir records the niche tag
+as a shared field offset plus a `WrappingRange` over the raw tag bits.
+If the tag lies inside that half-open range, the payload variant is active; otherwise the value is
+the empty variant.
+
+```k
+  rule #decodeValue(
+         BYTES
+       , typeInfoEnumType(...
+           name: _
+         , adtDef: _
+         , discriminants: _DISCRIMINANTS
+         , fields: (.Tys : SOME_FIELDS : .Tyss)
+         , layout:
+            someLayoutShape(layoutShape(...
+                fields: fieldsShapeArbitrary(mk(... offsets: TAG_OFFSET .MachineSizes))
+              , variants:
+                  variantsShapeMultiple(
+                    mk(...
+                        tag: scalarInitialized(
+                          mk(...
+                              value: primitiveInt(mk(... length: TAG_WIDTH, signed: _))
+                            , validRange: VALID_RANGE
+                          )
+                        )
+                      , tagEncoding: tagEncodingNiche()
+                      , tagField: 0
+                      , variants: _NONE_LAYOUT _SOME_LAYOUT .LayoutShapes #as VARIANT_LAYOUTS
+                      )
+                    )
+              , abi: _ABI
+              , abiAlign: _ABI_ALIGN
+              , size: _SIZE
+            ))
+         ) #as ENUM_TYPE
+       )
+    => #decodeEnumNicheFields(
+         BYTES,
+         #decodeEnumTagAtOffset(BYTES, TAG_OFFSET, TAG_WIDTH),
+         VALID_RANGE,
+         SOME_FIELDS,
+         VARIANT_LAYOUTS,
+         ENUM_TYPE
+       )
+    [preserves-definedness]
+
+  syntax Evaluation ::= #decodeEnumNicheFields ( Bytes , Int , WrappingRange , Tys , LayoutShapes , TypeInfo ) [function, total]
+  // --------------------------------------------------------------------------------------------------------------------------
+  rule #decodeEnumNicheFields(BYTES, TAG_VALUE, VALID_RANGE, SOME_FIELDS, VARIANT_LAYOUTS, _ENUM_TYPE)
+    => Aggregate(
+         variantIdx(1),
+         #decodeFieldsWithOffsets(BYTES, SOME_FIELDS, #nthVariantOffsets(VARIANT_LAYOUTS, 1))
+       )
+    requires #inWrappingRange(TAG_VALUE, VALID_RANGE)
+    [preserves-definedness]
+
+  rule #decodeEnumNicheFields(_BYTES, TAG_VALUE, VALID_RANGE, _SOME_FIELDS, _VARIANT_LAYOUTS, _ENUM_TYPE)
+    => Aggregate(variantIdx(0), .List)
+    requires notBool #inWrappingRange(TAG_VALUE, VALID_RANGE)
+    [preserves-definedness]
+
+  rule #decodeEnumNicheFields(BYTES, _, _VALID_RANGE, _SOME_FIELDS, _VARIANT_LAYOUTS, ENUM_TYPE)
+    => UnableToDecode(BYTES, ENUM_TYPE)
+    [owise]
 ```
 
 ## Array Allocations
