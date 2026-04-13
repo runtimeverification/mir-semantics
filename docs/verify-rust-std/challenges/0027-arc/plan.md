@@ -1,125 +1,81 @@
-# Execution Plan: Challenge 0027
+---
+challenge: "0027-arc"
+status: in_progress
+priority: p0
+iteration: 1
+last_updated: 2026-04-11
+---
 
-## Objective
+## Requirements
 
-Current planning focus for Challenge 0027 (`Arc`):
+**Goal:** Verify the unsafe `Arc` / `Weak` implementation surface in `alloc::sync`.
 
-- start from the raw-pointer / refcounting family where `0026-rc` provides the
-  strongest reusable pattern,
-- keep the verification-shaped proof harness separate from the concrete
-  frontier reproducer,
-- and follow the shared helper-level `CastKind::Transmute` diagnosis on the
-  Arc side rather than reopening the tranche selection.
+**Source:** https://github.com/model-checking/verify-rust-std/blob/main/doc/src/challenges/0027-arc.md  
+**Tracking issue:** [#383](https://github.com/model-checking/verify-rust-std/issues/383)
 
-## Confirmed Contract Surface
+### Challenge obligations
 
-- Published goal: verify `Arc` and `Weak` in `alloc::sync`.
-- Public success criteria: 12 public `unsafe` APIs must be annotated with
-  safety contracts and those contracts must be verified.
-- Additional coverage obligation: at least 75% of the listed non-public unsafe
-  helpers should be proven unconditionally safe or given safety contracts.
-- Proof limits from the challenge page:
-  - `T` proofs may be limited to primitive types.
-  - allocator proofs may be limited to standard-library allocators
-    (`Global` and `System`).
-- Challenge-specific UB obligations:
-  - data races,
-  - dangling or misaligned pointer access,
-  - compiler intrinsic UB,
-  - mutating immutable bytes,
-  - invalid values.
-- Arc-specific safety emphasis:
-  - do not confuse raw-pointer recovery with a concrete witness trace;
-  - proof artifacts must be symbolic or contract-shaped.
+- Verify the public unsafe `Arc` / `Weak` APIs with explicit safety contracts.
+- Cover the raw-pointer recovery and refcounting family first, because that is the currently selected branch slice.
+- Keep proof harnesses symbolic and keep concrete frontier reproducers separate.
+- Respect the challenge-specific UB obligations called out in the branch material:
+  dangling or misaligned pointer access, invalid values, intrinsic UB, immutable-byte mutation, and data-race hazards.
 
-## Scope Contract
+### Current branch-local scope
 
-- In scope for the first tranche:
-  - `Arc::from_raw_in`
-  - `Arc::increment_strong_count_in`
-  - `Arc::decrement_strong_count_in`
-  - `Weak::from_raw_in`
-  - the four thin `Global` wrappers that depend on those roots
-- Out of scope unless later justified:
-  - `Arc::assume_init` / `Arc<[MaybeUninit<T>],A>::assume_init`
-  - `Arc::get_mut_unchecked`
-  - `Arc::downcast_unchecked`
-  - the large non-public helper surface outside the raw-pointer/refcount
-    tranche
-- Exceptional dependency escalation policy:
-  - `runtimeverification/stable-mir-json` only if the challenge requires it for
-    SMIR shape or contract plumbing;
-  - `runtimeverification/haskell-backend` only with an explicit blocker note in
-    the evaluator record.
+- First target: `Arc<T, A>::from_raw_in`.
+- Follow-on targets after the root proof stabilizes:
+  `Arc::increment_strong_count_in`, `Arc::decrement_strong_count_in`, `Weak::from_raw_in`, and thin `Global` wrappers.
+- Deferred for later tranches:
+  `assume_init`, `get_mut_unchecked`, `downcast_unchecked`, and broader helper coverage outside the raw-pointer/refcount spine.
 
-## First Proof Target
+## Success Criteria Matrix
 
-- Highest-leverage first proof target: `Arc::from_raw_in`
-- Why first:
-  - it is the raw-recovery root for the allocator-general family;
-  - it unlocks the three refcount follow-ons and the `Global` wrapper layer;
-  - it already has both a symbolic harness and a smaller dedicated reproducer,
-    so the next move can stay inside one precise blocker family.
+### Proof status snapshot (2026-04-11)
 
-## Current Proof State
+| Harness | Role | Status | Frontier / Result | Notes |
+| --- | --- | --- | --- | --- |
+| `arc-from-raw-in.rs` | symbolic verification harness | PASS | closed | Root contract proof for `Arc::from_raw_in` is available on this branch |
+| `arc-from-raw-in-frontier-fail.rs` | concrete frontier reproducer | EXPECTED-FAIL | `failing: 1`, `stuck: 1` | Keep as the minimal reproducer for the remaining unresolved path |
 
-- Verification harness:
-  - `kmir/src/tests/integration/data/verify-rust-std/0027-arc/arc-from-raw-in.rs`
-  - start symbol: `verify_arc_from_raw_in`
-- Frontier reproducer:
-  - `kmir/src/tests/integration/data/verify-rust-std/0027-arc/arc-from-raw-in-frontier-fail.rs`
-  - start symbol: `main`
-- Shared blocker family with `0026-rc`:
-  - helper-level `CastKind::Transmute`
-  - current Arc-side site:
-    `#setUpCalleeData(monoItemFn(... name: symbol("malloc"), body: noBody), ...)`
-    at node `3`
+### Coverage map
 
-## Minimal Reproducer Policy
-
-- Use `arc-from-raw-in-frontier-fail.rs` to keep the helper setup as small as
-  possible while preserving the `Arc::from_raw_in` contract shape and the
-  shared helper frontier.
-- Keep `arc-from-raw-in.rs` symbolic and contract-shaped; do not turn it into a
-  concrete reproducer.
-- Do not widen into other Arc families until this shared transmute-family leaf
-  is either narrowed further or explicitly blocked with a precise next action.
-
-## Single Next Technical Subtask
-
-- Validate whether the new `malloc` `noBody` leaf is the same shared wrapper
-  frontier as `0026-rc`; if it is, keep `arc-from-raw-in-frontier-fail.rs`
-  as the dedicated reproducer and do not widen the Arc tranche yet.
-
-## Sprint Contracts
-
-| Sprint | Intended slice | Acceptance check | Status |
+| Requirement slice | Current Status | Harness / Artifact | Next requirement |
 | --- | --- | --- | --- |
-| 0 | Bootstrap challenge understanding | Requirements, safety obligations, and first tranche recorded | complete |
-| 1 | Raw-recovery root | `Arc::from_raw_in` has a selected verification shape, a separate reproducer file, and a precise shared transmute-family blocker | in progress |
-| 2 | Refcount spine | `Arc::increment_strong_count_in`, `Arc::decrement_strong_count_in`, `Weak::from_raw_in` follow the root | pending |
-| 3 | Wrapper layer | Thin `Global` wrappers are queued only after the allocator-general roots are stable | pending |
+| `Arc<T, A>::from_raw_in` root proof | VERIFIED | `arc-from-raw-in.rs` | Preserve pass while shrinking or explaining the remaining frontier repro |
+| Shared raw-pointer helper frontier | BLOCKED | `arc-from-raw-in-frontier-fail.rs` | Determine whether the `malloc` `noBody` path is a missing body, allocator modeling gap, or a wrapper setup issue |
+| `Arc::increment_strong_count_in` / `decrement_strong_count_in` | NOT STARTED | none yet | Reuse the proven root proof shape once the shared frontier is understood |
+| `Weak::from_raw_in` | NOT STARTED | none yet | Reuse raw-recovery spine after Arc-side frontier is stable |
+| Thin `Global` wrappers | NOT STARTED | none yet | Queue after allocator-generic roots are stable |
 
-## Dependencies And Blockers
+## Sprint Plan
 
-- `0026-rc` is the strongest reuse source for the contract-first split.
-- Arc adds a data-race obligation that Rc did not have; the evaluator should
-  fail closed if that obligation is only waved at.
-- The current shared blocker family is no longer hypothetical: both the proof
-  harness and the smaller reproducer now point to the shared `malloc`
-  `noBody` leaf rather than the original helper-level transmute site.
+### Sprint 0: Lock in the root proof
 
-## Cross-Challenge Notes
+- Keep `arc-from-raw-in.rs` green.
+- Treat the passing harness as the baseline contract shape for the raw-pointer tranche.
 
-- Reuse `0026-rc` for:
-  - contract-map structure,
-  - proof/tracer separation,
-  - the idea that a concrete frontier file is a reproducer, not a proof,
-  - and the shared transmute-family diagnosis discipline.
-- Reuse `0011-floats-ints` only for the audit pattern:
-  - coverage tables must make per-function progress obvious,
-  - but the raw-pointer tranche here should not copy float-oriented structure.
+### Sprint 1: Triage the remaining frontier
 
-## History
+- Re-run `arc-from-raw-in-frontier-fail.rs` and inspect the `failing: 1` plus `stuck: 1` leaves.
+- Confirm whether the current node-3 `malloc` `noBody` site is the same shared blocker family seen in related raw-pointer challenges.
+- Do not widen the reproducer; keep it concrete and minimal.
 
-- Bootstrap record created by orchestrator.
+### Sprint 2: Decide blocker ownership
+
+- If the frontier is a missing external body/model, record that as an explicit semantic dependency.
+- If the frontier is local to wrapper setup or transmute/layout plumbing, extract a smaller reproducer or implement the minimal fix.
+- Keep the symbolic proof harness unchanged unless the contract itself needs refinement.
+
+### Sprint 3: Expand the raw-pointer tranche
+
+- Add or replay `increment_strong_count_in`, `decrement_strong_count_in`, and `Weak::from_raw_in` only after the shared frontier has a stable diagnosis.
+- Queue thin `Global` wrappers after allocator-generic proofs are understood.
+
+## Blockers
+
+| Blocker | Type | Affects | Status | Notes |
+| --- | --- | --- | --- | --- |
+| `malloc` `noBody` setup leaf | Semantic / modeling | `arc-from-raw-in-frontier-fail.rs` | active | Current known frontier at node 3 from the branch README |
+| Shared raw-pointer helper uncertainty | Cross-challenge diagnosis | future Arc / Weak follow-ons | active | Needs comparison with the analogous `Rc`-family blocker before widening |
+| Data-race obligations not yet encoded | Specification gap | later `Arc` tranche | pending | Not a blocker for the current root proof, but must be explicit before claiming broader challenge coverage |
