@@ -139,7 +139,7 @@ The `operandMove` fix in `rt/data.md` is a cross-cutting K semantics change. For
 
 All proofs verified on 2026-04-11 using:
 ```bash
-cd /home/zhaoji/projs/mir-semantics-vrs/challenges/0009-duration
+# From the repository root (or challenge worktree):
 uv --project kmir run -- kmir prove <file> \
   --verbose --terminate-on-thunk \
   --proof-dir /tmp/kmir-0009-plan-<name> --reload --fail-fast

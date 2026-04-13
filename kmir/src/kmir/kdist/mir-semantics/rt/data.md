@@ -1378,10 +1378,11 @@ The simplest case of a cast is conversion from one number type to another:
 truncating semantics. These casts can only operate on the `Integer` variant of the `Value` type, adjusting
 bit width, signedness, and possibly truncating or 2s-complementing the value.
 
-A `Moved` value that reaches a cast has already been invalidated (e.g., after an `operandMove` on a `Copy`-type local that was used again). We propagate the `Moved` sentinel through the cast rather than getting stuck.
+Defensive fallback: if a `Moved` sentinel ever reaches a cast (e.g., through future semantics changes that re-enable source invalidation), propagate it rather than getting stuck.
 
 ```k
-  // Propagate Moved through any cast
+  // Propagate Moved through any cast (defensive — currently unreachable because
+  // operandMove no longer invalidates the source, but kept as a safety net)
   rule <k> #cast(Moved, _, _, _) => Moved ... </k>
 ```
 

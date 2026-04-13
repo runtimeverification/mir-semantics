@@ -9,11 +9,9 @@ Reference inputs:
 Execution context:
 
 - Branch: `verify-rust-std/reexec-0009-duration`
-- Worktree: `/home/zhaoji/projs/mir-semantics-vrs/challenges/0009-duration`
-- Planner record: `docs/verify-rust-std/challenges/0009-duration/planner.md`
-- Generator record: `docs/verify-rust-std/challenges/0009-duration/generator.md`
-- Evaluator record: `docs/verify-rust-std/challenges/0009-duration/evaluator.md`
-- Branch-local rubric: `docs/verify-rust-std/challenges/0009-duration/rubric.md`
+- Planner record: `docs/verify-rust-std/challenges/0009-duration/plan.md`
+- Evaluator record: `docs/verify-rust-std/challenges/0009-duration/evaluation_result.md`
+- Workpad: `docs/verify-rust-std/challenges/0009-duration/workpad.md`
 
 Challenge-local artifact contract:
 
@@ -27,6 +25,6 @@ Challenge-local artifact contract:
 Status board:
 
 - Planner: done (requirements extracted, blockers identified)
-- Generator: done (15 harnesses created, 9 pass, 5 expected-fail, 1 blocked)
-- Evaluator: not started
-- Draft PR: not created
+- Generator: done (29 harnesses, 22 pass, 5 expected-fail, 4 blocked on niche decoding)
+- Evaluator: done (16/16 required methods verified)
+- PR: runtimeverification/mir-semantics#1034

@@ -27,7 +27,7 @@
 ## Reproducibility Evidence Commands
 
 ```bash
-cd /home/zhaoji/projs/mir-semantics-vrs/challenges/0009-duration
+# From the repository root (or challenge worktree):
 
 # Reproduce representative passing proofs
 uv --project kmir run -- kmir prove \
