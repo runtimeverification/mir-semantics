@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, cast
 
 from pyk.cterm import CSubst, CTerm
 from pyk.kast.inner import KApply
 from pyk.kcfg.kcfg import KCFG
 
 from kmir.utils import render_statistics
+
+if TYPE_CHECKING:
+    from pyk.proof.reachability import APRProof
 
 
 @dataclass
@@ -77,6 +81,6 @@ def test_render_statistics_handles_zero_cost_predecessor_cycles() -> None:
     )
     proof = _FakeProof(fake_kcfg, init=init.id, pending_ids=frozenset({leaf.id}))
 
-    lines = render_statistics(proof)
+    lines = render_statistics(cast('APRProof', proof))
 
     assert f'  leaf {leaf.id}: shortest steps 1, path {init.id} -> {loop_target.id} -> {leaf.id}' in lines

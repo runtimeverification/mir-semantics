@@ -30,6 +30,7 @@ if TYPE_CHECKING:
 
 _LOGGER: Final = logging.getLogger(__name__)
 
+
 def prove(opts: ProveOpts) -> APRProof:
     if not opts.rs_file.is_file():
         raise ValueError(f'Input file does not exist: {opts.rs_file}')
