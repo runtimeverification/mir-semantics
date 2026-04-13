@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 PROVE_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 PROVE_FILES = list(PROVE_DIR.glob('*.*'))
 PROVE_START_SYMBOLS = {
-    'symbolic-args-fail': ['main', 'eats_all_args'],
+    'symbolic-args-unsupported': ['eats_all_args'],
     'symbolic-structs-fail': ['eats_struct_args'],
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
     'checked_arithmetic-fail': ['checked_add_i32'],
