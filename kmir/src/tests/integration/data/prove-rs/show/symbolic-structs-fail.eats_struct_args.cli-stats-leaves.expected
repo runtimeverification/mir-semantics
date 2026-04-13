@@ -1,0 +1,107 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: src/rust/library/std/src/rt.rs:194
+│
+│  (61 steps)
+├─ 3 (split)
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+│   function: eats_struct_args
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool ARG_INT2:Int ==Int ARG_INT5:Int
+┃  │
+┃  ├─ 4
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+┃  │   function: eats_struct_args
+┃  │
+┃  │  (96 steps)
+┃  ├─ 6 (split)
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
+┃  │   function: eats_struct_args
+┃  ┃
+┃  ┃ (branch)
+┃  ┣━━┓ subst: .Subst
+┃  ┃  ┃ constraint:
+┃  ┃  ┃     ARG_UINT3:Int ==Int ARG_UINT6:Int
+┃  ┃  │
+┃  ┃  ├─ 8
+┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
+┃  ┃  │   function: eats_struct_args
+┃  ┃  │
+┃  ┃  │  (6 steps)
+┃  ┃  └─ 10 (stuck, leaf)
+┃  ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+┃  ┃      span: no-location:0
+┃  ┃
+┃  ┗━━┓ subst: .Subst
+┃     ┃ constraint:
+┃     ┃     notBool ARG_UINT3:Int ==Int ARG_UINT6:Int
+┃     │
+┃     ├─ 9
+┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
+┃     │   function: eats_struct_args
+┃     │
+┃     │  (6 steps)
+┃     ├─ 11 (terminal)
+┃     │   #EndProgram ~> .K
+┃     │   function: eats_struct_args
+┃     │
+┃     ┊  constraint: true
+┃     ┊  subst: ...
+┃     └─ 2 (leaf, target, terminal)
+┃         #EndProgram ~> .K
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     ARG_INT2:Int ==Int ARG_INT5:Int
+   │
+   ├─ 5
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+   │   function: eats_struct_args
+   │
+   │  (66 steps)
+   ├─ 7 (terminal)
+   │   #EndProgram ~> .K
+   │   function: eats_struct_args
+   │
+   ┊  constraint: true
+   ┊  subst: ...
+   └─ 2 (leaf, target, terminal)
+       #EndProgram ~> .K
+
+
+
+
+STATISTICS
+-----------
+Total nodes: 10
+
+Node roles (exclusive):
+  target  : 1  ids: 2
+  terminal: 2  ids: 7, 11
+  failing : 1  ids: 10
+  split   : 2  ids: 3, 6
+  normal  : 4  ids: 4, 5, 8, 9
+  (root nodes omitted from totals: 1)
+
+Leaf paths from init:
+  total leaves (non-root): 2
+  reachable leaves       : 2
+  total steps            : 290
+
+  leaf 2 (path 1/2): steps 127, path 1 -> 3 -> 5 -> 7 -> 2
+  leaf 2 (path 2/2): steps 163, path 1 -> 3 -> 4 -> 6 -> 9 -> 11 -> 2
+  leaf 10: steps 163, path 1 -> 3 -> 4 -> 6 -> 8 -> 10
+
+LEAF <k> CELLS
+---------------
+Node 2:
+  #EndProgram ~> .K
+
+Node 10:
+  #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>E" ) , id: defId ( 27 ) , body: noBody ) , operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x008\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: provenanceMapEntry ( ... offset: 0 , allocId: allocId ( 0 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 28 ) , id: mirConstId ( 12 ) ) ) )  .Operands , span ( 65 ) ) ~> .K
+  >> function: core::panicking::panic::h<hash>
+  >> call span: <REPO>/kmir/src/tests/integration/data/prove-rs/symbolic-structs-fail.rs:29:5
