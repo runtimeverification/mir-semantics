@@ -3,8 +3,97 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (873 steps)
-├─ 3 (terminal)
+│  (50 steps)
+├─ 3
+│   #cast ( Range ( ListItem ( Integer ( 1 , 32 , true ) ) ) , castKindTransmute , t
+│   span: 131
+│
+│  (50 steps)
+├─ 4
+│   #setLocalValue ( place ( ... local: local ( 2 ) , projection: .ProjectionElems )
+│   function: main
+│
+│  (50 steps)
+├─ 5
+│   #reserveSlots ( localDecl ( ... ty: ty ( 2 ) , span: span ( 204 ) , mut: mutabil
+│   span: 204
+│
+│  (50 steps)
+├─ 6
+│   #traverseProjection ( toSlot ( 4 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( R
+│   span: 172
+│
+│  (50 steps)
+├─ 7
+│   operandMove ( place ( ... local: local ( 6 ) , projection: .ProjectionElems ) )
+│   span: 175
+│
+│  (50 steps)
+├─ 8
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   span: 176
+│
+│  (50 steps)
+├─ 9
+│   #readOperands ( operandMove ( place ( ... local: local ( 8 ) , projection: .Proj
+│   span: 195
+│
+│  (50 steps)
+├─ 10
+│   #execStmts ( statement ( ... kind: statementKindStorageLive ( local ( 15 ) ) , s
+│   span: 197
+│
+│  (50 steps)
+├─ 11
+│   BoolVal ( false )
+~> #freezer#selectBlock(_,_)_KMIR-CONTROL-FLOW_KItem_SwitchTar
+│
+│  (50 steps)
+├─ 12
+│   rvalueBinaryOp ( binOpOffset , operandCopy ( place ( ... local: local ( 22 ) , p
+│   span: 211
+│
+│  (50 steps)
+├─ 13
+│   #execStmts ( statement ( ... kind: statementKindStorageDead ( local ( 24 ) ) , s
+│   span: 219
+│
+│  (50 steps)
+├─ 14
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   function: main
+│   span: 250
+│
+│  (50 steps)
+├─ 15
+│   #reserveSlots ( localDecl ( ... ty: ty ( 3 ) , span: span ( 169 ) , mut: mutabil
+│   span: 169
+│
+│  (50 steps)
+├─ 16
+│   #setLocalValue ( place ( ... local: local ( 7 ) , projection: .ProjectionElems )
+│   span: 171
+│
+│  (50 steps)
+├─ 17
+│   #applyBinOp ( binOpSubUnchecked , Integer ( 1 , 64 , false ) , Integer ( 1 , 64
+│   span: 173
+│
+│  (50 steps)
+├─ 18
+│   #execStmt ( statement ( ... kind: statementKindStorageDead ( local ( 3 ) ) , spa
+│   span: 184
+│
+│  (50 steps)
+├─ 19
+│   operandCopy ( place ( ... local: local ( 4 ) , projection: .ProjectionElems ) )
+│   function: main
+│   span: 250
+│
+│  (23 steps)
+├─ 20 (terminal)
 │   #EndProgram ~> .K
 │   function: main
 │

@@ -3,8 +3,48 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (422 steps)
-├─ 3 (split)
+│  (50 steps)
+├─ 3
+│   #reserveSlots ( localDecl ( ... ty: ty ( 53 ) , span: span ( 264 ) , mut: mutabi
+│   span: 264
+│
+│  (50 steps)
+├─ 4
+│   #reserveSlots ( localDecl ( ... ty: ty ( 54 ) , span: span ( 227 ) , mut: mutabi
+│   span: 227
+│
+│  (50 steps)
+├─ 5
+│   #readOperandsAux ( ListItem ( Integer ( 1 , 32 , true ) ) ListItem ( Integer ( 2
+│   span: 114
+│
+│  (50 steps)
+├─ 6
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   span: 123
+│
+│  (50 steps)
+├─ 7
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x01\x00\x00
+│   span: 32
+│
+│  (50 steps)
+├─ 8
+│   PtrLocal ( slotPlace ( 4 , projectionElemConstantIndex ( ... offset: 1 , minLeng
+│   span: 130
+│
+│  (50 steps)
+├─ 9
+│   #mkRef ( toSlot ( 4 ) , projectionElemConstantIndex ( ... offset: 3 , minLength:
+│   span: 132
+│
+│  (50 steps)
+├─ 10
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   span: 135
+│
+│  (22 steps)
+├─ 11 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
 ┃
 ┃ (branch)
@@ -12,11 +52,69 @@
 ┃  ┃ constraint:
 ┃  ┃     0 ==Int ARG_INT1:Int &Int 18446744073709551615
 ┃  │
-┃  ├─ 4
+┃  ├─ 12
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
 ┃  │
-┃  │  (611 steps)
-┃  ├─ 6 (terminal)
+┃  │  (50 steps)
+┃  ├─ 14
+┃  │   #reserveSlots ( localDecl ( ... ty: ty ( 50 ) , span: span ( 86 ) , mut: mutabil
+┃  │   span: 86
+┃  │
+┃  │  (50 steps)
+┃  ├─ 16
+┃  │   #execStmt ( statement ( ... kind: statementKindStorageLive ( local ( 5 ) ) , spa
+┃  │   span: 78
+┃  │
+┃  │  (50 steps)
+┃  ├─ 19
+┃  │   #continueAt ( someBasicBlockIdx ( basicBlockIdx ( 4 ) ) ) ~> .K
+┃  │
+┃  │  (50 steps)
+┃  ├─ 22
+┃  │   operandCopy ( place ( ... local: local ( 26 ) , projection: projectionElemField
+┃  │   span: 155
+┃  │
+┃  │  (50 steps)
+┃  ├─ 26
+┃  │   #applyBinOp ( binOpEq , Integer ( 1 , 64 , true ) , Integer ( 1 , 64 , true ) ,
+┃  │   span: 150
+┃  │
+┃  │  (50 steps)
+┃  ├─ 30
+┃  │   Integer ( 0 , 64 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bi
+┃  │   span: 75
+┃  │
+┃  │  (50 steps)
+┃  ├─ 34
+┃  │   #execStmt ( statement ( ... kind: statementKindStorageDead ( local ( 5 ) ) , spa
+┃  │   span: 81
+┃  │
+┃  │  (50 steps)
+┃  ├─ 38
+┃  │   #readOperands ( operandMove ( place ( ... local: local ( 39 ) , projection: .Pro
+┃  │   span: 168
+┃  │
+┃  │  (50 steps)
+┃  ├─ 41
+┃  │   #traverseProjection ( toSlot ( 45 ) , AllocRef ( allocId ( 4 ) , .ProjectionElem
+┃  │   span: 164
+┃  │
+┃  │  (50 steps)
+┃  ├─ 44
+┃  │   #continueAt ( someBasicBlockIdx ( basicBlockIdx ( 16 ) ) ) ~> .K
+┃  │
+┃  │  (50 steps)
+┃  ├─ 46
+┃  │   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+┃  │   span: 183
+┃  │
+┃  │  (50 steps)
+┃  ├─ 47
+┃  │   operandMove ( place ( ... local: local ( 56 ) , projection: .ProjectionElems ) )
+┃  │
+┃  │  (11 steps)
+┃  ├─ 48 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │
 ┃  ┊  constraint: true
@@ -28,11 +126,11 @@
    ┃ constraint:
    ┃     notBool 0 ==Int ARG_INT1:Int &Int 18446744073709551615
    │
-   ├─ 5
+   ├─ 13
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
    │
    │  (1 step)
-   ├─ 7 (split)
+   ├─ 15 (split)
    │   #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 7 ) )
    ┃
    ┃ (branch)
@@ -40,22 +138,30 @@
    ┃  ┃ constraint:
    ┃  ┃     1 ==Int ARG_INT1:Int &Int 18446744073709551615
    ┃  │
-   ┃  ├─ 8
+   ┃  ├─ 17
    ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 7 ) )
    ┃  │
-   ┃  │  (109 steps)
-   ┃  └─ 10 (stuck, leaf)
+   ┃  │  (50 steps)
+   ┃  ├─ 20
+   ┃  │   #traverseProjection ( toSlot ( 130 ) , BoolVal ( true ) , .ProjectionElems , .Co
+   ┃  │
+   ┃  │  (50 steps)
+   ┃  ├─ 23
+   ┃  │   PtrLocal ( slotPlace ( 4 , projectionElemConstantIndex ( ... offset: 3 , minLeng
+   ┃  │
+   ┃  │  (9 steps)
+   ┃  └─ 27 (stuck, leaf)
    ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( slotPlace ( 4 , projectionEle
    ┃
    ┗━━┓ subst: .Subst
       ┃ constraint:
       ┃     notBool 1 ==Int ARG_INT1:Int &Int 18446744073709551615
       │
-      ├─ 9
+      ├─ 18
       │   #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 7 ) )
       │
       │  (1 step)
-      ├─ 11 (split)
+      ├─ 21 (split)
       │   #selectBlock ( switchTargets ( ... branches: branch ( 2 , basicBlockIdx ( 6 ) )
       ┃
       ┃ (branch)
@@ -63,22 +169,30 @@
       ┃  ┃ constraint:
       ┃  ┃     2 ==Int ARG_INT1:Int &Int 18446744073709551615
       ┃  │
-      ┃  ├─ 12
+      ┃  ├─ 24
       ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 2 , basicBlockIdx ( 6 ) )
       ┃  │
-      ┃  │  (109 steps)
-      ┃  └─ 14 (stuck, leaf)
+      ┃  │  (50 steps)
+      ┃  ├─ 28
+      ┃  │   #traverseProjection ( toSlot ( 130 ) , BoolVal ( true ) , .ProjectionElems , .Co
+      ┃  │
+      ┃  │  (50 steps)
+      ┃  ├─ 31
+      ┃  │   PtrLocal ( slotPlace ( 4 , projectionElemConstantIndex ( ... offset: 1 , minLeng
+      ┃  │
+      ┃  │  (9 steps)
+      ┃  └─ 35 (stuck, leaf)
       ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( slotPlace ( 4 , projectionEle
       ┃
       ┗━━┓ subst: .Subst
          ┃ constraint:
          ┃     notBool 2 ==Int ARG_INT1:Int &Int 18446744073709551615
          │
-         ├─ 13
+         ├─ 25
          │   #selectBlock ( switchTargets ( ... branches: branch ( 2 , basicBlockIdx ( 6 ) )
          │
          │  (1 step)
-         ├─ 15 (split)
+         ├─ 29 (split)
          │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 5 ) )
          ┃
          ┃ (branch)
@@ -86,22 +200,22 @@
          ┃  ┃ constraint:
          ┃  ┃     3 ==Int ARG_INT1:Int &Int 18446744073709551615
          ┃  │
-         ┃  ├─ 16
+         ┃  ├─ 32
          ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 5 ) )
          ┃  │
          ┃  │  (17 steps)
-         ┃  └─ 18 (stuck, leaf)
+         ┃  └─ 36 (stuck, leaf)
          ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( slotPlace ( 4 , projectionEle
          ┃
          ┗━━┓ subst: .Subst
             ┃ constraint:
             ┃     notBool 3 ==Int ARG_INT1:Int &Int 18446744073709551615
             │
-            ├─ 17
+            ├─ 33
             │   #selectBlock ( switchTargets ( ... branches: branch ( 3 , basicBlockIdx ( 5 ) )
             │
             │  (1 step)
-            ├─ 19 (split)
+            ├─ 37 (split)
             │   #selectBlock ( switchTargets ( ... branches: branch ( 4 , basicBlockIdx ( 4 ) )
             ┃
             ┃ (branch)
@@ -109,16 +223,16 @@
             ┃  ┃ constraint:
             ┃  ┃     4 ==Int ARG_INT1:Int &Int 18446744073709551615
             ┃  │
-            ┃  ├─ 20
+            ┃  ├─ 39
             ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 4 , basicBlockIdx ( 4 ) )
             ┃  │
             ┃  │  (18 steps)
-            ┃  ├─ 22
+            ┃  ├─ 42
             ┃  │   #mkPtr ( toAlloc ( allocId ( 2 ) ) , .ProjectionElems , mutabilityNot , metadata
             ┃  │   span: 136
             ┃  │
             ┃  │  (1 step)
-            ┃  └─ 24 (leaf, terminal)
+            ┃  └─ 45 (leaf, terminal)
             ┃      thunk ( #mkPtr ( toAlloc ( allocId ( 2 ) ) , .ProjectionElems , mutabilityNot ,
             ┃      span: 136
             ┃
@@ -126,11 +240,11 @@
                ┃ constraint:
                ┃     notBool 4 ==Int ARG_INT1:Int &Int 18446744073709551615
                │
-               ├─ 21
+               ├─ 40
                │   #selectBlock ( switchTargets ( ... branches: branch ( 4 , basicBlockIdx ( 4 ) )
                │
                │  (6 steps)
-               ├─ 23 (terminal)
+               ├─ 43 (terminal)
                │   #EndProgram ~> .K
                │
                ┊  constraint: true

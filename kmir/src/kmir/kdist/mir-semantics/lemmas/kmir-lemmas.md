@@ -52,15 +52,9 @@ The lists used in the semantics are cons-lists, so only rules with a head elemen
   rule allValues(ListItem(_) _REST) => false [owise]
 
   // Symbolic prove-rs inputs use fresh `List` variables to stand for arrays, slices,
-  // and aggregate argument lists whose elements are still runtime `Value`s. Carrying
-  // that invariant explicitly lets reads and writes avoid spurious branches on the
-  // underlying builtin `List:get` / `List:set` definedness checks.
-  rule isValue(ELEMS[IDX])
-    => true
-    requires allValues(ELEMS)
-     andBool 0 <=Int IDX
-     andBool IDX <Int size(ELEMS)
-    [simplification, symbolic(ELEMS)]
+  // and aggregate argument lists whose elements are still runtime `Value`s. The core
+  // semantics checks this invariant explicitly with `allValues(...)`; this lemma keeps
+  // the corresponding builtin `List:set` definedness from forking on impossible cases.
 
   rule #Ceil(ELEMS[IDX <- _VAL:Value])
     => #Ceil(ELEMS)

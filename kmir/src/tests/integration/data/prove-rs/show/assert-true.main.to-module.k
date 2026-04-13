@@ -37,6 +37,9 @@ module ASSERT-TRUE-MAIN-SUMMARY
            <slotStore>
              ( 0 |-> newLocal ( ty ( 0 ) , mutabilityNot ) => 0 |-> newLocal ( ty ( 0 ) , mutabilityNot ) 1 |-> newLocal ( ty ( 1 ) , mutabilityMut ) )
            </slotStore>
+           <nextSlot>
+             ( 1 => 2 )
+           </nextSlot>
          </kmir>
       [priority(20), label(BASIC-BLOCK-1-TO-3)]
 

@@ -3,8 +3,13 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (61 steps)
-├─ 3 (split)
+│  (50 steps)
+├─ 3
+│   #setLocalValue ( place ( ... local: local ( 4 ) , projection: .ProjectionElems )
+│   span: 50
+│
+│  (25 steps)
+├─ 4 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
 ┃ (branch)
@@ -12,11 +17,16 @@
 ┃  ┃ constraint:
 ┃  ┃     notBool ARG_INT2:Int ==Int ARG_INT5:Int
 ┃  │
-┃  ├─ 4
+┃  ├─ 5
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
-┃  │  (96 steps)
-┃  ├─ 6 (split)
+┃  │  (50 steps)
+┃  ├─ 7
+┃  │   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+┃  │   span: 63
+┃  │
+┃  │  (46 steps)
+┃  ├─ 9 (split)
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
 ┃  ┃
 ┃  ┃ (branch)
@@ -24,11 +34,11 @@
 ┃  ┃  ┃ constraint:
 ┃  ┃  ┃     ARG_UINT3:Int ==Int ARG_UINT6:Int
 ┃  ┃  │
-┃  ┃  ├─ 8
+┃  ┃  ├─ 11
 ┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
 ┃  ┃  │
 ┃  ┃  │  (6 steps)
-┃  ┃  └─ 10 (stuck, leaf)
+┃  ┃  └─ 13 (stuck, leaf)
 ┃  ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
 ┃  ┃      span: 32
 ┃  ┃
@@ -36,11 +46,11 @@
 ┃     ┃ constraint:
 ┃     ┃     notBool ARG_UINT3:Int ==Int ARG_UINT6:Int
 ┃     │
-┃     ├─ 9
+┃     ├─ 12
 ┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
 ┃     │
 ┃     │  (6 steps)
-┃     ├─ 11 (terminal)
+┃     ├─ 14 (terminal)
 ┃     │   #EndProgram ~> .K
 ┃     │
 ┃     ┊  constraint: true
@@ -52,11 +62,17 @@
    ┃ constraint:
    ┃     ARG_INT2:Int ==Int ARG_INT5:Int
    │
-   ├─ 5
+   ├─ 6
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
    │
-   │  (66 steps)
-   ├─ 7 (terminal)
+   │  (50 steps)
+   ├─ 8
+   │   BoolVal ( true )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation1_
+   │   span: 61
+   │
+   │  (16 steps)
+   ├─ 10 (terminal)
    │   #EndProgram ~> .K
    │
    ┊  constraint: true

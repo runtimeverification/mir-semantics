@@ -3,8 +3,15 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (88 steps)
-└─ 3 (stuck, leaf)
+│  (50 steps)
+├─ 3
+│   Integer ( -1 , 8 , true )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Eva
+│   function: main
+│   span: 50
+│
+│  (38 steps)
+└─ 4 (stuck, leaf)
     #traverseProjection ( toSlot ( 2 ) , Union ( fieldIdx ( 0 ) , Integer ( -1 , 8 ,
     function: main
     span: 59

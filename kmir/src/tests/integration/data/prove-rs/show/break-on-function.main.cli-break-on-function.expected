@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: src/rust/library/std/src/rt.rs:194
 │
-│  (7 steps)
+│  (10 steps)
 ├─ 3
 │   #execTerminatorCall ( ty ( 31 ) , monoItemFn ( ... name: symbol ( "foo" ) , id:
 │   function: main
@@ -15,7 +15,7 @@
 │   function: foo
 │   span: /prove-rs/break-on-function.rs:4
 │
-│  (5 steps)
+│  (10 steps)
 ├─ 5
 │   #execTerminatorCall ( ty ( 26 ) , monoItemFn ( ... name: symbol ( "std::hint::bl
 │   function: foo
@@ -27,7 +27,7 @@
 │   function: std::hint::black_box::<i32>
 │   span: /rust/library/core/src/hint.rs:389
 │
-│  (12 steps)
+│  (15 steps)
 ├─ 7
 │   #execTerminatorCall ( ty ( 25 ) , IntrinsicFunction ( symbol ( "black_box" ) ) ,
 │   function: std::hint::black_box::<i32>
@@ -39,7 +39,7 @@
 │   function: std::hint::black_box::<i32>
 │   span: /rust/library/core/src/hint.rs:389
 │
-│  (41 steps)
+│  (46 steps)
 ├─ 9 (terminal)
 │   #EndProgram ~> .K
 │   function: main

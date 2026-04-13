@@ -3,8 +3,13 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (75 steps)
-├─ 3 (split)
+│  (50 steps)
+├─ 3
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   span: 69
+│
+│  (25 steps)
+├─ 4 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
 ┃ (branch)
@@ -12,11 +17,11 @@
 ┃  ┃ constraint:
 ┃  ┃     notBool size ( ARG_ARRAY1:List ) >=Int 4
 ┃  │
-┃  ├─ 4
+┃  ├─ 5
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
 ┃  │  (6 steps)
-┃  └─ 6 (stuck, leaf)
+┃  └─ 7 (stuck, leaf)
 ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
 ┃      span: 32
 ┃
@@ -24,47 +29,79 @@
    ┃ constraint:
    ┃     size ( ARG_ARRAY1:List ) >=Int 4
    │
-   ├─ 5
+   ├─ 6
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
    │
-   │  (221 steps)
-   ├─ 7
+   │  (50 steps)
+   ├─ 8
+   │   #cast ( operandMove ( place ( ... local: local ( 7 ) , projection: .ProjectionEl
+   │   span: 75
+   │
+   │  (50 steps)
+   ├─ 9
+   │   #applyUnOp ( unOpPtrMetadata , Reference ( slotPlace ( 8 , .ProjectionElems ) ,
+   │   span: 73
+   │
+   │  (50 steps)
+   ├─ 10
+   │   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+   │   span: 45
+   │
+   │  (50 steps)
+   ├─ 11
+   │   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: assert (
+   │   span: 81
+   │
+   │  (21 steps)
+   ├─ 12
    │   #traverseProjection ( toSlot ( 2 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    │   span: 87
    ┃
    ┃ (1 step)
    ┣━━┓
    ┃  │
-   ┃  ├─ 8
+   ┃  ├─ 13
    ┃  │   #traverseProjection ( toSlot ( 2 ) , project:Value ( range ( ARG_ARRAY1:List , 0
    ┃  │   span: 87
    ┃  │
    ┃  │  (7 steps)
-   ┃  ├─ 10
+   ┃  ├─ 15
    ┃  │   #traverseProjection ( toSlot ( 2 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    ┃  │   span: 87
    ┃  ┃
    ┃  ┃ (1 step)
    ┃  ┣━━┓
    ┃  ┃  │
-   ┃  ┃  ├─ 11
+   ┃  ┃  ├─ 16
    ┃  ┃  │   #traverseProjection ( toSlot ( 2 ) , Range ( range ( range ( ARG_ARRAY1:List , 0
    ┃  ┃  │   span: 87
    ┃  ┃  │
-   ┃  ┃  │  (119 steps)
-   ┃  ┃  └─ 13 (stuck, leaf)
+   ┃  ┃  │  (50 steps)
+   ┃  ┃  ├─ 18
+   ┃  ┃  │   rvalueCast ( castKindPointerCoercion ( pointerCoercionUnsize ) , operandCopy ( p
+   ┃  ┃  │   span: 89
+   ┃  ┃  │
+   ┃  ┃  │  (50 steps)
+   ┃  ┃  ├─ 19
+   ┃  ┃  │   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+   ┃  ┃  │   span: 95
+   ┃  ┃  │
+   ┃  ┃  │  (19 steps)
+   ┃  ┃  └─ 20 (stuck, leaf)
    ┃  ┃      #traverseProjection ( toSlot ( 8 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    ┃  ┃      span: 97
    ┃  ┃
    ┃  ┗━━┓
    ┃     │
-   ┃     └─ 12 (stuck, leaf)
+   ┃     └─ 17 (stuck, leaf)
    ┃         #traverseProjection ( toSlot ( 2 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    ┃         span: 87
    ┃
    ┗━━┓
       │
-      └─ 9 (stuck, leaf)
+      └─ 14 (stuck, leaf)
           #traverseProjection ( toSlot ( 2 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
           span: 87
 

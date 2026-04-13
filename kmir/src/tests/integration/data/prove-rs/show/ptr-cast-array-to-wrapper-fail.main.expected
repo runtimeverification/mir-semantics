@@ -3,15 +3,21 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (68 steps)
+│  (50 steps)
 ├─ 3
-│   #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: projectionEl
+│   Reference ( slotPlace ( 2 , .ProjectionElems ) , mutabilityNot , metadata ( stat
+│   function: main
+│   span: 274
+│
+│  (40 steps)
+├─ 4
+│   #cast ( PtrLocal ( slotPlace ( 2 , projectionElemWrapStruct  projectionElemToZST
 │   function: main
 │   span: 270
 │
 │  (1 step)
-└─ 4 (leaf, terminal)
-    thunk ( #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: proj
+└─ 5 (leaf, terminal)
+    thunk ( #cast ( PtrLocal ( slotPlace ( 2 , projectionElemWrapStruct  projectionE
     function: main
     span: 270
 

@@ -23,6 +23,7 @@ module RT-DATA
   imports BODY
   imports TYPES
 
+  imports KMIR-AST
   imports RT-VALUE-SYNTAX
   imports RT-NUMBERS
   imports RT-DECODING
@@ -84,7 +85,7 @@ More often than not, a slot or list element must be selected by index and is req
 
   rule getValue(VALUES, IDX) => {VALUES[IDX]}:>Value
     requires 0 <=Int IDX andBool IDX <Int size(VALUES)
-     andBool isValue(VALUES[IDX])
+     andBool allValues(VALUES)
      [preserves-definedness] // valid indexing and sort coercion checked
 ```
 
@@ -347,7 +348,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule #setRangeElem(ELEMS, IDX, VAL)
       => ELEMS[IDX <- VAL]
     requires 0 <=Int IDX andBool IDX <Int size(ELEMS)
-     andBool isValue(ELEMS[IDX])
+     andBool allValues(ELEMS)
      [preserves-definedness]
 
   rule #buildUpdate(VAL, CtxField(IDX, ARGS, I, _) CTXS)
@@ -432,7 +433,7 @@ This is done without consideration of the validity of the Downcast[^downcast].
         ...
         </k>
     requires 0 <=Int I andBool I <Int size(ARGS)
-     andBool isValue(ARGS[I])
+     andBool allValues(ARGS)
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #traverseProjection(
@@ -534,7 +535,7 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
      andBool isTypedValue(frameLocal(STORE, SLOTS, LOCAL))
      andBool isInt(#expectUsize(frameValue(STORE, SLOTS, LOCAL)))
      andBool 0 <=Int #expectUsize(frameValue(STORE, SLOTS, LOCAL)) andBool #expectUsize(frameValue(STORE, SLOTS, LOCAL)) <Int size(ELEMENTS)
-     andBool isValue(ELEMENTS[#expectUsize(frameValue(STORE, SLOTS, LOCAL))])
+     andBool allValues(ELEMENTS)
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
 
   rule <k> #traverseProjection(
@@ -552,7 +553,7 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
         ...
         </k>
     requires 0 <=Int OFFSET andBool OFFSET <Int size(ELEMENTS)
-     andBool isValue(ELEMENTS[OFFSET])
+     andBool allValues(ELEMENTS)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #traverseProjection(
@@ -571,7 +572,7 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
         </k>
     requires 0 <Int OFFSET andBool OFFSET <=Int MINLEN
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
-     andBool isValue(ELEMENTS[MINLEN -Int OFFSET])
+     andBool allValues(ELEMENTS)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   syntax Int ::= #expectUsize ( Value ) [function]

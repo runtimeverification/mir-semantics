@@ -975,9 +975,40 @@
                 ],
                 "arity": 1,
                 "variable": false
+              },
+              {
+                "node": "KApply",
+                "label": {
+                  "node": "KLabel",
+                  "name": "<nextSlot>",
+                  "params": []
+                },
+                "args": [
+                  {
+                    "node": "KRewrite",
+                    "lhs": {
+                      "node": "KToken",
+                      "token": "1",
+                      "sort": {
+                        "node": "KSort",
+                        "name": "Int"
+                      }
+                    },
+                    "rhs": {
+                      "node": "KToken",
+                      "token": "2",
+                      "sort": {
+                        "node": "KSort",
+                        "name": "Int"
+                      }
+                    }
+                  }
+                ],
+                "arity": 1,
+                "variable": false
               }
             ],
-            "arity": 6,
+            "arity": 7,
             "variable": false
           },
           {
@@ -989,22 +1020,11 @@
             },
             "args": [
               {
-                "node": "KRewrite",
-                "lhs": {
-                  "node": "KToken",
-                  "token": "1",
-                  "sort": {
-                    "node": "KSort",
-                    "name": "Int"
-                  }
-                },
-                "rhs": {
-                  "node": "KToken",
-                  "token": "2",
-                  "sort": {
-                    "node": "KSort",
-                    "name": "Int"
-                  }
+                "node": "KToken",
+                "token": "1",
+                "sort": {
+                  "node": "KSort",
+                  "name": "Int"
                 }
               }
             ],

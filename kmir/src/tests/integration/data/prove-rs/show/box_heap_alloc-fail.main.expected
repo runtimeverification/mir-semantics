@@ -3,13 +3,23 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (107 steps)
+│  (50 steps)
 ├─ 3
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 307
+│
+│  (50 steps)
+├─ 4
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   span: 185
+│
+│  (7 steps)
+├─ 5
 │   #cast ( Integer ( 4 , 64 , false ) , castKindTransmute , ty ( 29 ) , ty ( 50 ) )
 │   span: 186
 │
 │  (1 step)
-└─ 4 (leaf, terminal)
+└─ 6 (leaf, terminal)
     thunk ( #cast ( Integer ( 4 , 64 , false ) , castKindTransmute , ty ( 29 ) , ty
     span: 186
 

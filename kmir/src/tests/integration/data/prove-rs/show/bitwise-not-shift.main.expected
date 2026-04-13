@@ -3,8 +3,110 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (928 steps)
-├─ 3 (terminal)
+│  (50 steps)
+├─ 3
+│   #reserveSlots ( localDecl ( ... ty: ty ( 37 ) , span: span ( 182 ) , mut: mutabi
+│   function: main
+│   span: 182
+│
+│  (50 steps)
+├─ 4
+│   #traverseProjection ( toSlot ( 4 ) , Integer ( 7 , 128 , false ) , .ProjectionEl
+│   function: main
+│
+│  (50 steps)
+├─ 5
+│   rvalueUnaryOp ( unOpNot , operandMove ( place ( ... local: local ( 8 ) , project
+│   function: main
+│   span: 121
+│
+│  (50 steps)
+├─ 6
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: 132
+│
+│  (50 steps)
+├─ 7
+│   BoolVal ( false )
+~> #freezer#applyUnOp(_,_)_RT-DATA_Evaluation_UnOp_Evaluation1
+│   function: main
+│   span: 136
+│
+│  (50 steps)
+├─ 8
+│   #setSlotValue ( 18 , Moved )
+~> BoolVal ( true )
+~> #freezer#selectBlock(_,_)_KM
+│   function: main
+│
+│  (50 steps)
+├─ 9
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   function: main
+│   span: 151
+│
+│  (50 steps)
+├─ 10
+│   operandCopy ( place ( ... local: local ( 4 ) , projection: .ProjectionElems ) )
+│   span: 65
+│
+│  (50 steps)
+├─ 11
+│   #reserveSlots ( localDecl ( ... ty: ty ( 16 ) , span: span ( 51 ) , mut: mutabil
+│   span: 51
+│
+│  (50 steps)
+├─ 12
+│   #execStmts ( statement ( ... kind: statementKindStorageDead ( local ( 4 ) ) , sp
+│   span: 54
+│
+│  (50 steps)
+├─ 13
+│   #setArgsFromStack ( 2 , operandMove ( place ( ... local: local ( 32 ) , projecti
+│   span: 73
+│
+│  (50 steps)
+├─ 14
+│   #setLocalValue ( place ( ... local: local ( 30 ) , projection: .ProjectionElems
+│   function: main
+│
+│  (50 steps)
+├─ 15
+│   #execStmt ( statement ( ... kind: statementKindStorageLive ( local ( 3 ) ) , spa
+│   span: 92
+│
+│  (50 steps)
+├─ 16
+│   #setLocalValue ( place ( ... local: local ( 34 ) , projection: .ProjectionElems
+│   function: main
+│   span: 170
+│
+│  (50 steps)
+├─ 17
+│   #setArgFromStack ( 1 , operandMove ( place ( ... local: local ( 40 ) , projectio
+│   span: 84
+│
+│  (50 steps)
+├─ 18
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   span: 83
+│
+│  (50 steps)
+├─ 19
+│   #setArgsFromStack ( 3 , .Operands )
+~> #execBlock ( basicBlock ( ... statements:
+│   span: 100
+│
+│  (50 steps)
+├─ 20
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   function: main
+│   span: 180
+│
+│  (28 steps)
+├─ 21 (terminal)
 │   #EndProgram ~> .K
 │   function: main
 │

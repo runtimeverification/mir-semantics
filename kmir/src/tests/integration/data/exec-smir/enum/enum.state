@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #setSlotValue ( 10 , Moved ) ~> Integer ( 65 , 0 , false ) ~> #freezer#selectBlock(_,_)_KMIR-CONTROL-FLOW_KItem_SwitchTargets_Evaluation1_ ( switchTargets (... branches: branch ( 65 , basicBlockIdx ( 3 ) )  .Branches , otherwise: basicBlockIdx ( 4 ) ) ~> .K ) ~> .K
+    #execBlockIdx ( basicBlockIdx ( 4 ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -66,7 +66,7 @@
     7 |-> typedValue ( Moved , ty ( 29 ) , mutabilityMut )
     8 |-> newLocal ( ty ( 16 ) , mutabilityNot )
     9 |-> newLocal ( ty ( 28 ) , mutabilityNot )
-    10 |-> typedValue ( Integer ( 65 , 0 , false ) , ty ( 6 ) , mutabilityMut )
+    10 |-> typedValue ( Moved , ty ( 6 ) , mutabilityMut )
     11 |-> newLocal ( ty ( 29 ) , mutabilityMut )
     12 |-> newLocal ( ty ( 26 ) , mutabilityNot )
     13 |-> newLocal ( ty ( 28 ) , mutabilityMut )

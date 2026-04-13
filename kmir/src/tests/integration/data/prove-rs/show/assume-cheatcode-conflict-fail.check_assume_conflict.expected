@@ -3,8 +3,13 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (67 steps)
-└─ 3 (stuck, leaf)
+│  (50 steps)
+├─ 3
+│   #applyBinOp ( binOpGt , Integer ( ARG_UINT1:Int , 64 , false ) , Integer ( 10 ,
+│   span: 50
+│
+│  (17 steps)
+└─ 4 (stuck, leaf)
     #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
     span: 32
 
