@@ -55,4 +55,7 @@
     ListItem ( Integer ( -1714975244 , 32 , true ) )
     ListItem ( Integer ( -282729822 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot )
   </slotStore>
+  <nextSlot>
+    5
+  </nextSlot>
 </kmir>

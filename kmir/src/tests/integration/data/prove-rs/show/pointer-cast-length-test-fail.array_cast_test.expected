@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (78 steps)
+│  (75 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
@@ -27,7 +27,7 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
    │
-   │  (238 steps)
+   │  (221 steps)
    ├─ 7
    │   #traverseProjection ( toSlot ( 2 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    │   span: 87
@@ -51,7 +51,7 @@
    ┃  ┃  │   #traverseProjection ( toSlot ( 2 ) , Range ( range ( range ( ARG_ARRAY1:List , 0
    ┃  ┃  │   span: 87
    ┃  ┃  │
-   ┃  ┃  │  (129 steps)
+   ┃  ┃  │  (119 steps)
    ┃  ┃  └─ 13 (stuck, leaf)
    ┃  ┃      #traverseProjection ( toSlot ( 8 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    ┃  ┃      span: 97

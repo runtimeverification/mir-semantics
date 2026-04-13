@@ -3,8 +3,226 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (2330 steps)
-├─ 3 (terminal)
+│  (50 steps)
+├─ 3
+│   rvalueAggregate ( aggregateKindArray ( ty ( 31 ) ) , operandMove ( place ( ... l
+│   function: main
+│   span: 199
+│
+│  (50 steps)
+├─ 4
+│   #setLocalValue ( place ( ... local: local ( 7 ) , projection: .ProjectionElems )
+│   function: main
+│   span: 190
+│
+│  (50 steps)
+├─ 5
+│   #setLocalValue ( place ( ... local: local ( 4 ) , projection: .ProjectionElems )
+│   span: 176
+│
+│  (50 steps)
+├─ 6
+│   rvalueAddressOf ( mutabilityNot , place ( ... local: local ( 1 ) , projection: p
+│   span: 55
+│
+│  (50 steps)
+├─ 7
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+│
+│  (50 steps)
+├─ 8
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   span: 60
+│
+│  (50 steps)
+├─ 9
+│   #dropSlots ( ListItem ( 25 ) ListItem ( 26 ) )
+~> #execBlockIdx ( basicBlockIdx
+│
+│  (50 steps)
+├─ 10
+│   #mkRef ( toSlot ( 15 ) , .ProjectionElems , mutabilityMut , metadata ( noMetadat
+│   span: 179
+│
+│  (50 steps)
+├─ 11
+│   #execBlockIdx ( basicBlockIdx ( 2 ) ) ~> .K
+│
+│  (50 steps)
+├─ 12
+│   #traverseProjection ( toSlot ( 41 ) , Reference ( slotPlace ( 15 , .ProjectionEl
+│   span: 110
+│
+│  (50 steps)
+├─ 13
+│   #traverseProjection ( toSlot ( 45 ) , Aggregate ( variantIdx ( 0 ) , ListItem (
+│   span: 115
+│
+│  (50 steps)
+├─ 14
+│   #setLocalValue ( place ( ... local: local ( 15 ) , projection: .ProjectionElems
+│   span: 119
+│
+│  (50 steps)
+├─ 15
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   span: 144
+│
+│  (50 steps)
+├─ 16
+│   #traverseProjection ( toSlot ( 64 ) , PtrLocal ( slotPlace ( 2 , projectionElemF
+│   span: 149
+│
+│  (50 steps)
+├─ 17
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   span: 113
+│
+│  (50 steps)
+├─ 18
+│   Aggregate ( variantIdx ( 1 ) , ListItem ( Reference ( slotPlace ( 2 , projection
+│   span: 117
+│
+│  (50 steps)
+├─ 19
+│   rvalueUse ( operandConstant ( constOperand ( ... span: span ( 183 ) , userTy: no
+│   span: 183
+│
+│  (50 steps)
+├─ 20
+│   Integer ( 1 , 8 , false )
+~> #freezer#setLocalValue(_,_)_RT-DATA_KItem_Place_Eva
+│   span: 185
+│
+│  (50 steps)
+├─ 21
+│   #reserveSlots ( localDecl ( ... ty: ty ( 30 ) , span: span ( 145 ) , mut: mutabi
+│   span: 145
+│
+│  (50 steps)
+├─ 22
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   span: 107
+│
+│  (50 steps)
+├─ 23
+│   #traverseProjection ( toSlot ( 15 ) , Aggregate ( variantIdx ( 0 ) , ListItem (
+│   span: 113
+│
+│  (50 steps)
+├─ 24
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   span: 97
+│
+│  (50 steps)
+├─ 25
+│   PtrLocal ( slotPlace ( 15 , projectionElemField ( fieldIdx ( 1 ) , ty ( 30 ) )
+│   span: 134
+│
+│  (50 steps)
+├─ 26
+│   #traverseProjection ( toSlot ( 93 ) , PtrLocal ( slotPlace ( 2 , projectionElemF
+│   span: 32
+│
+│  (50 steps)
+├─ 27
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   span: 132
+│
+│  (50 steps)
+├─ 28
+│   Reference ( slotPlace ( 2 , projectionElemField ( fieldIdx ( 1 ) , ty ( 48 ) )
+│   span: 126
+│
+│  (50 steps)
+├─ 29
+│   #setSlotValue ( 18 , Moved )
+~> Integer ( 1 , 0 , false )
+~> #freezer#selectBloc
+│
+│  (50 steps)
+├─ 30
+│   operandMove ( place ( ... local: local ( 14 ) , projection: .ProjectionElems ) )
+│
+│  (50 steps)
+├─ 31
+│   #reserveSlots ( localDecl ( ... ty: ty ( 35 ) , span: span ( 156 ) , mut: mutabi
+│   span: 156
+│
+│  (50 steps)
+├─ 32
+│   #traverseProjection ( toSlot ( 15 ) , Aggregate ( variantIdx ( 0 ) , ListItem (
+│   span: 105
+│
+│  (50 steps)
+├─ 33
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindShared , place (
+│   span: 111
+│
+│  (50 steps)
+├─ 34
+│   #applyBinOp ( binOpEq , PtrLocal ( slotPlace ( 2 , projectionElemField ( fieldId
+│   span: 111
+│
+│  (50 steps)
+├─ 35
+│   operandConstant ( constOperand ( ... span: span ( 119 ) , userTy: noUserTypeAnno
+│   span: 119
+│
+│  (50 steps)
+├─ 36
+│   #execStmt ( statement ( ... kind: statementKindStorageLive ( local ( 24 ) ) , sp
+│   span: 145
+│
+│  (50 steps)
+├─ 37
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   span: 151
+│
+│  (50 steps)
+├─ 38
+│   #cast ( operandCopy ( place ( ... local: local ( 27 ) , projection: .ProjectionE
+│   span: 128
+│
+│  (50 steps)
+├─ 39
+│   #execBlockIdx ( basicBlockIdx ( 4 ) ) ~> .K
+│
+│  (50 steps)
+├─ 40
+│   #setLocalValue ( place ( ... local: local ( 13 ) , projection: .ProjectionElems
+│   span: 181
+│
+│  (50 steps)
+├─ 41
+│   #execBlockIdx ( basicBlockIdx ( 3 ) ) ~> .K
+│
+│  (50 steps)
+├─ 42
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   span: 96
+│
+│  (50 steps)
+├─ 43
+│   #execStmt ( statement ( ... kind: statementKindStorageDead ( local ( 6 ) ) , spa
+│   span: 108
+│
+│  (50 steps)
+├─ 44
+│   #execStmts ( statement ( ... kind: statementKindStorageDead ( local ( 11 ) ) , s
+│   span: 114
+│
+│  (50 steps)
+├─ 45
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   span: 32
+│
+│  (49 steps)
+├─ 46 (terminal)
 │   #EndProgram ~> .K
 │   function: main
 │

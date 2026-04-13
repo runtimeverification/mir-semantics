@@ -3,8 +3,104 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (1045 steps)
-└─ 3 (stuck, leaf)
+│  (50 steps)
+├─ 3
+│   rvalueAggregate ( aggregateKindAdt ( adtDef ( 17 ) , variantIdx ( 0 ) , genericA
+│   span: 32
+│
+│  (50 steps)
+├─ 4
+│   Aggregate ( variantIdx ( 0 ) , ListItem ( Aggregate ( variantIdx ( 0 ) , ListIte
+│   span: 263
+│
+│  (50 steps)
+├─ 5
+│   #reserveSlots ( localDecl ( ... ty: ty ( 47 ) , span: span ( 68 ) , mut: mutabil
+│   span: 68
+│
+│  (50 steps)
+├─ 6
+│   #traverseProjection ( toSlot ( 29 ) , Reference ( slotPlace ( 2 , projectionElem
+│   span: 159
+│
+│  (50 steps)
+├─ 7
+│   #cast ( PtrLocal ( slotPlace ( 2 , projectionElemField ( fieldIdx ( 0 ) , ty ( 6
+│   span: 86
+│
+│  (50 steps)
+├─ 8
+│   #setLocalValue ( place ( ... local: local ( 16 ) , projection: .ProjectionElems
+│   span: 102
+│
+│  (50 steps)
+├─ 9
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\xff\xff\xff
+│   span: 100
+│
+│  (50 steps)
+├─ 10
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   span: 168
+│
+│  (50 steps)
+├─ 11
+│   #execStmts ( statement ( ... kind: statementKindStorageDead ( local ( 7 ) ) , sp
+│   span: 171
+│
+│  (50 steps)
+├─ 12
+│   #execStmt ( statement ( ... kind: statementKindStorageDead ( local ( 22 ) ) , sp
+│   span: 172
+│
+│  (50 steps)
+├─ 13
+│   #execTerminator ( terminator ( ... kind: terminatorKindReturn , span: span ( 160
+│   span: 160
+│
+│  (50 steps)
+├─ 14
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindMut ( ... kind:
+│   span: 271
+│
+│  (50 steps)
+├─ 15
+│   #execStmt ( statement ( ... kind: statementKindStorageLive ( local ( 5 ) ) , spa
+│   span: 237
+│
+│  (50 steps)
+├─ 16
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   span: 272
+│
+│  (50 steps)
+├─ 17
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   span: 274
+│
+│  (50 steps)
+├─ 18
+│   #reserveSlots ( localDecl ( ... ty: ty ( 46 ) , span: span ( 76 ) , mut: mutabil
+│   span: 76
+│
+│  (50 steps)
+├─ 19
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindShared , place (
+│   span: 159
+│
+│  (50 steps)
+├─ 20
+│   PtrLocal ( slotPlace ( 2 , projectionElemField ( fieldIdx ( 0 ) , ty ( 68 ) )  p
+│   span: 86
+│
+│  (50 steps)
+├─ 21
+│   #execTerminator ( terminator ( ... kind: terminatorKindGoto ( ... target: basicB
+│   span: 162
+│
+│  (37 steps)
+└─ 22 (stuck, leaf)
     #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core4cell22panic_already
     span: 32
 

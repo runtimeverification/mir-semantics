@@ -3,8 +3,94 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (892 steps)
-├─ 3 (terminal)
+│  (50 steps)
+├─ 3
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00" , prov
+│   span: 88
+│
+│  (50 steps)
+├─ 4
+│   #setLocalValue ( place ( ... local: local ( 4 ) , projection: .ProjectionElems )
+│   function: main
+│   span: 106
+│
+│  (50 steps)
+├─ 5
+│   #reserveSlots ( localDecl ( ... ty: ty ( 28 ) , span: span ( 78 ) , mut: mutabil
+│   span: 78
+│
+│  (50 steps)
+├─ 6
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 4 ) )
+│
+│  (50 steps)
+├─ 7
+│   #setLocalValue ( place ( ... local: local ( 1 ) , projection: .ProjectionElems )
+│   span: 110
+│
+│  (50 steps)
+├─ 8
+│   #execStmts ( statement ( ... kind: statementKindAssign ( ... place: place ( ...
+│   function: main
+│   span: 117
+│
+│  (50 steps)
+├─ 9
+│   operandCopy ( place ( ... local: local ( 11 ) , projection: projectionElemField
+│   function: main
+│   span: 116
+│
+│  (50 steps)
+├─ 10
+│   #execBlock ( basicBlock ( ... statements: statement ( ... kind: statementKindAss
+│   span: 73
+│
+│  (50 steps)
+├─ 11
+│   #execStmts ( .Statements )
+~> #execTerminator ( terminator ( ... kind: terminato
+│   span: 77
+│
+│  (50 steps)
+├─ 12
+│   #applyBinOp ( binOpEq , operandCopy ( place ( ... local: local ( 3 ) , projectio
+│   span: 148
+│
+│  (50 steps)
+├─ 13
+│   #setLocalValue ( place ( ... local: local ( 1 ) , projection: .ProjectionElems )
+│   span: 88
+│
+│  (50 steps)
+├─ 14
+│   rvalueRef ( region ( ... kind: regionKindReErased ) , borrowKindShared , place (
+│   function: main
+│   span: 131
+│
+│  (50 steps)
+├─ 15
+│   AllocRef ( allocId ( 4 ) , .ProjectionElems , metadata ( noMetadataSize , 0 , no
+│   function: main
+│   span: 129
+│
+│  (50 steps)
+├─ 16
+│   #setLocalValue ( place ( ... local: local ( 3 ) , projection: .ProjectionElems )
+│   span: 72
+│
+│  (50 steps)
+├─ 17
+│   #setUpCalleeData ( monoItemFn ( ... name: symbol ( "<SmallInt as std::cmp::Parti
+│   span: 149
+│
+│  (50 steps)
+├─ 18
+│   Integer ( 2 , 0 , false )
+~> #freezer#applyBinOp(_,_,_,_)_RT-DATA_Evaluation_Bin
+│   span: 148
+│
+│  (34 steps)
+├─ 19 (terminal)
 │   #EndProgram ~> .K
 │   function: main
 │

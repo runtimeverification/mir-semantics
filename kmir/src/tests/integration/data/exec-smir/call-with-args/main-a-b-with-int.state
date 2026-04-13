@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #setArgFromStack ( 1 , operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) ) ~> #setArgsFromStack ( 2 , operandConstant ( constOperand (... span: span ( 57 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x0b\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 2 ) , mutability: mutabilityMut ) ) , ty: ty ( 28 ) , id: mirConstId ( 12 ) ) ) )  .Operands ) ~> #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) ) ~> .K
+    #setLocalValue ( place (... local: local ( 1 ) , projection: .ProjectionElems ) , Integer ( 10 , 64 , false ) ) ~> #setArgsFromStack ( 2 , operandConstant ( constOperand (... span: span ( 57 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x0b\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 2 ) , mutability: mutabilityMut ) ) , ty: ty ( 28 ) , id: mirConstId ( 12 ) ) ) )  .Operands ) ~> #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) ) ~> .K
   </k>
   <retVal>
     noReturn

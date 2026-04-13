@@ -3,8 +3,13 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (91 steps)
-├─ 3 (split)
+│  (50 steps)
+├─ 3
+│   #setArgsFromStack ( 7 , operandCopy ( place ( ... local: local ( 7 ) , projectio
+│   span: 51
+│
+│  (32 steps)
+├─ 4 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃
 ┃ (branch)
@@ -12,11 +17,21 @@
 ┃  ┃ constraint:
 ┃  ┃     notBool ARG_BOOL3:Bool
 ┃  │
-┃  ├─ 4
+┃  ├─ 5
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
 ┃  │
-┃  │  (145 steps)
-┃  ├─ 6 (split)
+┃  │  (50 steps)
+┃  ├─ 7
+┃  │   #traverseProjection ( toSlot ( 33 ) , Integer ( 0 , 64 , false ) , .ProjectionEl
+┃  │   span: 56
+┃  │
+┃  │  (50 steps)
+┃  ├─ 9
+┃  │   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+┃  │   span: 63
+┃  │
+┃  │  (37 steps)
+┃  ├─ 11 (split)
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
 ┃  ┃
 ┃  ┃ (branch)
@@ -24,11 +39,11 @@
 ┃  ┃  ┃ constraint:
 ┃  ┃  ┃     notBool size ( ARG_ARRAY8:List ) >Int 0
 ┃  ┃  │
-┃  ┃  ├─ 8
+┃  ┃  ├─ 13
 ┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
 ┃  ┃  │
 ┃  ┃  │  (5 steps)
-┃  ┃  ├─ 12 (terminal)
+┃  ┃  ├─ 17 (terminal)
 ┃  ┃  │   #EndProgram ~> .K
 ┃  ┃  │
 ┃  ┃  ┊  constraint: true
@@ -40,59 +55,49 @@
 ┃     ┃ constraint:
 ┃     ┃     size ( ARG_ARRAY8:List ) >Int 0
 ┃     │
-┃     ├─ 9
+┃     ├─ 14
 ┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
 ┃     │
-┃     │  (126 steps)
-┃     ├─ 13
-┃     │   #traverseProjection ( toSlot ( 12 ) , Range ( ARG_ARRAY8:List ) , projectionElem
-┃     │   span: 69
-┃     ┃
-┃     ┃ (1 step)
-┃     ┣━━┓
-┃     ┃  │
-┃     ┃  ├─ 16
-┃     ┃  │   #traverseProjection ( toSlot ( 12 ) , project:Value ( ARG_ARRAY8:List [ 0 ] ~> .
-┃     ┃  │   span: 69
-┃     ┃  │
-┃     ┃  │  (7 steps)
-┃     ┃  ├─ 20
-┃     ┃  │   #execTerminator ( terminator ( ... kind: terminatorKindReturn , span: span ( 71
-┃     ┃  │   span: 71
-┃     ┃  ┃
-┃     ┃  ┃ (1 step)
-┃     ┃  ┣━━┓
-┃     ┃  ┃  │
-┃     ┃  ┃  ├─ 22 (terminal)
-┃     ┃  ┃  │   #EndProgram ~> .K
-┃     ┃  ┃  │
-┃     ┃  ┃  ┊  constraint:
-┃     ┃  ┃  ┊      Ceil_2cca30a3
-┃     ┃  ┃  ┊  subst: ...
-┃     ┃  ┃  └─ 2 (leaf, target, terminal)
-┃     ┃  ┃      #EndProgram ~> .K
-┃     ┃  ┃
-┃     ┃  ┗━━┓
-┃     ┃     │
-┃     ┃     └─ 23 (leaf, pending)
-┃     ┃         #execTerminator ( terminator ( ... kind: terminatorKindReturn , span: span ( 71
-┃     ┃         span: 71
-┃     ┃
-┃     ┗━━┓
-┃        │
-┃        └─ 17 (stuck, leaf)
-┃            #traverseProjection ( toSlot ( 12 ) , Range ( ARG_ARRAY8:List ) , projectionElem
-┃            span: 69
+┃     │  (50 steps)
+┃     ├─ 18
+┃     │   operandCopy ( place ( ... local: local ( 7 ) , projection: projectionElemDeref
+┃     │   span: 68
+┃     │
+┃     │  (50 steps)
+┃     ├─ 21
+┃     │   BoolVal ( 0 <Int size ( ARG_ARRAY8:List ) )
+~> #freezer#expect(_,_,_)_KMIR-CONTR
+┃     │
+┃     │  (28 steps)
+┃     ├─ 23 (terminal)
+┃     │   #EndProgram ~> .K
+┃     │
+┃     ┊  constraint:
+┃     ┊      0 <Int size ( ARG_ARRAY8:List )
+┃     ┊      allValues ( ARG_ARRAY8:List )
+┃     ┊  subst: ...
+┃     └─ 2 (leaf, target, terminal)
+┃         #EndProgram ~> .K
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
    ┃     ARG_BOOL3:Bool
    │
-   ├─ 5
+   ├─ 6
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
    │
-   │  (119 steps)
-   ├─ 7 (split)
+   │  (50 steps)
+   ├─ 8
+   │   operandMove ( place ( ... local: local ( 4 ) , projection: .ProjectionElems ) )
+   │   span: 54
+   │
+   │  (50 steps)
+   ├─ 10
+   │   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00
+   │   span: 61
+   │
+   │  (13 steps)
+   ├─ 12 (split)
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
    ┃
    ┃ (branch)
@@ -100,11 +105,11 @@
    ┃  ┃ constraint:
    ┃  ┃     notBool size ( ARG_ARRAY8:List ) >Int 0
    ┃  │
-   ┃  ├─ 10
+   ┃  ├─ 15
    ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
    ┃  │
    ┃  │  (5 steps)
-   ┃  ├─ 14 (terminal)
+   ┃  ├─ 19 (terminal)
    ┃  │   #EndProgram ~> .K
    ┃  │
    ┃  ┊  constraint: true
@@ -116,43 +121,29 @@
       ┃ constraint:
       ┃     size ( ARG_ARRAY8:List ) >Int 0
       │
-      ├─ 11
+      ├─ 16
       │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 9 ) )
       │
-      │  (126 steps)
-      ├─ 15
-      │   #traverseProjection ( toSlot ( 12 ) , Range ( ARG_ARRAY8:List ) , projectionElem
-      │   span: 69
-      ┃
-      ┃ (1 step)
-      ┣━━┓
-      ┃  │
-      ┃  ├─ 18
-      ┃  │   #traverseProjection ( toSlot ( 12 ) , project:Value ( ARG_ARRAY8:List [ 0 ] ~> .
-      ┃  │   span: 69
-      ┃  │
-      ┃  │  (7 steps)
-      ┃  ├─ 21
-      ┃  │   #execTerminator ( terminator ( ... kind: terminatorKindReturn , span: span ( 71
-      ┃  │   span: 71
-      ┃  ┃
-      ┃  ┃ (1 step)
-      ┃  ┣━━┓
-      ┃  ┃  │
-      ┃  ┃  └─ 24 (leaf, pending)
-      ┃  ┃      #EndProgram ~> .K
-      ┃  ┃
-      ┃  ┗━━┓
-      ┃     │
-      ┃     └─ 25 (leaf, pending)
-      ┃         #execTerminator ( terminator ( ... kind: terminatorKindReturn , span: span ( 71
-      ┃         span: 71
-      ┃
-      ┗━━┓
-         │
-         └─ 19 (stuck, leaf)
-             #traverseProjection ( toSlot ( 12 ) , Range ( ARG_ARRAY8:List ) , projectionElem
-             span: 69
+      │  (50 steps)
+      ├─ 20
+      │   operandCopy ( place ( ... local: local ( 7 ) , projection: projectionElemDeref
+      │   span: 68
+      │
+      │  (50 steps)
+      ├─ 22
+      │   BoolVal ( 0 <Int size ( ARG_ARRAY8:List ) )
+~> #freezer#expect(_,_,_)_KMIR-CONTR
+      │
+      │  (28 steps)
+      ├─ 24 (terminal)
+      │   #EndProgram ~> .K
+      │
+      ┊  constraint:
+      ┊      0 <Int size ( ARG_ARRAY8:List )
+      ┊      allValues ( ARG_ARRAY8:List )
+      ┊  subst: ...
+      └─ 2 (leaf, target, terminal)
+          #EndProgram ~> .K
 
 
 

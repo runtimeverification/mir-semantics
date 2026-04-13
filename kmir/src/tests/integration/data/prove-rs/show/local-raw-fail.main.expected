@@ -3,14 +3,20 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (61 steps)
+│  (50 steps)
 ├─ 3
+│   #execStmt ( statement ( ... kind: statementKindAssign ( ... place: place ( ... l
+│   function: main
+│   span: 50
+│
+│  (7 steps)
+├─ 4
 │   #cast ( PtrLocal ( slotPlace ( 2 , projectionElemToZST  .ProjectionElems ) , mut
 │   function: main
 │   span: 50
 │
 │  (1 step)
-└─ 4 (leaf, terminal)
+└─ 5 (leaf, terminal)
     thunk ( #cast ( PtrLocal ( slotPlace ( 2 , projectionElemToZST  .ProjectionElems
     function: main
     span: 50

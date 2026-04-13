@@ -40,4 +40,7 @@
     2 |-> typedValue ( Integer ( 191 , 8 , false ) , ty ( 9 ) , mutabilityNot )
     3 |-> typedValue ( Integer ( -1000150020 , 32 , true ) , ty ( 8 ) , mutabilityNot )
   </slotStore>
+  <nextSlot>
+    4
+  </nextSlot>
 </kmir>

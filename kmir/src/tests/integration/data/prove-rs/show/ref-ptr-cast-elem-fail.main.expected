@@ -3,14 +3,20 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (83 steps)
+│  (50 steps)
 ├─ 3
+│   #cast ( operandMove ( place ( ... local: local ( 4 ) , projection: .ProjectionEl
+│   function: main
+│   span: 50
+│
+│  (28 steps)
+├─ 4
 │   #cast ( PtrLocal ( slotPlace ( 2 , projectionElemConstantIndex ( ... offset: 0 ,
 │   function: main
 │   span: 50
 │
 │  (1 step)
-└─ 4 (leaf, terminal)
+└─ 5 (leaf, terminal)
     thunk ( #cast ( PtrLocal ( slotPlace ( 2 , projectionElemConstantIndex ( ... off
     function: main
     span: 50
