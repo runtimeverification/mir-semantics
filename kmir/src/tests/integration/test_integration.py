@@ -909,3 +909,48 @@ def test_reduce_standalone() -> None:
         assert len(reloaded.items) == 2
     finally:
         reduced_path.unlink()
+
+
+# ---------------------------------------------------------------------------
+# CSE tests
+# ---------------------------------------------------------------------------
+
+
+def test_cse_callee_proof(tmp_path: Path) -> None:
+    """Callee proof should complete with covers for a simple function."""
+    from kmir._cse import prove_callee
+    from kmir._prove import _prove_sequential, apr_proof_from_smir
+    from kmir.cargo import cargo_get_smir_json
+
+    rs_file = PROVE_DIR / 'cse-simple-callee.rs'
+
+    # Generate SMIR and build KMIR (including 'double' in the call graph)
+    smir_data = cargo_get_smir_json(rs_file)
+    smir_info = SMIRInfo(smir_data)
+    smir_info = smir_info.reduce_to('main')  # 'double' is reachable from 'main'
+    kmir_instance = KMIR.from_kompiled_kore(smir_info, target_dir=tmp_path, symbolic=True)
+
+    # Step 1: Verify baseline passes
+    baseline = apr_proof_from_smir(kmir_instance, 'baseline', smir_info, start_symbol='main', proof_dir=tmp_path)
+    _prove_sequential(
+        kmir_instance,
+        baseline,
+        opts=ProveOpts(rs_file, proof_dir=tmp_path),
+        label='baseline',
+        cut_point_rules=[],
+    )
+    assert baseline.passed, 'Baseline proof should pass'
+
+    # Step 2: Prove the callee function 'double' standalone
+    callee_proof = prove_callee(kmir_instance, smir_info, 'double', proof_dir=tmp_path)
+    covers = [c for c in callee_proof.kcfg.covers() if c.target.id == callee_proof.target]
+    stuck = [n for n in callee_proof.kcfg.leaves if callee_proof.kcfg.is_stuck(n.id)]
+    assert len(covers) > 0, f'Callee proof should have covers, got {len(covers)}'
+    assert len(stuck) == 0, f'Callee proof should have no stuck nodes, got {len(stuck)}'
+
+    # Step 3: Extract cover paths and verify return value extraction
+    from kmir._cse import extract_cover_paths
+
+    cover_paths = extract_cover_paths(callee_proof)
+    assert len(cover_paths) > 0, 'Should extract at least one cover path'
+    assert cover_paths[0].return_value is not None, 'Cover path should have a return value'
