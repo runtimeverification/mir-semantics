@@ -1646,6 +1646,22 @@ The layout is the same for the wrapped type and so the cast in either direction 
         </k>
       requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
 
+  // Up (indirect): T -> Wrapper(U) where T != U but T can be transmuted to U.
+  // First cast T into the inner field type U, then wrap. This handles cases like
+  // usize -> Alignment where Alignment wraps AlignmentEnum (an enum, not T directly).
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            #cast(VAL, castKindTransmute, TY_SOURCE, {#transparentFieldTy(lookupTy(TY_TARGET))}:>Ty)
+            ~> #wrapTransmute(TY_TARGET)
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_TARGET)) =/=K TyUnknown
+       andBool #transparentFieldTy(lookupTy(TY_TARGET)) =/=K TY_SOURCE
+      [priority(60)]
+
+  syntax KItem ::= #wrapTransmute ( Ty )
+  rule <k> INNER:Value ~> #wrapTransmute(_TY_TARGET) => Aggregate(variantIdx(0), ListItem(INNER)) ... </k>
+
   // Down: Wrapper(T) -> T
   rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
           =>
@@ -1742,6 +1758,44 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     => readTyConstInt(KIND) *Int 8
     [preserves-definedness]
   rule #staticArrayLenBits(_OTHER) => 0 [owise]
+```
+
+Casting an integer to a `char` type is valid when the integer has a 32-bit width (same as `u32`).
+In Rust, `char` is represented as a 32-bit unsigned integer (a Unicode scalar value).
+The semantics keeps the same `Integer` representation since `char` values are stored as `Integer(VAL, 32, false)`.
+
+```k
+  syntax Bool ::= #isCharType ( TypeInfo ) [function, total]
+  // --------------------------------------------------------
+  rule #isCharType(typeInfoPrimitiveType(primTypeChar)) => true
+  rule #isCharType(_OTHER) => false [owise]
+
+  rule <k> #cast(
+              Integer(VAL, 32, _SIGNEDNESS),
+              castKindTransmute,
+              _TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            Integer(VAL &Int 4294967295, 32, false)
+          ...
+        </k>
+      requires #isCharType(lookupTy(TY_TARGET))
+
+  // Casting a char (Integer) back to an integer type via transmute
+  rule <k> #cast(
+              Integer(VAL, 32, false),
+              castKindTransmute,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(VAL, 32, #numTypeOf(lookupTy(TY_TARGET)))
+          ...
+        </k>
+      requires #isCharType(lookupTy(TY_SOURCE))
+       andBool #isIntType(lookupTy(TY_TARGET))
+      [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
 A transmutation from an integer to an enum is wellformed if:
