@@ -1,19 +1,28 @@
 use std::time::Duration;
 
-fn new_check(secs: u64, nanos: u32) {
-    let expected_secs = secs + (nanos / 1_000_000_000) as u64;
-    let expected_nanos = nanos % 1_000_000_000;
-    let d = Duration::new(secs, nanos);
-    assert!(d.as_secs() == expected_secs);
-    assert!(d.subsec_nanos() == expected_nanos);
-}
-
 fn main() {
-    new_check(5, 0);
-    new_check(5, 500_000_000);
-    new_check(0, 0);
-    new_check(0, 999_999_999);
-    // nanos >= 1_000_000_000 should carry over to seconds
-    new_check(0, 1_000_000_000);
-    new_check(0, 1_500_000_000);
+    // Duration::new carries nanos >= 1_000_000_000 into seconds
+    let d1 = Duration::new(5, 0);
+    assert!(d1.as_secs() == 5);
+    assert!(d1.subsec_nanos() == 0);
+
+    let d2 = Duration::new(5, 500_000_000);
+    assert!(d2.as_secs() == 5);
+    assert!(d2.subsec_nanos() == 500_000_000);
+
+    let d3 = Duration::new(0, 0);
+    assert!(d3.as_secs() == 0);
+    assert!(d3.subsec_nanos() == 0);
+
+    let d4 = Duration::new(0, 999_999_999);
+    assert!(d4.as_secs() == 0);
+    assert!(d4.subsec_nanos() == 999_999_999);
+
+    let d5 = Duration::new(0, 1_000_000_000);
+    assert!(d5.as_secs() == 1);
+    assert!(d5.subsec_nanos() == 0);
+
+    let d6 = Duration::new(0, 1_500_000_000);
+    assert!(d6.as_secs() == 1);
+    assert!(d6.subsec_nanos() == 500_000_000);
 }

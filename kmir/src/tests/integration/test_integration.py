@@ -117,21 +117,6 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
 
 VERIFY_RUST_STD_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std').resolve(strict=True)
 VERIFY_RUST_STD_FILES = list(VERIFY_RUST_STD_DIR.glob('**/*.rs'))
-VERIFY_RUST_STD_SHOW_SPECS = [
-    '0011-floats-ints/unchecked_add-fail',
-    '0011-floats-ints/unchecked_sub-fail',
-    '0011-floats-ints/unchecked_mul-fail',
-    '0011-floats-ints/unchecked_shl-fail',
-    '0011-floats-ints/unchecked_shr-fail',
-    '0011-floats-ints/unchecked_neg-fail',
-    '0009-duration/13-checked_add_overflow',
-    '0009-duration/14-checked_sub_underflow',
-    '0009-duration/15-checked_mul_overflow',
-    '0009-duration/16-checked_div_zero',
-    '0009-duration/01-new',
-    '0009-duration/mul_f64',
-    '0009-duration/div_f64',
-]
 
 
 @pytest.mark.parametrize(
@@ -140,9 +125,14 @@ VERIFY_RUST_STD_SHOW_SPECS = [
     ids=[f'{spec.parent.name}/{spec.stem}' for spec in VERIFY_RUST_STD_FILES],
 )
 def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
-    should_fail = rs_file.stem.endswith('fail')
-    spec_id = f'{rs_file.parent.name}/{rs_file.stem}'
-    should_show = spec_id in VERIFY_RUST_STD_SHOW_SPECS
+    # Behavior driven by filename suffix:
+    #   -fail         soundness check (intentional assertion violation), assert failed
+    #   -suspect      suspected UB in rust std (proof finds a counterexample), assert failed
+    #   -unsupported  known semantic limitation, run but no assertion (result unreliable)
+    #   (default)     assert passed
+    should_fail = rs_file.stem.endswith(('-fail', '-suspect'))
+    unsupported = rs_file.stem.endswith('-unsupported')
+    should_show = should_fail or unsupported
 
     if update_expected_output and not should_show:
         pytest.skip()
@@ -177,12 +167,10 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
                 show_res, show_dir / f'{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
             )
 
-        if should_show and not should_fail:
-            pass  # show-only: .expected file comparison is the regression test
-        elif not should_fail:
-            assert apr_proof.passed
-        else:
+        if should_fail:
             assert apr_proof.failed
+        elif not unsupported:
+            assert apr_proof.passed
 
 
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)
