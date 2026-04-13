@@ -139,6 +139,13 @@ Function pointers are zero-sized constants whose `Ty` is a key in the function t
        </k>
     requires typeInfoVoidType ==K lookupTy(TY) // not a valid type info
      andBool lookupFunction(TY) =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
+
+  rule <k> operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, ty(ID) #as TY, _)))
+        => #decodeConstant(constantKindZeroSized, TY, typeInfoVoidType)
+       ...
+       </k>
+    requires typeInfoVoidType ==K lookupTy(TY) // not a valid type info
+     andBool lookupFunction(TY) ==K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // non-function ZST, e.g. closure env missing from type table
 ```
 
 ### Copying and Moving
@@ -1326,6 +1333,7 @@ The operation typically creates a pointer with empty metadata.
   // ------------------------------------------------------------------------------------------
   rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, META) ... </k>
   rule <k> #mkPtr(toStack(STACK_OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(STACK_OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
+  rule <k> #mkPtr(     toAlloc(ALLOC_ID)     , PROJS,  _ , META) => AllocRef(ALLOC_ID, PROJS, META) ... </k>
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
@@ -1494,6 +1502,29 @@ Otherwise, compute the type projection and convert metadata accordingly.
       [preserves-definedness] // valid map lookups checked
 ```
 
+Heap allocation pointers (`AllocRef`) follow the same rules.
+
+```k
+  rule <k> #cast(AllocRef(ALLOC_ID, PROJS, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+          => AllocRef(ALLOC_ID, PROJS, META)
+          ...
+        </k>
+      requires pointeeTy(lookupTy(TY_SOURCE)) ==K pointeeTy(lookupTy(TY_TARGET))
+      [priority(45), preserves-definedness] // valid map lookups checked
+
+  rule <k> #cast(AllocRef(ALLOC_ID, PROJS, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+          =>
+            AllocRef(
+              ALLOC_ID,
+              appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems),
+              #convertMetadata(META, lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+      requires NoProjectionElems =/=K #typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+      [preserves-definedness] // valid map lookups checked
+```
+
 The pointer's metadata needs to be adapted to the new type.
 
 ```k
@@ -1646,6 +1677,22 @@ The layout is the same for the wrapped type and so the cast in either direction 
         </k>
       requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
 
+  // Up (indirect): T -> Wrapper(U) where T != U but T can be transmuted to U.
+  // First cast T into the inner field type U, then wrap. This handles cases like
+  // usize -> Alignment where Alignment wraps AlignmentEnum (an enum, not T directly).
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            #cast(VAL, castKindTransmute, TY_SOURCE, {#transparentFieldTy(lookupTy(TY_TARGET))}:>Ty)
+            ~> #wrapTransmute(TY_TARGET)
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_TARGET)) =/=K TyUnknown
+       andBool #transparentFieldTy(lookupTy(TY_TARGET)) =/=K TY_SOURCE
+      [priority(60)]
+
+  syntax KItem ::= #wrapTransmute ( Ty )
+  rule <k> INNER:Value ~> #wrapTransmute(_TY_TARGET) => Aggregate(variantIdx(0), ListItem(INNER)) ... </k>
+
   // Down: Wrapper(T) -> T
   rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
           =>
@@ -1742,6 +1789,44 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     => readTyConstInt(KIND) *Int 8
     [preserves-definedness]
   rule #staticArrayLenBits(_OTHER) => 0 [owise]
+```
+
+Casting an integer to a `char` type is valid when the integer has a 32-bit width (same as `u32`).
+In Rust, `char` is represented as a 32-bit unsigned integer (a Unicode scalar value).
+The semantics keeps the same `Integer` representation since `char` values are stored as `Integer(VAL, 32, false)`.
+
+```k
+  syntax Bool ::= #isCharType ( TypeInfo ) [function, total]
+  // --------------------------------------------------------
+  rule #isCharType(typeInfoPrimitiveType(primTypeChar)) => true
+  rule #isCharType(_OTHER) => false [owise]
+
+  rule <k> #cast(
+              Integer(VAL, 32, _SIGNEDNESS),
+              castKindTransmute,
+              _TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            Integer(VAL &Int 4294967295, 32, false)
+          ...
+        </k>
+      requires #isCharType(lookupTy(TY_TARGET))
+
+  // Casting a char (Integer) back to an integer type via transmute
+  rule <k> #cast(
+              Integer(VAL, 32, false),
+              castKindTransmute,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(VAL, 32, #numTypeOf(lookupTy(TY_TARGET)))
+          ...
+        </k>
+      requires #isCharType(lookupTy(TY_SOURCE))
+       andBool #isIntType(lookupTy(TY_TARGET))
+      [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
 A transmutation from an integer to an enum is wellformed if:
@@ -1923,6 +2008,9 @@ Zero-sized types can be decoded trivially into their respective representation.
         => Range(.List) ... </k>
   // zero-sized function item (e.g., closures without captures)
   rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoFunType(_))
+        => Aggregate(variantIdx(0), .List) ... </k>
+  // zero-sized closure env missing from the type table
+  rule <k> #decodeConstant(constantKindZeroSized, _TY, typeInfoVoidType)
         => Aggregate(variantIdx(0), .List) ... </k>
 ```
 
@@ -2431,6 +2519,7 @@ Raw pointer comparisons ignore mutability, but require the address and metadata 
 
 ```k
   syntax Bool ::= #ptrLocalEq(Value, Value) [function, total]
+                | #allocRefEq(Value, Value) [function, total]
 
   rule #ptrLocalEq(
           PtrLocal(OFFSET1, PLACE1, _, PTRMETA1),
@@ -2440,6 +2529,14 @@ Raw pointer comparisons ignore mutability, but require the address and metadata 
      andBool PLACE1 ==K PLACE2
      andBool PTRMETA1 ==K PTRMETA2
   rule #ptrLocalEq(_, _) => false [owise]
+
+  rule #allocRefEq(
+          AllocRef(ALLOC_ID1, _, metadata(_, OFFSET1, _)),
+          AllocRef(ALLOC_ID2, _, metadata(_, OFFSET2, _))
+       )
+    =>  ALLOC_ID1 ==K ALLOC_ID2
+     andBool OFFSET1 ==Int OFFSET2
+  rule #allocRefEq(_, _) => false [owise]
 
   rule #applyBinOp(
           binOpEq,
@@ -2456,6 +2553,22 @@ Raw pointer comparisons ignore mutability, but require the address and metadata 
           _
        )
     => BoolVal(notBool #ptrLocalEq(PTR1, PTR2))
+
+  rule #applyBinOp(
+          binOpEq,
+          AllocRef(_, _, _) #as PTR1,
+          AllocRef(_, _, _) #as PTR2,
+          _
+       )
+    => BoolVal(#allocRefEq(PTR1, PTR2))
+
+  rule #applyBinOp(
+          binOpNe,
+          AllocRef(_, _, _) #as PTR1,
+          AllocRef(_, _, _) #as PTR2,
+          _
+       )
+    => BoolVal(notBool #allocRefEq(PTR1, PTR2))
 ```
 
 
@@ -2498,6 +2611,41 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
           _CHECKED)
     =>
           PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)) )
+    requires OFFSET_VAL >=Int 0
+     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
+   [preserves-definedness]
+
+  // Trivial case when adding 0 - valid for any allocation pointer
+  rule #applyBinOp(
+          binOpOffset,
+          AllocRef(ALLOC_ID, PROJS, POINTEE_METADATA),
+          Integer(VAL, _WIDTH, _SIGNED), // Trivial case when adding 0
+          _CHECKED)
+    =>
+          AllocRef(ALLOC_ID, PROJS, POINTEE_METADATA)
+  requires VAL ==Int 0
+  [preserves-definedness, priority(40)]
+
+  // Check offset bounds against origin pointer with dynamicSize metadata
+  rule #applyBinOp(
+          binOpOffset,
+          AllocRef(ALLOC_ID, PROJS, metadata(CURRENT_SIZE, CURRENT_OFFSET, dynamicSize(ORIGIN_SIZE))),
+          Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
+          _CHECKED)
+    =>
+          AllocRef(ALLOC_ID, PROJS, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, dynamicSize(ORIGIN_SIZE)))
+    requires OFFSET_VAL >=Int 0
+     andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
+   [preserves-definedness]
+
+  // Check offset bounds against origin pointer with staticSize metadata
+  rule #applyBinOp(
+          binOpOffset,
+          AllocRef(ALLOC_ID, PROJS, metadata(CURRENT_SIZE, CURRENT_OFFSET, staticSize(ORIGIN_SIZE))),
+          Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
+          _CHECKED)
+    =>
+          AllocRef(ALLOC_ID, PROJS, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)))
     requires OFFSET_VAL >=Int 0
      andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
    [preserves-definedness]

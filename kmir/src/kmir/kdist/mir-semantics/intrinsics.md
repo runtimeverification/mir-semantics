@@ -200,6 +200,17 @@ the second argument, so the returned difference is always positive.
        </k>
     requires (SIGNED_FLAG orBool OFF1 >=Int OFF2)
 
+  rule <k>
+        #ptrOffsetDiff(
+          AllocRef(ALLOC_ID, _, metadata(_, OFF1, _)),
+          AllocRef(ALLOC_ID, _, metadata(_, OFF2, _)),
+          SIGNED_FLAG,
+          DEST
+       ) => #setLocalValue(DEST, Integer(OFF1 -Int OFF2, 64, SIGNED_FLAG))
+        ...
+       </k>
+    requires (SIGNED_FLAG orBool OFF1 >=Int OFF2)
+
   rule <k> 
         #ptrOffsetDiff(
           PtrLocal(_, _, _, _) #as PTR1,
@@ -210,6 +221,282 @@ the second argument, so the returned difference is always positive.
         ...
        </k>
     [priority(100)]
+
+  rule <k>
+        #ptrOffsetDiff(
+          AllocRef(_, _, _) #as PTR1,
+          AllocRef(_, _, _) #as PTR2,
+          SIGNED_FLAG,
+          _DEST
+       ) => #UBErrorPtrOffsetDiff(PTR1, PTR2, SIGNED_FLAG)
+        ...
+       </k>
+    [priority(100)]
+```
+
+#### Count Population / `ctpop` (`std::intrinsics::ctpop`)
+
+The `ctpop` intrinsic counts the number of set bits (1-bits) in an integer value, also known as
+"population count" or "Hamming weight". It is used by methods like `u32::count_ones()` and
+`usize::is_power_of_two()`. The implementation evaluates the operand, extracts the integer value,
+computes the popcount recursively, and returns an integer of the same width and signedness.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ctpop")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execCtpop(DEST, ARG)
+       ... </k>
+
+  syntax KItem ::= #execCtpop ( Place, Evaluation ) [seqstrict(2)]
+
+  rule <k> #execCtpop(DEST, Integer(VAL, WIDTH, SIGNED))
+        => #setLocalValue(DEST, Integer(#popcount(VAL &Int ((1 <<Int WIDTH) -Int 1)), WIDTH, SIGNED))
+       ... </k>
+    [preserves-definedness]
+
+  syntax Int ::= #popcount ( Int ) [function, total]
+  // ------------------------------------------------
+  rule #popcount(0) => 0
+  rule #popcount(N) => (N &Int 1) +Int #popcount(N >>Int 1)
+    requires N >Int 0
+  rule #popcount(_) => 0 [owise]
+```
+
+#### Count Leading Zeros (`std::intrinsics::ctlz_nonzero`, `std::intrinsics::ctlz`)
+
+The `ctlz_nonzero` intrinsic counts the number of leading zeros in the binary representation of a nonzero integer.
+It assumes the input is nonzero (undefined behavior if zero). The `ctlz` intrinsic is the same but defined for
+all integers (returns `WIDTH` for zero). Both intrinsics evaluate their operand to a `Value`, then compute the
+count of leading zeros. For an integer with value `V` and bit width `W`, the count of leading zeros is
+`W - 1 - log2Int(V)` for nonzero values (using the unsigned representation of the bit pattern).
+
+```k
+  // ctlz_nonzero: count leading zeros, assumes input is nonzero
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ctlz_nonzero")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execCtlz(DEST, ARG)
+       ... </k>
+
+  // ctlz: count leading zeros, returns WIDTH for zero
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ctlz")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execCtlz(DEST, ARG)
+       ... </k>
+
+  syntax KItem ::= #execCtlz(Place, Evaluation) [strict(2)]
+
+  // Unsigned nonzero: leading zeros = WIDTH - 1 - log2Int(VAL)
+  // Result is always u32 (32-bit unsigned) per Rust ABI for bit-counting intrinsics
+  rule <k> #execCtlz(DEST, Integer(VAL, WIDTH, false))
+        => #setLocalValue(DEST, Integer(WIDTH -Int 1 -Int log2Int(VAL), 32, false))
+       ... </k>
+    requires VAL >Int 0
+    [preserves-definedness]
+
+  // Signed nonzero: convert to unsigned bit pattern first
+  rule <k> #execCtlz(DEST, Integer(VAL, WIDTH, true))
+        => #setLocalValue(DEST, Integer(WIDTH -Int 1 -Int log2Int(VAL &Int ((1 <<Int WIDTH) -Int 1)), 32, false))
+       ... </k>
+    requires VAL =/=Int 0
+     andBool WIDTH >Int 0
+    [preserves-definedness]
+
+  // Zero case (for ctlz, not ctlz_nonzero, but we handle it uniformly)
+  rule <k> #execCtlz(DEST, Integer(0, WIDTH, _SIGNED))
+        => #setLocalValue(DEST, Integer(WIDTH, 32, false))
+       ... </k>
+```
+
+#### Count Trailing Zeros (`std::intrinsics::cttz_nonzero`, `std::intrinsics::cttz`)
+
+The `cttz_nonzero` intrinsic counts the number of trailing zeros in the binary representation of a nonzero integer.
+It assumes the input is nonzero (undefined behavior if zero). The `cttz` intrinsic is the same but defined for
+all integers (returns `WIDTH` for zero). For a nonzero value, the count of trailing zeros equals the position of
+the lowest set bit, computed as `log2Int(VAL &Int (0 -Int VAL))` where `VAL &Int (-VAL)` isolates the lowest set bit.
+
+```k
+  // cttz_nonzero: count trailing zeros, assumes input is nonzero
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("cttz_nonzero")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execCttz(DEST, ARG)
+       ... </k>
+
+  // cttz: count trailing zeros, returns WIDTH for zero
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("cttz")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execCttz(DEST, ARG)
+       ... </k>
+
+  syntax KItem ::= #execCttz(Place, Evaluation) [strict(2)]
+
+  // Unsigned nonzero: trailing zeros = log2Int(VAL &Int (0 -Int VAL))
+  // Result is always u32 (32-bit unsigned) per Rust ABI for bit-counting intrinsics
+  rule <k> #execCttz(DEST, Integer(VAL, _WIDTH, false))
+        => #setLocalValue(DEST, Integer(log2Int(VAL &Int (0 -Int VAL)), 32, false))
+       ... </k>
+    requires VAL >Int 0
+    [preserves-definedness]
+
+  // Signed nonzero: convert to unsigned bit pattern, then find trailing zeros
+  rule <k> #execCttz(DEST, Integer(VAL, WIDTH, true))
+        => #execCttz(DEST, Integer(VAL &Int ((1 <<Int WIDTH) -Int 1), WIDTH, false))
+       ... </k>
+    requires VAL =/=Int 0
+     andBool WIDTH >Int 0
+    [preserves-definedness]
+
+  // Zero case (for cttz, not cttz_nonzero, but we handle it uniformly)
+  rule <k> #execCttz(DEST, Integer(0, WIDTH, _SIGNED))
+        => #setLocalValue(DEST, Integer(WIDTH, 32, false))
+       ... </k>
+```
+
+#### Byte Swap (`std::intrinsics::bswap`)
+
+The `bswap` intrinsic reverses the byte order of an integer value. For a `WIDTH`-bit integer, it swaps the
+bytes from little-endian to big-endian order (or vice versa). The implementation converts the value to its
+unsigned bit pattern and uses a recursive helper function `#bswap` to reverse the bytes.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("bswap")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execBswap(DEST, ARG)
+       ... </k>
+
+  syntax KItem ::= #execBswap(Place, Evaluation) [strict(2)]
+
+  // Unsigned: byte-swap
+  rule <k> #execBswap(DEST, Integer(VAL, WIDTH, SIGNED))
+        => #setLocalValue(DEST, Integer(
+             truncate(#bswapAux(VAL &Int ((1 <<Int WIDTH) -Int 1), WIDTH /Int 8, 0), WIDTH, #signedness(SIGNED)),
+             WIDTH, SIGNED))
+       ... </k>
+    requires WIDTH >Int 0
+    [preserves-definedness]
+
+  syntax Signedness ::= #signedness(Bool) [function, total]
+  rule #signedness(true) => Signed
+  rule #signedness(false) => Unsigned
+
+  // Recursive byte-swap helper: #bswapAux(VAL, BYTES_REMAINING, ACCUMULATOR)
+  syntax Int ::= #bswapAux(Int, Int, Int) [function, total]
+  rule #bswapAux(_, 0, ACC) => ACC
+  rule #bswapAux(VAL, N, ACC) => #bswapAux(VAL >>Int 8, N -Int 1, (ACC <<Int 8) |Int (VAL &Int 255))
+    requires N >Int 0
+  rule #bswapAux(_, _, ACC) => ACC [owise]
+```
+
+#### Bit Rotation (`std::intrinsics::rotate_left`, `std::intrinsics::rotate_right`)
+
+The `rotate_left` and `rotate_right` intrinsics perform circular bit rotations within the integer's fixed bit
+width. Bits shifted out on one side wrap around to the other side. The implementation first normalizes the
+rotation amount modulo the bit width, then applies the corresponding masked rotate formula to the unsigned bit
+pattern. The result keeps the same width and signedness as the input integer.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("rotate_left")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
+        => #execRotateLeft(DEST, ARG1, ARG2)
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("rotate_right")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
+        => #execRotateRight(DEST, ARG1, ARG2)
+       ... </k>
+
+  syntax KItem ::= #execRotateLeft(Place, Evaluation, Evaluation) [seqstrict(2,3)]
+  syntax KItem ::= #execRotateRight(Place, Evaluation, Evaluation) [seqstrict(2,3)]
+
+  rule <k> #execRotateLeft(DEST, Integer(VAL, WIDTH, SIGNED), Integer(SHIFT, _, _))
+        => #setLocalValue(DEST, Integer(
+             truncate(
+               ((VAL &Int ((1 <<Int WIDTH) -Int 1)) <<Int #rotateAmount(SHIFT, WIDTH))
+               |Int
+               ((VAL &Int ((1 <<Int WIDTH) -Int 1)) >>Int (WIDTH -Int #rotateAmount(SHIFT, WIDTH))),
+               WIDTH,
+               #signedness(SIGNED)),
+             WIDTH, SIGNED))
+       ... </k>
+    requires WIDTH >Int 0
+    [preserves-definedness]
+
+  rule <k> #execRotateRight(DEST, Integer(VAL, WIDTH, SIGNED), Integer(SHIFT, _, _))
+        => #setLocalValue(DEST, Integer(
+             truncate(
+               ((VAL &Int ((1 <<Int WIDTH) -Int 1)) >>Int #rotateAmount(SHIFT, WIDTH))
+               |Int
+               ((VAL &Int ((1 <<Int WIDTH) -Int 1)) <<Int (WIDTH -Int #rotateAmount(SHIFT, WIDTH))),
+               WIDTH,
+               #signedness(SIGNED)),
+             WIDTH, SIGNED))
+       ... </k>
+    requires WIDTH >Int 0
+    [preserves-definedness]
+
+  syntax Int ::= #rotateAmount(Int, Int) [function, total]
+  rule #rotateAmount(SHIFT, WIDTH) => SHIFT %Int WIDTH
+    requires WIDTH >Int 0
+  rule #rotateAmount(_, _) => 0 [owise]
+```
+
+#### Bit Reverse (`std::intrinsics::bitreverse`)
+
+The `bitreverse` intrinsic reverses the full bit order of an integer value. Bit `0` moves to position
+`WIDTH - 1`, bit `1` moves to position `WIDTH - 2`, and so on. The implementation operates on the unsigned
+bit pattern and reconstructs the reversed integer one bit at a time.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("bitreverse")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execBitreverse(DEST, ARG)
+       ... </k>
+
+  syntax KItem ::= #execBitreverse(Place, Evaluation) [strict(2)]
+
+  rule <k> #execBitreverse(DEST, Integer(VAL, WIDTH, SIGNED))
+        => #setLocalValue(DEST, Integer(
+             truncate(#bitreverseAux(VAL &Int ((1 <<Int WIDTH) -Int 1), WIDTH, 0), WIDTH, #signedness(SIGNED)),
+             WIDTH, SIGNED))
+       ... </k>
+    requires WIDTH >Int 0
+    [preserves-definedness]
+
+  syntax Int ::= #bitreverseAux(Int, Int, Int) [function, total]
+  rule #bitreverseAux(_, 0, ACC) => ACC
+  rule #bitreverseAux(VAL, N, ACC) => #bitreverseAux(VAL >>Int 1, N -Int 1, (ACC <<Int 1) |Int (VAL &Int 1))
+    requires N >Int 0
+  rule #bitreverseAux(_, _, ACC) => ACC [owise]
+```
+
+#### Saturating Add (`std::intrinsics::saturating_add`)
+
+The `saturating_add` intrinsic performs saturating integer addition. Instead of wrapping on overflow, the result
+is clamped to the maximum (or minimum for signed underflow) value representable by the type.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("saturating_add")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
+        => #execSaturatingAdd(DEST, ARG1, ARG2)
+       ... </k>
+
+  syntax KItem ::= #execSaturatingAdd(Place, Evaluation, Evaluation) [seqstrict(2,3)]
+
+  // Unsigned saturating add: clamp at (2^WIDTH - 1)
+  rule <k> #execSaturatingAdd(DEST, Integer(VAL1, WIDTH, false), Integer(VAL2, WIDTH, false))
+        => #setLocalValue(DEST, Integer(minInt(VAL1 +Int VAL2, (1 <<Int WIDTH) -Int 1), WIDTH, false))
+       ... </k>
+    [preserves-definedness]
+
+  // Signed saturating add: clamp at min/max of signed range
+  rule <k> #execSaturatingAdd(DEST, Integer(VAL1, WIDTH, true), Integer(VAL2, WIDTH, true))
+        => #setLocalValue(DEST, Integer(
+             #clampSigned(VAL1 +Int VAL2, WIDTH),
+             WIDTH, true))
+       ... </k>
+    requires WIDTH >Int 0
+    [preserves-definedness]
+
+  // Helper: clamp a value to the signed range [-2^(W-1), 2^(W-1) - 1]
+  syntax Int ::= #clampSigned(Int, Int) [function, total]
+  rule #clampSigned(VAL, WIDTH) => (1 <<Int (WIDTH -Int 1)) -Int 1
+    requires WIDTH >Int 0 andBool VAL >=Int (1 <<Int (WIDTH -Int 1))
+  rule #clampSigned(VAL, WIDTH) => 0 -Int (1 <<Int (WIDTH -Int 1))
+    requires WIDTH >Int 0 andBool VAL <Int (0 -Int (1 <<Int (WIDTH -Int 1)))
+  rule #clampSigned(VAL, WIDTH) => VAL
+    requires WIDTH >Int 0
+     andBool VAL <Int (1 <<Int (WIDTH -Int 1))
+     andBool VAL >=Int (0 -Int (1 <<Int (WIDTH -Int 1)))
+  rule #clampSigned(VAL, _) => VAL [owise]
 ```
 
 ```k
