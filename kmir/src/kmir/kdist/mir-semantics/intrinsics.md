@@ -373,6 +373,156 @@ read-modify-write. Like Rust's atomic fetch-sub operations, the arithmetic wraps
        ... </k>
 ```
 
+#### Atomic Fetch Nand / Or / Xor (`std::intrinsics::atomic_{nand,or,xor}_*`)
+
+The `atomic_nand_*`, `atomic_or_*`, and `atomic_xor_*` intrinsics atomically apply the corresponding bitwise
+operation at a pointer and return the previous value. KMIR does not model inter-thread interference or memory
+ordering, so each ordering variant behaves like a local read-modify-write. Integer results are truncated back to
+the operand width after the bitwise update, while boolean `nand` computes `!(old && arg)` directly.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_seqcst")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_acqrel")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_release")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_acquire")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_relaxed")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_seqcst")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_acqrel")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_release")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_acquire")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_nand_relaxed")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicNand(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+
+  syntax KItem ::= #execAtomicNand(Place, Place, Evaluation, Evaluation) [seqstrict(3,4)]
+
+  rule <k> #execAtomicNand(DEST, PTR, BoolVal(OLDVAL), BoolVal(ARGVAL))
+        => #setLocalValue(PTR, BoolVal(notBool (OLDVAL andBool ARGVAL)))
+        ~> #setLocalValue(DEST, BoolVal(OLDVAL))
+       ... </k>
+  rule <k> #execAtomicNand(DEST, PTR, Integer(OLDVAL, WIDTH, true), Integer(ARGVAL, WIDTH, true))
+        => #setLocalValue(PTR, Integer(truncate(~Int (OLDVAL &Int ARGVAL), WIDTH, Signed), WIDTH, true))
+        ~> #setLocalValue(DEST, Integer(OLDVAL, WIDTH, true))
+       ... </k>
+  rule <k> #execAtomicNand(DEST, PTR, Integer(OLDVAL, WIDTH, false), Integer(ARGVAL, WIDTH, false))
+        => #setLocalValue(PTR, Integer(truncate(~Int (OLDVAL &Int ARGVAL), WIDTH, Unsigned), WIDTH, false))
+        ~> #setLocalValue(DEST, Integer(OLDVAL, WIDTH, false))
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_seqcst")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_acqrel")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_release")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_acquire")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_relaxed")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_seqcst")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_acqrel")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_release")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_acquire")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_or_relaxed")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicOr(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+
+  syntax KItem ::= #execAtomicOr(Place, Place, Evaluation, Evaluation) [seqstrict(3,4)]
+
+  rule <k> #execAtomicOr(DEST, PTR, BoolVal(OLDVAL), BoolVal(ARGVAL))
+        => #setLocalValue(PTR, BoolVal(OLDVAL orBool ARGVAL))
+        ~> #setLocalValue(DEST, BoolVal(OLDVAL))
+       ... </k>
+  rule <k> #execAtomicOr(DEST, PTR, Integer(OLDVAL, WIDTH, true), Integer(ARGVAL, WIDTH, true))
+        => #setLocalValue(PTR, Integer(truncate(OLDVAL |Int ARGVAL, WIDTH, Signed), WIDTH, true))
+        ~> #setLocalValue(DEST, Integer(OLDVAL, WIDTH, true))
+       ... </k>
+  rule <k> #execAtomicOr(DEST, PTR, Integer(OLDVAL, WIDTH, false), Integer(ARGVAL, WIDTH, false))
+        => #setLocalValue(PTR, Integer(truncate(OLDVAL |Int ARGVAL, WIDTH, Unsigned), WIDTH, false))
+        ~> #setLocalValue(DEST, Integer(OLDVAL, WIDTH, false))
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_seqcst")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_acqrel")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_release")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_acquire")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_relaxed")), operandCopy(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_seqcst")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_acqrel")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_release")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_acquire")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_xor_relaxed")), operandMove(place(LOCAL, PROJ)) ARG2:Operand .Operands, DEST, _SPAN)
+        => #execAtomicXor(DEST, place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems)), operandCopy(place(LOCAL, appendP(PROJ, projectionElemDeref .ProjectionElems))), ARG2)
+       ... </k>
+
+  syntax KItem ::= #execAtomicXor(Place, Place, Evaluation, Evaluation) [seqstrict(3,4)]
+
+  rule <k> #execAtomicXor(DEST, PTR, BoolVal(OLDVAL), BoolVal(ARGVAL))
+        => #setLocalValue(PTR, BoolVal(OLDVAL xorBool ARGVAL))
+        ~> #setLocalValue(DEST, BoolVal(OLDVAL))
+       ... </k>
+  rule <k> #execAtomicXor(DEST, PTR, Integer(OLDVAL, WIDTH, true), Integer(ARGVAL, WIDTH, true))
+        => #setLocalValue(PTR, Integer(truncate(OLDVAL xorInt ARGVAL, WIDTH, Signed), WIDTH, true))
+        ~> #setLocalValue(DEST, Integer(OLDVAL, WIDTH, true))
+       ... </k>
+  rule <k> #execAtomicXor(DEST, PTR, Integer(OLDVAL, WIDTH, false), Integer(ARGVAL, WIDTH, false))
+        => #setLocalValue(PTR, Integer(truncate(OLDVAL xorInt ARGVAL, WIDTH, Unsigned), WIDTH, false))
+        ~> #setLocalValue(DEST, Integer(OLDVAL, WIDTH, false))
+       ... </k>
+```
+
 #### Atomic Compare Exchange SeqCst (`std::intrinsics::atomic_cxchg_seqcst_seqcst`)
 
 The `atomic_cxchg_seqcst_seqcst` intrinsic atomically compares the current value at a pointer with an expected
