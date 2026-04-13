@@ -1,0 +1,60 @@
+default: null
+specializations:
+- - inj{SortInt{}, SortRat{}}
+  - default: null
+    specializations:
+    - - Lbl'-LT-UndsCommUnds-GT-'Rat'Unds'RAT-COMMON'Unds'Rat'Unds'Int'Unds'Int{}
+      - action:
+        - 6362
+        - - - &id002 ['1']
+            - STRING.String
+          - - &id005 ['2']
+            - STRING.String
+          - - &id001 ['0', '2']
+            - INT.Int
+          - - ['0', '1']
+            - INT.Int
+          - - ['1', '1']
+            - INT.Int
+      - [INT.Int, INT.Int]
+    - - inj{SortInt{}, SortRat{}}
+      - action:
+        - 6365
+        - - - ['0', '1']
+            - INT.Int
+          - - *id001
+            - INT.Int
+      - [INT.Int]
+    sort: STRING.String
+    occurrence: *id002
+  - [INT.Int]
+- - Lbl'-LT-UndsCommUnds-GT-'Rat'Unds'RAT-COMMON'Unds'Rat'Unds'Int'Unds'Int{}
+  - default: null
+    specializations:
+    - - Lbl'-LT-UndsCommUnds-GT-'Rat'Unds'RAT-COMMON'Unds'Rat'Unds'Int'Unds'Int{}
+      - action:
+        - 6363
+        - - - ['0', '1']
+            - INT.Int
+          - - ['1', '1']
+            - INT.Int
+          - - &id003 ['0', '2']
+            - INT.Int
+          - - &id004 ['1', '2']
+            - INT.Int
+      - [INT.Int, INT.Int]
+    - - inj{SortInt{}, SortRat{}}
+      - action:
+        - 6364
+        - - - ['0', '1']
+            - INT.Int
+          - - *id003
+            - INT.Int
+          - - *id004
+            - INT.Int
+      - [INT.Int]
+    sort: STRING.String
+    occurrence: *id002
+  - [INT.Int, INT.Int]
+sort: STRING.String
+occurrence: *id005

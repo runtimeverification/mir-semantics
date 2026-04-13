@@ -1,0 +1,474 @@
+- default: fail
+  specializations:
+  - - kseq{}
+    - default: fail
+      specializations:
+      - - inj{SortValue{}, SortKItem{}}
+        - default: fail
+          specializations:
+          - - Lbl'Hash'mkUnion'LParUndsRParUnds'RT-DATA'Unds'Value'Unds'FieldIdx{}
+            - args:
+              - - &id001 ['0', '0', '0', '0', '0', '1']
+                - LIST.List
+              next:
+                default: fail
+                specializations:
+                - - '0'
+                  - fail
+                  - []
+                - - '1'
+                  - args:
+                    - - *id001
+                      - LIST.List
+                    - - [lit, '0', MINT.MInt 64]
+                      - MINT.MInt 64
+                    next:
+                      default: fail
+                      specializations:
+                      - - inj{SortValue{}, SortKItem{}}
+                        - args:
+                          - - *id001
+                            - LIST.List
+                          - - [lit, '1', MINT.MInt 64]
+                            - MINT.MInt 64
+                          - - [lit, '0', MINT.MInt 64]
+                            - MINT.MInt 64
+                          next:
+                            action:
+                            - 6304
+                            - - - &id004 ['1', '1']
+                                - STRING.String
+                              - - &id005 ['1', '1', '0', '0', '0', '1']
+                                - STRING.String
+                              - - &id006 ['1', '0', '1']
+                                - STRING.String
+                              - - &id007 ['2', '0', '1']
+                                - STRING.String
+                              - - &id008 ['3', '0', '1']
+                                - STRING.String
+                              - - &id009 ['4', '0', '1']
+                                - STRING.String
+                              - - ['0', '0', '0', '0', '0', '0', '0', '1']
+                                - STRING.String
+                              - - ['0', '0', '0', '1', '0', '0', '0', '1']
+                                - STRING.String
+                          function: hook_LIST_range_long
+                          sort: LIST.List
+                          occurrence: ['1', '0', '0', '0', '0', '0', '1']
+                        - [STRING.String]
+                      sort: STRING.String
+                      occurrence: ['0', '0', '0', '0', '0', '0', '1']
+                    function: hook_LIST_get_long
+                    sort: STRING.String
+                    occurrence: ['0', '0', '0', '0', '0', '0', '1']
+                  - [STRING.String]
+                bitwidth: 64
+                sort: MINT.MInt 64
+                occurrence: &id002 [size, '0', '0', '0', '0', '0', '1']
+              function: hook_LIST_size_long
+              sort: MINT.MInt 64
+              occurrence: *id002
+            - [STRING.String]
+          - - Lbl'Hash'mkAggregate'LParUndsRParUnds'RT-DATA'Unds'Value'Unds'AggregateKind{}
+            - default: fail
+              specializations:
+              - - LblAggregateKind'ColnColn'RawPtr{}
+                - args:
+                  - - *id001
+                    - LIST.List
+                  next:
+                    default: fail
+                    specializations:
+                    - - '0'
+                      - fail
+                      - []
+                    - - '1'
+                      - fail
+                      - [STRING.String]
+                    - - '2'
+                      - args:
+                        - - *id001
+                          - LIST.List
+                        - - [lit, '1', MINT.MInt 64]
+                          - MINT.MInt 64
+                        next:
+                          args:
+                          - - *id001
+                            - LIST.List
+                          - - [lit, '0', MINT.MInt 64]
+                            - MINT.MInt 64
+                          next:
+                            default: fail
+                            specializations:
+                            - - inj{SortValue{}, SortKItem{}}
+                              - default: fail
+                                specializations:
+                                - - inj{SortValue{}, SortKItem{}}
+                                  - default: fail
+                                    specializations:
+                                    - - LblValue'ColnColn'PtrLocal{}
+                                      - default: null
+                                        specializations:
+                                        - - LblMetadata{}
+                                          - default: fail
+                                            specializations:
+                                            - - LblValue'ColnColn'Aggregate{}
+                                              - args:
+                                                - - &id003 ['1', '0', '1', '0', '0',
+                                                    '0', '0', '0', '1']
+                                                  - LIST.List
+                                                next:
+                                                  default: fail
+                                                  specializations:
+                                                  - - '0'
+                                                    - args:
+                                                      - - *id001
+                                                        - LIST.List
+                                                      - - [lit, '2', MINT.MInt 64]
+                                                        - MINT.MInt 64
+                                                      - - [lit, '0', MINT.MInt 64]
+                                                        - MINT.MInt 64
+                                                      next:
+                                                        args:
+                                                        - - *id003
+                                                          - LIST.List
+                                                        - - [lit, '0', MINT.MInt 64]
+                                                          - MINT.MInt 64
+                                                        - - [lit, '0', MINT.MInt 64]
+                                                          - MINT.MInt 64
+                                                        next:
+                                                          action:
+                                                          - 6305
+                                                          - - - *id004
+                                                              - STRING.String
+                                                            - - *id005
+                                                              - STRING.String
+                                                            - - &id012 ['2', '0',
+                                                                '0', '0', '0', '0',
+                                                                '0', '0', '1']
+                                                              - STRING.String
+                                                            - - ['0', '0', '1', '0',
+                                                                '0', '0', '0', '0',
+                                                                '1']
+                                                              - STRING.String
+                                                            - - *id006
+                                                              - STRING.String
+                                                            - - *id007
+                                                              - STRING.String
+                                                            - - *id008
+                                                              - STRING.String
+                                                            - - *id009
+                                                              - STRING.String
+                                                            - - &id013 ['0', '3',
+                                                                '0', '0', '0', '0',
+                                                                '0', '0', '0', '1']
+                                                              - STRING.String
+                                                            - - &id014 ['0', '0',
+                                                                '0', '0', '1', '0',
+                                                                '0', '0', '1']
+                                                              - STRING.String
+                                                            - - &id015 ['1', '0',
+                                                                '0', '0', '1', '0',
+                                                                '0', '0', '1']
+                                                              - STRING.String
+                                                            - - &id016 ['0', '0',
+                                                                '0', '0', '0', '0',
+                                                                '0', '0', '1']
+                                                              - INT.Int
+                                                            - - &id017 ['2', '3',
+                                                                '0', '0', '0', '0',
+                                                                '0', '0', '0', '1']
+                                                              - STRING.String
+                                                            - - &id021 ['1', '0',
+                                                                '0', '0', '0', '0',
+                                                                '0', '0', '1']
+                                                              - STRING.String
+                                                            - - &id018 ['1', '3',
+                                                                '0', '0', '0', '0',
+                                                                '0', '0', '0', '1']
+                                                              - INT.Int
+                                                        function: hook_LIST_range_long
+                                                        sort: LIST.List
+                                                        occurrence: ['0', '1', '0',
+                                                          '1', '0', '0', '0', '0',
+                                                          '0', '1']
+                                                      function: hook_LIST_range_long
+                                                      sort: LIST.List
+                                                      occurrence: ['2', '0', '0',
+                                                        '0', '0', '0', '1']
+                                                    - []
+                                                  bitwidth: 64
+                                                  sort: MINT.MInt 64
+                                                  occurrence: &id010 [size, '1', '0',
+                                                    '1', '0', '0', '0', '0', '0',
+                                                    '1']
+                                                function: hook_LIST_size_long
+                                                sort: MINT.MInt 64
+                                                occurrence: *id010
+                                              - [STRING.String, LIST.List]
+                                            - - LblValue'ColnColn'Integer{}
+                                              - default: null
+                                                specializations:
+                                                - - Lblplace{}
+                                                  - default: fail
+                                                    specializations:
+                                                    - - '0'
+                                                      - args:
+                                                        - - &id011 ['1', '0', '1',
+                                                            '0', '0', '0', '0', '0',
+                                                            '1']
+                                                          - INT.Int
+                                                        next:
+                                                          default: fail
+                                                          specializations:
+                                                          - - '1'
+                                                            - args:
+                                                              - - *id011
+                                                                - INT.Int
+                                                              - - [lit, '0', MINT.MInt
+                                                                    64]
+                                                                - MINT.MInt 64
+                                                              next:
+                                                                default: fail
+                                                                specializations:
+                                                                - - '64'
+                                                                  - args:
+                                                                    - - *id001
+                                                                      - LIST.List
+                                                                    - - [lit, '2',
+                                                                        MINT.MInt
+                                                                          64]
+                                                                      - MINT.MInt
+                                                                        64
+                                                                    - - [lit, '0',
+                                                                        MINT.MInt
+                                                                          64]
+                                                                      - MINT.MInt
+                                                                        64
+                                                                    next:
+                                                                      action:
+                                                                      - 6306
+                                                                      - - - *id004
+                                                                          - STRING.String
+                                                                        - - *id005
+                                                                          - STRING.String
+                                                                        - - *id012
+                                                                          - STRING.String
+                                                                        - - *id006
+                                                                          - STRING.String
+                                                                        - - *id007
+                                                                          - STRING.String
+                                                                        - - *id008
+                                                                          - STRING.String
+                                                                        - - *id009
+                                                                          - STRING.String
+                                                                        - - *id013
+                                                                          - STRING.String
+                                                                        - - *id014
+                                                                          - STRING.String
+                                                                        - - ['0',
+                                                                            '0', '1',
+                                                                            '0', '0',
+                                                                            '0', '0',
+                                                                            '0', '1']
+                                                                          - INT.Int
+                                                                        - - ['0',
+                                                                            '1', '0',
+                                                                            '0', '0',
+                                                                            '0', '0',
+                                                                            '0', '0',
+                                                                            '1']
+                                                                          - STRING.String
+                                                                        - - *id015
+                                                                          - STRING.String
+                                                                        - - *id016
+                                                                          - INT.Int
+                                                                        - - *id017
+                                                                          - STRING.String
+                                                                        - - ['1',
+                                                                            '1', '0',
+                                                                            '0', '0',
+                                                                            '0', '0',
+                                                                            '0', '0',
+                                                                            '1']
+                                                                          - STRING.String
+                                                                        - - *id018
+                                                                          - INT.Int
+                                                                    function: hook_LIST_range_long
+                                                                    sort: LIST.List
+                                                                    occurrence: [
+                                                                      '2', '0', '0',
+                                                                      '0', '0', '0',
+                                                                      '1']
+                                                                  - []
+                                                                bitwidth: 64
+                                                                sort: MINT.MInt 64
+                                                                occurrence: &id019 [
+                                                                  '0', '1', '0', '1',
+                                                                  '0', '0', '0', '0',
+                                                                  '0', '1']
+                                                              function: hook_INT_limb
+                                                              sort: MINT.MInt 64
+                                                              occurrence: *id019
+                                                            - []
+                                                          bitwidth: 32
+                                                          sort: MINT.MInt 32
+                                                          occurrence: &id020 [size,
+                                                            '1', '0', '1', '0', '0',
+                                                            '0', '0', '0', '1']
+                                                        function: hook_INT_size_int
+                                                        sort: MINT.MInt 32
+                                                        occurrence: *id020
+                                                      - []
+                                                    bitwidth: 1
+                                                    sort: BOOL.Bool
+                                                    occurrence: ['2', '0', '1', '0',
+                                                      '0', '0', '0', '0', '1']
+                                                  - [STRING.String, STRING.String]
+                                                sort: STRING.String
+                                                occurrence: *id021
+                                              - [INT.Int, INT.Int, BOOL.Bool]
+                                            sort: STRING.String
+                                            occurrence: ['0', '1', '0', '0', '0',
+                                              '0', '0', '1']
+                                          - [STRING.String, INT.Int, STRING.String]
+                                        sort: STRING.String
+                                        occurrence: ['3', '0', '0', '0', '0', '0',
+                                          '0', '0', '1']
+                                      - [INT.Int, STRING.String, STRING.String, STRING.String]
+                                    sort: STRING.String
+                                    occurrence: ['0', '0', '0', '0', '0', '0', '0',
+                                      '1']
+                                  - [STRING.String]
+                                sort: STRING.String
+                                occurrence: ['0', '0', '0', '0', '0', '0', '1']
+                              - [STRING.String]
+                            sort: STRING.String
+                            occurrence: ['1', '0', '0', '0', '0', '0', '1']
+                          function: hook_LIST_get_long
+                          sort: STRING.String
+                          occurrence: ['0', '0', '0', '0', '0', '0', '1']
+                        function: hook_LIST_get_long
+                        sort: STRING.String
+                        occurrence: ['1', '0', '0', '0', '0', '0', '1']
+                      - [STRING.String, STRING.String]
+                    bitwidth: 64
+                    sort: MINT.MInt 64
+                    occurrence: &id022 [size, '0', '0', '0', '0', '0', '1']
+                  function: hook_LIST_size_long
+                  sort: MINT.MInt 64
+                  occurrence: *id022
+                - [STRING.String, STRING.String]
+              - - LblAggregateKind'ColnColn'Adt{}
+                - action:
+                  - 6300
+                  - - - ['0', '0', '0', '0', '1', '0', '0', '0', '1']
+                      - STRING.String
+                    - - *id004
+                      - STRING.String
+                    - - *id005
+                      - STRING.String
+                    - - ['2', '0', '0', '0', '1', '0', '0', '0', '1']
+                      - STRING.String
+                    - - ['3', '0', '0', '0', '1', '0', '0', '0', '1']
+                      - STRING.String
+                    - - ['4', '0', '0', '0', '1', '0', '0', '0', '1']
+                      - STRING.String
+                    - - *id006
+                      - STRING.String
+                    - - *id007
+                      - STRING.String
+                    - - *id008
+                      - STRING.String
+                    - - *id009
+                      - STRING.String
+                    - - *id001
+                      - LIST.List
+                    - - ['1', '0', '0', '0', '1', '0', '0', '0', '1']
+                      - STRING.String
+                - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+              - - LblAggregateKind'ColnColn'Array{}
+                - action:
+                  - 6301
+                  - - - *id004
+                      - STRING.String
+                    - - *id005
+                      - STRING.String
+                    - - *id006
+                      - STRING.String
+                    - - *id007
+                      - STRING.String
+                    - - *id008
+                      - STRING.String
+                    - - *id009
+                      - STRING.String
+                    - - ['0', '0', '0', '0', '1', '0', '0', '0', '1']
+                      - STRING.String
+                    - - *id001
+                      - LIST.List
+                - [STRING.String]
+              - - LblAggregateKind'ColnColn'Closure{}
+                - action:
+                  - 6302
+                  - - - ['0', '0', '0', '0', '1', '0', '0', '0', '1']
+                      - STRING.String
+                    - - *id004
+                      - STRING.String
+                    - - *id005
+                      - STRING.String
+                    - - *id006
+                      - STRING.String
+                    - - *id007
+                      - STRING.String
+                    - - *id008
+                      - STRING.String
+                    - - *id009
+                      - STRING.String
+                    - - ['1', '0', '0', '0', '1', '0', '0', '0', '1']
+                      - STRING.String
+                    - - *id001
+                      - LIST.List
+                - [STRING.String, STRING.String]
+              - - LblAggregateKind'ColnColn'Tuple{}
+                - action:
+                  - 6303
+                  - - - *id004
+                      - STRING.String
+                    - - *id005
+                      - STRING.String
+                    - - *id006
+                      - STRING.String
+                    - - *id007
+                      - STRING.String
+                    - - *id008
+                      - STRING.String
+                    - - *id009
+                      - STRING.String
+                    - - *id001
+                      - LIST.List
+                - []
+              sort: STRING.String
+              occurrence: ['0', '0', '0', '1', '0', '0', '0', '1']
+            - [STRING.String]
+          sort: STRING.String
+          occurrence: ['0', '0', '1', '0', '0', '0', '1']
+        - [STRING.String]
+      sort: STRING.String
+      occurrence: ['0', '1', '0', '0', '0', '1']
+    - [STRING.String, STRING.String]
+  sort: STRING.String
+  occurrence: ['1', '0', '0', '0', '1']
+- - - {hook: LIST.List, occurrence: VarACC}
+    - ['0', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar2}
+    - ['1', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen0}
+    - ['1', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen1}
+    - ['2', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen2}
+    - ['3', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen3}
+    - ['4', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar0}
+    - ['1', '1']

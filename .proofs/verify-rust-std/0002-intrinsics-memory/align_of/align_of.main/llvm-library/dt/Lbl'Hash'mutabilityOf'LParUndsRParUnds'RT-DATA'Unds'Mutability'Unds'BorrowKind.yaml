@@ -1,0 +1,21 @@
+default: null
+specializations:
+- - LblBorrowKind'ColnColn'Fake{}
+  - action:
+    - 5967
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+- - LblBorrowKind'ColnColn'Mut{}
+  - action:
+    - 5968
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+- - LblBorrowKind'ColnColn'Shared{}
+  - action:
+    - 5969
+    - []
+  - []
+sort: STRING.String
+occurrence: ['1']
