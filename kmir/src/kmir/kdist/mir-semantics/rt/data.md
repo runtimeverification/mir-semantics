@@ -331,7 +331,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
 
   // PointerOffset operates on a canonical range view. Bare values are treated as a
-  // singleton range instead of bouncing between `VAL` and `Range(ListItem(VAL))`.
+  // singleton range, and later scalar projections transparently descend into the
+  // head element through CtxRangeHead instead of materializing a fake index-0 step.
   syntax Value ::= #rangeView ( Value ) [function, total]
   rule #rangeView(Range(ELEMS)) => Range(ELEMS)
   rule #rangeView(VAL) => Range(ListItem(VAL)) requires notBool isRange(VAL)
@@ -408,6 +409,14 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
   rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemFromZST, projectionElemToZST PS:ProjectionElems) => PS [priority(40)]
+
+  syntax Bool ::= #projectsHead ( ProjectionElem ) [function, total]
+  // ---------------------------------------------------------------
+  rule #projectsHead(projectionElemDeref)      => true
+  rule #projectsHead(projectionElemField(_, _)) => true
+  rule #projectsHead(projectionElemDowncast(_)) => true
+  rule #projectsHead(projectionElemWrapStruct)  => true
+  rule #projectsHead(_OTHER)                    => false [owise]
 
   syntax Value ::= #localFromFrame ( StackFrame, Local, Int ) [function]
 
@@ -526,49 +535,30 @@ The situation typically arises when the stored value is a pointer (`NonNull`) bu
 
 A somewhat dual case to this rule can occur when a pointer into an array of data elements has been offset and is then dereferenced.
 The dereferenced pointer may either point to a subslice or to a single element (depending on context).
-Therefore, a field projection may be found which has to be applied to the head element of an array.
-The following rules resolve this situation by using the head element while
-retaining an internal `CtxRangeHead(...)` context, so writes still rebuild the
-enclosing range without leaking a synthetic `ConstantIndex(0)` into later place
-or reference reconstruction.
+Subsequent scalar projections such as `Field`, `Downcast`, `Deref`, or `WrapStruct`
+should act on that single pointed-at element, but the enclosing range still has to be
+available for write-back. Instead of re-encoding every scalar projection against
+`Range(ListItem(...))`, we first descend into the head element and remember that
+implicit step via `CtxRangeHead(...)`, leaving the forward `PATH` unchanged.
 
 ```k
   rule <k> #traverseProjection(
              DEST,
-             Range(ListItem(Aggregate(V_IDX, ARGS)) REST:List),
-             projectionElemField(fieldIdx(I), TY) PROJS,
+             Range(ListItem(HEAD) REST:List),
+             (PROJ:ProjectionElem PROJS),
              CTXTS,
              PATH
            )
         => #traverseProjection(
              DEST,
-             getValue(ARGS, I),
-             PROJS,
-             CtxField(V_IDX, ARGS, I, TY) CtxRangeHead(ListItem(Aggregate(V_IDX, ARGS)) REST) CTXTS,
-             #pushProjection(PATH, projectionElemField(fieldIdx(I), TY))
-           )
-        ...
-        </k>
-    requires 0 <=Int I andBool I <Int size(ARGS)
-     andBool isValue(ARGS[I])
-    [preserves-definedness] // valid list indexing checked
-
-  rule <k> #traverseProjection(
-             DEST,
-             Range(ListItem(Union(FIELD_IDX, ARG)) REST:List),
-             projectionElemField(FIELD_IDX, TY) PROJS,
-             CTXTS,
+             HEAD,
+             PROJ PROJS,
+             CtxRangeHead(ListItem(HEAD) REST) CTXTS,
              PATH
            )
-        => #traverseProjection(
-             DEST,
-             ARG,
-             PROJS,
-             CtxFieldUnion(FIELD_IDX, ARG, TY) CtxRangeHead(ListItem(Union(FIELD_IDX, ARG)) REST) CTXTS,
-             #pushProjection(PATH, projectionElemField(FIELD_IDX, TY))
-           )
         ...
         </k>
+    requires #projectsHead(PROJ)
     [preserves-definedness]
 ```
 
@@ -657,7 +647,7 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
            )
         => #traverseProjection(
              DEST,
-             getValue(ELEMENTS, OFFSET),
+             getValue(ELEMENTS, MINLEN -Int OFFSET),
              PROJS,
              CtxIndex(ELEMENTS, MINLEN -Int OFFSET) CTXTS,
              #pushProjection(PATH, projectionElemConstantIndex(MINLEN -Int OFFSET, 0, false))
