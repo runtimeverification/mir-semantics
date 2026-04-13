@@ -1,0 +1,67 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (83 steps)
+├─ 3 (split)
+│   #expect ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT2:Int /Int 1000000000 &In
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool notBool ARG_UINT1:Int +Int ARG_UINT2:Int /Int 1000000000 &Int 18446744073709551615 ==Int ARG_UINT1:Int +Int ARG_UINT2:Int /Int 1000000000 ==Bool false
+┃  │
+┃  ├─ 4
+┃  │   #expect ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT2:Int /Int 1000000000 &In
+┃  │
+┃  │  (2 steps)
+┃  └─ 6 (stuck, leaf)
+┃      #ProgramError ( AssertError ( assertMessageOverflow ( binOpAdd , operandCopy ( p
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     notBool ARG_UINT1:Int +Int ARG_UINT2:Int /Int 1000000000 &Int 18446744073709551615 ==Int ARG_UINT1:Int +Int ARG_UINT2:Int /Int 1000000000 ==Bool false
+   │
+   ├─ 5
+   │   #expect ( BoolVal ( notBool ARG_UINT1:Int +Int ARG_UINT2:Int /Int 1000000000 &In
+   │
+   │  (86 steps)
+   ├─ 7 (split)
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+   ┃
+   ┃ (branch)
+   ┣━━┓ subst: .Subst
+   ┃  ┃ constraint:
+   ┃  ┃     notBool ARG_UINT2:Int <Int 1000000000
+   ┃  │
+   ┃  ├─ 8
+   ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+   ┃  │
+   ┃  │  (303 steps)
+   ┃  ├─ 10 (terminal)
+   ┃  │   #EndProgram ~> .K
+   ┃  │
+   ┃  ┊  constraint: true
+   ┃  ┊  subst: ...
+   ┃  └─ 2 (leaf, target, terminal)
+   ┃      #EndProgram ~> .K
+   ┃
+   ┗━━┓ subst: .Subst
+      ┃ constraint:
+      ┃     ARG_UINT2:Int <Int 1000000000
+      │
+      ├─ 9
+      │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
+      │
+      │  (168 steps)
+      ├─ 11 (terminal)
+      │   #EndProgram ~> .K
+      │
+      ┊  constraint: true
+      ┊  subst: ...
+      └─ 2 (leaf, target, terminal)
+          #EndProgram ~> .K
+
+
+

@@ -1,0 +1,20 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (237 steps)
+├─ 3
+│   #cast ( Float ( 0.40000000000000000e1 , 64 ) , castKindTransmute , ty ( 49 ) , t
+│   span: 104
+│
+│  (1 step)
+└─ 4 (leaf, terminal)
+    thunk ( #cast ( Float ( 0.40000000000000000e1 , 64 ) , castKindTransmute , ty (
+    span: 104
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
