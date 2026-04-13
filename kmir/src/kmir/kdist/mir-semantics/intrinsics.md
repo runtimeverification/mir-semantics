@@ -229,6 +229,18 @@ like a plain write through a dereferenced pointer.
        ... </k>
 ```
 
+#### Atomic Fence SeqCst (`std::intrinsics::atomic_fence_seqcst`)
+
+The `atomic_fence_seqcst` intrinsic models a sequentially consistent fence. KMIR does not model
+memory ordering, so the fence itself is a no-op. The intrinsic still returns `()`, so the
+destination is set to the unit value.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("atomic_fence_seqcst")), .Operands, DEST, _SPAN)
+        => #setLocalValue(DEST, Aggregate(variantIdx(0), .List))
+       ... </k>
+```
+
 #### Atomic Swap SeqCst (`std::intrinsics::atomic_xchg_seqcst`)
 
 The `atomic_xchg_seqcst` intrinsic atomically swaps a new value into a pointer and returns the old value. KMIR
