@@ -1,0 +1,22 @@
+default: null
+specializations:
+- - LblMachineSize'ColnColn'num'Unds'bits{}
+  - default: null
+    specializations:
+    - - LblMIRInt'ColnColn'Int{}
+      - action:
+        - 7197
+        - - - ['0', '0', '1']
+            - INT.Int
+      - [INT.Int]
+    - - inj{SortInt{}, SortMIRInt{}}
+      - action:
+        - 7198
+        - - - ['0', '0', '1']
+            - INT.Int
+      - [INT.Int]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

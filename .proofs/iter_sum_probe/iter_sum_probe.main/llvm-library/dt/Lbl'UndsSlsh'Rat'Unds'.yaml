@@ -1,0 +1,90 @@
+default: null
+specializations:
+- - Lbl'-LT-UndsCommUnds-GT-'Rat'Unds'RAT-COMMON'Unds'Rat'Unds'Int'Unds'Int{}
+  - default: null
+    specializations:
+    - - Lbl'-LT-UndsCommUnds-GT-'Rat'Unds'RAT-COMMON'Unds'Rat'Unds'Int'Unds'Int{}
+      - action:
+        - 7668
+        - - - ['0', '1']
+            - INT.Int
+          - - ['1', '1']
+            - INT.Int
+          - - &id001 ['0', '2']
+            - INT.Int
+          - - &id002 ['1', '2']
+            - INT.Int
+      - [INT.Int, INT.Int]
+    - - inj{SortInt{}, SortRat{}}
+      - action:
+        - 7670
+        - - - ['0', '1']
+            - INT.Int
+          - - *id001
+            - INT.Int
+          - - *id002
+            - INT.Int
+      - [INT.Int]
+    sort: STRING.String
+    occurrence: &id006 ['1']
+  - [INT.Int, INT.Int]
+- - inj{SortInt{}, SortRat{}}
+  - default: null
+    specializations:
+    - - Lbl'-LT-UndsCommUnds-GT-'Rat'Unds'RAT-COMMON'Unds'Rat'Unds'Int'Unds'Int{}
+      - args:
+        - - &id003 ['0', '2']
+          - INT.Int
+        next:
+          default: null
+          specializations:
+          - - '1'
+            - action:
+              - 7669
+              - - - ['0', '1']
+                  - INT.Int
+                - - ['1', '1']
+                  - INT.Int
+                - - *id003
+                  - INT.Int
+            - []
+          - - '0'
+            - fail
+            - []
+          bitwidth: 1
+          sort: BOOL.Bool
+          occurrence: &id004 [side_condition_7669]
+        function: side_condition_7669
+        sort: BOOL.Bool
+        occurrence: *id004
+      - [INT.Int, INT.Int]
+    - - inj{SortInt{}, SortRat{}}
+      - args:
+        - - *id003
+          - INT.Int
+        next:
+          default: null
+          specializations:
+          - - '1'
+            - action:
+              - 7671
+              - - - ['0', '1']
+                  - INT.Int
+                - - *id003
+                  - INT.Int
+            - []
+          - - '0'
+            - fail
+            - []
+          bitwidth: 1
+          sort: BOOL.Bool
+          occurrence: &id005 [side_condition_7671]
+        function: side_condition_7671
+        sort: BOOL.Bool
+        occurrence: *id005
+      - [INT.Int]
+    sort: STRING.String
+    occurrence: *id006
+  - [INT.Int]
+sort: STRING.String
+occurrence: ['2']

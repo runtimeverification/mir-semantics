@@ -1,0 +1,1851 @@
+- default: fail
+  specializations:
+  - - LblIntrinsicFunction{}
+    - default: null
+      specializations:
+      - - Lblsymbol'LParUndsRParUnds'LIB'Unds'Symbol'Unds'String{}
+        - default: null
+          specializations:
+          - - LblOperands'ColnColn'empty{}
+            - next:
+                args:
+                - - &id009 ['0', '0', '0', '0', '0', '0', '0', '1']
+                  - STRING.String
+                - - &id015 [lit, assert_inhabited, STRING.String]
+                  - STRING.String
+                next:
+                  default: null
+                  specializations:
+                  - - '1'
+                    - default:
+                        default:
+                          next:
+                            action:
+                            - 7372
+                            - - - &id001 ['2', '0', '0', '0', '0', '1']
+                                - STRING.String
+                              - - &id002 ['1', '1']
+                                - STRING.String
+                              - - &id010 ['1', '0', '0', '0', '1']
+                                - STRING.String
+                              - - &id003 ['1', '0', '1']
+                                - STRING.String
+                              - - &id004 ['2', '0', '1']
+                                - STRING.String
+                              - - &id005 ['3', '0', '1']
+                                - STRING.String
+                              - - &id006 ['4', '0', '1']
+                                - STRING.String
+                              - - &id007 ['3', '0', '0', '0', '0', '1']
+                                - STRING.String
+                          pattern:
+                            args:
+                            - args:
+                              - hook: STRING.String
+                                occurrence: &id008 ['0', '0', '1', '0', '0', '0',
+                                  '1']
+                              constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                            - args: []
+                              constructor: dotk{}
+                            constructor: kseq{}
+                          occurrence: &id011 ['1', '0', '0', '0', '1']
+                          sort: STRING.String
+                        specializations:
+                        - - LblnoBasicBlockIdx'Unds'BODY'Unds'MaybeBasicBlockIdx{}
+                          - next:
+                              action:
+                              - 7373
+                              - - - *id001
+                                  - STRING.String
+                                - - *id002
+                                  - STRING.String
+                                - - ['1', '1', '0', '0', '0', '1']
+                                  - STRING.String
+                                - - *id003
+                                  - STRING.String
+                                - - *id004
+                                  - STRING.String
+                                - - *id005
+                                  - STRING.String
+                                - - *id006
+                                  - STRING.String
+                                - - *id007
+                                  - STRING.String
+                            pattern:
+                              args: []
+                              constructor: dotk{}
+                            occurrence: ['1', '1', '0', '0', '0', '1']
+                            sort: STRING.String
+                          - []
+                        sort: STRING.String
+                        occurrence: *id008
+                      specializations: []
+                      sort: STRING.String
+                      occurrence: *id009
+                    - []
+                  - - '0'
+                    - next:
+                        args:
+                        - - *id009
+                          - STRING.String
+                        - - &id013 [lit, cold_path, STRING.String]
+                          - STRING.String
+                        next:
+                          default: null
+                          specializations:
+                          - - '1'
+                            - default:
+                                next:
+                                  action:
+                                  - 7377
+                                  - - - *id001
+                                      - STRING.String
+                                    - - *id002
+                                      - STRING.String
+                                    - - *id010
+                                      - STRING.String
+                                    - - *id003
+                                      - STRING.String
+                                    - - *id004
+                                      - STRING.String
+                                    - - *id005
+                                      - STRING.String
+                                    - - *id006
+                                      - STRING.String
+                                    - - *id007
+                                      - STRING.String
+                                pattern:
+                                  args:
+                                  - args:
+                                    - hook: STRING.String
+                                      occurrence: *id008
+                                    constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                  - args: []
+                                    constructor: dotk{}
+                                  constructor: kseq{}
+                                occurrence: *id011
+                                sort: STRING.String
+                              specializations: []
+                              sort: STRING.String
+                              occurrence: *id009
+                            - []
+                          - - '0'
+                            - &id017
+                              default: fail
+                              specializations: []
+                              sort: STRING.String
+                              occurrence: ['0', '0', '0', '0', '0', '0', '0', '1']
+                            - []
+                          bitwidth: 1
+                          sort: BOOL.Bool
+                          occurrence: &id012 [eq, '0', '0', '0', '0', '0', '0', '0',
+                            '1', and, lit, cold_path, STRING.String]
+                        function: hook_KEQUAL_eq
+                        sort: BOOL.Bool
+                        occurrence: *id012
+                      pattern: {hook: STRING.String, literal: cold_path}
+                      occurrence: *id013
+                      sort: STRING.String
+                    - []
+                  bitwidth: 1
+                  sort: BOOL.Bool
+                  occurrence: &id014 [eq, '0', '0', '0', '0', '0', '0', '0', '1',
+                    and, lit, assert_inhabited, STRING.String]
+                function: hook_KEQUAL_eq
+                sort: BOOL.Bool
+                occurrence: *id014
+              pattern: {hook: STRING.String, literal: assert_inhabited}
+              occurrence: *id015
+              sort: STRING.String
+            - []
+          - - LblOperands'ColnColn'append{}
+            - default: null
+              specializations:
+              - - LblOperands'ColnColn'empty{}
+                - next:
+                    args:
+                    - - *id009
+                      - STRING.String
+                    - - &id035 [lit, bitreverse, STRING.String]
+                      - STRING.String
+                    next:
+                      default: null
+                      specializations:
+                      - - '1'
+                        - default:
+                            next:
+                              action:
+                              - 7374
+                              - - - *id002
+                                  - STRING.String
+                                - - *id010
+                                  - STRING.String
+                                - - *id003
+                                  - STRING.String
+                                - - *id004
+                                  - STRING.String
+                                - - *id005
+                                  - STRING.String
+                                - - *id006
+                                  - STRING.String
+                                - - *id007
+                                  - STRING.String
+                                - - &id016 ['0', '1', '0', '0', '0', '0', '1']
+                                  - STRING.String
+                                - - *id001
+                                  - STRING.String
+                            pattern:
+                              args:
+                              - args:
+                                - hook: STRING.String
+                                  occurrence: *id008
+                                constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                              - args: []
+                                constructor: dotk{}
+                              constructor: kseq{}
+                            occurrence: *id011
+                            sort: STRING.String
+                          specializations: []
+                          sort: STRING.String
+                          occurrence: *id009
+                        - []
+                      - - '0'
+                        - next:
+                            args:
+                            - - *id009
+                              - STRING.String
+                            - - &id033 [lit, black_box, STRING.String]
+                              - STRING.String
+                            next:
+                              default: null
+                              specializations:
+                              - - '1'
+                                - default:
+                                    next:
+                                      action:
+                                      - 7375
+                                      - - - *id002
+                                          - STRING.String
+                                        - - *id010
+                                          - STRING.String
+                                        - - *id003
+                                          - STRING.String
+                                        - - *id004
+                                          - STRING.String
+                                        - - *id005
+                                          - STRING.String
+                                        - - *id006
+                                          - STRING.String
+                                        - - *id007
+                                          - STRING.String
+                                        - - *id016
+                                          - STRING.String
+                                        - - *id001
+                                          - STRING.String
+                                    pattern:
+                                      args:
+                                      - args:
+                                        - hook: STRING.String
+                                          occurrence: *id008
+                                        constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                      - args: []
+                                        constructor: dotk{}
+                                      constructor: kseq{}
+                                    occurrence: *id011
+                                    sort: STRING.String
+                                  specializations: []
+                                  sort: STRING.String
+                                  occurrence: *id009
+                                - []
+                              - - '0'
+                                - next:
+                                    args:
+                                    - - *id009
+                                      - STRING.String
+                                    - - &id031 [lit, bswap, STRING.String]
+                                      - STRING.String
+                                    next:
+                                      default: null
+                                      specializations:
+                                      - - '1'
+                                        - default:
+                                            next:
+                                              action:
+                                              - 7376
+                                              - - - *id002
+                                                  - STRING.String
+                                                - - *id010
+                                                  - STRING.String
+                                                - - *id003
+                                                  - STRING.String
+                                                - - *id004
+                                                  - STRING.String
+                                                - - *id005
+                                                  - STRING.String
+                                                - - *id006
+                                                  - STRING.String
+                                                - - *id007
+                                                  - STRING.String
+                                                - - *id016
+                                                  - STRING.String
+                                                - - *id001
+                                                  - STRING.String
+                                            pattern:
+                                              args:
+                                              - args:
+                                                - hook: STRING.String
+                                                  occurrence: *id008
+                                                constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                              - args: []
+                                                constructor: dotk{}
+                                              constructor: kseq{}
+                                            occurrence: *id011
+                                            sort: STRING.String
+                                          specializations: []
+                                          sort: STRING.String
+                                          occurrence: *id009
+                                        - []
+                                      - - '0'
+                                        - next:
+                                            args:
+                                            - - *id009
+                                              - STRING.String
+                                            - - &id029 [lit, ctlz, STRING.String]
+                                              - STRING.String
+                                            next:
+                                              default: null
+                                              specializations:
+                                              - - '1'
+                                                - default:
+                                                    next:
+                                                      action:
+                                                      - 7378
+                                                      - - - *id002
+                                                          - STRING.String
+                                                        - - *id010
+                                                          - STRING.String
+                                                        - - *id003
+                                                          - STRING.String
+                                                        - - *id004
+                                                          - STRING.String
+                                                        - - *id005
+                                                          - STRING.String
+                                                        - - *id006
+                                                          - STRING.String
+                                                        - - *id007
+                                                          - STRING.String
+                                                        - - *id016
+                                                          - STRING.String
+                                                        - - *id001
+                                                          - STRING.String
+                                                    pattern:
+                                                      args:
+                                                      - args:
+                                                        - hook: STRING.String
+                                                          occurrence: *id008
+                                                        constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                      - args: []
+                                                        constructor: dotk{}
+                                                      constructor: kseq{}
+                                                    occurrence: *id011
+                                                    sort: STRING.String
+                                                  specializations: []
+                                                  sort: STRING.String
+                                                  occurrence: *id009
+                                                - []
+                                              - - '0'
+                                                - next:
+                                                    args:
+                                                    - - *id009
+                                                      - STRING.String
+                                                    - - &id027 [lit, ctlz_nonzero,
+                                                        STRING.String]
+                                                      - STRING.String
+                                                    next:
+                                                      default: null
+                                                      specializations:
+                                                      - - '1'
+                                                        - default:
+                                                            next:
+                                                              action:
+                                                              - 7379
+                                                              - - - *id002
+                                                                  - STRING.String
+                                                                - - *id010
+                                                                  - STRING.String
+                                                                - - *id003
+                                                                  - STRING.String
+                                                                - - *id004
+                                                                  - STRING.String
+                                                                - - *id005
+                                                                  - STRING.String
+                                                                - - *id006
+                                                                  - STRING.String
+                                                                - - *id007
+                                                                  - STRING.String
+                                                                - - *id016
+                                                                  - STRING.String
+                                                                - - *id001
+                                                                  - STRING.String
+                                                            pattern:
+                                                              args:
+                                                              - args:
+                                                                - hook: STRING.String
+                                                                  occurrence: *id008
+                                                                constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                              - args: []
+                                                                constructor: dotk{}
+                                                              constructor: kseq{}
+                                                            occurrence: *id011
+                                                            sort: STRING.String
+                                                          specializations: []
+                                                          sort: STRING.String
+                                                          occurrence: *id009
+                                                        - []
+                                                      - - '0'
+                                                        - next:
+                                                            args:
+                                                            - - *id009
+                                                              - STRING.String
+                                                            - - &id025 [lit, ctpop,
+                                                                STRING.String]
+                                                              - STRING.String
+                                                            next:
+                                                              default: null
+                                                              specializations:
+                                                              - - '1'
+                                                                - default:
+                                                                    next:
+                                                                      action:
+                                                                      - 7380
+                                                                      - - - *id002
+                                                                          - STRING.String
+                                                                        - - *id010
+                                                                          - STRING.String
+                                                                        - - *id003
+                                                                          - STRING.String
+                                                                        - - *id004
+                                                                          - STRING.String
+                                                                        - - *id005
+                                                                          - STRING.String
+                                                                        - - *id006
+                                                                          - STRING.String
+                                                                        - - *id007
+                                                                          - STRING.String
+                                                                        - - *id016
+                                                                          - STRING.String
+                                                                        - - *id001
+                                                                          - STRING.String
+                                                                    pattern:
+                                                                      args:
+                                                                      - args:
+                                                                        - hook: STRING.String
+                                                                          occurrence: *id008
+                                                                        constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                      - args: []
+                                                                        constructor: dotk{}
+                                                                      constructor: kseq{}
+                                                                    occurrence: *id011
+                                                                    sort: STRING.String
+                                                                  specializations: []
+                                                                  sort: STRING.String
+                                                                  occurrence: *id009
+                                                                - []
+                                                              - - '0'
+                                                                - next:
+                                                                    args:
+                                                                    - - *id009
+                                                                      - STRING.String
+                                                                    - - &id023 [lit,
+                                                                        cttz, STRING.String]
+                                                                      - STRING.String
+                                                                    next:
+                                                                      default: null
+                                                                      specializations:
+                                                                      - - '1'
+                                                                        - default:
+                                                                            next:
+                                                                              action:
+                                                                              - 7381
+                                                                              - - - *id002
+                                                                                  - STRING.String
+                                                                                - - *id010
+                                                                                  - STRING.String
+                                                                                - - *id003
+                                                                                  - STRING.String
+                                                                                - - *id004
+                                                                                  - STRING.String
+                                                                                - - *id005
+                                                                                  - STRING.String
+                                                                                - - *id006
+                                                                                  - STRING.String
+                                                                                - - *id007
+                                                                                  - STRING.String
+                                                                                - - *id016
+                                                                                  - STRING.String
+                                                                                - - *id001
+                                                                                  - STRING.String
+                                                                            pattern:
+                                                                              args:
+                                                                              - args:
+                                                                                - hook: STRING.String
+                                                                                  occurrence: *id008
+                                                                                constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                              - args: []
+                                                                                constructor: dotk{}
+                                                                              constructor: kseq{}
+                                                                            occurrence: *id011
+                                                                            sort: STRING.String
+                                                                          specializations: []
+                                                                          sort: STRING.String
+                                                                          occurrence: *id009
+                                                                        - []
+                                                                      - - '0'
+                                                                        - next:
+                                                                            args:
+                                                                            - - *id009
+                                                                              - STRING.String
+                                                                            - - &id021 [
+                                                                                lit,
+                                                                                cttz_nonzero,
+                                                                                STRING.String]
+                                                                              - STRING.String
+                                                                            next:
+                                                                              default: null
+                                                                              specializations:
+                                                                              - - '1'
+                                                                                - default:
+                                                                                    next:
+                                                                                      action:
+                                                                                      - 7382
+                                                                                      - - - *id002
+                                                                                          - STRING.String
+                                                                                        - - *id010
+                                                                                          - STRING.String
+                                                                                        - - *id003
+                                                                                          - STRING.String
+                                                                                        - - *id004
+                                                                                          - STRING.String
+                                                                                        - - *id005
+                                                                                          - STRING.String
+                                                                                        - - *id006
+                                                                                          - STRING.String
+                                                                                        - - *id007
+                                                                                          - STRING.String
+                                                                                        - - *id016
+                                                                                          - STRING.String
+                                                                                        - - *id001
+                                                                                          - STRING.String
+                                                                                    pattern:
+                                                                                      args:
+                                                                                      - args:
+                                                                                        - hook: STRING.String
+                                                                                          occurrence: *id008
+                                                                                        constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                                      - args: []
+                                                                                        constructor: dotk{}
+                                                                                      constructor: kseq{}
+                                                                                    occurrence: *id011
+                                                                                    sort: STRING.String
+                                                                                  specializations: []
+                                                                                  sort: STRING.String
+                                                                                  occurrence: *id009
+                                                                                - []
+                                                                              - - '0'
+                                                                                - next:
+                                                                                    args:
+                                                                                    - - *id009
+                                                                                      - STRING.String
+                                                                                    - - &id019 [
+                                                                                        lit,
+                                                                                        volatile_load,
+                                                                                        STRING.String]
+                                                                                      - STRING.String
+                                                                                    next:
+                                                                                      default: null
+                                                                                      specializations:
+                                                                                      - - '1'
+                                                                                        - default:
+                                                                                            default: fail
+                                                                                            specializations:
+                                                                                            - - LblOperand'ColnColn'Copy{}
+                                                                                              - default: null
+                                                                                                specializations:
+                                                                                                - - Lblplace{}
+                                                                                                  - next:
+                                                                                                      action:
+                                                                                                      - 7393
+                                                                                                      - - - *id002
+                                                                                                          - STRING.String
+                                                                                                        - - *id010
+                                                                                                          - STRING.String
+                                                                                                        - - *id003
+                                                                                                          - STRING.String
+                                                                                                        - - *id004
+                                                                                                          - STRING.String
+                                                                                                        - - *id005
+                                                                                                          - STRING.String
+                                                                                                        - - *id006
+                                                                                                          - STRING.String
+                                                                                                        - - *id007
+                                                                                                          - STRING.String
+                                                                                                        - - *id001
+                                                                                                          - STRING.String
+                                                                                                        - - [
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '1',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '1']
+                                                                                                          - STRING.String
+                                                                                                        - - [
+                                                                                                            '1',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '1',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '1']
+                                                                                                          - STRING.String
+                                                                                                    pattern:
+                                                                                                      args:
+                                                                                                      - args:
+                                                                                                        - hook: STRING.String
+                                                                                                          occurrence: *id008
+                                                                                                        constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                                                      - args: []
+                                                                                                        constructor: dotk{}
+                                                                                                      constructor: kseq{}
+                                                                                                    occurrence: *id011
+                                                                                                    sort: STRING.String
+                                                                                                  - [
+                                                                                                    STRING.String,
+                                                                                                    STRING.String]
+                                                                                                sort: STRING.String
+                                                                                                occurrence: [
+                                                                                                  '0',
+                                                                                                  '0',
+                                                                                                  '1',
+                                                                                                  '0',
+                                                                                                  '0',
+                                                                                                  '0',
+                                                                                                  '0',
+                                                                                                  '1']
+                                                                                              - [
+                                                                                                STRING.String]
+                                                                                            - - LblOperand'ColnColn'Move{}
+                                                                                              - default: null
+                                                                                                specializations:
+                                                                                                - - Lblplace{}
+                                                                                                  - next:
+                                                                                                      action:
+                                                                                                      - 7394
+                                                                                                      - - - *id002
+                                                                                                          - STRING.String
+                                                                                                        - - *id010
+                                                                                                          - STRING.String
+                                                                                                        - - *id003
+                                                                                                          - STRING.String
+                                                                                                        - - *id004
+                                                                                                          - STRING.String
+                                                                                                        - - *id005
+                                                                                                          - STRING.String
+                                                                                                        - - *id006
+                                                                                                          - STRING.String
+                                                                                                        - - *id007
+                                                                                                          - STRING.String
+                                                                                                        - - *id001
+                                                                                                          - STRING.String
+                                                                                                        - - [
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '1',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '1']
+                                                                                                          - STRING.String
+                                                                                                        - - [
+                                                                                                            '1',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '1',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '1']
+                                                                                                          - STRING.String
+                                                                                                    pattern:
+                                                                                                      args:
+                                                                                                      - args:
+                                                                                                        - hook: STRING.String
+                                                                                                          occurrence: *id008
+                                                                                                        constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                                                      - args: []
+                                                                                                        constructor: dotk{}
+                                                                                                      constructor: kseq{}
+                                                                                                    occurrence: *id011
+                                                                                                    sort: STRING.String
+                                                                                                  - [
+                                                                                                    STRING.String,
+                                                                                                    STRING.String]
+                                                                                                sort: STRING.String
+                                                                                                occurrence: [
+                                                                                                  '0',
+                                                                                                  '0',
+                                                                                                  '1',
+                                                                                                  '0',
+                                                                                                  '0',
+                                                                                                  '0',
+                                                                                                  '0',
+                                                                                                  '1']
+                                                                                              - [
+                                                                                                STRING.String]
+                                                                                            sort: STRING.String
+                                                                                            occurrence: &id037 [
+                                                                                              '0',
+                                                                                              '1',
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '0',
+                                                                                              '1']
+                                                                                          specializations: []
+                                                                                          sort: STRING.String
+                                                                                          occurrence: *id009
+                                                                                        - []
+                                                                                      - - '0'
+                                                                                        - *id017
+                                                                                        - []
+                                                                                      bitwidth: 1
+                                                                                      sort: BOOL.Bool
+                                                                                      occurrence: &id018 [
+                                                                                        eq,
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '0',
+                                                                                        '1',
+                                                                                        and,
+                                                                                        lit,
+                                                                                        volatile_load,
+                                                                                        STRING.String]
+                                                                                    function: hook_KEQUAL_eq
+                                                                                    sort: BOOL.Bool
+                                                                                    occurrence: *id018
+                                                                                  pattern: {
+                                                                                    hook: STRING.String,
+                                                                                    literal: volatile_load}
+                                                                                  occurrence: *id019
+                                                                                  sort: STRING.String
+                                                                                - []
+                                                                              bitwidth: 1
+                                                                              sort: BOOL.Bool
+                                                                              occurrence: &id020 [
+                                                                                eq,
+                                                                                '0',
+                                                                                '0',
+                                                                                '0',
+                                                                                '0',
+                                                                                '0',
+                                                                                '0',
+                                                                                '0',
+                                                                                '1',
+                                                                                and,
+                                                                                lit,
+                                                                                cttz_nonzero,
+                                                                                STRING.String]
+                                                                            function: hook_KEQUAL_eq
+                                                                            sort: BOOL.Bool
+                                                                            occurrence: *id020
+                                                                          pattern: {
+                                                                            hook: STRING.String,
+                                                                            literal: cttz_nonzero}
+                                                                          occurrence: *id021
+                                                                          sort: STRING.String
+                                                                        - []
+                                                                      bitwidth: 1
+                                                                      sort: BOOL.Bool
+                                                                      occurrence: &id022 [
+                                                                        eq, '0', '0',
+                                                                        '0', '0',
+                                                                        '0', '0',
+                                                                        '0', '1',
+                                                                        and, lit,
+                                                                        cttz, STRING.String]
+                                                                    function: hook_KEQUAL_eq
+                                                                    sort: BOOL.Bool
+                                                                    occurrence: *id022
+                                                                  pattern: {hook: STRING.String,
+                                                                    literal: cttz}
+                                                                  occurrence: *id023
+                                                                  sort: STRING.String
+                                                                - []
+                                                              bitwidth: 1
+                                                              sort: BOOL.Bool
+                                                              occurrence: &id024 [
+                                                                eq, '0', '0', '0',
+                                                                '0', '0', '0', '0',
+                                                                '1', and, lit, ctpop,
+                                                                STRING.String]
+                                                            function: hook_KEQUAL_eq
+                                                            sort: BOOL.Bool
+                                                            occurrence: *id024
+                                                          pattern: {hook: STRING.String,
+                                                            literal: ctpop}
+                                                          occurrence: *id025
+                                                          sort: STRING.String
+                                                        - []
+                                                      bitwidth: 1
+                                                      sort: BOOL.Bool
+                                                      occurrence: &id026 [eq, '0',
+                                                        '0', '0', '0', '0', '0', '0',
+                                                        '1', and, lit, ctlz_nonzero,
+                                                        STRING.String]
+                                                    function: hook_KEQUAL_eq
+                                                    sort: BOOL.Bool
+                                                    occurrence: *id026
+                                                  pattern: {hook: STRING.String, literal: ctlz_nonzero}
+                                                  occurrence: *id027
+                                                  sort: STRING.String
+                                                - []
+                                              bitwidth: 1
+                                              sort: BOOL.Bool
+                                              occurrence: &id028 [eq, '0', '0', '0',
+                                                '0', '0', '0', '0', '1', and, lit,
+                                                ctlz, STRING.String]
+                                            function: hook_KEQUAL_eq
+                                            sort: BOOL.Bool
+                                            occurrence: *id028
+                                          pattern: {hook: STRING.String, literal: ctlz}
+                                          occurrence: *id029
+                                          sort: STRING.String
+                                        - []
+                                      bitwidth: 1
+                                      sort: BOOL.Bool
+                                      occurrence: &id030 [eq, '0', '0', '0', '0',
+                                        '0', '0', '0', '1', and, lit, bswap, STRING.String]
+                                    function: hook_KEQUAL_eq
+                                    sort: BOOL.Bool
+                                    occurrence: *id030
+                                  pattern: {hook: STRING.String, literal: bswap}
+                                  occurrence: *id031
+                                  sort: STRING.String
+                                - []
+                              bitwidth: 1
+                              sort: BOOL.Bool
+                              occurrence: &id032 [eq, '0', '0', '0', '0', '0', '0',
+                                '0', '1', and, lit, black_box, STRING.String]
+                            function: hook_KEQUAL_eq
+                            sort: BOOL.Bool
+                            occurrence: *id032
+                          pattern: {hook: STRING.String, literal: black_box}
+                          occurrence: *id033
+                          sort: STRING.String
+                        - []
+                      bitwidth: 1
+                      sort: BOOL.Bool
+                      occurrence: &id034 [eq, '0', '0', '0', '0', '0', '0', '0', '1',
+                        and, lit, bitreverse, STRING.String]
+                    function: hook_KEQUAL_eq
+                    sort: BOOL.Bool
+                    occurrence: *id034
+                  pattern: {hook: STRING.String, literal: bitreverse}
+                  occurrence: *id035
+                  sort: STRING.String
+                - []
+              - - LblOperands'ColnColn'append{}
+                - default: fail
+                  specializations:
+                  - - LblOperands'ColnColn'empty{}
+                    - next:
+                        args:
+                        - - *id009
+                          - STRING.String
+                        - - &id059 [lit, prefetch_read_data, STRING.String]
+                          - STRING.String
+                        next:
+                          default: null
+                          specializations:
+                          - - '1'
+                            - default:
+                                next:
+                                  action:
+                                  - 7383
+                                  - - - *id016
+                                      - STRING.String
+                                    - - &id036 ['0', '1', '1', '0', '0', '0', '0',
+                                        '1']
+                                      - STRING.String
+                                    - - *id001
+                                      - STRING.String
+                                    - - *id002
+                                      - STRING.String
+                                    - - *id010
+                                      - STRING.String
+                                    - - *id003
+                                      - STRING.String
+                                    - - *id004
+                                      - STRING.String
+                                    - - *id005
+                                      - STRING.String
+                                    - - *id006
+                                      - STRING.String
+                                    - - *id007
+                                      - STRING.String
+                                pattern:
+                                  args:
+                                  - args:
+                                    - hook: STRING.String
+                                      occurrence: *id008
+                                    constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                  - args: []
+                                    constructor: dotk{}
+                                  constructor: kseq{}
+                                occurrence: *id011
+                                sort: STRING.String
+                              specializations: []
+                              sort: STRING.String
+                              occurrence: *id009
+                            - []
+                          - - '0'
+                            - next:
+                                args:
+                                - - *id009
+                                  - STRING.String
+                                - - &id057 [lit, prefetch_read_instruction, STRING.String]
+                                  - STRING.String
+                                next:
+                                  default: null
+                                  specializations:
+                                  - - '1'
+                                    - default:
+                                        next:
+                                          action:
+                                          - 7384
+                                          - - - *id016
+                                              - STRING.String
+                                            - - *id036
+                                              - STRING.String
+                                            - - *id001
+                                              - STRING.String
+                                            - - *id002
+                                              - STRING.String
+                                            - - *id010
+                                              - STRING.String
+                                            - - *id003
+                                              - STRING.String
+                                            - - *id004
+                                              - STRING.String
+                                            - - *id005
+                                              - STRING.String
+                                            - - *id006
+                                              - STRING.String
+                                            - - *id007
+                                              - STRING.String
+                                        pattern:
+                                          args:
+                                          - args:
+                                            - hook: STRING.String
+                                              occurrence: *id008
+                                            constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                          - args: []
+                                            constructor: dotk{}
+                                          constructor: kseq{}
+                                        occurrence: *id011
+                                        sort: STRING.String
+                                      specializations: []
+                                      sort: STRING.String
+                                      occurrence: *id009
+                                    - []
+                                  - - '0'
+                                    - next:
+                                        args:
+                                        - - *id009
+                                          - STRING.String
+                                        - - &id055 [lit, prefetch_write_data, STRING.String]
+                                          - STRING.String
+                                        next:
+                                          default: null
+                                          specializations:
+                                          - - '1'
+                                            - default:
+                                                next:
+                                                  action:
+                                                  - 7385
+                                                  - - - *id016
+                                                      - STRING.String
+                                                    - - *id036
+                                                      - STRING.String
+                                                    - - *id001
+                                                      - STRING.String
+                                                    - - *id002
+                                                      - STRING.String
+                                                    - - *id010
+                                                      - STRING.String
+                                                    - - *id003
+                                                      - STRING.String
+                                                    - - *id004
+                                                      - STRING.String
+                                                    - - *id005
+                                                      - STRING.String
+                                                    - - *id006
+                                                      - STRING.String
+                                                    - - *id007
+                                                      - STRING.String
+                                                pattern:
+                                                  args:
+                                                  - args:
+                                                    - hook: STRING.String
+                                                      occurrence: *id008
+                                                    constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                  - args: []
+                                                    constructor: dotk{}
+                                                  constructor: kseq{}
+                                                occurrence: *id011
+                                                sort: STRING.String
+                                              specializations: []
+                                              sort: STRING.String
+                                              occurrence: *id009
+                                            - []
+                                          - - '0'
+                                            - next:
+                                                args:
+                                                - - *id009
+                                                  - STRING.String
+                                                - - &id053 [lit, prefetch_write_instruction,
+                                                    STRING.String]
+                                                  - STRING.String
+                                                next:
+                                                  default: null
+                                                  specializations:
+                                                  - - '1'
+                                                    - default:
+                                                        next:
+                                                          action:
+                                                          - 7386
+                                                          - - - *id016
+                                                              - STRING.String
+                                                            - - *id036
+                                                              - STRING.String
+                                                            - - *id001
+                                                              - STRING.String
+                                                            - - *id002
+                                                              - STRING.String
+                                                            - - *id010
+                                                              - STRING.String
+                                                            - - *id003
+                                                              - STRING.String
+                                                            - - *id004
+                                                              - STRING.String
+                                                            - - *id005
+                                                              - STRING.String
+                                                            - - *id006
+                                                              - STRING.String
+                                                            - - *id007
+                                                              - STRING.String
+                                                        pattern:
+                                                          args:
+                                                          - args:
+                                                            - hook: STRING.String
+                                                              occurrence: *id008
+                                                            constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                          - args: []
+                                                            constructor: dotk{}
+                                                          constructor: kseq{}
+                                                        occurrence: *id011
+                                                        sort: STRING.String
+                                                      specializations: []
+                                                      sort: STRING.String
+                                                      occurrence: *id009
+                                                    - []
+                                                  - - '0'
+                                                    - next:
+                                                        args:
+                                                        - - *id009
+                                                          - STRING.String
+                                                        - - &id051 [lit, ptr_offset_from,
+                                                            STRING.String]
+                                                          - STRING.String
+                                                        next:
+                                                          default: null
+                                                          specializations:
+                                                          - - '1'
+                                                            - default:
+                                                                next:
+                                                                  action:
+                                                                  - 7387
+                                                                  - - - *id002
+                                                                      - STRING.String
+                                                                    - - *id010
+                                                                      - STRING.String
+                                                                    - - *id003
+                                                                      - STRING.String
+                                                                    - - *id004
+                                                                      - STRING.String
+                                                                    - - *id005
+                                                                      - STRING.String
+                                                                    - - *id006
+                                                                      - STRING.String
+                                                                    - - *id007
+                                                                      - STRING.String
+                                                                    - - *id016
+                                                                      - STRING.String
+                                                                    - - *id036
+                                                                      - STRING.String
+                                                                    - - *id001
+                                                                      - STRING.String
+                                                                pattern:
+                                                                  args:
+                                                                  - args:
+                                                                    - hook: STRING.String
+                                                                      occurrence: *id008
+                                                                    constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                  - args: []
+                                                                    constructor: dotk{}
+                                                                  constructor: kseq{}
+                                                                occurrence: *id011
+                                                                sort: STRING.String
+                                                              specializations: []
+                                                              sort: STRING.String
+                                                              occurrence: *id009
+                                                            - []
+                                                          - - '0'
+                                                            - next:
+                                                                args:
+                                                                - - *id009
+                                                                  - STRING.String
+                                                                - - &id049 [lit, ptr_offset_from_unsigned,
+                                                                    STRING.String]
+                                                                  - STRING.String
+                                                                next:
+                                                                  default: null
+                                                                  specializations:
+                                                                  - - '1'
+                                                                    - default:
+                                                                        next:
+                                                                          action:
+                                                                          - 7388
+                                                                          - - - *id002
+                                                                              - STRING.String
+                                                                            - - *id010
+                                                                              - STRING.String
+                                                                            - - *id003
+                                                                              - STRING.String
+                                                                            - - *id004
+                                                                              - STRING.String
+                                                                            - - *id005
+                                                                              - STRING.String
+                                                                            - - *id006
+                                                                              - STRING.String
+                                                                            - - *id007
+                                                                              - STRING.String
+                                                                            - - *id016
+                                                                              - STRING.String
+                                                                            - - *id036
+                                                                              - STRING.String
+                                                                            - - *id001
+                                                                              - STRING.String
+                                                                        pattern:
+                                                                          args:
+                                                                          - args:
+                                                                            - hook: STRING.String
+                                                                              occurrence: *id008
+                                                                            constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                          - args: []
+                                                                            constructor: dotk{}
+                                                                          constructor: kseq{}
+                                                                        occurrence: *id011
+                                                                        sort: STRING.String
+                                                                      specializations: []
+                                                                      sort: STRING.String
+                                                                      occurrence: *id009
+                                                                    - []
+                                                                  - - '0'
+                                                                    - next:
+                                                                        args:
+                                                                        - - *id009
+                                                                          - STRING.String
+                                                                        - - &id047 [
+                                                                            lit, raw_eq,
+                                                                            STRING.String]
+                                                                          - STRING.String
+                                                                        next:
+                                                                          default: null
+                                                                          specializations:
+                                                                          - - '1'
+                                                                            - default:
+                                                                                default: null
+                                                                                specializations:
+                                                                                - - Lbl'-LT-'currentFrame'-GT-'{}
+                                                                                  - default: null
+                                                                                    specializations:
+                                                                                    - - Lbl'-LT-'locals'-GT-'{}
+                                                                                      - next:
+                                                                                          action:
+                                                                                          - 7389
+                                                                                          - - - *id002
+                                                                                              - STRING.String
+                                                                                            - - *id010
+                                                                                              - STRING.String
+                                                                                            - - [
+                                                                                                '0',
+                                                                                                '3',
+                                                                                                '0',
+                                                                                                '1']
+                                                                                              - STRING.String
+                                                                                            - - [
+                                                                                                '1',
+                                                                                                '3',
+                                                                                                '0',
+                                                                                                '1']
+                                                                                              - STRING.String
+                                                                                            - - *id005
+                                                                                              - STRING.String
+                                                                                            - - [
+                                                                                                '2',
+                                                                                                '3',
+                                                                                                '0',
+                                                                                                '1']
+                                                                                              - STRING.String
+                                                                                            - - [
+                                                                                                '3',
+                                                                                                '3',
+                                                                                                '0',
+                                                                                                '1']
+                                                                                              - STRING.String
+                                                                                            - - [
+                                                                                                '4',
+                                                                                                '3',
+                                                                                                '0',
+                                                                                                '1']
+                                                                                              - STRING.String
+                                                                                            - - *id003
+                                                                                              - STRING.String
+                                                                                            - - *id004
+                                                                                              - STRING.String
+                                                                                            - - *id006
+                                                                                              - STRING.String
+                                                                                            - - *id007
+                                                                                              - STRING.String
+                                                                                            - - *id016
+                                                                                              - STRING.String
+                                                                                            - - *id036
+                                                                                              - STRING.String
+                                                                                            - - [
+                                                                                                '0',
+                                                                                                '5',
+                                                                                                '3',
+                                                                                                '0',
+                                                                                                '1']
+                                                                                              - LIST.List
+                                                                                            - - *id001
+                                                                                              - STRING.String
+                                                                                        pattern:
+                                                                                          args:
+                                                                                          - args:
+                                                                                            - hook: STRING.String
+                                                                                              occurrence: *id008
+                                                                                            constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                                          - args: []
+                                                                                            constructor: dotk{}
+                                                                                          constructor: kseq{}
+                                                                                        occurrence: *id011
+                                                                                        sort: STRING.String
+                                                                                      - [
+                                                                                        LIST.List]
+                                                                                    sort: STRING.String
+                                                                                    occurrence: [
+                                                                                      '5',
+                                                                                      '3',
+                                                                                      '0',
+                                                                                      '1']
+                                                                                  - [
+                                                                                    STRING.String,
+                                                                                    STRING.String,
+                                                                                    STRING.String,
+                                                                                    STRING.String,
+                                                                                    STRING.String,
+                                                                                    STRING.String]
+                                                                                sort: STRING.String
+                                                                                occurrence: &id062 [
+                                                                                  '3',
+                                                                                  '0',
+                                                                                  '1']
+                                                                              specializations: []
+                                                                              sort: STRING.String
+                                                                              occurrence: *id009
+                                                                            - []
+                                                                          - - '0'
+                                                                            - next:
+                                                                                args:
+                                                                                - - *id009
+                                                                                  - STRING.String
+                                                                                - - &id045 [
+                                                                                    lit,
+                                                                                    rotate_left,
+                                                                                    STRING.String]
+                                                                                  - STRING.String
+                                                                                next:
+                                                                                  default: null
+                                                                                  specializations:
+                                                                                  - - '1'
+                                                                                    - default:
+                                                                                        next:
+                                                                                          action:
+                                                                                          - 7390
+                                                                                          - - - *id002
+                                                                                              - STRING.String
+                                                                                            - - *id010
+                                                                                              - STRING.String
+                                                                                            - - *id003
+                                                                                              - STRING.String
+                                                                                            - - *id004
+                                                                                              - STRING.String
+                                                                                            - - *id005
+                                                                                              - STRING.String
+                                                                                            - - *id006
+                                                                                              - STRING.String
+                                                                                            - - *id007
+                                                                                              - STRING.String
+                                                                                            - - *id016
+                                                                                              - STRING.String
+                                                                                            - - *id036
+                                                                                              - STRING.String
+                                                                                            - - *id001
+                                                                                              - STRING.String
+                                                                                        pattern:
+                                                                                          args:
+                                                                                          - args:
+                                                                                            - hook: STRING.String
+                                                                                              occurrence: *id008
+                                                                                            constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                                          - args: []
+                                                                                            constructor: dotk{}
+                                                                                          constructor: kseq{}
+                                                                                        occurrence: *id011
+                                                                                        sort: STRING.String
+                                                                                      specializations: []
+                                                                                      sort: STRING.String
+                                                                                      occurrence: *id009
+                                                                                    - []
+                                                                                  - - '0'
+                                                                                    - next:
+                                                                                        args:
+                                                                                        - - *id009
+                                                                                          - STRING.String
+                                                                                        - - &id043 [
+                                                                                            lit,
+                                                                                            rotate_right,
+                                                                                            STRING.String]
+                                                                                          - STRING.String
+                                                                                        next:
+                                                                                          default: null
+                                                                                          specializations:
+                                                                                          - - '1'
+                                                                                            - default:
+                                                                                                next:
+                                                                                                  action:
+                                                                                                  - 7391
+                                                                                                  - - - *id002
+                                                                                                      - STRING.String
+                                                                                                    - - *id010
+                                                                                                      - STRING.String
+                                                                                                    - - *id003
+                                                                                                      - STRING.String
+                                                                                                    - - *id004
+                                                                                                      - STRING.String
+                                                                                                    - - *id005
+                                                                                                      - STRING.String
+                                                                                                    - - *id006
+                                                                                                      - STRING.String
+                                                                                                    - - *id007
+                                                                                                      - STRING.String
+                                                                                                    - - *id016
+                                                                                                      - STRING.String
+                                                                                                    - - *id036
+                                                                                                      - STRING.String
+                                                                                                    - - *id001
+                                                                                                      - STRING.String
+                                                                                                pattern:
+                                                                                                  args:
+                                                                                                  - args:
+                                                                                                    - hook: STRING.String
+                                                                                                      occurrence: *id008
+                                                                                                    constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                                                  - args: []
+                                                                                                    constructor: dotk{}
+                                                                                                  constructor: kseq{}
+                                                                                                occurrence: *id011
+                                                                                                sort: STRING.String
+                                                                                              specializations: []
+                                                                                              sort: STRING.String
+                                                                                              occurrence: *id009
+                                                                                            - []
+                                                                                          - - '0'
+                                                                                            - next:
+                                                                                                args:
+                                                                                                - - *id009
+                                                                                                  - STRING.String
+                                                                                                - - &id041 [
+                                                                                                    lit,
+                                                                                                    saturating_add,
+                                                                                                    STRING.String]
+                                                                                                  - STRING.String
+                                                                                                next:
+                                                                                                  default: null
+                                                                                                  specializations:
+                                                                                                  - - '1'
+                                                                                                    - default:
+                                                                                                        next:
+                                                                                                          action:
+                                                                                                          - 7392
+                                                                                                          - - - *id002
+                                                                                                              - STRING.String
+                                                                                                            - - *id010
+                                                                                                              - STRING.String
+                                                                                                            - - *id003
+                                                                                                              - STRING.String
+                                                                                                            - - *id004
+                                                                                                              - STRING.String
+                                                                                                            - - *id005
+                                                                                                              - STRING.String
+                                                                                                            - - *id006
+                                                                                                              - STRING.String
+                                                                                                            - - *id007
+                                                                                                              - STRING.String
+                                                                                                            - - *id016
+                                                                                                              - STRING.String
+                                                                                                            - - *id036
+                                                                                                              - STRING.String
+                                                                                                            - - *id001
+                                                                                                              - STRING.String
+                                                                                                        pattern:
+                                                                                                          args:
+                                                                                                          - args:
+                                                                                                            - hook: STRING.String
+                                                                                                              occurrence: *id008
+                                                                                                            constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                                                          - args: []
+                                                                                                            constructor: dotk{}
+                                                                                                          constructor: kseq{}
+                                                                                                        occurrence: *id011
+                                                                                                        sort: STRING.String
+                                                                                                      specializations: []
+                                                                                                      sort: STRING.String
+                                                                                                      occurrence: *id009
+                                                                                                    - []
+                                                                                                  - - '0'
+                                                                                                    - next:
+                                                                                                        args:
+                                                                                                        - - *id009
+                                                                                                          - STRING.String
+                                                                                                        - - &id039 [
+                                                                                                            lit,
+                                                                                                            volatile_store,
+                                                                                                            STRING.String]
+                                                                                                          - STRING.String
+                                                                                                        next:
+                                                                                                          default: null
+                                                                                                          specializations:
+                                                                                                          - - '1'
+                                                                                                            - default:
+                                                                                                                default: fail
+                                                                                                                specializations:
+                                                                                                                - - LblOperand'ColnColn'Copy{}
+                                                                                                                  - default: null
+                                                                                                                    specializations:
+                                                                                                                    - - Lblplace{}
+                                                                                                                      - next:
+                                                                                                                          action:
+                                                                                                                          - 7395
+                                                                                                                          - - - *id001
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id002
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id010
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id003
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id004
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id005
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id006
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id007
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id036
+                                                                                                                              - STRING.String
+                                                                                                                            - - [
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '1',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '1']
+                                                                                                                              - STRING.String
+                                                                                                                            - - [
+                                                                                                                                '1',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '1',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '1']
+                                                                                                                              - STRING.String
+                                                                                                                        pattern:
+                                                                                                                          args:
+                                                                                                                          - args:
+                                                                                                                            - hook: STRING.String
+                                                                                                                              occurrence: *id008
+                                                                                                                            constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                                                                          - args: []
+                                                                                                                            constructor: dotk{}
+                                                                                                                          constructor: kseq{}
+                                                                                                                        occurrence: *id011
+                                                                                                                        sort: STRING.String
+                                                                                                                      - [
+                                                                                                                        STRING.String,
+                                                                                                                        STRING.String]
+                                                                                                                    sort: STRING.String
+                                                                                                                    occurrence: [
+                                                                                                                      '0',
+                                                                                                                      '0',
+                                                                                                                      '1',
+                                                                                                                      '0',
+                                                                                                                      '0',
+                                                                                                                      '0',
+                                                                                                                      '0',
+                                                                                                                      '1']
+                                                                                                                  - [
+                                                                                                                    STRING.String]
+                                                                                                                - - LblOperand'ColnColn'Move{}
+                                                                                                                  - default: null
+                                                                                                                    specializations:
+                                                                                                                    - - Lblplace{}
+                                                                                                                      - next:
+                                                                                                                          action:
+                                                                                                                          - 7396
+                                                                                                                          - - - *id001
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id002
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id010
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id003
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id004
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id005
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id006
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id007
+                                                                                                                              - STRING.String
+                                                                                                                            - - *id036
+                                                                                                                              - STRING.String
+                                                                                                                            - - [
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '1',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '1']
+                                                                                                                              - STRING.String
+                                                                                                                            - - [
+                                                                                                                                '1',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '1',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '0',
+                                                                                                                                '1']
+                                                                                                                              - STRING.String
+                                                                                                                        pattern:
+                                                                                                                          args:
+                                                                                                                          - args:
+                                                                                                                            - hook: STRING.String
+                                                                                                                              occurrence: *id008
+                                                                                                                            constructor: Lbl'Hash'continueAt'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'KItem'Unds'MaybeBasicBlockIdx{}
+                                                                                                                          - args: []
+                                                                                                                            constructor: dotk{}
+                                                                                                                          constructor: kseq{}
+                                                                                                                        occurrence: *id011
+                                                                                                                        sort: STRING.String
+                                                                                                                      - [
+                                                                                                                        STRING.String,
+                                                                                                                        STRING.String]
+                                                                                                                    sort: STRING.String
+                                                                                                                    occurrence: [
+                                                                                                                      '0',
+                                                                                                                      '0',
+                                                                                                                      '1',
+                                                                                                                      '0',
+                                                                                                                      '0',
+                                                                                                                      '0',
+                                                                                                                      '0',
+                                                                                                                      '1']
+                                                                                                                  - [
+                                                                                                                    STRING.String]
+                                                                                                                sort: STRING.String
+                                                                                                                occurrence: *id037
+                                                                                                              specializations: []
+                                                                                                              sort: STRING.String
+                                                                                                              occurrence: *id009
+                                                                                                            - []
+                                                                                                          - - '0'
+                                                                                                            - *id017
+                                                                                                            - []
+                                                                                                          bitwidth: 1
+                                                                                                          sort: BOOL.Bool
+                                                                                                          occurrence: &id038 [
+                                                                                                            eq,
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '0',
+                                                                                                            '1',
+                                                                                                            and,
+                                                                                                            lit,
+                                                                                                            volatile_store,
+                                                                                                            STRING.String]
+                                                                                                        function: hook_KEQUAL_eq
+                                                                                                        sort: BOOL.Bool
+                                                                                                        occurrence: *id038
+                                                                                                      pattern: {
+                                                                                                        hook: STRING.String,
+                                                                                                        literal: volatile_store}
+                                                                                                      occurrence: *id039
+                                                                                                      sort: STRING.String
+                                                                                                    - []
+                                                                                                  bitwidth: 1
+                                                                                                  sort: BOOL.Bool
+                                                                                                  occurrence: &id040 [
+                                                                                                    eq,
+                                                                                                    '0',
+                                                                                                    '0',
+                                                                                                    '0',
+                                                                                                    '0',
+                                                                                                    '0',
+                                                                                                    '0',
+                                                                                                    '0',
+                                                                                                    '1',
+                                                                                                    and,
+                                                                                                    lit,
+                                                                                                    saturating_add,
+                                                                                                    STRING.String]
+                                                                                                function: hook_KEQUAL_eq
+                                                                                                sort: BOOL.Bool
+                                                                                                occurrence: *id040
+                                                                                              pattern: {
+                                                                                                hook: STRING.String,
+                                                                                                literal: saturating_add}
+                                                                                              occurrence: *id041
+                                                                                              sort: STRING.String
+                                                                                            - []
+                                                                                          bitwidth: 1
+                                                                                          sort: BOOL.Bool
+                                                                                          occurrence: &id042 [
+                                                                                            eq,
+                                                                                            '0',
+                                                                                            '0',
+                                                                                            '0',
+                                                                                            '0',
+                                                                                            '0',
+                                                                                            '0',
+                                                                                            '0',
+                                                                                            '1',
+                                                                                            and,
+                                                                                            lit,
+                                                                                            rotate_right,
+                                                                                            STRING.String]
+                                                                                        function: hook_KEQUAL_eq
+                                                                                        sort: BOOL.Bool
+                                                                                        occurrence: *id042
+                                                                                      pattern: {
+                                                                                        hook: STRING.String,
+                                                                                        literal: rotate_right}
+                                                                                      occurrence: *id043
+                                                                                      sort: STRING.String
+                                                                                    - []
+                                                                                  bitwidth: 1
+                                                                                  sort: BOOL.Bool
+                                                                                  occurrence: &id044 [
+                                                                                    eq,
+                                                                                    '0',
+                                                                                    '0',
+                                                                                    '0',
+                                                                                    '0',
+                                                                                    '0',
+                                                                                    '0',
+                                                                                    '0',
+                                                                                    '1',
+                                                                                    and,
+                                                                                    lit,
+                                                                                    rotate_left,
+                                                                                    STRING.String]
+                                                                                function: hook_KEQUAL_eq
+                                                                                sort: BOOL.Bool
+                                                                                occurrence: *id044
+                                                                              pattern: {
+                                                                                hook: STRING.String,
+                                                                                literal: rotate_left}
+                                                                              occurrence: *id045
+                                                                              sort: STRING.String
+                                                                            - []
+                                                                          bitwidth: 1
+                                                                          sort: BOOL.Bool
+                                                                          occurrence: &id046 [
+                                                                            eq, '0',
+                                                                            '0', '0',
+                                                                            '0', '0',
+                                                                            '0', '0',
+                                                                            '1', and,
+                                                                            lit, raw_eq,
+                                                                            STRING.String]
+                                                                        function: hook_KEQUAL_eq
+                                                                        sort: BOOL.Bool
+                                                                        occurrence: *id046
+                                                                      pattern: {hook: STRING.String,
+                                                                        literal: raw_eq}
+                                                                      occurrence: *id047
+                                                                      sort: STRING.String
+                                                                    - []
+                                                                  bitwidth: 1
+                                                                  sort: BOOL.Bool
+                                                                  occurrence: &id048 [
+                                                                    eq, '0', '0',
+                                                                    '0', '0', '0',
+                                                                    '0', '0', '1',
+                                                                    and, lit, ptr_offset_from_unsigned,
+                                                                    STRING.String]
+                                                                function: hook_KEQUAL_eq
+                                                                sort: BOOL.Bool
+                                                                occurrence: *id048
+                                                              pattern: {hook: STRING.String,
+                                                                literal: ptr_offset_from_unsigned}
+                                                              occurrence: *id049
+                                                              sort: STRING.String
+                                                            - []
+                                                          bitwidth: 1
+                                                          sort: BOOL.Bool
+                                                          occurrence: &id050 [eq,
+                                                            '0', '0', '0', '0', '0',
+                                                            '0', '0', '1', and, lit,
+                                                            ptr_offset_from, STRING.String]
+                                                        function: hook_KEQUAL_eq
+                                                        sort: BOOL.Bool
+                                                        occurrence: *id050
+                                                      pattern: {hook: STRING.String,
+                                                        literal: ptr_offset_from}
+                                                      occurrence: *id051
+                                                      sort: STRING.String
+                                                    - []
+                                                  bitwidth: 1
+                                                  sort: BOOL.Bool
+                                                  occurrence: &id052 [eq, '0', '0',
+                                                    '0', '0', '0', '0', '0', '1',
+                                                    and, lit, prefetch_write_instruction,
+                                                    STRING.String]
+                                                function: hook_KEQUAL_eq
+                                                sort: BOOL.Bool
+                                                occurrence: *id052
+                                              pattern: {hook: STRING.String, literal: prefetch_write_instruction}
+                                              occurrence: *id053
+                                              sort: STRING.String
+                                            - []
+                                          bitwidth: 1
+                                          sort: BOOL.Bool
+                                          occurrence: &id054 [eq, '0', '0', '0', '0',
+                                            '0', '0', '0', '1', and, lit, prefetch_write_data,
+                                            STRING.String]
+                                        function: hook_KEQUAL_eq
+                                        sort: BOOL.Bool
+                                        occurrence: *id054
+                                      pattern: {hook: STRING.String, literal: prefetch_write_data}
+                                      occurrence: *id055
+                                      sort: STRING.String
+                                    - []
+                                  bitwidth: 1
+                                  sort: BOOL.Bool
+                                  occurrence: &id056 [eq, '0', '0', '0', '0', '0',
+                                    '0', '0', '1', and, lit, prefetch_read_instruction,
+                                    STRING.String]
+                                function: hook_KEQUAL_eq
+                                sort: BOOL.Bool
+                                occurrence: *id056
+                              pattern: {hook: STRING.String, literal: prefetch_read_instruction}
+                              occurrence: *id057
+                              sort: STRING.String
+                            - []
+                          bitwidth: 1
+                          sort: BOOL.Bool
+                          occurrence: &id058 [eq, '0', '0', '0', '0', '0', '0', '0',
+                            '1', and, lit, prefetch_read_data, STRING.String]
+                        function: hook_KEQUAL_eq
+                        sort: BOOL.Bool
+                        occurrence: *id058
+                      pattern: {hook: STRING.String, literal: prefetch_read_data}
+                      occurrence: *id059
+                      sort: STRING.String
+                    - []
+                  sort: STRING.String
+                  occurrence: ['1', '1', '1', '0', '0', '0', '0', '1']
+                - [STRING.String, STRING.String]
+              sort: STRING.String
+              occurrence: ['1', '1', '0', '0', '0', '0', '1']
+            - [STRING.String, STRING.String]
+          sort: STRING.String
+          occurrence: &id061 ['1', '0', '0', '0', '0', '1']
+        - [STRING.String]
+      sort: STRING.String
+      occurrence: ['0', '0', '0', '0', '0', '0', '1']
+    - [STRING.String]
+  sort: STRING.String
+  occurrence: &id060 ['0', '0', '0', '0', '0', '1']
+- - - {hook: STRING.String, occurrence: VarTARGET}
+    - *id008
+  - - {hook: STRING.String, occurrence: VarFUNC}
+    - *id060
+  - - {hook: STRING.String, occurrence: VarARGS}
+    - *id061
+  - - {hook: STRING.String, occurrence: VarDEST}
+    - ['2', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: VarSPAN}
+    - ['3', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen2}
+    - ['1', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen3}
+    - ['2', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen4}
+    - *id062
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen5}
+    - ['4', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar0}
+    - ['1', '1']

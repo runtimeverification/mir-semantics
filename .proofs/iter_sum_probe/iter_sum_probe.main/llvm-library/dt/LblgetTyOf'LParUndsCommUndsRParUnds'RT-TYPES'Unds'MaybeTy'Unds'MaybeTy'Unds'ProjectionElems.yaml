@@ -1,0 +1,150 @@
+default: null
+specializations:
+- - LblProjectionElems'ColnColn'append{}
+  - default:
+      default:
+        action:
+        - 7823
+        - - - &id002 ['1']
+            - STRING.String
+          - - &id001 ['2']
+            - STRING.String
+      specializations:
+      - - LblTyUnknown'Unds'RT-TYPES'Unds'MaybeTy{}
+        - &id004
+          action:
+          - 7819
+          - - - *id001
+              - STRING.String
+            - - *id002
+              - STRING.String
+        - []
+      sort: STRING.String
+      occurrence: *id002
+    specializations:
+    - - LblProjectionElem'ColnColn'Downcast{}
+      - action:
+        - 7820
+        - - - ['0', '0', '2']
+            - STRING.String
+          - - &id003 ['1', '2']
+            - STRING.String
+          - - *id002
+            - STRING.String
+      - [STRING.String]
+    - - LblProjectionElem'ColnColn'Subslice{}
+      - action:
+        - 7821
+        - - - ['0', '0', '2']
+            - STRING.String
+          - - ['1', '0', '2']
+            - STRING.String
+          - - ['2', '0', '2']
+            - STRING.String
+          - - *id003
+            - STRING.String
+          - - *id002
+            - STRING.String
+      - [STRING.String, STRING.String, STRING.String]
+    - - LblProjectionElem'ColnColn'Field{}
+      - action:
+        - 7824
+        - - - *id002
+            - STRING.String
+          - - ['0', '0', '2']
+            - STRING.String
+          - - *id003
+            - STRING.String
+          - - ['1', '0', '2']
+            - STRING.String
+      - [STRING.String, STRING.String]
+    - - LblProjectionElem'ColnColn'OpaqueCast{}
+      - action:
+        - 7825
+        - - - *id002
+            - STRING.String
+          - - *id003
+            - STRING.String
+          - - ['0', '0', '2']
+            - STRING.String
+      - [STRING.String]
+    - - LblProjectionElem'ColnColn'Subtype{}
+      - action:
+        - 7826
+        - - - *id002
+            - STRING.String
+          - - *id003
+            - STRING.String
+          - - ['0', '0', '2']
+            - STRING.String
+      - [STRING.String]
+    - - LblProjectionElem'ColnColn'ConstantIndex{}
+      - default: null
+        specializations:
+        - - LblTyUnknown'Unds'RT-TYPES'Unds'MaybeTy{}
+          - *id004
+          - []
+        - - inj{SortTy{}, SortMaybeTy{}}
+          - action:
+            - 7827
+            - - - ['0', '0', '2']
+                - STRING.String
+              - - ['1', '0', '2']
+                - STRING.String
+              - - ['2', '0', '2']
+                - STRING.String
+              - - *id003
+                - STRING.String
+              - - ['0', '1']
+                - STRING.String
+          - [STRING.String]
+        sort: STRING.String
+        occurrence: *id002
+      - [STRING.String, STRING.String, STRING.String]
+    - - LblProjectionElem'ColnColn'Deref{}
+      - default: null
+        specializations:
+        - - LblTyUnknown'Unds'RT-TYPES'Unds'MaybeTy{}
+          - *id004
+          - []
+        - - inj{SortTy{}, SortMaybeTy{}}
+          - action:
+            - 7828
+            - - - *id003
+                - STRING.String
+              - - ['0', '1']
+                - STRING.String
+          - [STRING.String]
+        sort: STRING.String
+        occurrence: *id002
+      - []
+    - - LblProjectionElem'ColnColn'Index{}
+      - default: null
+        specializations:
+        - - LblTyUnknown'Unds'RT-TYPES'Unds'MaybeTy{}
+          - *id004
+          - []
+        - - inj{SortTy{}, SortMaybeTy{}}
+          - action:
+            - 7829
+            - - - ['0', '0', '2']
+                - STRING.String
+              - - *id003
+                - STRING.String
+              - - ['0', '1']
+                - STRING.String
+          - [STRING.String]
+        sort: STRING.String
+        occurrence: *id002
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '2']
+  - [STRING.String, STRING.String]
+- - LblProjectionElems'ColnColn'empty{}
+  - action:
+    - 7822
+    - - - *id002
+        - STRING.String
+  - []
+sort: STRING.String
+occurrence: *id001

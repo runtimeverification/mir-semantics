@@ -1,0 +1,17 @@
+default: null
+specializations:
+- - LblBasicBlocks'ColnColn'append{}
+  - action:
+    - 9190
+    - - - ['0', '1']
+        - STRING.String
+      - - ['1', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+- - LblBasicBlocks'ColnColn'empty{}
+  - action:
+    - 9191
+    - []
+  - []
+sort: STRING.String
+occurrence: ['1']

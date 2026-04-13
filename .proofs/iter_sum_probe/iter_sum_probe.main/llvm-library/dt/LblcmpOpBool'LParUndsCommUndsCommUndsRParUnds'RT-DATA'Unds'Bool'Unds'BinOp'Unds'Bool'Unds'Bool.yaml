@@ -1,0 +1,52 @@
+default: fail
+specializations:
+- - LblBinOp'ColnColn'Eq{}
+  - action:
+    - 7746
+    - - - &id001 ['2']
+        - BOOL.Bool
+      - - &id002 ['3']
+        - BOOL.Bool
+  - []
+- - LblBinOp'ColnColn'Ge{}
+  - action:
+    - 7747
+    - - - *id001
+        - BOOL.Bool
+      - - *id002
+        - BOOL.Bool
+  - []
+- - LblBinOp'ColnColn'Gt{}
+  - action:
+    - 7748
+    - - - *id001
+        - BOOL.Bool
+      - - *id002
+        - BOOL.Bool
+  - []
+- - LblBinOp'ColnColn'Le{}
+  - action:
+    - 7749
+    - - - *id001
+        - BOOL.Bool
+      - - *id002
+        - BOOL.Bool
+  - []
+- - LblBinOp'ColnColn'Lt{}
+  - action:
+    - 7750
+    - - - *id001
+        - BOOL.Bool
+      - - *id002
+        - BOOL.Bool
+  - []
+- - LblBinOp'ColnColn'Ne{}
+  - action:
+    - 7751
+    - - - *id001
+        - BOOL.Bool
+      - - *id002
+        - BOOL.Bool
+  - []
+sort: STRING.String
+occurrence: ['1']

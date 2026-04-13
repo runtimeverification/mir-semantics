@@ -1,0 +1,19 @@
+default: &id001
+  action:
+  - 7156
+  - - - &id002 ['1']
+      - STRING.String
+specializations:
+- - LblTypeInfo'ColnColn'PrimitiveType{}
+  - default: *id001
+    specializations:
+    - - LblPrimitiveType'ColnColn'Char{}
+      - action:
+        - 7157
+        - []
+      - []
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+sort: STRING.String
+occurrence: *id002

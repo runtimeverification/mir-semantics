@@ -1,0 +1,184 @@
+- args:
+  - - &id001 ['1', '0', '0', '0', '0', '1']
+    - STRING.String
+  next:
+    default: null
+    specializations:
+    - - '1'
+      - action:
+        - 7365
+        - - - &id002 ['1', '1']
+            - STRING.String
+          - - &id003 ['1', '0', '0', '0', '1']
+            - STRING.String
+          - - &id004 ['1', '0', '1']
+            - STRING.String
+          - - &id005 ['2', '0', '1']
+            - STRING.String
+          - - &id006 ['3', '0', '1']
+            - STRING.String
+          - - &id007 ['4', '0', '1']
+            - STRING.String
+          - - *id001
+            - STRING.String
+          - - &id008 ['0', '0', '0', '0', '0', '1']
+            - STRING.String
+      - []
+    - - '0'
+      - default: fail
+        specializations:
+        - - inj{SortValue{}, SortEvaluation{}}
+          - default: fail
+            specializations:
+            - - LblValue'ColnColn'Integer{}
+              - default: null
+                specializations:
+                - - '0'
+                  - args:
+                    - - &id009 ['0', '0', '1', '0', '0', '0', '0', '1']
+                      - INT.Int
+                    next:
+                      default: null
+                      specializations:
+                      - - '1'
+                        - action:
+                          - 7362
+                          - - - *id002
+                              - STRING.String
+                            - - *id003
+                              - STRING.String
+                            - - *id004
+                              - STRING.String
+                            - - *id005
+                              - STRING.String
+                            - - &id010 ['2', '0', '1', '0', '0', '0', '0', '1']
+                              - BOOL.Bool
+                            - - *id006
+                              - STRING.String
+                            - - *id007
+                              - STRING.String
+                            - - *id008
+                              - STRING.String
+                            - - *id009
+                              - INT.Int
+                            - - &id011 ['1', '0', '1', '0', '0', '0', '0', '1']
+                              - INT.Int
+                        - []
+                      - - '0'
+                        - &id014
+                          args:
+                          - - *id009
+                            - INT.Int
+                          next:
+                            default: fail
+                            specializations:
+                            - - '0'
+                              - action:
+                                - 7364
+                                - - - *id002
+                                    - STRING.String
+                                  - - *id003
+                                    - STRING.String
+                                  - - *id004
+                                    - STRING.String
+                                  - - *id005
+                                    - STRING.String
+                                  - - *id006
+                                    - STRING.String
+                                  - - *id007
+                                    - STRING.String
+                                  - - *id010
+                                    - BOOL.Bool
+                                  - - *id008
+                                    - STRING.String
+                                  - - *id011
+                                    - INT.Int
+                              - []
+                            bitwidth: 32
+                            sort: MINT.MInt 32
+                            occurrence: &id012 [size, '0', '0', '1', '0', '0', '0',
+                              '0', '1']
+                          function: hook_INT_size_int
+                          sort: MINT.MInt 32
+                          occurrence: *id012
+                        - []
+                      bitwidth: 1
+                      sort: BOOL.Bool
+                      occurrence: &id013 [side_condition_7362]
+                    function: side_condition_7362
+                    sort: BOOL.Bool
+                    occurrence: *id013
+                  - []
+                - - '1'
+                  - args:
+                    - - *id009
+                      - INT.Int
+                    - - *id011
+                      - INT.Int
+                    next:
+                      default: null
+                      specializations:
+                      - - '1'
+                        - action:
+                          - 7363
+                          - - - *id002
+                              - STRING.String
+                            - - *id003
+                              - STRING.String
+                            - - *id004
+                              - STRING.String
+                            - - *id005
+                              - STRING.String
+                            - - *id006
+                              - STRING.String
+                            - - *id007
+                              - STRING.String
+                            - - *id008
+                              - STRING.String
+                            - - *id009
+                              - INT.Int
+                            - - *id011
+                              - INT.Int
+                        - []
+                      - - '0'
+                        - *id014
+                        - []
+                      bitwidth: 1
+                      sort: BOOL.Bool
+                      occurrence: &id015 [side_condition_7363]
+                    function: side_condition_7363
+                    sort: BOOL.Bool
+                    occurrence: *id015
+                  - []
+                bitwidth: 1
+                sort: BOOL.Bool
+                occurrence: *id010
+              - [INT.Int, INT.Int, BOOL.Bool]
+            sort: STRING.String
+            occurrence: ['0', '1', '0', '0', '0', '0', '1']
+          - [STRING.String]
+        sort: STRING.String
+        occurrence: *id001
+      - []
+    bitwidth: 1
+    sort: BOOL.Bool
+    occurrence: &id016 [side_condition_7365]
+  function: side_condition_7365
+  sort: BOOL.Bool
+  occurrence: *id016
+- - - {hook: STRING.String, occurrence: VarK0}
+    - ['0', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: VarHOLE}
+    - ['1', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar2}
+    - ['1', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen0}
+    - ['1', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen1}
+    - ['2', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen2}
+    - ['3', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen3}
+    - ['4', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar0}
+    - ['1', '1']

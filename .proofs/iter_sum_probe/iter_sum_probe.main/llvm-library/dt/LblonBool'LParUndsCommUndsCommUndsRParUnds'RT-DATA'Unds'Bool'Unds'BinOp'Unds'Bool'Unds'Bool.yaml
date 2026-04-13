@@ -1,0 +1,28 @@
+default: fail
+specializations:
+- - LblBinOp'ColnColn'BitAnd{}
+  - action:
+    - 8548
+    - - - &id001 ['2']
+        - BOOL.Bool
+      - - &id002 ['3']
+        - BOOL.Bool
+  - []
+- - LblBinOp'ColnColn'BitOr{}
+  - action:
+    - 8549
+    - - - *id001
+        - BOOL.Bool
+      - - *id002
+        - BOOL.Bool
+  - []
+- - LblBinOp'ColnColn'BitXor{}
+  - action:
+    - 8550
+    - - - *id001
+        - BOOL.Bool
+      - - *id002
+        - BOOL.Bool
+  - []
+sort: STRING.String
+occurrence: ['1']

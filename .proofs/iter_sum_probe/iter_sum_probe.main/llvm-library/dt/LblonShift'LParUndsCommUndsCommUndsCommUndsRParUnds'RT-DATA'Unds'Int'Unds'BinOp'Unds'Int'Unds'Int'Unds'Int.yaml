@@ -1,0 +1,44 @@
+default: fail
+specializations:
+- - LblBinOp'ColnColn'Shl{}
+  - action:
+    - 8570
+    - - - &id001 ['4']
+        - INT.Int
+      - - &id002 ['2']
+        - INT.Int
+      - - &id003 ['3']
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'ShlUnchecked{}
+  - action:
+    - 8571
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+      - - *id003
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'Shr{}
+  - action:
+    - 8572
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+      - - *id003
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'ShrUnchecked{}
+  - action:
+    - 8573
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+      - - *id003
+        - INT.Int
+  - []
+sort: STRING.String
+occurrence: ['1']

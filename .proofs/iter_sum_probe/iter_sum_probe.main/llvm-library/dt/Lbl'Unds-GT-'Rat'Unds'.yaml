@@ -1,0 +1,64 @@
+args:
+- - &id001 ['2']
+  - STRING.String
+next:
+  default: null
+  specializations:
+  - - '1'
+    - action:
+      - 7698
+      - - - &id003 ['1']
+          - STRING.String
+        - - *id001
+          - STRING.String
+    - []
+  - - '0'
+    - default: fail
+      specializations:
+      - - inj{SortInt{}, SortRat{}}
+        - args:
+          - - &id002 ['0', '2']
+            - INT.Int
+          next:
+            default: fail
+            specializations:
+            - - '0'
+              - default: null
+                specializations:
+                - - Lbl'-LT-UndsCommUnds-GT-'Rat'Unds'RAT-COMMON'Unds'Rat'Unds'Int'Unds'Int{}
+                  - action:
+                    - 7699
+                    - - - ['1', '1']
+                        - INT.Int
+                      - - *id002
+                        - INT.Int
+                      - - ['0', '1']
+                        - INT.Int
+                  - [INT.Int, INT.Int]
+                - - inj{SortInt{}, SortRat{}}
+                  - action:
+                    - 7700
+                    - - - *id002
+                        - INT.Int
+                      - - ['0', '1']
+                        - INT.Int
+                  - [INT.Int]
+                sort: STRING.String
+                occurrence: *id003
+              - []
+            bitwidth: 32
+            sort: MINT.MInt 32
+            occurrence: &id004 [size, '0', '2']
+          function: hook_INT_size_int
+          sort: MINT.MInt 32
+          occurrence: *id004
+        - [INT.Int]
+      sort: STRING.String
+      occurrence: *id001
+    - []
+  bitwidth: 1
+  sort: BOOL.Bool
+  occurrence: &id005 [side_condition_7698]
+function: side_condition_7698
+sort: BOOL.Bool
+occurrence: *id005

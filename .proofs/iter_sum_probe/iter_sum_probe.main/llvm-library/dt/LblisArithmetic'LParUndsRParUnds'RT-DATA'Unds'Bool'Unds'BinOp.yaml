@@ -1,0 +1,48 @@
+default:
+  action:
+  - 7878
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblBinOp'ColnColn'Add{}
+  - action:
+    - 7879
+    - []
+  - []
+- - LblBinOp'ColnColn'AddUnchecked{}
+  - action:
+    - 7880
+    - []
+  - []
+- - LblBinOp'ColnColn'Div{}
+  - action:
+    - 7881
+    - []
+  - []
+- - LblBinOp'ColnColn'Mul{}
+  - action:
+    - 7882
+    - []
+  - []
+- - LblBinOp'ColnColn'MulUnchecked{}
+  - action:
+    - 7883
+    - []
+  - []
+- - LblBinOp'ColnColn'Rem{}
+  - action:
+    - 7884
+    - []
+  - []
+- - LblBinOp'ColnColn'Sub{}
+  - action:
+    - 7885
+    - []
+  - []
+- - LblBinOp'ColnColn'SubUnchecked{}
+  - action:
+    - 7886
+    - []
+  - []
+sort: STRING.String
+occurrence: *id001

@@ -1,0 +1,46 @@
+args:
+- - &id001 ['2']
+  - INT.Int
+next:
+  default: &id003
+    action:
+    - 7022
+    - - - *id001
+        - INT.Int
+      - - &id002 ['1']
+        - FLOAT.Float
+  specializations:
+  - - '0'
+    - action:
+      - 7023
+      - - - *id002
+          - FLOAT.Float
+    - []
+  - - '1'
+    - args:
+      - - *id001
+        - INT.Int
+      - - [lit, '0', MINT.MInt 64]
+        - MINT.MInt 64
+      next:
+        default: *id003
+        specializations:
+        - - '1'
+          - action:
+            - 7024
+            - - - *id002
+                - FLOAT.Float
+          - []
+        bitwidth: 64
+        sort: MINT.MInt 64
+        occurrence: &id004 ['0', '2']
+      function: hook_INT_limb
+      sort: MINT.MInt 64
+      occurrence: *id004
+    - []
+  bitwidth: 32
+  sort: MINT.MInt 32
+  occurrence: &id005 [size, '2']
+function: hook_INT_size_int
+sort: MINT.MInt 32
+occurrence: *id005

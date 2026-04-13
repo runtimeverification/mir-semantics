@@ -1,0 +1,6 @@
+action:
+- 7680
+- - - ['1']
+    - STRING.String
+  - - ['2']
+    - STRING.String

@@ -1,0 +1,122 @@
+args:
+- - &id001 ['1']
+  - INT.Int
+next:
+  default: null
+  specializations:
+  - - '1'
+    - action:
+      - 7639
+      - - - &id002 ['2']
+          - STRING.String
+        - - &id007 ['3']
+          - STRING.String
+        - - *id001
+          - INT.Int
+    - []
+  - - '0'
+    - default: null
+      specializations:
+      - - LblsignedBytes{}
+        - args:
+          - - *id001
+            - INT.Int
+          next:
+            default: null
+            specializations:
+            - - '1'
+              - action:
+                - 7635
+                - - - *id002
+                    - STRING.String
+                  - - *id001
+                    - INT.Int
+              - []
+            - - '0'
+              - args:
+                - - *id001
+                  - INT.Int
+                next:
+                  default: null
+                  specializations:
+                  - - '1'
+                    - action:
+                      - 7636
+                      - - - *id002
+                          - STRING.String
+                        - - *id001
+                          - INT.Int
+                    - []
+                  - - '0'
+                    - args:
+                      - - *id001
+                        - INT.Int
+                      next:
+                        default: null
+                        specializations:
+                        - - '1'
+                          - action:
+                            - 7637
+                            - - - *id002
+                                - STRING.String
+                              - - *id001
+                                - INT.Int
+                          - []
+                        - - '0'
+                          - fail
+                          - []
+                        bitwidth: 1
+                        sort: BOOL.Bool
+                        occurrence: &id003 [side_condition_7637]
+                      function: side_condition_7637
+                      sort: BOOL.Bool
+                      occurrence: *id003
+                    - []
+                  bitwidth: 1
+                  sort: BOOL.Bool
+                  occurrence: &id004 [side_condition_7636]
+                function: side_condition_7636
+                sort: BOOL.Bool
+                occurrence: *id004
+              - []
+            bitwidth: 1
+            sort: BOOL.Bool
+            occurrence: &id005 [side_condition_7635]
+          function: side_condition_7635
+          sort: BOOL.Bool
+          occurrence: *id005
+        - []
+      - - LblunsignedBytes{}
+        - args:
+          - - *id001
+            - INT.Int
+          next:
+            default: null
+            specializations:
+            - - '1'
+              - action:
+                - 7638
+                - - - *id002
+                    - STRING.String
+                  - - *id001
+                    - INT.Int
+              - []
+            - - '0'
+              - fail
+              - []
+            bitwidth: 1
+            sort: BOOL.Bool
+            occurrence: &id006 [side_condition_7638]
+          function: side_condition_7638
+          sort: BOOL.Bool
+          occurrence: *id006
+        - []
+      sort: STRING.String
+      occurrence: *id007
+    - []
+  bitwidth: 1
+  sort: BOOL.Bool
+  occurrence: &id008 [side_condition_7639]
+function: side_condition_7639
+sort: BOOL.Bool
+occurrence: *id008

@@ -1,0 +1,24 @@
+default: null
+specializations:
+- - LblFloatTy'ColnColn'F128{}
+  - action:
+    - 7256
+    - []
+  - []
+- - LblFloatTy'ColnColn'F16{}
+  - action:
+    - 7257
+    - []
+  - []
+- - LblFloatTy'ColnColn'F32{}
+  - action:
+    - 7258
+    - []
+  - []
+- - LblFloatTy'ColnColn'F64{}
+  - action:
+    - 7259
+    - []
+  - []
+sort: STRING.String
+occurrence: ['1']

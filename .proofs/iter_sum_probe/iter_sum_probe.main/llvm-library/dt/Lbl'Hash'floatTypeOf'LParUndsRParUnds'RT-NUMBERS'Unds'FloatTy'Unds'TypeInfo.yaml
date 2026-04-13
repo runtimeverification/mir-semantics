@@ -1,0 +1,16 @@
+default: fail
+specializations:
+- - LblTypeInfo'ColnColn'PrimitiveType{}
+  - default: fail
+    specializations:
+    - - LblPrimitiveType'ColnColn'Float{}
+      - action:
+        - 7135
+        - - - ['0', '0', '1']
+            - STRING.String
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

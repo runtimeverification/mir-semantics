@@ -1,0 +1,143 @@
+- default: null
+  specializations:
+  - - LbltoAlloc'LParUndsRParUnds'RT-DATA'Unds'WriteTo'Unds'AllocId{}
+    - next:
+        action:
+        - 7596
+        - - - &id001 ['1', '1']
+            - STRING.String
+          - - &id002 ['1', '0', '0', '0', '1']
+            - STRING.String
+          - - &id008 ['2', '0', '0', '0', '0', '0', '1']
+            - STRING.String
+          - - &id003 ['1', '0', '1']
+            - STRING.String
+          - - &id004 ['2', '0', '1']
+            - STRING.String
+          - - &id005 ['3', '0', '1']
+            - STRING.String
+          - - &id006 ['4', '0', '1']
+            - STRING.String
+          - - ['0', '0', '0', '0', '0', '0', '0', '1']
+            - STRING.String
+          - - &id007 ['3', '0', '0', '0', '0', '0', '1']
+            - STRING.String
+          - - &id009 ['1', '0', '0', '0', '0', '0', '1']
+            - STRING.String
+      pattern:
+        args:
+        - hook: STRING.String
+          occurrence: &id010 ['0', '3', '0', '0', '0', '0', '0', '1']
+        - hook: INT.Int
+          occurrence: &id011 ['1', '3', '0', '0', '0', '0', '0', '1']
+        - hook: STRING.String
+          occurrence: &id012 ['2', '3', '0', '0', '0', '0', '0', '1']
+        constructor: LblMetadata{}
+      occurrence: &id013 ['3', '0', '0', '0', '0', '0', '1']
+      sort: STRING.String
+    - [STRING.String]
+  - - LbltoLocal'LParUndsRParUnds'RT-DATA'Unds'WriteTo'Unds'Int{}
+    - next:
+        action:
+        - 7597
+        - - - *id001
+            - STRING.String
+          - - *id002
+            - STRING.String
+          - - *id003
+            - STRING.String
+          - - *id004
+            - STRING.String
+          - - *id005
+            - STRING.String
+          - - *id006
+            - STRING.String
+          - - ['0', '0', '0', '0', '0', '0', '0', '1']
+            - INT.Int
+          - - *id007
+            - STRING.String
+          - - *id008
+            - STRING.String
+          - - *id009
+            - STRING.String
+      pattern:
+        args:
+        - hook: STRING.String
+          occurrence: *id010
+        - hook: INT.Int
+          occurrence: *id011
+        - hook: STRING.String
+          occurrence: *id012
+        constructor: LblMetadata{}
+      occurrence: *id013
+      sort: STRING.String
+    - [INT.Int]
+  - - LbltoStack'LParUndsCommUndsRParUnds'RT-DATA'Unds'WriteTo'Unds'Int'Unds'Local{}
+    - next:
+        action:
+        - 7598
+        - - - *id001
+            - STRING.String
+          - - *id002
+            - STRING.String
+          - - *id003
+            - STRING.String
+          - - *id004
+            - STRING.String
+          - - *id005
+            - STRING.String
+          - - *id006
+            - STRING.String
+          - - ['1', '0', '0', '0', '0', '0', '0', '1']
+            - STRING.String
+          - - *id007
+            - STRING.String
+          - - *id008
+            - STRING.String
+          - - ['0', '0', '0', '0', '0', '0', '0', '1']
+            - INT.Int
+          - - *id009
+            - STRING.String
+      pattern:
+        args:
+        - hook: STRING.String
+          occurrence: *id010
+        - hook: INT.Int
+          occurrence: *id011
+        - hook: STRING.String
+          occurrence: *id012
+        constructor: LblMetadata{}
+      occurrence: *id013
+      sort: STRING.String
+    - [INT.Int, STRING.String]
+  sort: STRING.String
+  occurrence: &id014 ['0', '0', '0', '0', '0', '0', '1']
+- - - args:
+      - {hook: STRING.String, occurrence: VarSIZE}
+      - {hook: STRING.String, occurrence: VarVAL}
+      constructor: Lbl'Hash'maybeDynamicSize'LParUndsCommUndsRParUnds'RT-DATA'Unds'MetadataSize'Unds'MetadataSize'Unds'Value{}
+    - *id010
+  - - {hook: INT.Int, occurrence: VarOFFSET}
+    - *id011
+  - - {hook: STRING.String, occurrence: VarORIGIN'Unds'SIZE}
+    - *id012
+  - - {hook: STRING.String, occurrence: VarDEST}
+    - *id014
+  - - args:
+      - {hook: STRING.String, occurrence: VarCTXTS}
+      constructor: Lbl'Hash'projectionsFor'LParUndsRParUnds'RT-DATA'Unds'ProjectionElems'Unds'Contexts{}
+    - ['1', '0', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: VarMUT}
+    - ['2', '0', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar2}
+    - ['1', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen0}
+    - ['1', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen1}
+    - ['2', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen2}
+    - ['3', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen3}
+    - ['4', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar0}
+    - ['1', '1']

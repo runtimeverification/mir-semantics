@@ -1,0 +1,65 @@
+default: null
+specializations:
+- - LblProjectionElems'ColnColn'append{}
+  - default: null
+    specializations:
+    - - LblProjectionElems'ColnColn'append{}
+      - action:
+        - 7832
+        - - - &id001 ['0', '1']
+            - STRING.String
+          - - ['0', '1', '1']
+            - STRING.String
+          - - ['1', '1', '1']
+            - STRING.String
+          - - &id004 ['1', '1']
+            - STRING.String
+      - [STRING.String, STRING.String]
+    - - LblProjectionElems'ColnColn'empty{}
+      - default: &id002
+          action:
+          - 7833
+          - - - *id001
+              - STRING.String
+        specializations:
+        - - LblProjectionElem'ColnColn'ConstantIndex{}
+          - default: *id002
+            specializations:
+            - - inj{SortInt{}, SortMIRInt{}}
+              - args:
+                - - ['0', '0', '0', '1']
+                  - INT.Int
+                next:
+                  default: *id002
+                  specializations:
+                  - - '0'
+                    - action:
+                      - 7834
+                      - - - ['1', '0', '1']
+                          - STRING.String
+                        - - ['2', '0', '1']
+                          - STRING.String
+                    - []
+                  bitwidth: 32
+                  sort: MINT.MInt 32
+                  occurrence: &id003 [size, '0', '0', '0', '1']
+                function: hook_INT_size_int
+                sort: MINT.MInt 32
+                occurrence: *id003
+              - [INT.Int]
+            sort: STRING.String
+            occurrence: ['0', '0', '1']
+          - [STRING.String, STRING.String, STRING.String]
+        sort: STRING.String
+        occurrence: *id001
+      - []
+    sort: STRING.String
+    occurrence: *id004
+  - [STRING.String, STRING.String]
+- - LblProjectionElems'ColnColn'empty{}
+  - action:
+    - 7835
+    - []
+  - []
+sort: STRING.String
+occurrence: ['1']

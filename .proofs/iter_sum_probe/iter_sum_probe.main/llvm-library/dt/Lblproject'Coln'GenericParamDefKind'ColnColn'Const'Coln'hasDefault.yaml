@@ -1,0 +1,10 @@
+default: fail
+specializations:
+- - LblGenericParamDefKind'ColnColn'Const{}
+  - action:
+    - 8717
+    - - - ['0', '1']
+        - BOOL.Bool
+  - [BOOL.Bool]
+sort: STRING.String
+occurrence: ['1']

@@ -1,0 +1,20 @@
+default: null
+specializations:
+- - LblProjectionElems'ColnColn'append{}
+  - action:
+    - 7734
+    - - - ['1', '1']
+        - STRING.String
+      - - &id001 ['2']
+        - STRING.String
+      - - ['0', '1']
+        - STRING.String
+  - [STRING.String, STRING.String]
+- - LblProjectionElems'ColnColn'empty{}
+  - action:
+    - 7735
+    - - - *id001
+        - STRING.String
+  - []
+sort: STRING.String
+occurrence: ['1']

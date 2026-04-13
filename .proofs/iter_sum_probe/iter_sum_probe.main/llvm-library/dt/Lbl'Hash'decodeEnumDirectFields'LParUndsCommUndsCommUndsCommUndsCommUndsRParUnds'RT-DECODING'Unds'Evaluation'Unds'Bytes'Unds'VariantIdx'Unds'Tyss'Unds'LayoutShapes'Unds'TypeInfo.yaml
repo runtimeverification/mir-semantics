@@ -1,0 +1,49 @@
+default: &id007
+  action:
+  - 7084
+  - - - &id004 ['3']
+      - STRING.String
+    - - &id002 ['2']
+      - STRING.String
+    - - &id006 ['4']
+      - STRING.String
+    - - &id003 ['1']
+      - BYTES.Bytes
+    - - &id001 ['5']
+      - STRING.String
+specializations:
+- - LblvariantIdx{}
+  - args:
+    - - &id005 ['0', '2']
+      - INT.Int
+    next:
+      default: null
+      specializations:
+      - - '1'
+        - action:
+          - 7083
+          - - - *id001
+              - STRING.String
+            - - *id002
+              - STRING.String
+            - - *id003
+              - BYTES.Bytes
+            - - *id004
+              - STRING.String
+            - - *id005
+              - INT.Int
+            - - *id006
+              - STRING.String
+        - []
+      - - '0'
+        - *id007
+        - []
+      bitwidth: 1
+      sort: BOOL.Bool
+      occurrence: &id008 [side_condition_7083]
+    function: side_condition_7083
+    sort: BOOL.Bool
+    occurrence: *id008
+  - [INT.Int]
+sort: STRING.String
+occurrence: *id002

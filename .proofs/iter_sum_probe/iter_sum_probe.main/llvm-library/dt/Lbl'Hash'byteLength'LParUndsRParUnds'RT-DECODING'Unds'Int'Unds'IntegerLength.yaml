@@ -1,0 +1,29 @@
+default: null
+specializations:
+- - LblIntegerLength'ColnColn'I128{}
+  - action:
+    - 7058
+    - []
+  - []
+- - LblIntegerLength'ColnColn'I16{}
+  - action:
+    - 7059
+    - []
+  - []
+- - LblIntegerLength'ColnColn'I32{}
+  - action:
+    - 7060
+    - []
+  - []
+- - LblIntegerLength'ColnColn'I64{}
+  - action:
+    - 7061
+    - []
+  - []
+- - LblIntegerLength'ColnColn'I8{}
+  - action:
+    - 7062
+    - []
+  - []
+sort: STRING.String
+occurrence: ['1']

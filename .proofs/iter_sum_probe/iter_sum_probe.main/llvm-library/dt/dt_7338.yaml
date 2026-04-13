@@ -1,0 +1,161 @@
+- args:
+  - - &id001 ['1', '0', '0', '0', '0', '1']
+    - STRING.String
+  next:
+    default: null
+    specializations:
+    - - '1'
+      - action:
+        - 7404
+        - - - &id003 ['1', '1']
+            - STRING.String
+          - - &id004 ['1', '0', '0', '0', '1']
+            - STRING.String
+          - - &id005 ['1', '0', '1']
+            - STRING.String
+          - - &id006 ['2', '0', '1']
+            - STRING.String
+          - - &id007 ['3', '0', '1']
+            - STRING.String
+          - - &id008 ['4', '0', '1']
+            - STRING.String
+          - - *id001
+            - STRING.String
+          - - &id009 ['0', '0', '0', '0', '0', '1']
+            - STRING.String
+          - - &id002 ['2', '0', '0', '0', '0', '1']
+            - STRING.String
+      - []
+    - - '0'
+      - args:
+        - - *id002
+          - STRING.String
+        - - *id001
+          - STRING.String
+        next:
+          default: null
+          specializations:
+          - - '1'
+            - action:
+              - 7405
+              - - - *id003
+                  - STRING.String
+                - - *id004
+                  - STRING.String
+                - - *id005
+                  - STRING.String
+                - - *id006
+                  - STRING.String
+                - - *id007
+                  - STRING.String
+                - - *id008
+                  - STRING.String
+                - - *id002
+                  - STRING.String
+                - - *id009
+                  - STRING.String
+                - - *id001
+                  - STRING.String
+            - []
+          - - '0'
+            - default: fail
+              specializations:
+              - - inj{SortValue{}, SortEvaluation{}}
+                - default: fail
+                  specializations:
+                  - - inj{SortValue{}, SortEvaluation{}}
+                    - default: fail
+                      specializations:
+                      - - LblValue'ColnColn'Integer{}
+                        - default: fail
+                          specializations:
+                          - - LblValue'ColnColn'Integer{}
+                            - args:
+                              - - &id010 ['1', '0', '1', '0', '0', '0', '0', '1']
+                                - INT.Int
+                              next:
+                                default: null
+                                specializations:
+                                - - '1'
+                                  - action:
+                                    - 7403
+                                    - - - *id003
+                                        - STRING.String
+                                      - - *id004
+                                        - STRING.String
+                                      - - ['1', '0', '2', '0', '0', '0', '0', '1']
+                                        - INT.Int
+                                      - - ['2', '0', '2', '0', '0', '0', '0', '1']
+                                        - BOOL.Bool
+                                      - - *id005
+                                        - STRING.String
+                                      - - *id006
+                                        - STRING.String
+                                      - - *id007
+                                        - STRING.String
+                                      - - *id008
+                                        - STRING.String
+                                      - - *id009
+                                        - STRING.String
+                                      - - ['0', '0', '2', '0', '0', '0', '0', '1']
+                                        - INT.Int
+                                      - - ['2', '0', '1', '0', '0', '0', '0', '1']
+                                        - BOOL.Bool
+                                      - - ['0', '0', '1', '0', '0', '0', '0', '1']
+                                        - INT.Int
+                                      - - *id010
+                                        - INT.Int
+                                  - []
+                                - - '0'
+                                  - fail
+                                  - []
+                                bitwidth: 1
+                                sort: BOOL.Bool
+                                occurrence: &id011 [side_condition_7403]
+                              function: side_condition_7403
+                              sort: BOOL.Bool
+                              occurrence: *id011
+                            - [INT.Int, INT.Int, BOOL.Bool]
+                          sort: STRING.String
+                          occurrence: ['0', '1', '0', '0', '0', '0', '1']
+                        - [INT.Int, INT.Int, BOOL.Bool]
+                      sort: STRING.String
+                      occurrence: ['0', '2', '0', '0', '0', '0', '1']
+                    - [STRING.String]
+                  sort: STRING.String
+                  occurrence: *id001
+                - [STRING.String]
+              sort: STRING.String
+              occurrence: *id002
+            - []
+          bitwidth: 1
+          sort: BOOL.Bool
+          occurrence: &id012 [side_condition_7405]
+        function: side_condition_7405
+        sort: BOOL.Bool
+        occurrence: *id012
+      - []
+    bitwidth: 1
+    sort: BOOL.Bool
+    occurrence: &id013 [side_condition_7404]
+  function: side_condition_7404
+  sort: BOOL.Bool
+  occurrence: *id013
+- - - {hook: STRING.String, occurrence: VarK0}
+    - ['0', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: VarHOLE}
+    - ['1', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: VarK2}
+    - ['2', '0', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar2}
+    - ['1', '0', '0', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen0}
+    - ['1', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen1}
+    - ['2', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen2}
+    - ['3', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'Gen3}
+    - ['4', '0', '1']
+  - - {hook: STRING.String, occurrence: Var'Unds'DotVar0}
+    - ['1', '1']

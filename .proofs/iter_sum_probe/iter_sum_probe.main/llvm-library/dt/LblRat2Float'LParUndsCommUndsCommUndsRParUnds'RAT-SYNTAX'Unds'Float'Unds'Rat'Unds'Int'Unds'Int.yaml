@@ -1,0 +1,26 @@
+default: null
+specializations:
+- - Lbl'-LT-UndsCommUnds-GT-'Rat'Unds'RAT-COMMON'Unds'Rat'Unds'Int'Unds'Int{}
+  - action:
+    - 7643
+    - - - ['1', '1']
+        - INT.Int
+      - - &id001 ['3']
+        - INT.Int
+      - - ['0', '1']
+        - INT.Int
+      - - &id002 ['2']
+        - INT.Int
+  - [INT.Int, INT.Int]
+- - inj{SortInt{}, SortRat{}}
+  - action:
+    - 7644
+    - - - *id001
+        - INT.Int
+      - - ['0', '1']
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - [INT.Int]
+sort: STRING.String
+occurrence: ['1']

@@ -1,0 +1,20 @@
+default:
+  action:
+  - 8577
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblTypeInfo'ColnColn'PtrType{}
+  - action:
+    - 8578
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+- - LblTypeInfo'ColnColn'RefType{}
+  - action:
+    - 8579
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: *id001

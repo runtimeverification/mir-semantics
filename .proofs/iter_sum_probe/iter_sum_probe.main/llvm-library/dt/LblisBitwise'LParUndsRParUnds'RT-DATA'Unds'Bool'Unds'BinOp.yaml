@@ -1,0 +1,23 @@
+default:
+  action:
+  - 7901
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblBinOp'ColnColn'BitAnd{}
+  - action:
+    - 7902
+    - []
+  - []
+- - LblBinOp'ColnColn'BitOr{}
+  - action:
+    - 7903
+    - []
+  - []
+- - LblBinOp'ColnColn'BitXor{}
+  - action:
+    - 7904
+    - []
+  - []
+sort: STRING.String
+occurrence: *id001

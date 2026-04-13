@@ -1,0 +1,52 @@
+default: fail
+specializations:
+- - LblBinOp'ColnColn'Eq{}
+  - action:
+    - 7752
+    - - - &id001 ['2']
+        - FLOAT.Float
+      - - &id002 ['3']
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'Ge{}
+  - action:
+    - 7753
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'Gt{}
+  - action:
+    - 7754
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'Le{}
+  - action:
+    - 7755
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'Lt{}
+  - action:
+    - 7756
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'Ne{}
+  - action:
+    - 7757
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+sort: STRING.String
+occurrence: ['1']

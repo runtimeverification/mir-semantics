@@ -1,0 +1,15 @@
+default: null
+specializations:
+- - LblTyUnknown'Unds'RT-TYPES'Unds'MaybeTy{}
+  - action:
+    - 7191
+    - []
+  - []
+- - inj{SortTy{}, SortMaybeTy{}}
+  - action:
+    - 7192
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: ['1']

@@ -1,0 +1,52 @@
+default: &id001
+  action:
+  - 7020
+  - - - &id002 ['1']
+      - STRING.String
+    - - &id003 ['2']
+      - STRING.String
+specializations:
+- - LblValue'ColnColn'AllocRef{}
+  - default: null
+    specializations:
+    - - LblMetadata{}
+      - default: *id001
+        specializations:
+        - - LblValue'ColnColn'AllocRef{}
+          - default: null
+            specializations:
+            - - LblMetadata{}
+              - action:
+                - 7021
+                - - - ['1', '1']
+                    - STRING.String
+                  - - ['0', '2', '1']
+                    - STRING.String
+                  - - ['2', '2', '1']
+                    - STRING.String
+                  - - ['1', '2']
+                    - STRING.String
+                  - - ['0', '2', '2']
+                    - STRING.String
+                  - - ['2', '2', '2']
+                    - STRING.String
+                  - - ['0', '1']
+                    - STRING.String
+                  - - ['0', '2']
+                    - STRING.String
+                  - - ['1', '2', '1']
+                    - INT.Int
+                  - - ['1', '2', '2']
+                    - INT.Int
+              - [STRING.String, INT.Int, STRING.String]
+            sort: STRING.String
+            occurrence: ['2', '1']
+          - [STRING.String, STRING.String, STRING.String]
+        sort: STRING.String
+        occurrence: *id002
+      - [STRING.String, INT.Int, STRING.String]
+    sort: STRING.String
+    occurrence: ['2', '2']
+  - [STRING.String, STRING.String, STRING.String]
+sort: STRING.String
+occurrence: *id003

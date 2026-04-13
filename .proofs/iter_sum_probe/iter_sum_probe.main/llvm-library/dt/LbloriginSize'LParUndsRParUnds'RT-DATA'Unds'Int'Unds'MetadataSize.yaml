@@ -1,0 +1,21 @@
+default: null
+specializations:
+- - LbldynamicSize{}
+  - action:
+    - 8574
+    - - - ['0', '1']
+        - INT.Int
+  - [INT.Int]
+- - LblnoMetadataSize{}
+  - action:
+    - 8575
+    - []
+  - []
+- - LblstaticSize{}
+  - action:
+    - 8576
+    - - - ['0', '1']
+        - INT.Int
+  - [INT.Int]
+sort: STRING.String
+occurrence: ['1']
