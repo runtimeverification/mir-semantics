@@ -1,25 +1,84 @@
-# Execution Plan: Challenge 0028
+---
+challenge: "0028-flt2dec"
+status: in_progress
+priority: p1
+iteration: 1
+last_updated: 2026-04-11
+---
 
-Current objective:
-- Reconfirm the published success criteria table, then keep the current challenge-local reproducer at the `core::slice::index` frontier `<std::ops::Range<usize> as std::slice::SliceIndex<[u8]>>::index` (`library/core/src/slice/index.rs:440`) unless a smaller reproducer can preserve the same post-select path.
+## Requirements
 
-Next generator task:
-- Re-run the existing proof/show evidence against the current challenge-local probe, then stop shrinking if the first leaf is still the `Range<usize>::index` frontier; otherwise record the newly smaller reproducer and its exact first leaf.
+**Goal:** Verify the float-to-decimal conversion module in `core::num::flt2dec`.
 
-Generator acceptance evidence:
-- The probe file path in `kmir/src/tests/integration/data/verify-rust-std/0028-flt2dec`.
-- The exact command(s) used to rerun it.
-- The first pass/fail result with the precise failure mode, now from a replay-based collector that asserts the current probe replay fails at the slice-index frontier.
-- A note saying whether the result stays in copied `digits_to_dec_str` control flow, advances into actual decimal-point-path logic, or exposes a genuine backend limit.
-- A pointer back to `docs/verify-rust-std/challenges/0028-flt2dec/success_criteria.md` so the probe evidence is auditable against the published function list.
+**Source:** https://github.com/model-checking/verify-rust-std/blob/main/doc/src/challenges/0028-flt2dec.md  
+**Tracking issue:** [#524](https://github.com/model-checking/verify-rust-std/issues/524)
 
-Plan slices:
-1. Reconfirm the published function list, safety obligations, and UB exclusions from the challenge page.
-2. Preserve the restored real prefix slice and the single concrete `digits_to_dec_str` case, but trim only the current post-select slice-index path so the active path stays challenge-local.
-3. Rerun only that minimally trimmed probe and record the first concrete boundary it reaches, classifying it as copied `flt2dec` control flow, decimal-point-path logic, a backend limit, or the underlying slice-index helper.
-4. If the frontier moves past `slice_end_index_len_fail`, keep the smallest discovered reproducer and update the success-criteria coverage notes to reflect the new proof frontier rather than shrinking again.
+### Current branch-local scope
 
-Stop conditions:
-- Stop at `blocked` only if a smaller reproducer exposes a new backend or library boundary with direct evidence after the `buf.len()` branch test has been simplified away.
-- Stop at `in progress` if the replay still lands on `slice_end_index_len_fail` at `Range<usize>::index` and no smaller challenge-local reproducer is found.
-- Do not widen scope to restore the real suffix slice or other operations until the first post-select leaf has been captured with evidence.
+- Active artifact: `digits_to_dec_str_probe.rs`.
+- Treat the probe as a challenge-local verification frontier, not as final coverage for the whole challenge.
+- Keep the reproducer small and concrete while preserving the same post-select `digits_to_dec_str` path.
+- Do not widen to the broader formatter surface until the current frontier is classified precisely.
+
+### Published function surface currently represented in branch docs
+
+- `digits_to_dec_str`
+- `digits_to_exp_str`
+- `to_shortest_str`
+- `to_shortest_exp_str`
+- `to_exact_exp_str`
+- `to_exact_fixed_str`
+- `format_shortest_opt`
+- `format_shortest`
+- `format_exact_opt`
+- `format_exact`
+
+## Success Criteria Matrix
+
+### Proof status snapshot (2026-04-11)
+
+| Harness | Scope | Status | Frontier / Result | Notes |
+| --- | --- | --- | --- | --- |
+| `digits_to_dec_str_probe.rs` | concrete `digits_to_dec_str` probe | FAIL | `failing: 1` | Current known frontier remains on the slice indexing path reached from the probe |
+
+### Coverage map
+
+| Requirement slice | Current Status | Harness / Artifact | Next requirement |
+| --- | --- | --- | --- |
+| `digits_to_dec_str` | FRONTIER REACHED | `digits_to_dec_str_probe.rs` | Confirm whether the failure is truly a `slice::index` semantic gap or just a reducible probe artifact |
+| Remaining `flt2dec` formatting functions | NOT STARTED | `success_criteria.md` only | Leave untouched until the first `digits_to_dec_str` frontier is stable and auditable |
+
+## Sprint Plan
+
+### Sprint 0: Reconfirm the active frontier
+
+- Re-run `digits_to_dec_str_probe.rs`.
+- Verify that the first concrete failing leaf is still the known `Range<usize>::index` path.
+- Record whether the failing path is still downstream of the copied `if exp >= buf.len()` split.
+
+### Sprint 1: Minimize without changing the path
+
+- Shrink only the current post-select slice-index path.
+- Keep the reproducer challenge-local; do not generalize it into a library-level slice test unless the challenge-local path disappears.
+
+### Sprint 2: Classify the blocker
+
+- Decide whether the failure is:
+  challenge-local `flt2dec` logic,
+  copied control flow around decimal formatting,
+  a `core::slice::index` semantic limitation,
+  or a backend/modeling boundary.
+- Stop shrinking once the first stable classification is obtained.
+
+### Sprint 3: Resume challenge coverage
+
+- If the frontier moves past `slice::index`, keep the smallest reproducer that reaches the deeper `flt2dec` logic.
+- Only then start adding proof-shaped artifacts for `digits_to_dec_str` itself and the remaining formatter surface.
+
+## Blockers
+
+| Blocker | Type | Affects | Status | Notes |
+| --- | --- | --- | --- | --- |
+| `digits_to_dec_str_probe.rs` failing leaf | Semantic frontier | current probe | active | User-reported status is `failing: 1` |
+| `core::slice::index` boundary | Library semantics / modeling | current probe | active | Branch README identifies this as the current exact frontier family |
+| No proof-shaped harness for full `flt2dec` API surface yet | Coverage gap | remaining functions | pending | Deferred intentionally until the current frontier is stable |
