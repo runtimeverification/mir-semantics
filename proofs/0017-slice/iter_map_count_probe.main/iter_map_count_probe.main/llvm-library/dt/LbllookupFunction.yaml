@@ -1,0 +1,164 @@
+default: null
+specializations:
+- - Lblty{}
+  - args:
+    - - &id001 ['0', '1']
+      - INT.Int
+    next:
+      default: &id002
+        action:
+        - 7220
+        - - - *id001
+            - INT.Int
+      specializations:
+      - - '0'
+        - action:
+          - 7902
+          - []
+        - []
+      - - '1'
+        - args:
+          - - *id001
+            - INT.Int
+          - - [lit, '0', MINT.MInt 64]
+            - MINT.MInt 64
+          next:
+            default: *id002
+            specializations:
+            - - '34'
+              - action:
+                - 7919
+                - []
+              - []
+            - - '62'
+              - action:
+                - 7911
+                - []
+              - []
+            - - '40'
+              - action:
+                - 7921
+                - []
+              - []
+            - - '26'
+              - action:
+                - 7916
+                - []
+              - []
+            - - '46'
+              - action:
+                - 7908
+                - []
+              - []
+            - - '72'
+              - action:
+                - 7906
+                - []
+              - []
+            - - '43'
+              - action:
+                - 7907
+                - []
+              - []
+            - - '25'
+              - action:
+                - 7915
+                - []
+              - []
+            - - '64'
+              - action:
+                - 7922
+                - []
+              - []
+            - - '70'
+              - action:
+                - 7904
+                - []
+              - []
+            - - '38'
+              - action:
+                - 7920
+                - []
+              - []
+            - - '30'
+              - action:
+                - 7917
+                - []
+              - []
+            - - '63'
+              - action:
+                - 7913
+                - []
+              - []
+            - - '52'
+              - action:
+                - 7910
+                - []
+              - []
+            - - '12'
+              - action:
+                - 7914
+                - []
+              - []
+            - - '66'
+              - action:
+                - 7903
+                - []
+              - []
+            - - '65'
+              - action:
+                - 7923
+                - []
+              - []
+            - - '71'
+              - action:
+                - 7905
+                - []
+              - []
+            - - '47'
+              - action:
+                - 7909
+                - []
+              - []
+            - - '31'
+              - action:
+                - 7918
+                - []
+              - []
+            bitwidth: 64
+            sort: MINT.MInt 64
+            occurrence: &id003 ['0', '0', '1']
+          function: hook_INT_limb
+          sort: MINT.MInt 64
+          occurrence: *id003
+        - []
+      - - '-1'
+        - args:
+          - - *id001
+            - INT.Int
+          - - [lit, '0', MINT.MInt 64]
+            - MINT.MInt 64
+          next:
+            default: *id002
+            specializations:
+            - - '1'
+              - action:
+                - 7912
+                - []
+              - []
+            bitwidth: 64
+            sort: MINT.MInt 64
+            occurrence: &id004 ['0', '0', '1']
+          function: hook_INT_limb
+          sort: MINT.MInt 64
+          occurrence: *id004
+        - []
+      bitwidth: 32
+      sort: MINT.MInt 32
+      occurrence: &id005 [size, '0', '1']
+    function: hook_INT_size_int
+    sort: MINT.MInt 32
+    occurrence: *id005
+  - [INT.Int]
+sort: STRING.String
+occurrence: ['1']

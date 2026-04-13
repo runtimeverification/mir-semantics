@@ -1,0 +1,31 @@
+default: null
+specializations:
+- - LblTyss'ColnColn'append{}
+  - default: null
+    specializations:
+    - - LblTys'ColnColn'append{}
+      - action:
+        - 7243
+        - - - ['1', '0', '1']
+            - STRING.String
+          - - &id001 ['1', '1']
+            - STRING.String
+          - - ['0', '0', '1']
+            - STRING.String
+      - [STRING.String, STRING.String]
+    - - LblTys'ColnColn'empty{}
+      - action:
+        - 7244
+        - - - *id001
+            - STRING.String
+      - []
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String, STRING.String]
+- - LblTyss'ColnColn'empty{}
+  - action:
+    - 7245
+    - []
+  - []
+sort: STRING.String
+occurrence: ['1']

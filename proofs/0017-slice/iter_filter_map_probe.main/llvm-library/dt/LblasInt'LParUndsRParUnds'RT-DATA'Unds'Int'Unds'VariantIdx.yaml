@@ -1,0 +1,16 @@
+default: null
+specializations:
+- - Lblerr'LParUndsRParUnds'RT-DECODING'Unds'VariantIdx'Unds'String{}
+  - action:
+    - 6436
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+- - LblvariantIdx{}
+  - action:
+    - 6437
+    - - - ['0', '1']
+        - INT.Int
+  - [INT.Int]
+sort: STRING.String
+occurrence: ['1']

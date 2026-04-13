@@ -1,0 +1,52 @@
+default: fail
+specializations:
+- - LblBinOp'ColnColn'Eq{}
+  - action:
+    - 6458
+    - - - &id001 ['2']
+        - INT.Int
+      - - &id002 ['3']
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'Ge{}
+  - action:
+    - 6459
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'Gt{}
+  - action:
+    - 6460
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'Le{}
+  - action:
+    - 6461
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'Lt{}
+  - action:
+    - 6462
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'Ne{}
+  - action:
+    - 6463
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+sort: STRING.String
+occurrence: ['1']

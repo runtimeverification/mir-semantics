@@ -1,0 +1,14 @@
+default:
+  action:
+  - 7037
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblTypeInfo'ColnColn'RefType{}
+  - action:
+    - 7038
+    - - - ['0', '1']
+        - STRING.String
+  - [STRING.String]
+sort: STRING.String
+occurrence: *id001

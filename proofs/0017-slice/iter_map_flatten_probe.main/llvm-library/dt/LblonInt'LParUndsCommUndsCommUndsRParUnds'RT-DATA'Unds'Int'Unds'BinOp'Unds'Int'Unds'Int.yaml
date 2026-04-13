@@ -1,0 +1,126 @@
+default: fail
+specializations:
+- - LblBinOp'ColnColn'Add{}
+  - action:
+    - 7259
+    - - - &id001 ['2']
+        - INT.Int
+      - - &id002 ['3']
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'AddUnchecked{}
+  - action:
+    - 7260
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'BitAnd{}
+  - action:
+    - 7261
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'BitOr{}
+  - action:
+    - 7262
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'BitXor{}
+  - action:
+    - 7263
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'Div{}
+  - args:
+    - - *id002
+      - INT.Int
+    next:
+      default: null
+      specializations:
+      - - '1'
+        - action:
+          - 7264
+          - - - *id001
+              - INT.Int
+            - - *id002
+              - INT.Int
+        - []
+      - - '0'
+        - fail
+        - []
+      bitwidth: 1
+      sort: BOOL.Bool
+      occurrence: &id003 [side_condition_7264]
+    function: side_condition_7264
+    sort: BOOL.Bool
+    occurrence: *id003
+  - []
+- - LblBinOp'ColnColn'Mul{}
+  - action:
+    - 7265
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'MulUnchecked{}
+  - action:
+    - 7266
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'Rem{}
+  - args:
+    - - *id002
+      - INT.Int
+    next:
+      default: null
+      specializations:
+      - - '1'
+        - action:
+          - 7267
+          - - - *id001
+              - INT.Int
+            - - *id002
+              - INT.Int
+        - []
+      - - '0'
+        - fail
+        - []
+      bitwidth: 1
+      sort: BOOL.Bool
+      occurrence: &id004 [side_condition_7267]
+    function: side_condition_7267
+    sort: BOOL.Bool
+    occurrence: *id004
+  - []
+- - LblBinOp'ColnColn'Sub{}
+  - action:
+    - 7268
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+- - LblBinOp'ColnColn'SubUnchecked{}
+  - action:
+    - 7269
+    - - - *id001
+        - INT.Int
+      - - *id002
+        - INT.Int
+  - []
+sort: STRING.String
+occurrence: ['1']

@@ -1,0 +1,253 @@
+default: null
+specializations:
+- - inj{SortProjectionElems{}, SortMaybeProjectionElems{}}
+  - default: &id001
+      action:
+      - 7229
+      - - - &id010 ['1']
+          - STRING.String
+        - - &id011 ['0', '2']
+          - STRING.String
+    specializations:
+    - - LblProjectionElems'ColnColn'append{}
+      - default: *id001
+        specializations:
+        - - LblProjectionElem'ColnColn'ConstantIndex{}
+          - default: *id001
+            specializations:
+            - - LblprojectionElemSingletonArray'Unds'RT-TYPES'Unds'ProjectionElem{}
+              - default: *id001
+                specializations:
+                - - inj{SortBool{}, SortMIRBool{}}
+                  - default: *id001
+                    specializations:
+                    - - '0'
+                      - default: *id001
+                        specializations:
+                        - - inj{SortInt{}, SortMIRInt{}}
+                          - args:
+                            - - ['0', '1', '1']
+                              - INT.Int
+                            next:
+                              default: *id001
+                              specializations:
+                              - - '0'
+                                - default: *id001
+                                  specializations:
+                                  - - inj{SortInt{}, SortMIRInt{}}
+                                    - args:
+                                      - - ['0', '0', '1']
+                                        - INT.Int
+                                      next:
+                                        default: *id001
+                                        specializations:
+                                        - - '0'
+                                          - action:
+                                            - 7231
+                                            - - - &id004 ['1', '0', '2']
+                                                - STRING.String
+                                          - []
+                                        bitwidth: 32
+                                        sort: MINT.MInt 32
+                                        occurrence: &id002 [size, '0', '0', '1']
+                                      function: hook_INT_size_int
+                                      sort: MINT.MInt 32
+                                      occurrence: *id002
+                                    - [INT.Int]
+                                  sort: STRING.String
+                                  occurrence: ['0', '1']
+                                - []
+                              bitwidth: 32
+                              sort: MINT.MInt 32
+                              occurrence: &id003 [size, '0', '1', '1']
+                            function: hook_INT_size_int
+                            sort: MINT.MInt 32
+                            occurrence: *id003
+                          - [INT.Int]
+                        sort: STRING.String
+                        occurrence: ['1', '1']
+                      - []
+                    bitwidth: 1
+                    sort: BOOL.Bool
+                    occurrence: ['0', '2', '1']
+                  - [BOOL.Bool]
+                sort: STRING.String
+                occurrence: ['2', '1']
+              - []
+            sort: STRING.String
+            occurrence: &id006 ['0', '0', '2']
+          - [STRING.String, STRING.String, STRING.String]
+        - - LblProjectionElem'ColnColn'Field{}
+          - default: null
+            specializations:
+            - - LblfieldIdx'LParUndsRParUnds'BODY'Unds'FieldIdx'Unds'Int{}
+              - default: *id001
+                specializations:
+                - - LblprojectionElemWrapStruct'Unds'RT-TYPES'Unds'ProjectionElem{}
+                  - args:
+                    - - ['0', '0', '1']
+                      - INT.Int
+                    next:
+                      default: *id001
+                      specializations:
+                      - - '0'
+                        - action:
+                          - 7232
+                          - - - ['1', '1']
+                              - STRING.String
+                            - - *id004
+                              - STRING.String
+                        - []
+                      bitwidth: 32
+                      sort: MINT.MInt 32
+                      occurrence: &id005 [size, '0', '0', '1']
+                    function: hook_INT_size_int
+                    sort: MINT.MInt 32
+                    occurrence: *id005
+                  - []
+                sort: STRING.String
+                occurrence: *id006
+              - [INT.Int]
+            sort: STRING.String
+            occurrence: ['0', '1']
+          - [STRING.String, STRING.String]
+        - - LblprojectionElemFromZST'Unds'RT-TYPES'Unds'ProjectionElem{}
+          - default: *id001
+            specializations:
+            - - LblprojectionElemToZST'Unds'RT-TYPES'Unds'ProjectionElem{}
+              - action:
+                - 7233
+                - - - *id004
+                    - STRING.String
+              - []
+            sort: STRING.String
+            occurrence: *id006
+          - []
+        - - LblprojectionElemSingletonArray'Unds'RT-TYPES'Unds'ProjectionElem{}
+          - default: *id001
+            specializations:
+            - - LblProjectionElem'ColnColn'ConstantIndex{}
+              - default: *id001
+                specializations:
+                - - inj{SortBool{}, SortMIRBool{}}
+                  - default: *id001
+                    specializations:
+                    - - '0'
+                      - default: *id001
+                        specializations:
+                        - - inj{SortInt{}, SortMIRInt{}}
+                          - args:
+                            - - ['0', '1', '0', '0', '2']
+                              - INT.Int
+                            next:
+                              default: *id001
+                              specializations:
+                              - - '0'
+                                - default: *id001
+                                  specializations:
+                                  - - inj{SortInt{}, SortMIRInt{}}
+                                    - args:
+                                      - - ['0', '0', '0', '0', '2']
+                                        - INT.Int
+                                      next:
+                                        default: *id001
+                                        specializations:
+                                        - - '0'
+                                          - action:
+                                            - 7234
+                                            - - - *id004
+                                                - STRING.String
+                                          - []
+                                        bitwidth: 32
+                                        sort: MINT.MInt 32
+                                        occurrence: &id007 [size, '0', '0', '0', '0',
+                                          '2']
+                                      function: hook_INT_size_int
+                                      sort: MINT.MInt 32
+                                      occurrence: *id007
+                                    - [INT.Int]
+                                  sort: STRING.String
+                                  occurrence: ['0', '0', '0', '2']
+                                - []
+                              bitwidth: 32
+                              sort: MINT.MInt 32
+                              occurrence: &id008 [size, '0', '1', '0', '0', '2']
+                            function: hook_INT_size_int
+                            sort: MINT.MInt 32
+                            occurrence: *id008
+                          - [INT.Int]
+                        sort: STRING.String
+                        occurrence: ['1', '0', '0', '2']
+                      - []
+                    bitwidth: 1
+                    sort: BOOL.Bool
+                    occurrence: ['0', '2', '0', '0', '2']
+                  - [BOOL.Bool]
+                sort: STRING.String
+                occurrence: ['2', '0', '0', '2']
+              - [STRING.String, STRING.String, STRING.String]
+            sort: STRING.String
+            occurrence: *id006
+          - []
+        - - LblprojectionElemToZST'Unds'RT-TYPES'Unds'ProjectionElem{}
+          - default: *id001
+            specializations:
+            - - LblprojectionElemFromZST'Unds'RT-TYPES'Unds'ProjectionElem{}
+              - action:
+                - 7235
+                - - - *id004
+                    - STRING.String
+              - []
+            sort: STRING.String
+            occurrence: *id006
+          - []
+        - - LblprojectionElemWrapStruct'Unds'RT-TYPES'Unds'ProjectionElem{}
+          - default: *id001
+            specializations:
+            - - LblProjectionElem'ColnColn'Field{}
+              - default: null
+                specializations:
+                - - LblfieldIdx'LParUndsRParUnds'BODY'Unds'FieldIdx'Unds'Int{}
+                  - args:
+                    - - ['0', '0', '0', '0', '2']
+                      - INT.Int
+                    next:
+                      default: *id001
+                      specializations:
+                      - - '0'
+                        - action:
+                          - 7236
+                          - - - ['1', '0', '0', '2']
+                              - STRING.String
+                            - - *id004
+                              - STRING.String
+                        - []
+                      bitwidth: 32
+                      sort: MINT.MInt 32
+                      occurrence: &id009 [size, '0', '0', '0', '0', '2']
+                    function: hook_INT_size_int
+                    sort: MINT.MInt 32
+                    occurrence: *id009
+                  - [INT.Int]
+                sort: STRING.String
+                occurrence: ['0', '0', '0', '2']
+              - [STRING.String, STRING.String]
+            sort: STRING.String
+            occurrence: *id006
+          - []
+        sort: STRING.String
+        occurrence: *id010
+      - [STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: *id011
+  - [STRING.String]
+- - LblNoProjectionElems'Unds'RT-TYPES'Unds'MaybeProjectionElems{}
+  - action:
+    - 7230
+    - - - *id010
+        - STRING.String
+      - - &id012 ['2']
+        - STRING.String
+  - []
+sort: STRING.String
+occurrence: *id012

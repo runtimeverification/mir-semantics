@@ -1,0 +1,45 @@
+default: null
+specializations:
+- - LblnoLayoutShape'Unds'TYPES'Unds'MaybeLayoutShape{}
+  - action:
+    - 5938
+    - []
+  - []
+- - LblsomeLayoutShape'LParUndsRParUnds'TYPES'Unds'MaybeLayoutShape'Unds'LayoutShape{}
+  - default: null
+    specializations:
+    - - LbllayoutShape'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'TYPES'Unds'LayoutShape'Unds'FieldsShape'Unds'VariantsShape'Unds'ValueAbi'Unds'Align'Unds'MachineSize{}
+      - default:
+          action:
+          - 5937
+          - - - &id001 ['1']
+              - STRING.String
+        specializations:
+        - - LblFieldsShape'ColnColn'Arbitrary{}
+          - default: null
+            specializations:
+            - - Lblmk'LParUndsRParUnds'TYPES'Unds'FieldsShapeArbitrary'Unds'MachineSizes{}
+              - action:
+                - 5939
+                - - - ['1', '0', '1']
+                    - STRING.String
+                  - - ['2', '0', '1']
+                    - STRING.String
+                  - - ['3', '0', '1']
+                    - STRING.String
+                  - - ['4', '0', '1']
+                    - STRING.String
+                  - - ['0', '0', '0', '0', '1']
+                    - STRING.String
+              - [STRING.String]
+            sort: STRING.String
+            occurrence: ['0', '0', '0', '1']
+          - [STRING.String]
+        sort: STRING.String
+        occurrence: ['0', '0', '1']
+      - [STRING.String, STRING.String, STRING.String, STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: ['0', '1']
+  - [STRING.String]
+sort: STRING.String
+occurrence: *id001

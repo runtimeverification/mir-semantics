@@ -1,0 +1,73 @@
+default: fail
+specializations:
+- - LblvariantIdx{}
+  - default: fail
+    specializations:
+    - - LblDiscriminants'ColnColn'append{}
+      - args:
+        - - &id001 ['0', '2']
+          - INT.Int
+        next:
+          default: null
+          specializations:
+          - - '1'
+            - action:
+              - 5947
+              - - - &id004 ['0', '1']
+                  - STRING.String
+                - - *id001
+                  - INT.Int
+                - - &id002 ['1', '1']
+                  - STRING.String
+            - []
+          - - '0'
+            - default: null
+              specializations:
+              - - Lbldiscriminant'LParUndsRParUnds'TYPES'Unds'Discriminant'Unds'MIRInt{}
+                - default: fail
+                  specializations:
+                  - - inj{SortInt{}, SortMIRInt{}}
+                    - args:
+                      - - *id001
+                        - INT.Int
+                      next:
+                        default: null
+                        specializations:
+                        - - '1'
+                          - action:
+                            - 5948
+                            - - - *id002
+                                - STRING.String
+                              - - *id001
+                                - INT.Int
+                              - - ['0', '0', '0', '1']
+                                - INT.Int
+                          - []
+                        - - '0'
+                          - fail
+                          - []
+                        bitwidth: 1
+                        sort: BOOL.Bool
+                        occurrence: &id003 [side_condition_5948]
+                      function: side_condition_5948
+                      sort: BOOL.Bool
+                      occurrence: *id003
+                    - [INT.Int]
+                  sort: STRING.String
+                  occurrence: ['0', '0', '1']
+                - [STRING.String]
+              sort: STRING.String
+              occurrence: *id004
+            - []
+          bitwidth: 1
+          sort: BOOL.Bool
+          occurrence: &id005 [side_condition_5947]
+        function: side_condition_5947
+        sort: BOOL.Bool
+        occurrence: *id005
+      - [STRING.String, STRING.String]
+    sort: STRING.String
+    occurrence: ['1']
+  - [INT.Int]
+sort: STRING.String
+occurrence: ['2']

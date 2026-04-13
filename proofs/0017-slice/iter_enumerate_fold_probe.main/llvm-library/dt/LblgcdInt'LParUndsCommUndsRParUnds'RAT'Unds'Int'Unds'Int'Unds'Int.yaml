@@ -1,0 +1,85 @@
+args:
+- - &id001 ['2']
+  - INT.Int
+next:
+  default: null
+  specializations:
+  - - '1'
+    - action:
+      - 6502
+      - - - &id002 ['1']
+          - INT.Int
+        - - *id001
+          - INT.Int
+    - []
+  - - '0'
+    - args:
+      - - *id001
+        - INT.Int
+      next:
+        default: fail
+        specializations:
+        - - '0'
+          - args:
+            - - *id001
+              - INT.Int
+            - - *id002
+              - INT.Int
+            next:
+              default: null
+              specializations:
+              - - '1'
+                - action:
+                  - 6500
+                  - - - *id001
+                      - INT.Int
+                    - - *id002
+                      - INT.Int
+                - []
+              - - '0'
+                - args:
+                  - - *id001
+                    - INT.Int
+                  - - *id002
+                    - INT.Int
+                  next:
+                    default: null
+                    specializations:
+                    - - '1'
+                      - action:
+                        - 6501
+                        - - - *id001
+                            - INT.Int
+                          - - *id002
+                            - INT.Int
+                      - []
+                    - - '0'
+                      - fail
+                      - []
+                    bitwidth: 1
+                    sort: BOOL.Bool
+                    occurrence: &id003 [side_condition_6501]
+                  function: side_condition_6501
+                  sort: BOOL.Bool
+                  occurrence: *id003
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: &id004 [side_condition_6500]
+            function: side_condition_6500
+            sort: BOOL.Bool
+            occurrence: *id004
+          - []
+        bitwidth: 32
+        sort: MINT.MInt 32
+        occurrence: &id005 [size, '2']
+      function: hook_INT_size_int
+      sort: MINT.MInt 32
+      occurrence: *id005
+    - []
+  bitwidth: 1
+  sort: BOOL.Bool
+  occurrence: &id006 [side_condition_6502]
+function: side_condition_6502
+sort: BOOL.Bool
+occurrence: *id006

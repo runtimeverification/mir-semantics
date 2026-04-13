@@ -1,0 +1,22 @@
+default: &id001
+  action:
+  - 5933
+  - - - &id002 ['1']
+      - STRING.String
+specializations:
+- - LblTypeInfo'ColnColn'ArrayType{}
+  - default: *id001
+    specializations:
+    - - LblsomeTyConst'LParUndsRParUnds'TYPES'Unds'MaybeTyConst'Unds'TyConst{}
+      - action:
+        - 5934
+        - - - ['0', '1', '1']
+            - STRING.String
+          - - ['0', '1']
+            - STRING.String
+      - [STRING.String]
+    sort: STRING.String
+    occurrence: ['1', '1']
+  - [STRING.String, STRING.String]
+sort: STRING.String
+occurrence: *id002

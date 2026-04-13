@@ -1,0 +1,47 @@
+default: null
+specializations:
+- - Lbllocal{}
+  - default: null
+    specializations:
+    - - LblStackFrame'LParUndsCommUndsCommUndsCommUndsCommUndsRParUnds'KMIR-CONFIGURATION'Unds'StackFrame'Unds'Ty'Unds'Place'Unds'MaybeBasicBlockIdx'Unds'UnwindAction'Unds'List{}
+      - args:
+        - - &id001 ['0', '2']
+          - INT.Int
+        - - &id002 ['4', '1']
+          - LIST.List
+        next:
+          default: null
+          specializations:
+          - - '1'
+            - action:
+              - 5945
+              - - - ['3', '1']
+                  - STRING.String
+                - - ['0', '1']
+                  - STRING.String
+                - - ['1', '1']
+                  - STRING.String
+                - - ['2', '1']
+                  - STRING.String
+                - - *id001
+                  - INT.Int
+                - - *id002
+                  - LIST.List
+                - - ['3']
+                  - INT.Int
+            - []
+          - - '0'
+            - fail
+            - []
+          bitwidth: 1
+          sort: BOOL.Bool
+          occurrence: &id003 [side_condition_5945]
+        function: side_condition_5945
+        sort: BOOL.Bool
+        occurrence: *id003
+      - [STRING.String, STRING.String, STRING.String, STRING.String, LIST.List]
+    sort: STRING.String
+    occurrence: ['1']
+  - [INT.Int]
+sort: STRING.String
+occurrence: ['2']

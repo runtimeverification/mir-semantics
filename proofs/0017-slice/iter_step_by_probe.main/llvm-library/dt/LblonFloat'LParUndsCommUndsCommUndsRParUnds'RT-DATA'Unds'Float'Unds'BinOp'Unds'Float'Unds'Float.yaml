@@ -1,0 +1,68 @@
+default: fail
+specializations:
+- - LblBinOp'ColnColn'Add{}
+  - action:
+    - 7251
+    - - - &id001 ['2']
+        - FLOAT.Float
+      - - &id002 ['3']
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'AddUnchecked{}
+  - action:
+    - 7252
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'Div{}
+  - action:
+    - 7253
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'Mul{}
+  - action:
+    - 7254
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'MulUnchecked{}
+  - action:
+    - 7255
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'Rem{}
+  - action:
+    - 7256
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'Sub{}
+  - action:
+    - 7257
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+- - LblBinOp'ColnColn'SubUnchecked{}
+  - action:
+    - 7258
+    - - - *id001
+        - FLOAT.Float
+      - - *id002
+        - FLOAT.Float
+  - []
+sort: STRING.String
+occurrence: ['1']

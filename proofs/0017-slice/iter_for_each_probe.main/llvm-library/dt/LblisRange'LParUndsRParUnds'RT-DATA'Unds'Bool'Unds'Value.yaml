@@ -1,0 +1,14 @@
+default:
+  action:
+  - 7029
+  - - - &id001 ['1']
+      - STRING.String
+specializations:
+- - LblValue'ColnColn'Range{}
+  - action:
+    - 7030
+    - - - ['0', '1']
+        - LIST.List
+  - [LIST.List]
+sort: STRING.String
+occurrence: *id001
