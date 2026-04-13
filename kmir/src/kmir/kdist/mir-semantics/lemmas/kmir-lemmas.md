@@ -16,6 +16,7 @@ module KMIR-LEMMAS
   imports INT-SYMBOLIC
   imports BOOL
 
+  imports KMIR-AST
   imports RT-DATA
 ```
 ## Simplifications for lists to avoid spurious branching on error cases in control flow
@@ -33,6 +34,39 @@ The lists used in the semantics are cons-lists, so only rules with a head elemen
     [simplification, symbolic(REST)]
 
   rule 0 <=Int size(_LIST:List) => true [simplification]
+
+  // `#reserveSlots` grows `ownedSlots` and `<slotStore>` in lockstep. These simplifications
+  // let `frameLocal` peel away irrelevant tail updates when reading an older local, and
+  // directly return the newly-added local when the read reaches the matching tail slot.
+  rule frameLocal(_STORE[SLOT <- LOCAL], SLOTS ListItem(SLOT), size(SLOTS)) => LOCAL
+    requires isTypedLocal(LOCAL)
+    [simplification]
+
+  rule frameLocal(STORE[SLOT <- _], SLOTS ListItem(SLOT), IDX) => frameLocal(STORE, SLOTS, IDX)
+    requires 0 <=Int IDX andBool IDX <Int size(SLOTS)
+    [simplification]
+
+  // --------------------------------------------------
+  rule allValues(.List) => true
+  rule allValues(ListItem(_:Value) REST) => allValues(REST)
+  rule allValues(ListItem(_) _REST) => false [owise]
+
+  // Symbolic prove-rs inputs use fresh `List` variables to stand for arrays, slices,
+  // and aggregate argument lists whose elements are still runtime `Value`s. Carrying
+  // that invariant explicitly lets reads and writes avoid spurious branches on the
+  // underlying builtin `List:get` / `List:set` definedness checks.
+  rule isValue(ELEMS[IDX])
+    => true
+    requires allValues(ELEMS)
+     andBool 0 <=Int IDX
+     andBool IDX <Int size(ELEMS)
+    [simplification, symbolic(ELEMS)]
+
+  rule #Ceil(ELEMS[IDX <- _VAL:Value])
+    => #Ceil(ELEMS)
+     #And {true #Equals allValues(ELEMS)}
+     #And {true #Equals 0 <=Int IDX andBool IDX <Int size(ELEMS)}
+    [simplification, symbolic(ELEMS)]
 ```
 
 The hooked `range` function selects a segment from a list, by removing elements from front and back.

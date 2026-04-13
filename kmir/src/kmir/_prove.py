@@ -30,7 +30,6 @@ if TYPE_CHECKING:
 
 _LOGGER: Final = logging.getLogger(__name__)
 
-
 def prove(opts: ProveOpts) -> APRProof:
     if not opts.rs_file.is_file():
         raise ValueError(f'Input file does not exist: {opts.rs_file}')
@@ -128,7 +127,6 @@ def _prove(opts: ProveOpts, target_path: Path, label: str, *, allow_rpc_recovery
         break_every_step=opts.break_every_step,
         break_on_function=opts.break_on_function,
     )
-
     try:
         if opts.max_workers and opts.max_workers > 1:
             _prove_parallel(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)

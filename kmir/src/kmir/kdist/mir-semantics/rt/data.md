@@ -60,17 +60,6 @@ More often than not, a slot or list element must be selected by index and is req
     requires 0 <=Int IDX andBool IDX <Int size(SLOTS)
      [preserves-definedness]
 
-  // Fresh callee slots are appended to the frame list and written into the store in lockstep.
-  // These simplifications let current-frame reads reduce through the most recent updates even
-  // when the slot ids themselves are symbolic fresh values.
-  rule frameLocal(_STORE[SLOT <- LOCAL], SLOTS ListItem(SLOT), size(SLOTS)) => LOCAL
-    requires isTypedLocal(LOCAL)
-    [simplification]
-
-  rule frameLocal(STORE[SLOT <- _], SLOTS ListItem(SLOT), IDX) => frameLocal(STORE, SLOTS, IDX)
-    requires 0 <=Int IDX andBool IDX <Int size(SLOTS)
-    [simplification]
-
   // indexing values out of TypedValue, runtime slots, and Value lists
   syntax Value ::= getSlotValue ( Map, Int ) [function]
                  | frameValue   ( Map, List, Int ) [function]
@@ -241,13 +230,23 @@ If we are setting a value at a `Place` which has `Projection`s in it, then we mu
      andBool isNewLocal(getSlot(STORE, SLOT))
     [preserves-definedness] // valid lookup checked
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL:Value)
-        => #setSlotValue(#frameSlotId(SLOTS, I), VAL)
-        ...
-       </k>
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL:Value) => .K ... </k>
        <currentFrame> <ownedSlots> SLOTS </ownedSlots> ... </currentFrame>
+       <slotStore>
+          STORE => STORE[#frameSlotId(SLOTS, I) <- typedValue(VAL, tyOfLocal(frameLocal(STORE, SLOTS, I)), mutabilityOf(frameLocal(STORE, SLOTS, I)))]
+       </slotStore>
     requires 0 <=Int I andBool I <Int size(SLOTS)
-    [preserves-definedness] // valid slot indexing checked
+     andBool isTypedValue(frameLocal(STORE, SLOTS, I))
+    [preserves-definedness] // valid slot indexing and lookup checked
+
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL:Value) => .K ... </k>
+       <currentFrame> <ownedSlots> SLOTS </ownedSlots> ... </currentFrame>
+       <slotStore>
+          STORE => STORE[#frameSlotId(SLOTS, I) <- typedValue(VAL, tyOfLocal(frameLocal(STORE, SLOTS, I)), mutabilityOf(frameLocal(STORE, SLOTS, I)))]
+       </slotStore>
+    requires 0 <=Int I andBool I <Int size(SLOTS)
+     andBool isNewLocal(frameLocal(STORE, SLOTS, I))
+    [preserves-definedness] // valid slot indexing and lookup checked
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL:Value)
         => #traverseProjection(toSlot(#frameSlotId(SLOTS, I)), frameValue(STORE, SLOTS, I), PROJ, .Contexts)

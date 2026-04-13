@@ -73,6 +73,11 @@ PROVE_SHOW_SPECS = [
     'ptr-cast-array-to-singleton-wrapped-array-fail',
 ]
 
+PROVE_EXPECTED_FAILURES = {
+    ('symbolic-args-fail', 'eats_all_args'): False,
+}
+SNAPSHOT_PROVE_MAX_DEPTH = 50
+
 
 @pytest.mark.parametrize(
     'rs_file',
@@ -87,7 +92,7 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     if update_expected_output and not should_show:
         pytest.skip()
 
-    prove_opts = ProveOpts(rs_file, smir=is_smir, terminate_on_thunk=True)
+    prove_opts = ProveOpts(rs_file, smir=is_smir, terminate_on_thunk=True, max_depth=SNAPSHOT_PROVE_MAX_DEPTH)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
@@ -98,6 +103,7 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     for start_symbol in start_symbols:
         prove_opts.start_symbol = start_symbol
         apr_proof = kmir.prove_program(prove_opts)
+        should_fail = PROVE_EXPECTED_FAILURES.get((rs_file.stem, start_symbol), rs_file.stem.endswith('fail'))
 
         if should_show:
             display_opts = ShowOpts(

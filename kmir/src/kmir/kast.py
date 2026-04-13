@@ -380,7 +380,11 @@ class _ArgGenerator:
                     mlEqualsTrue(leInt(variant_var, token(max_variant))),
                 ]
                 args = self._fresh_var('ENUM_ARGS')
-                return KApply('Value::Aggregate', (KApply('variantIdx', (variant_var,)), args)), idx_range, None
+                return (
+                    KApply('Value::Aggregate', (KApply('variantIdx', (variant_var,)), args)),
+                    idx_range + [mlEqualsTrue(KApply('allValues', (args,)))],
+                    None,
+                )
 
             case StructT(_, _, fields):
                 field_vars: list[KInner] = []
@@ -397,14 +401,18 @@ class _ArgGenerator:
 
             case UnionT():
                 args = self._fresh_var('ARG_UNION')
-                return KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), args)), [], None
+                return (
+                    KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), args)),
+                    [mlEqualsTrue(KApply('allValues', (args,)))],
+                    None,
+                )
 
             case ArrayT(_, None):
                 elems = self._fresh_var('ARG_ARRAY')
                 l = self._fresh_var('ARG_ARRAY_LEN')
                 return (
                     KApply('Value::Range', (elems,)),
-                    [mlEqualsTrue(eqInt(KApply('sizeList', (elems,)), l))],
+                    [mlEqualsTrue(eqInt(KApply('sizeList', (elems,)), l)), mlEqualsTrue(KApply('allValues', (elems,)))],
                     KApply(
                         'Metadata',
                         (

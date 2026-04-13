@@ -22,6 +22,7 @@ MODULES_DIR = (Path(__file__).parent / 'data' / 'modules').resolve(strict=True)
 # they don't differ between local checkouts and CI (e.g. symbolic-args-fail.main.cli-stats-leaves).
 _REPO_ROOT = str(Path(__file__).resolve().parents[4])
 _PATH_REPLACEMENTS: dict[str, str] = {_REPO_ROOT + '/': '<REPO>/'}
+_SNAPSHOT_PROVE_MAX_DEPTH = 50
 
 
 def _prove_and_store(
@@ -32,7 +33,8 @@ def _prove_and_store(
     is_smir: bool = False,
     max_depth: int | None = None,
 ) -> APRProof:
-    opts = ProveOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbol=start_symbol, max_depth=max_depth)
+    proof_max_depth = _SNAPSHOT_PROVE_MAX_DEPTH if max_depth is None else max_depth
+    opts = ProveOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbol=start_symbol, max_depth=proof_max_depth)
     apr_proof = kmir.prove_program(opts)
     apr_proof.write_proof_data()
     return apr_proof

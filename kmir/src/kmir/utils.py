@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import heapq
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Sequence
@@ -177,53 +178,62 @@ def render_statistics(proof: APRProof) -> list[str]:
     reachable_leaf_count = 0
     leaf_lines: list[str] = []
 
-    def _path_nodes(source_id: int, path: Sequence[KCFG.Successor]) -> list[int]:
+    def _successor_edges(source_id: int) -> list[tuple[int, int]]:
         from pyk.kcfg.kcfg import KCFG as _KCFG
 
-        node_ids = [source_id]
-        current = source_id
-        for succ in path:
-            target_id: int | None = None
-            if isinstance(succ, _KCFG.EdgeLike):
-                target_id = succ.target.id
-            elif isinstance(succ, _KCFG.MultiEdge):
-                targets = list(succ.targets)
-                if len(targets) == 1:
-                    target_id = targets[0].id
-            if target_id is not None and target_id != current:
-                node_ids.append(target_id)
-                current = target_id
+        edges: list[tuple[int, int]] = []
+        for succ in kcfg.successors(source_id):
+            match succ:
+                case _KCFG.Edge(target=target, depth=depth):
+                    edges.append((target.id, depth))
+                case _KCFG.MergedEdge(target=target, edges=merged_edges):
+                    edges.append((target.id, min(edge.depth for edge in merged_edges)))
+                case _KCFG.Cover(target=target):
+                    edges.append((target.id, 0))
+                case _KCFG.Split(targets=targets):
+                    edges.extend((target.id, 0) for target in targets)
+                case _KCFG.NDBranch(targets=targets):
+                    edges.extend((target.id, 1) for target in targets)
+                case _:
+                    raise ValueError(f'Cannot handle Successor type: {type(succ)}')
+        return edges
+
+    shortest_steps: dict[int, int] = {proof.init: 0}
+    shortest_prev: dict[int, int] = {}
+    worklist: list[tuple[int, int]] = [(0, proof.init)]
+
+    while worklist:
+        curr_steps, node_id = heapq.heappop(worklist)
+        if curr_steps != shortest_steps.get(node_id):
+            continue
+        for target_id, weight in sorted(_successor_edges(node_id)):
+            next_steps = curr_steps + weight
+            prev_steps = shortest_steps.get(target_id)
+            # Keep the first equal-cost predecessor. Rewriting predecessors on
+            # ties can create zero-cost cycles through Cover/Split edges and
+            # make path reconstruction loop forever.
+            if prev_steps is None or next_steps < prev_steps:
+                shortest_steps[target_id] = next_steps
+                shortest_prev[target_id] = node_id
+                heapq.heappush(worklist, (next_steps, target_id))
+
+    def _shortest_path_nodes(target_id: int) -> list[int]:
+        node_ids = [target_id]
+        while node_ids[-1] != proof.init:
+            node_ids.append(shortest_prev[node_ids[-1]])
+        node_ids.reverse()
         return node_ids
 
     for leaf in sorted(leaves, key=lambda n: n.id):
-        paths = kcfg.paths_between(proof.init, leaf.id)
-        if not paths:
+        min_steps = shortest_steps.get(leaf.id)
+        if min_steps is None:
             leaf_lines.append(f'  leaf {leaf.id}: unreachable from init')
             continue
 
-        path_infos: list[tuple[int, tuple[int, ...]]] = []
-        seen_sequences: set[tuple[int, ...]] = set()
-
-        for path in paths:
-            steps = kcfg.path_length(path)
-            node_seq = tuple(_path_nodes(proof.init, path))
-            if node_seq in seen_sequences:
-                continue
-            seen_sequences.add(node_seq)
-            path_infos.append((steps, node_seq))
-
-        if not path_infos:
-            leaf_lines.append(f'  leaf {leaf.id}: unreachable from init')
-            continue
-
-        total_steps += min(steps for steps, _ in path_infos)
+        total_steps += min_steps
         reachable_leaf_count += 1
-        path_infos.sort(key=lambda info: (info[0], info[1]))
-
-        for idx, (steps, node_seq) in enumerate(path_infos, start=1):
-            suffix = '' if len(path_infos) == 1 else f' (path {idx}/{len(path_infos)})'
-            seq_str = ' -> '.join(str(nid) for nid in node_seq)
-            leaf_lines.append(f'  leaf {leaf.id}{suffix}: steps {steps}, path {seq_str}')
+        seq_str = ' -> '.join(str(nid) for nid in _shortest_path_nodes(leaf.id))
+        leaf_lines.append(f'  leaf {leaf.id}: shortest steps {min_steps}, path {seq_str}')
 
     lines.append(f'  total leaves (non-root): {len(leaves)}')
     lines.append(f'  reachable leaves       : {reachable_leaf_count}')
