@@ -33,7 +33,7 @@ PROVE_START_SYMBOLS = {
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
     'checked_arithmetic-fail': ['checked_add_i32'],
     'pointer-cast': ['main', 'test'],
-    'pointer-cast-length-test-fail': ['array_cast_test'],
+    'pointer-cast-length-test-unsupported': ['array_cast_test'],
     'assume-cheatcode': ['check_assume'],
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
@@ -42,35 +42,35 @@ PROVE_START_SYMBOLS = {
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
 PROVE_SHOW_SPECS = [
-    'local-raw-fail',
-    'interior-mut-fail',
-    'interior-mut3-fail',
+    'local-raw-unsupported',
+    'interior-mut-unsupported',
+    'interior-mut3-unsupported',
     'iter_next_3',
     'assert_eq_exp',
     'bitwise-not-shift',
     'symbolic-args-fail',
     'symbolic-structs-fail',
     'checked_arithmetic-fail',
-    'offset-u8-fail',
-    'pointer-cast-length-test-fail',
+    'offset-u8-unsupported',
+    'pointer-cast-length-test-unsupported',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
-    'raw-ptr-cast-fail',
+    'raw-ptr-cast-unsupported',
     'transmute-u8-to-enum-fail',
     'assert-inhabited-fail',
     'iterator-simple',
-    'unions-fail',
-    'transmute-maybe-uninit-fail',
-    'ptr-through-wrapper-fail',
+    'unions-unsupported',
+    'transmute-maybe-uninit-unsupported',
+    'ptr-through-wrapper-unsupported',
     'test_offset_from-fail',
-    'ref-ptr-cast-elem-fail',
-    'ref-ptr-cast-elem-offset-fail',
-    'volatile_store_static-fail',
-    'volatile_load_static-fail',
-    'box_heap_alloc-fail',
-    'ptr-cast-array-to-wrapper-fail',
-    'ptr-cast-array-to-nested-wrapper-fail',
-    'ptr-cast-array-to-singleton-wrapped-array-fail',
+    'ref-ptr-cast-elem-unsupported',
+    'ref-ptr-cast-elem-offset-unsupported',
+    'volatile_store_static-unsupported',
+    'volatile_load_static-unsupported',
+    'box_heap_alloc-unsupported',
+    'ptr-cast-array-to-wrapper-unsupported',
+    'ptr-cast-array-to-nested-wrapper-unsupported',
+    'ptr-cast-array-to-singleton-wrapped-array-unsupported',
 ]
 
 
@@ -80,7 +80,7 @@ PROVE_SHOW_SPECS = [
     ids=[spec.stem for spec in PROVE_FILES],
 )
 def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
-    should_fail = rs_file.stem.endswith('fail')
+    should_fail = rs_file.stem.endswith('fail') or rs_file.stem.endswith('unsupported')
     should_show = rs_file.stem in PROVE_SHOW_SPECS
     is_smir = rs_file.suffix == '.json'
 
