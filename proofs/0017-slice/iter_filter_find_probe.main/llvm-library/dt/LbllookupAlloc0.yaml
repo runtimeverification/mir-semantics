@@ -1,0 +1,21 @@
+args:
+- - &id001 ['1']
+  - INT.Int
+next:
+  default:
+    action:
+    - 8014
+    - - - *id001
+        - INT.Int
+  specializations:
+  - - '0'
+    - action:
+      - 8024
+      - []
+    - []
+  bitwidth: 32
+  sort: MINT.MInt 32
+  occurrence: &id002 [size, '1']
+function: hook_INT_size_int
+sort: MINT.MInt 32
+occurrence: *id002

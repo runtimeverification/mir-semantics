@@ -1,0 +1,106 @@
+args:
+- - &id001 ['1']
+  - LIST.List
+next:
+  default: &id005
+    args:
+    - - *id001
+      - LIST.List
+    - - [lit, '0', MINT.MInt 64]
+      - MINT.MInt 64
+    next:
+      default: fail
+      specializations:
+      - - inj{SortValue{}, SortKItem{}}
+        - default: fail
+          specializations:
+          - - LblValue'ColnColn'Integer{}
+            - default: fail
+              specializations:
+              - - '0'
+                - args:
+                  - - &id002 ['1', '0', '0', '1']
+                    - INT.Int
+                  next:
+                    default: fail
+                    specializations:
+                    - - '1'
+                      - args:
+                        - - *id002
+                          - INT.Int
+                        - - [lit, '0', MINT.MInt 64]
+                          - MINT.MInt 64
+                        next:
+                          default: fail
+                          specializations:
+                          - - '8'
+                            - args:
+                              - - *id001
+                                - LIST.List
+                              - - [lit, '1', MINT.MInt 64]
+                                - MINT.MInt 64
+                              - - [lit, '0', MINT.MInt 64]
+                                - MINT.MInt 64
+                              next:
+                                action:
+                                - 5944
+                                - - - ['0', '0', '0', '1']
+                                    - INT.Int
+                                  - - ['1', '1']
+                                    - LIST.List
+                              function: hook_LIST_range_long
+                              sort: LIST.List
+                              occurrence: ['1', '1']
+                            - []
+                          bitwidth: 64
+                          sort: MINT.MInt 64
+                          occurrence: &id003 ['0', '1', '0', '0', '1']
+                        function: hook_INT_limb
+                        sort: MINT.MInt 64
+                        occurrence: *id003
+                      - []
+                    bitwidth: 32
+                    sort: MINT.MInt 32
+                    occurrence: &id004 [size, '1', '0', '0', '1']
+                  function: hook_INT_size_int
+                  sort: MINT.MInt 32
+                  occurrence: *id004
+                - []
+              bitwidth: 1
+              sort: BOOL.Bool
+              occurrence: ['2', '0', '0', '1']
+            - [INT.Int, INT.Int, BOOL.Bool]
+          sort: STRING.String
+          occurrence: ['0', '0', '1']
+        - [STRING.String]
+      sort: STRING.String
+      occurrence: ['0', '1']
+    function: hook_LIST_get_long
+    sort: STRING.String
+    occurrence: ['0', '1']
+  specializations:
+  - - '0'
+    - args:
+      - - *id001
+        - LIST.List
+      - - [lit, '0', MINT.MInt 64]
+        - MINT.MInt 64
+      - - [lit, '0', MINT.MInt 64]
+        - MINT.MInt 64
+      next:
+        action:
+        - 5943
+        - []
+      function: hook_LIST_range_long
+      sort: LIST.List
+      occurrence: ['0', '1']
+    - []
+  - - '1'
+    - *id005
+    - [STRING.String]
+  bitwidth: 64
+  sort: MINT.MInt 64
+  occurrence: &id006 [size, '1']
+function: hook_LIST_size_long
+sort: MINT.MInt 64
+occurrence: *id006
