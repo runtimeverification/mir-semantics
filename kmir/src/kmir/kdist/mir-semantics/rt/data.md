@@ -1646,6 +1646,22 @@ The layout is the same for the wrapped type and so the cast in either direction 
         </k>
       requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
 
+  // Up (indirect): T -> Wrapper(U) where T != U but T can be transmuted to U.
+  // First cast T into the inner field type U, then wrap. This handles cases like
+  // usize -> Alignment where Alignment wraps AlignmentEnum (an enum, not T directly).
+  rule <k> #cast(VAL:Value, castKindTransmute, TY_SOURCE, TY_TARGET)
+          =>
+            #cast(VAL, castKindTransmute, TY_SOURCE, {#transparentFieldTy(lookupTy(TY_TARGET))}:>Ty)
+            ~> #wrapTransmute(TY_TARGET)
+          ...
+        </k>
+      requires #transparentFieldTy(lookupTy(TY_TARGET)) =/=K TyUnknown
+       andBool #transparentFieldTy(lookupTy(TY_TARGET)) =/=K TY_SOURCE
+      [priority(60)]
+
+  syntax KItem ::= #wrapTransmute ( Ty )
+  rule <k> INNER:Value ~> #wrapTransmute(_TY_TARGET) => Aggregate(variantIdx(0), ListItem(INNER)) ... </k>
+
   // Down: Wrapper(T) -> T
   rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
           =>
