@@ -377,13 +377,13 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
                     ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , false ))))))   // borrow flag
                     ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , false ))))))   // borrow count
                     ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( _ , 64 , true ))))))   // inner wrapper
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( OFFSET , PLACE , MUT , metadata ( dynamicSize ( _ ) , 0 , dynamicSize ( _ ))))))))  // &mut [u8] reference
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( SPLACE , MUT , metadata ( dynamicSize ( _ ) , 0 , dynamicSize ( _ ))))))))  // &mut [u8] reference
              ), N)
           => Aggregate ( variantIdx ( 0 ) ,
                     ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , false ))))))   // reset borrow flag to 0
                     ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , false ))))))   // reset borrow count to 0
                     ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Integer ( 0 , 64 , true ))))))
-                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( OFFSET , PLACE , MUT , metadata ( dynamicSize ( N ) , 0 , dynamicSize ( N ))))))))  // set size to N
+                    ListItem (Aggregate ( variantIdx ( 0 ) , ListItem (Reference ( SPLACE , MUT , metadata ( dynamicSize ( N ) , 0 , dynamicSize ( N ))))))))  // set size to N
              ) ...
       </k>
 ```

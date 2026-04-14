@@ -122,12 +122,8 @@ The code uses some helper sorts for better readability.
   rule #keyNe(Key(LHS), Key(RHS)) => LHS =/=K RHS [preserves-definedness]
   rule #keyNe(_, _) => true [owise]
 ```
-For lists that are already known to contain bytes, the following simplification removes the `#mapOffset` call
-This ensures that branches on the key value are not duplicated.
+With slotStore, `#mapOffset` and `#adjustRef` are no longer needed (no stack-relative offsets).
 
-```k
-  rule #mapOffset(VAR, _) => VAR requires allBytes(VAR)
-```
 
 ```k
 
