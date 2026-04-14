@@ -43,7 +43,7 @@ _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
-def _flush_lines(lines: 'Iterable[str]') -> None:
+def _flush_lines(lines: Iterable[str]) -> None:
     """Print lines to stdout one at a time, then release the list if possible."""
     for line in lines:
         print(line)
