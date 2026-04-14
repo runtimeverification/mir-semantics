@@ -90,12 +90,19 @@ def prove_callee(
     proof_dir: Path | None = None,
     max_iterations: int = 1000,
     max_depth: int = 10000,
+    init_subst: dict[str, KInner] | None = None,
 ) -> APRProof:
-    """Prove a callee function to completion (standalone, no caller context)."""
+    """Prove a callee function to completion (standalone, no caller context).
+
+    Args:
+        init_subst: Optional substitution to apply to the init cterm's config.
+            Use this to pre-condition the symbolic state, e.g. replacing raw
+            Aggregate slots with domain-specific sorts like PAccountMint.
+    """
     from ._prove import _prove_sequential
 
     proof_id = f'cse-callee.{callee_name}'
-    proof = _make_callee_proof(kmir, smir_info, callee_name, proof_id, proof_dir=proof_dir)
+    proof = _make_callee_proof(kmir, smir_info, callee_name, proof_id, proof_dir=proof_dir, init_subst=init_subst)
 
     from .options import ProveOpts
 
@@ -121,9 +128,10 @@ def _make_callee_proof(
     proof_id: str,
     *,
     proof_dir: Path | None = None,
+    init_subst: dict[str, KInner] | None = None,
 ) -> APRProof:
     """Create an APRProof for a standalone callee function."""
-    from pyk.kast.manip import abstract_term_safely, split_config_from
+    from pyk.kast.manip import abstract_term_safely, set_cell, split_config_from
 
     lhs_config, constraints = make_call_config(
         kmir.definition,
@@ -131,6 +139,12 @@ def _make_callee_proof(
         start_symbol=callee_name,
         mode=SymbolicMode(),
     )
+
+    # Apply optional substitution to pre-condition the symbolic state
+    if init_subst:
+        for cell_name, value in init_subst.items():
+            lhs_config = set_cell(lhs_config, cell_name, value)
+
     lhs = CTerm(lhs_config, constraints)
 
     var_config, var_subst = split_config_from(lhs_config)
