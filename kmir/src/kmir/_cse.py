@@ -18,6 +18,8 @@ from typing import TYPE_CHECKING
 
 from pyk.cterm import CTerm
 from pyk.kast.inner import KApply, KRewrite, KSequence, KSort, KToken, KVariable, Subst
+from pyk.kast.att import Atts as AttKeys
+from pyk.kast.att import AttEntry, KAtt
 from pyk.kast.outer import KFlatModule, KImport, KRule
 from pyk.kast.prelude.ml import mlAnd, mlEqualsTrue
 from pyk.proof.reachability import APRProof
@@ -277,70 +279,80 @@ def generate_summary_rules(
     return rules
 
 
+_EXEC_TERMINATOR_CALL = '#execTerminatorCall(_,_,_,_,_,_,_)_KMIR-CONTROL-FLOW_KItem_Ty_MonoItemKind_Operands_Place_MaybeBasicBlockIdx_UnwindAction_Span'
+_SET_LOCAL_VALUE = '#setLocalValue(_,_)_RT-DATA_KItem_Place_Evaluation'
+_CONTINUE_AT = '#continueAt(_)_KMIR-CONTROL-FLOW_KItem_MaybeBasicBlockIdx'
+_GET_FUNCTION_NAME = 'getFunctionName(_)_KMIR-CONTROL-FLOW_String_MonoItemKind'
+_EQ_STRING = '_==String__STRING-COMMON_Bool_String_String'
+
+
 def _build_summary_rule(
     callee_name: str,
     path: CoverPath,
     path_idx: int,
     init_cterm: CTerm,
 ) -> KRule | None:
-    """Build one K rule for a single execution path."""
+    """Build one K rule for a single execution path.
+
+    Uses cterm_build_rule to construct a properly-structured rule from
+    init CTerm (at function call) → final CTerm (after return).
+    The init CTerm's K_CELL is #execTerminatorCall(...) and the final
+    CTerm's K_CELL is #setLocalValue(DEST, RET) ~> #continueAt(TARGET).
+    """
+    from pyk.cterm.cterm import cterm_build_rule
+
     if path.return_value is None:
         _LOGGER.warning(f'CSE: no return value for {callee_name} path {path_idx}, skipping')
         return None
 
-    # Variables for the rule LHS pattern
-    func_var = KVariable('FUNC', sort=KSort('MonoItemKind'))
-    args_var = KVariable('ARGS', sort=KSort('Operands'))
-    dest_var = KVariable('DEST', sort=KSort('Place'))
-    target_var = KVariable('TARGET', sort=KSort('MaybeBasicBlockIdx'))
-    unwind_var = KVariable('_UNWIND', sort=KSort('UnwindAction'))
-    span_var = KVariable('_SPAN', sort=KSort('Span'))
-    ty_var = KVariable('_TY', sort=KSort('Ty'))
+    # Variables for the rule
+    func_var = KVariable('CSE_FUNC')
+    dest_var = KVariable('CSE_DEST')
+    target_var = KVariable('CSE_TARGET')
+    cont_var = KVariable('CSE_CONT')
 
-    # LHS: #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, _SPAN)
-    lhs_k = KApply(
-        '#execTerminatorCall',
-        [ty_var, func_var, args_var, dest_var, target_var, unwind_var, span_var],
-    )
-
-    # RHS: #setLocalValue(DEST, RET_VALUE) ~> #execBlockIdx(TARGET)
-    rhs_k = KSequence(
-        [
-            KApply('#setLocalValue', [dest_var, path.return_value]),
-            KApply('#execBlockIdx', [target_var]),
-        ]
-    )
-
-    # Build the rule body as a <k> cell rewrite
-    body = KApply('<generatedTop>', [
-        KApply('<kmir>', [
-            KRewrite(lhs_k, rhs_k),  # <k> cell rewrite — simplified, will need full config
-        ])
+    # Build init CTerm: same as init_cterm but with K_CELL = #execTerminatorCall ~> CONT
+    lhs_k = KSequence([
+        KApply(_EXEC_TERMINATOR_CALL, [
+            KVariable('CSE_TY'), func_var, KVariable('CSE_ARGS'),
+            dest_var, target_var, KVariable('CSE_UNWIND'), KVariable('CSE_SPAN'),
+        ]),
+        cont_var,
     ])
 
-    # For now, build requires clause with function name match
-    func_name_check = KApply(
-        '_==String_',
-        [
-            KApply('getFunctionName', [func_var]),
-            KToken(f'"{callee_name}"', KSort('String')),
-        ],
-    )
+    # Build final CTerm: same config but K_CELL = #setLocalValue(DEST, RET) ~> #continueAt(TARGET)
+    rhs_k = KSequence([
+        KApply(_SET_LOCAL_VALUE, [dest_var, path.return_value]),
+        KApply(_CONTINUE_AT, [target_var]),
+    ])
 
-    # Combine function name check with path constraints
-    requires_clauses = [func_name_check]
-    requires_clauses.extend(path.constraints)
+    # Use the init_cterm config as the base, replace K_CELL
+    from pyk.kast.manip import set_cell
 
-    requires = mlEqualsTrue(mlAnd(requires_clauses)) if len(requires_clauses) > 1 else mlEqualsTrue(requires_clauses[0])
+    init_config = set_cell(init_cterm.config, 'K_CELL', lhs_k)
+    final_config = set_cell(init_cterm.config, 'K_CELL', rhs_k)
+
+    # Build requires: getFunctionName(FUNC) ==String "callee_name" andBool path constraints
+    func_name_check = KApply(_EQ_STRING, [
+        KApply(_GET_FUNCTION_NAME, [func_var]),
+        KToken(f'"{callee_name}"', KSort('String')),
+    ])
+
+    constraints: list[KInner] = [mlEqualsTrue(func_name_check)]
+    constraints.extend(path.constraints)
+
+    init_cterm_rule = CTerm(init_config, tuple(constraints))
+    final_cterm_rule = CTerm(final_config)
 
     rule_label = f'cse-summary-{_sanitize_name(callee_name)}-path-{path_idx}'
 
-    return KRule(
-        body=body,
-        requires=requires,
-        ensures=KToken('true', KSort('Bool')),
-        att={'priority': '30', 'label': rule_label},
+    rule, _subst = cterm_build_rule(
+        rule_label,
+        init_cterm_rule,
+        final_cterm_rule,
+        priority=30,
     )
+    return rule
 
 
 def _sanitize_name(name: str) -> str:

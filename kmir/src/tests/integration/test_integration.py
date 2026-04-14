@@ -950,8 +950,40 @@ def test_cse_callee_proof(tmp_path: Path) -> None:
     # become summary rules. The caller's constraints will exclude error paths.
 
     # Step 3: Extract cover paths and verify return value extraction
-    from kmir._cse import extract_cover_paths
+    from kmir._cse import build_summary_module, extract_cover_paths, generate_summary_rules
 
     cover_paths = extract_cover_paths(callee_proof)
     assert len(cover_paths) > 0, 'Should extract at least one cover path'
     assert cover_paths[0].return_value is not None, 'Cover path should have a return value'
+
+    # Step 4: Generate summary rules
+    init_cterm = callee_proof.kcfg.node(callee_proof.init).cterm
+    rules = generate_summary_rules('double', cover_paths, init_cterm)
+    assert len(rules) > 0, 'Should generate at least one summary rule'
+
+    # Step 5: Build summary module
+    module = build_summary_module('double', rules)
+    assert module is not None
+    assert len(module.sentences) > 0
+
+    # Step 6: Prove caller with summary via add-module
+    from pyk.cterm import cterm_symbolic
+    from pyk.kcfg.explore import KCFGExplore
+    from pyk.proof.reachability import APRProver
+
+    from kmir._prove import apr_proof_from_smir
+    from kmir.kmir import KMIRSemantics
+
+    reuse_proof = apr_proof_from_smir(kmir_instance, 'cse-reuse', smir_info, start_symbol='main', proof_dir=tmp_path)
+    with cterm_symbolic(
+        kmir_instance.definition,
+        kmir_instance.definition_dir,
+        llvm_definition_dir=kmir_instance.llvm_library_dir,
+        simplify_each=30,
+    ) as cts:
+        module_name = cts.add_module(module, name_as_id=True)
+        kcfg_explore = KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
+        prover = APRProver(kcfg_explore, execute_depth=10000)
+        prover.advance_proof(reuse_proof, max_iterations=1000)
+
+    assert reuse_proof.passed, f'CSE reuse proof should pass, status={reuse_proof.status}'
