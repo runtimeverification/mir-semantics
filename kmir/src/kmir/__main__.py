@@ -193,16 +193,23 @@ def _kmir_show(opts: ShowOpts) -> None:
         print(f'Module written to: {opts.to_module}')
     else:
         # Stream lines to stdout to avoid holding the entire output in memory
+        last_line = lines[-1] if lines else ''
         _flush_lines(lines)
         del lines
         if opts.statistics:
-            print()
-            _flush_lines(render_statistics(proof))
+            if last_line != '':
+                print()
+            stat_lines = render_statistics(proof)
+            last_line = stat_lines[-1] if stat_lines else last_line
+            _flush_lines(stat_lines)
         if effective_rule_edges:
             print('# Rules: ')
-            _flush_lines(render_rules(proof, effective_rule_edges))
+            rule_lines = render_rules(proof, effective_rule_edges)
+            last_line = rule_lines[-1] if rule_lines else last_line
+            _flush_lines(rule_lines)
         if opts.leaves:
-            print()
+            if last_line != '':
+                print()
             _flush_lines(render_leaf_k_cells(proof, node_printer.cterm_show, smir_info=node_printer.smir_info))
 
 
