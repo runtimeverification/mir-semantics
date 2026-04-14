@@ -356,8 +356,15 @@ def _build_summary_rule(
 
 
 def _sanitize_name(name: str) -> str:
-    """Sanitize function name for use as K rule label."""
-    return name.replace('::', '-').replace('<', '').replace('>', '').replace(' ', '')
+    """Sanitize function name for use as K identifiers (module names, rule labels)."""
+    import re
+
+    result = name.replace('::', '-').replace('<', '').replace('>', '').replace(' ', '').replace('_', '-')
+    result = re.sub(r'[^a-zA-Z0-9-]', '', result)
+    # Kore identifiers must start with a letter
+    if result and not result[0].isalpha():
+        result = 'cse' + result
+    return result
 
 
 def build_summary_module(callee_name: str, rules: list[KRule]) -> KFlatModule:
