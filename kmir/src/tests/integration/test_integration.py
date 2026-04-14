@@ -987,3 +987,10 @@ def test_cse_callee_proof(tmp_path: Path) -> None:
         prover.advance_proof(reuse_proof, max_iterations=1000)
 
     assert reuse_proof.passed, f'CSE reuse proof should pass, status={reuse_proof.status}'
+
+    # Step 7: Verify structure preservation (H2, H4)
+    r_kcfg = reuse_proof.kcfg
+    assert len(list(r_kcfg.ndbranches())) == 0, 'H4: CSE must not produce NDBranch'
+    b_splits = len(list(baseline.kcfg.splits()))
+    r_splits = len(list(r_kcfg.splits()))
+    assert b_splits == r_splits, f'H2: splits mismatch baseline={b_splits} reuse={r_splits}'
