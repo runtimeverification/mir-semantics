@@ -472,14 +472,6 @@ results.
      andBool lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO) ==Int 0
      andBool lengthBytes(BYTES) /Int #elemSize(ELEMTYPEINFO) ==Int LEN
 
-  syntax ListInt ::= #decodeUints ( Bytes , Int , Int , Int ) [function]
-  rule #decodeUints(_, _, _, _) => .Ints [owise]
-  rule #decodeUints(BYTES:Bytes, N, LEN, WIDTH)
-    => Bytes2Int(substrBytes(BYTES, N *Int WIDTH, (N +Int 1) *Int WIDTH), LE, Signed)
-       #decodeUints(BYTES, N +Int 1, LEN, WIDTH)
-    requires 0 <=Int N andBool 0 <Int WIDTH andBool (N +Int 1) *Int WIDTH <=Int lengthBytes(BYTES)
-    [preserves-definedness]
-
   syntax List ::= #decodeArrayElements ( Bytes, TypeInfo, Int, List ) [function]
                   // bytes, elem type info, remaining length, accumulated list
 
