@@ -239,8 +239,8 @@ def _extract_return_value(cterm: CTerm) -> KInner | None:
     """Extract the return value from RETVAL_CELL."""
     try:
         retval_cell = cterm.cell('RETVAL_CELL')
-        # retval_cell should be return(VAL) or noRetVal
-        if isinstance(retval_cell, KApply) and retval_cell.label.name == 'return':
+        # retval_cell is return(VAL) with full label name return(_)_KMIR-CONFIGURATION_RetVal_Value
+        if isinstance(retval_cell, KApply) and 'return' in retval_cell.label.name:
             return retval_cell.args[0]
     except Exception:
         pass
