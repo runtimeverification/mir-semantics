@@ -101,7 +101,7 @@ def prove_callee(
     """
     from ._prove import _prove_sequential
 
-    proof_id = f'cse-callee.{callee_name}'
+    proof_id = f'cse-callee.{_sanitize_name(callee_name)}'
     proof = _make_callee_proof(kmir, smir_info, callee_name, proof_id, proof_dir=proof_dir, init_subst=init_subst)
 
     from .options import ProveOpts
@@ -522,7 +522,7 @@ def _prove_callee_with_deps(
     from pyk.kcfg.explore import KCFGExplore
     from pyk.proof.reachability import APRProver
 
-    proof_id = f'cse-callee.{callee_name}'
+    proof_id = f'cse-callee.{_sanitize_name(callee_name)}'
     proof = _make_callee_proof(kmir, smir_info, callee_name, proof_id, proof_dir=proof_dir, init_subst=init_subst)
 
     with cterm_symbolic(
