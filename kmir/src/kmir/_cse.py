@@ -452,16 +452,37 @@ def _prove_and_summarize_callee(
     callee_name: str,
     *,
     proof_dir: Path | None = None,
+    init_subst: dict[str, KInner] | None = None,
+    dep_modules: list[KFlatModule] | None = None,
 ) -> CalleeSummary:
-    """Prove a callee and generate summary rules."""
+    """Prove a callee and generate summary rules.
+
+    Args:
+        init_subst: Optional substitution for PAccount pre-conditioning.
+        dep_modules: Summary modules of sub-callees to inject via add-module
+            during the callee proof (multi-level composition).
+    """
     summary = CalleeSummary(name=callee_name)
     t0 = time.time()
 
-    try:
-        proof = prove_callee(kmir, smir_info, callee_name, proof_dir=proof_dir)
-    except Exception as e:
-        _LOGGER.warning(f'CSE: callee proof failed for {callee_name}: {e}')
-        return summary
+    if dep_modules:
+        # Multi-level: prove callee with sub-callee summaries injected
+        try:
+            proof = _prove_callee_with_deps(
+                kmir, smir_info, callee_name,
+                dep_modules=dep_modules,
+                init_subst=init_subst,
+                proof_dir=proof_dir,
+            )
+        except Exception as e:
+            _LOGGER.warning(f'CSE: callee proof failed for {callee_name}: {e}')
+            return summary
+    else:
+        try:
+            proof = prove_callee(kmir, smir_info, callee_name, proof_dir=proof_dir, init_subst=init_subst)
+        except Exception as e:
+            _LOGGER.warning(f'CSE: callee proof failed for {callee_name}: {e}')
+            return summary
 
     summary.prove_time = time.time() - t0
     summary.num_covers = len([c for c in proof.kcfg.covers() if c.target.id == proof.target])
@@ -483,6 +504,41 @@ def _prove_and_summarize_callee(
         summary.module = build_summary_module(callee_name, summary.rules)
 
     return summary
+
+
+def _prove_callee_with_deps(
+    kmir: KMIR,
+    smir_info: SMIRInfo,
+    callee_name: str,
+    *,
+    dep_modules: list[KFlatModule],
+    init_subst: dict[str, KInner] | None = None,
+    proof_dir: Path | None = None,
+    max_iterations: int = 1000,
+    max_depth: int = 10000,
+) -> APRProof:
+    """Prove a callee with dependency summary modules injected (multi-level)."""
+    from pyk.cterm import cterm_symbolic
+    from pyk.kcfg.explore import KCFGExplore
+    from pyk.proof.reachability import APRProver
+
+    proof_id = f'cse-callee.{callee_name}'
+    proof = _make_callee_proof(kmir, smir_info, callee_name, proof_id, proof_dir=proof_dir, init_subst=init_subst)
+
+    with cterm_symbolic(
+        kmir.definition,
+        kmir.definition_dir,
+        llvm_definition_dir=kmir.llvm_library_dir,
+        bug_report=kmir.bug_report,
+        simplify_each=30,
+    ) as cts:
+        for mod in dep_modules:
+            cts.add_module(mod, name_as_id=True)
+        kcfg_explore = KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
+        prover = APRProver(kcfg_explore, execute_depth=max_depth)
+        prover.advance_proof(proof, max_iterations=max_iterations)
+
+    return proof
 
 
 def _prove_with_summaries(
