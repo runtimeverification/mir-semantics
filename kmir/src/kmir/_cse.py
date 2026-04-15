@@ -340,54 +340,71 @@ def _build_summary_rule(
         KApply(_CONTINUE_AT, [target_var]),
     ])
 
-    # Wildcard all cells except K_CELL. The return value uses a variable
-    # that also appears in an unused cell (RETVAL_CELL) to avoid being
-    # treated as existential by cterm_build_rule.
-    from pyk.kast.manip import abstract_term_safely, split_config_from
+    # Clone a cheatcode rule's body structure (with cell wildcards like
+    # _Gen1:RetValCell) and replace only the <k> cell content.
+    # This ensures the rule matches any caller state.
+    # The rule is injected via APRProver(extra_module=...) to be part of
+    # the execution module chain.
+    from pyk.kast.manip import set_cell
 
-    var_config, var_subst = split_config_from(init_cterm.config)
-    ret_var = KVariable('CSERET')
+    # Find a cheatcode rule to use as template for cell structure
+    template_body = _get_cheatcode_template(init_cterm)
+    if template_body is None:
+        _LOGGER.warning(f'CSE: no cheatcode template found, cannot build rule for {callee_name}')
+        return None
 
-    lhs_subst: dict[str, KInner] = {
-        v: abstract_term_safely(KVariable('_'), base_name=v) for v in var_subst
-    }
-    lhs_subst['K_CELL'] = lhs_k
-    # Bind CSERET in LHS via RETVAL_CELL so it's not existential
-    lhs_subst['RETVAL_CELL'] = ret_var
-    init_config = Subst(lhs_subst)(var_config)
+    # Replace K_CELL with our call→return rewrite
+    body = set_cell(template_body, 'K_CELL', KRewrite(lhs_k, rhs_k))
 
-    rhs_k = KSequence([
-        KApply(_SET_LOCAL_VALUE, [dest_var, ret_var]),
-        KApply(_CONTINUE_AT, [target_var]),
-    ])
-    rhs_subst = dict(lhs_subst)
-    rhs_subst['K_CELL'] = rhs_k
-    final_config = Subst(rhs_subst)(var_config)
-
-    # Build requires: getFunctionName(FUNC) ==String "callee_name" andBool path constraints
+    # requires: getFunctionName(FUNC) ==String "callee_name"
     func_name_check = KApply(_EQ_STRING, [
         KApply(_GET_FUNCTION_NAME, [func_var]),
         KToken(f'"{callee_name}"', KSort('String')),
     ])
 
-    # Only include the function name check as requires.
-    # Path constraints reference callee-internal variables (ARG_UINT1 etc.)
-    # which aren't bound when matching #execTerminatorCall in the caller's context.
-    # With existential ?CSE_RET, the backend picks the correct return value.
-    constraints: list[KInner] = [mlEqualsTrue(func_name_check)]
-
-    init_cterm_rule = CTerm(init_config, tuple(constraints))
-    final_cterm_rule = CTerm(final_config)
-
     rule_label = f'cse-summary-{_sanitize_name(callee_name)}-path-{path_idx}'
 
-    rule, _subst = cterm_build_rule(
-        rule_label,
-        init_cterm_rule,
-        final_cterm_rule,
-        priority=30,
+    return KRule(
+        body=body,
+        requires=func_name_check,
+        att=KAtt([AttEntry(AttKeys.PRIORITY, '20'), AttEntry(AttKeys.LABEL, rule_label)]),
     )
-    return rule
+
+
+# Cache for cheatcode template body
+_cheatcode_template_cache: KInner | None = None
+
+
+def _get_cheatcode_template(init_cterm: CTerm) -> KInner | None:
+    """Get a cheatcode rule body as template for CSE rules.
+
+    Returns the body with cell wildcards (_Gen1:RetValCell etc.) that
+    can be reused by replacing only the <k> cell content.
+    """
+    global _cheatcode_template_cache
+    if _cheatcode_template_cache is not None:
+        return _cheatcode_template_cache
+
+    # Build template from empty config with cell variables
+    # This matches the structure used by compiled cheatcode rules
+    from pyk.kast.manip import split_config_from
+
+    empty_config = init_cterm.config
+    var_config, var_subst = split_config_from(empty_config)
+
+    # Create cell-sorted wildcard variables (like _Gen1:RetValCell)
+    from pyk.kast.manip import abstract_term_safely
+
+    template_subst: dict[str, KInner] = {}
+    for v_name in var_subst:
+        if v_name == 'K_CELL':
+            template_subst[v_name] = KVariable('_K_PLACEHOLDER')  # will be replaced
+        else:
+            # Use underscore-prefixed names for wildcards
+            template_subst[v_name] = abstract_term_safely(KVariable('_'), base_name=v_name)
+
+    _cheatcode_template_cache = Subst(template_subst)(var_config)
+    return _cheatcode_template_cache
 
 
 def _sanitize_name(name: str) -> str:
