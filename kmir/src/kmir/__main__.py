@@ -34,13 +34,21 @@ from .utils import render_leaf_k_cells, render_rules, render_statistics
 
 if TYPE_CHECKING:
     from argparse import Namespace
-    from collections.abc import Sequence
+    from collections.abc import Iterable, Sequence
     from typing import Final
 
     from .options import KMirOpts
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
+
+
+def _flush_lines(lines: Iterable[str]) -> None:
+    """Print lines to stdout one at a time, then release the list if possible."""
+    for line in lines:
+        print(line)
+    if hasattr(lines, 'clear'):
+        lines.clear()
 
 
 def _kmir_run(opts: RunOpts) -> None:
@@ -171,24 +179,38 @@ def _kmir_show(opts: ShowOpts) -> None:
         omit_cells=tuple(all_omit_cells),
         to_module=opts.to_module is not None,
     )
-    if opts.statistics:
-        if lines and lines[-1] != '':
-            lines.append('')
-        lines.extend(render_statistics(proof))
-    if effective_rule_edges:
-        lines.append('# Rules: ')
-        lines.extend(render_rules(proof, effective_rule_edges))
-    if opts.leaves:
-        if lines and lines[-1] != '':
-            lines.append('')
-        lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show, smir_info=node_printer.smir_info))
 
     # Handle --to-module output
     if opts.to_module:
+        if opts.statistics:
+            lines.extend(render_statistics(proof))
+        if effective_rule_edges:
+            lines.append('# Rules: ')
+            lines.extend(render_rules(proof, effective_rule_edges))
+        if opts.leaves:
+            lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show, smir_info=node_printer.smir_info))
         _write_to_module(kmir, proof, opts.to_module)
         print(f'Module written to: {opts.to_module}')
     else:
-        print('\n'.join(lines))
+        # Stream lines to stdout to avoid holding the entire output in memory
+        last_line = lines[-1] if lines else ''
+        _flush_lines(lines)
+        del lines
+        if opts.statistics:
+            if last_line != '':
+                print()
+            stat_lines = render_statistics(proof)
+            last_line = stat_lines[-1] if stat_lines else last_line
+            _flush_lines(stat_lines)
+        if effective_rule_edges:
+            print('# Rules: ')
+            rule_lines = render_rules(proof, effective_rule_edges)
+            last_line = rule_lines[-1] if rule_lines else last_line
+            _flush_lines(rule_lines)
+        if opts.leaves:
+            if last_line != '':
+                print()
+            _flush_lines(render_leaf_k_cells(proof, node_printer.cterm_show, smir_info=node_printer.smir_info))
 
 
 def _kmir_prune(opts: PruneOpts) -> None:
