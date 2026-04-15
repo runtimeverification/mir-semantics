@@ -340,11 +340,29 @@ def _build_summary_rule(
         KApply(_CONTINUE_AT, [target_var]),
     ])
 
-    # Use the init_cterm config as the base, replace K_CELL
-    from pyk.kast.manip import set_cell
+    # Wildcard all cells except K_CELL. The return value uses a variable
+    # that also appears in an unused cell (RETVAL_CELL) to avoid being
+    # treated as existential by cterm_build_rule.
+    from pyk.kast.manip import abstract_term_safely, split_config_from
 
-    init_config = set_cell(init_cterm.config, 'K_CELL', lhs_k)
-    final_config = set_cell(init_cterm.config, 'K_CELL', rhs_k)
+    var_config, var_subst = split_config_from(init_cterm.config)
+    ret_var = KVariable('CSERET')
+
+    lhs_subst: dict[str, KInner] = {
+        v: abstract_term_safely(KVariable('_'), base_name=v) for v in var_subst
+    }
+    lhs_subst['K_CELL'] = lhs_k
+    # Bind CSERET in LHS via RETVAL_CELL so it's not existential
+    lhs_subst['RETVAL_CELL'] = ret_var
+    init_config = Subst(lhs_subst)(var_config)
+
+    rhs_k = KSequence([
+        KApply(_SET_LOCAL_VALUE, [dest_var, ret_var]),
+        KApply(_CONTINUE_AT, [target_var]),
+    ])
+    rhs_subst = dict(lhs_subst)
+    rhs_subst['K_CELL'] = rhs_k
+    final_config = Subst(rhs_subst)(var_config)
 
     # Build requires: getFunctionName(FUNC) ==String "callee_name" andBool path constraints
     func_name_check = KApply(_EQ_STRING, [
@@ -352,8 +370,11 @@ def _build_summary_rule(
         KToken(f'"{callee_name}"', KSort('String')),
     ])
 
+    # Only include the function name check as requires.
+    # Path constraints reference callee-internal variables (ARG_UINT1 etc.)
+    # which aren't bound when matching #execTerminatorCall in the caller's context.
+    # With existential ?CSE_RET, the backend picks the correct return value.
     constraints: list[KInner] = [mlEqualsTrue(func_name_check)]
-    constraints.extend(path.constraints)
 
     init_cterm_rule = CTerm(init_config, tuple(constraints))
     final_cterm_rule = CTerm(final_config)
@@ -385,6 +406,14 @@ def build_summary_module(callee_name: str, rules: list[KRule]) -> KFlatModule:
     """Wrap summary rules in a KFlatModule for add-module injection."""
     module_name = f'CSE-SUMMARY-{_sanitize_name(callee_name).upper()}'
     return KFlatModule(module_name, sentences=rules, imports=[KImport('KMIR')])
+
+
+def merge_summary_modules(modules: list[KFlatModule]) -> KFlatModule:
+    """Merge multiple summary modules into one for use as APRProver extra_module."""
+    all_rules: list[KRule] = []
+    for mod in modules:
+        all_rules.extend(r for r in mod.sentences if isinstance(r, KRule))
+    return KFlatModule('CSE-ALL-SUMMARIES', sentences=all_rules, imports=[KImport('KMIR')])
 
 
 # ---------------------------------------------------------------------------
@@ -525,6 +554,7 @@ def _prove_callee_with_deps(
     proof_id = f'cse-callee.{_sanitize_name(callee_name)}'
     proof = _make_callee_proof(kmir, smir_info, callee_name, proof_id, proof_dir=proof_dir, init_subst=init_subst)
 
+    merged = merge_summary_modules(dep_modules)
     with cterm_symbolic(
         kmir.definition,
         kmir.definition_dir,
@@ -532,10 +562,8 @@ def _prove_callee_with_deps(
         bug_report=kmir.bug_report,
         simplify_each=30,
     ) as cts:
-        for mod in dep_modules:
-            cts.add_module(mod, name_as_id=True)
         kcfg_explore = KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
-        prover = APRProver(kcfg_explore, execute_depth=max_depth)
+        prover = APRProver(kcfg_explore, execute_depth=max_depth, extra_module=merged)
         prover.advance_proof(proof, max_iterations=max_iterations)
 
     return proof
@@ -558,6 +586,7 @@ def _prove_with_summaries(
     proof_id = f'cse-reuse.{start_symbol}'
     proof = apr_proof_from_smir(kmir, proof_id, smir_info, start_symbol=start_symbol, proof_dir=opts.proof_dir)
 
+    merged = merge_summary_modules(summary_modules) if summary_modules else None
     with cterm_symbolic(
         kmir.definition,
         kmir.definition_dir,
@@ -565,13 +594,8 @@ def _prove_with_summaries(
         bug_report=kmir.bug_report,
         simplify_each=30,
     ) as cts:
-        # Inject summary modules
-        for module in summary_modules:
-            module_name = cts.add_module(module, name_as_id=True)
-            _LOGGER.info(f'CSE: added summary module {module_name}')
-
         kcfg_explore = KCFGExplore(cts, kcfg_semantics=KMIRSemantics())
-        prover = APRProver(kcfg_explore, execute_depth=opts.max_depth)
+        prover = APRProver(kcfg_explore, execute_depth=opts.max_depth, extra_module=merged)
         prover.advance_proof(
             proof,
             max_iterations=opts.max_iterations,
