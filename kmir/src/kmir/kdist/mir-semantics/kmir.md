@@ -389,21 +389,15 @@ where the returned result should go.
         ...
        </k>
 
+  // Constants have no side effects worth preserving.
   rule <k> #consumeNoOpArg(operandConstant(_)) => .K ... </k>
 
-  rule <k> #consumeNoOpArg(operandCopy(place(local(I), .ProjectionElems))) => .K ... </k>
-       <locals> LOCALS </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness]
-
-  rule <k> #consumeNoOpArg(operandMove(place(local(I), _))) => .K ... </k>
-       <locals> LOCALS => LOCALS[I <- typedValue(Moved, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)] </locals>
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness]
+  // For Copy/Move operands, delegate to the normal operand evaluation path so that
+  // projected places are traversed correctly and only the precise subplace is marked
+  // Moved.  The resulting value is discarded since the call is a no-op.
+  syntax KItem ::= "#discardNoOpResult"
+  rule <k> #consumeNoOpArg(OP:Operand) => OP ~> #discardNoOpResult ... </k> [owise]
+  rule <k> _:Value ~> #discardNoOpResult => .K ... </k>
 
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
