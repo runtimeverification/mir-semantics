@@ -219,8 +219,9 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
 If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
-  // `place(local(-1), .ProjectionElems)` is the sentinel destination for calls whose
-  // return should not be written back. Without this rule, the return path would fall
+  // `place(local(-1), .ProjectionElems)` is the sentinel destination indicating the
+  // callee is not expected to return a value (e.g. `main`, top-level framework calls,
+  // or `drop_in_place` functions). Without this rule, the return path would fall
   // through to `#setLocalValue`, which only accepts real local indices and would get
   // stuck on `local(-1)`.
   rule [termReturnIgnored]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
