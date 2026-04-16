@@ -258,3 +258,28 @@ def test_drop_function_tys_accept_core_drop_in_place_names() -> None:
     )
 
     assert smir_info.drop_function_tys == {2: 12}
+
+
+PROVE_DATA_DIR = Path(__file__).parent.parent / 'integration' / 'data' / 'prove-rs'
+SUBSLICE_SMIR_FILE = PROVE_DATA_DIR / 'subslice-drop-partial-move.smir.json'
+
+DROP_IN_PLACE_DROPPABLE_2 = (
+    '_ZN4core3ptr79drop_in_place'
+    '$LT$$u5b$subslice_drop_partial_move..Droppable$u3b$$u20$2$u5d$$GT$'
+    '17haa85988f30869bfeE'
+)
+
+
+def test_reduce_to_preserves_subslice_drop_glue() -> None:
+    # Generated from subslice-drop-partial-move.rs:
+    #   let arr = [Droppable(1), Droppable(2), Droppable(3)];
+    #   let [first, ..] = arr;
+    #   consume(first);
+    #
+    # The compiler emits Drop(arr.Subslice(1, 3, false)) to drop the
+    # remaining [Droppable; 2].  _projected_ty() must resolve the
+    # Subslice to [Droppable; 2] so reduce_to('main') keeps
+    # drop_in_place::<[Droppable; 2]>.
+    smir_info = SMIRInfo.from_file(SUBSLICE_SMIR_FILE)
+    reduced = smir_info.reduce_to('main')
+    assert DROP_IN_PLACE_DROPPABLE_2 in reduced.items
