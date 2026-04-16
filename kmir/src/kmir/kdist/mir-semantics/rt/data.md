@@ -384,9 +384,6 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule consP(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) PS:ProjectionElems) => PS [priority(40)]
   // this rule is not valid if the original pointee has more than one field
   // rule consP(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct PS:ProjectionElems) => PS [priority(40)]
-  // HACK: special rule which munges together constant-indexing and offset projections 
-  rule consP( projectionElemConstantIndex(I, 0, false), PointerOffset(OFF, _SIZE) PS) => projectionElemConstantIndex(I +Int OFF, 0, false) PS [priority(40)]
-    // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
   rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemFromZST, projectionElemToZST PS:ProjectionElems) => PS [priority(40)]
 
@@ -1113,7 +1110,7 @@ and an array of the indeicated size gets reconstructed if the provided metadata 
   rule <k> ListItem(PtrLocal(OFFSET, place(LOCAL, PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) 
            ListItem(Integer(LENGTH, 64, false))
            ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, place(LOCAL, removeIndexTail(PROJS)), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
+        => PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
     // requires LENGTH +Int PTR_OFFSET <=Int ORIGIN_SIZE // refuse to create an invalid fat pointer

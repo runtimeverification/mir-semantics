@@ -3,9 +3,9 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (1066 steps)
+│  (1069 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toStack ( 3 , local ( 3 ) ) , Range ( ListItem ( Union ( f
+    #traverseProjection ( toStack ( 3 , local ( 3 ) ) , Integer ( 1 , 32 , true ) ,
     span: 106
 
 
