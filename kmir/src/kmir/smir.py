@@ -353,6 +353,30 @@ class SMIRInfo:
             return Ty(type_info.element_type)
 
         if 'Subslice' in projection and isinstance(type_info, ArrayT):
+            sub = projection['Subslice']
+            from_idx = sub.get('from', 0)
+            to_idx = sub.get('to', 0)
+            from_end = sub.get('from_end', False)
+
+            if from_end:
+                # [from .. len-to]: result length depends on runtime size
+                if type_info.length is not None:
+                    result_len = type_info.length - from_idx - to_idx
+                else:
+                    result_len = None
+            else:
+                # [from .. to]: result length = to - from
+                result_len = to_idx - from_idx
+
+            # Search for an ArrayType with matching element type and length
+            if result_len is not None:
+                for candidate_ty, candidate_info in self.types.items():
+                    if (
+                        isinstance(candidate_info, ArrayT)
+                        and candidate_info.element_type == type_info.element_type
+                        and candidate_info.length == result_len
+                    ):
+                        return candidate_ty
             return ty
 
         if 'OpaqueCast' in projection or 'Subtype' in projection:
