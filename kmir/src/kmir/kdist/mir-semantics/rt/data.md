@@ -384,6 +384,9 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule consP(projectionElemWrapStruct, projectionElemField(fieldIdx(0), _) PS:ProjectionElems) => PS [priority(40)]
   // this rule is not valid if the original pointee has more than one field
   // rule consP(projectionElemField(fieldIdx(0), _), projectionElemWrapStruct PS:ProjectionElems) => PS [priority(40)]
+  // HACK: special rule which munges together constant-indexing and offset projections 
+  rule consP( projectionElemConstantIndex(I, 0, false), PointerOffset(OFF, _SIZE) PS) => projectionElemConstantIndex(I +Int OFF, 0, false) PS [priority(40)]
+    // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
   rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemFromZST, projectionElemToZST PS:ProjectionElems) => PS [priority(40)]
 
@@ -506,6 +509,16 @@ The following rule resolves this situation by using the head element.
         => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
     [preserves-definedness, priority(100)]
 
+  // Temporary bridge rule: after PointerOffset lifts a single value to Range(ListItem(...)),
+  // unwrap a Union head element so the existing Union + Field rules below can keep running.
+  rule <k> #traverseProjection(
+             DEST,
+             Range(ListItem(Union(_, _) #as VALUE) _REST:List),
+             projectionElemField(IDX, TY) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(DEST, VALUE, projectionElemField(IDX, TY) PROJS, CTXTS) ... </k> // TODO mark context?
+    [preserves-definedness, priority(100)]
 ```
 
 #### Unions
@@ -647,6 +660,24 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
      andBool START <=Int size(ELEMENTS) -Int END
     [preserves-definedness] // Indexes checked to be in range for ELEMENTS
 
+  // Temporary bridge rule: PointerOffset is implemented below in terms of Range slicing, so
+  // lift a single non-Range value to Range(ListItem(...)) to reuse that shared path.
+  rule <k> #traverseProjection(
+             DEST,
+             VAL,
+             PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             Range(ListItem(VAL)),
+             PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS,
+             CTXTS
+           )
+        ...
+        </k>
+    requires notBool isRange(VAL)
+    [preserves-definedness, priority(100)]
 
   rule <k> #traverseProjection(
              DEST,
@@ -1110,7 +1141,7 @@ and an array of the indeicated size gets reconstructed if the provided metadata 
   rule <k> ListItem(PtrLocal(OFFSET, place(LOCAL, PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) 
            ListItem(Integer(LENGTH, 64, false))
            ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
+        => PtrLocal(OFFSET, place(LOCAL, removeIndexTail(PROJS)), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
     // requires LENGTH +Int PTR_OFFSET <=Int ORIGIN_SIZE // refuse to create an invalid fat pointer
