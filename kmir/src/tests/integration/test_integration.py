@@ -59,7 +59,6 @@ PROVE_SHOW_SPECS = [
     'transmute-u8-to-enum-fail',
     'assert-inhabited-fail',
     'iterator-simple',
-    'unions-fail',
     'transmute-maybe-uninit-fail',
     'ptr-through-wrapper-fail',
     'test_offset_from-fail',

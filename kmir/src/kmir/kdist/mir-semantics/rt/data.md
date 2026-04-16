@@ -359,6 +359,14 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule #buildUpdate(Aggregate(variantIdx(0), ListItem(VALUE) .List), CtxWrapStruct CTXS)
     => #buildUpdate(VALUE, CTXS)
 
+  // Reinterpret union payloads through the accessed field type.
+  // This keeps the underlying bits and switches signedness/width for integer fields.
+  syntax Value ::= #unionFieldRead ( Value , Ty ) [function, total]
+  rule #unionFieldRead(Integer(VAL, WIDTH, _SIGNEDNESS), TY)
+    => #intAsType(VAL, WIDTH, #numTypeOf(lookupTy(TY)))
+    requires #isIntType(lookupTy(TY))
+  rule #unionFieldRead(VAL, _TY) => VAL [owise]
+
 
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
 
@@ -512,16 +520,16 @@ The following rule resolves this situation by using the head element.
 
 #### Unions
 ```k
-  // Case: Union is in same state as field projection
+  // Union field reads reuse the stored payload and reinterpret integer fields through the accessed type.
   rule <k> #traverseProjection(
              DEST,
-             Union(FIELD_IDX, ARG),
+             Union(_ACTIVE_FIELD_IDX, ARG),
              projectionElemField(FIELD_IDX, TY) PROJS,
              CTXTS
            )
         => #traverseProjection(
              DEST,
-             ARG,
+             #unionFieldRead(ARG, TY),
              PROJS,
              CtxFieldUnion(FIELD_IDX, ARG, TY) CTXTS
            )
@@ -529,7 +537,7 @@ The following rule resolves this situation by using the head element.
         </k>
     [preserves-definedness]
 
-  // TODO: Case: Union is in different state as field projection
+  // Union field reads are permitted regardless of the active field.
 ```
 
 #### Ranges
