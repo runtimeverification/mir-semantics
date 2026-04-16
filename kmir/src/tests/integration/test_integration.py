@@ -60,7 +60,7 @@ PROVE_SHOW_SPECS = [
     'assert-inhabited-fail',
     'iterator-simple',
     'unions-fail',
-    'transmute-maybe-uninit-fail',
+    'transmute-maybe-uninit-i128',
     'ptr-through-wrapper-fail',
     'test_offset_from-fail',
     'ref-ptr-cast-elem-fail',
