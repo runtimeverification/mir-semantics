@@ -70,6 +70,7 @@ PROVE_SHOW_SPECS = [
     'ptr-cast-array-to-nested-wrapper-fail',
     'ptr-cast-array-to-singleton-wrapped-array-fail',
     'iterator-simple-fail',
+    'subslice-drop-unsupported-fail',
 ]
 
 
