@@ -305,6 +305,8 @@ VERIFY_RUST_STD_SHOW_SPECS = [
     ids=[f'{spec.parent.name}/{spec.stem}' for spec in VERIFY_RUST_STD_FILES],
 )
 def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+    from kmir.kompile import kompile_smir
+
     should_fail = rs_file.stem.endswith('fail')
     should_show = rs_file.stem in VERIFY_RUST_STD_SHOW_SPECS
 
@@ -320,26 +322,36 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
     if rs_file.stem in VERIFY_RUST_STD_START_SYMBOLS:
         start_symbols = VERIFY_RUST_STD_START_SYMBOLS[rs_file.stem]
 
-    for start_symbol in start_symbols:
-        prove_opts.start_symbol = start_symbol
-        apr_proof = kmir.prove_program(prove_opts)
+    # Kompile once with full SMIR (reduced to all start symbols), reuse for all proofs
+    smir_info = SMIRInfo(parsed_smir)
+    smir_info = smir_info.reduce_to(start_symbols)
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        target_path = Path(tmp_dir)  # required for kompilation
+        kompiled = kompile_smir(smir_info=smir_info, target_dir=target_path, symbolic=True)
+        prebuilt_kmir = kompiled.create_kmir()  # this KMIR has the kompiled function defs
 
-        if should_show:
-            display_opts = ShowOpts(
-                rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
-            )
-            shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
-            show_res = '\n'.join(shower.show(apr_proof))
-            show_dir = rs_file.parent / 'show'
-            show_dir.mkdir(exist_ok=True)
-            assert_or_update_show_output(
-                show_res, show_dir / f'{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
-            )
+        for start_symbol in start_symbols:
+            prove_opts.start_symbol = start_symbol
+            apr_proof = KMIR.prove_program_with_kmir(prebuilt_kmir, smir_info, prove_opts)
 
-        if not should_fail:
-            assert apr_proof.passed
-        else:
-            assert apr_proof.failed
+            if should_show:
+                display_opts = ShowOpts(
+                    rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
+                )
+                shower = APRProofShow(
+                    kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts)
+                )
+                show_res = '\n'.join(shower.show(apr_proof))
+                show_dir = rs_file.parent / 'show'
+                show_dir.mkdir(exist_ok=True)
+                assert_or_update_show_output(
+                    show_res, show_dir / f'{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
+                )
+
+            if not should_fail:
+                assert apr_proof.passed
+            else:
+                assert apr_proof.failed
 
 
 MULTI_CRATE_DIR = (Path(__file__).parent / 'data' / 'crate-tests').resolve(strict=True)
