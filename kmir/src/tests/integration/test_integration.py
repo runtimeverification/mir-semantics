@@ -307,6 +307,8 @@ VERIFY_RUST_STD_SHOW_SPECS = [
 def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     from kmir.kompile import kompile_smir
 
+    # kmir fixture is unused here; kept so a kompile failure fails fast before per-file work begins
+
     should_fail = rs_file.stem.endswith('fail')
     should_show = rs_file.stem in VERIFY_RUST_STD_SHOW_SPECS
 
@@ -315,8 +317,6 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
 
     parsed_smir = cargo_get_smir_json(rs_file)
     prove_opts = ProveOpts(rs_file, terminate_on_thunk=True, parsed_smir=parsed_smir)
-    printer = PrettyPrinter(kmir.definition)
-    cterm_show = CTermShow(printer.print)
 
     start_symbols = ['main']
     if rs_file.stem in VERIFY_RUST_STD_START_SYMBOLS:
@@ -329,6 +329,8 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
         target_path = Path(tmp_dir)  # required for kompilation
         kompiled = kompile_smir(smir_info=smir_info, target_dir=target_path, symbolic=True)
         prebuilt_kmir = kompiled.create_kmir()  # this KMIR has the kompiled function defs
+        printer = PrettyPrinter(prebuilt_kmir.definition)
+        cterm_show = CTermShow(printer.print)
 
         for start_symbol in start_symbols:
             prove_opts.start_symbol = start_symbol
@@ -339,7 +341,8 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
                     rs_file.parent, apr_proof.id, full_printer=False, smir_info=None, omit_current_body=False
                 )
                 shower = APRProofShow(
-                    kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts)
+                    prebuilt_kmir.definition,
+                    node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts),
                 )
                 show_res = '\n'.join(shower.show(apr_proof))
                 show_dir = rs_file.parent / 'show'
