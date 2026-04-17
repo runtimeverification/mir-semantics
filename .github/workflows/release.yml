@@ -62,7 +62,9 @@ jobs:
           push: true
           build-args: |
             K_VERSION=${{ steps.set-image-name.outputs.k-version }}
-          tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}
+          tags: |
+            ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}
+            ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-latest
 
       - name: 'On failure, delete drafted release'
         if: failure()
