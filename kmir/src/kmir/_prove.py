@@ -196,10 +196,7 @@ def _prove_sequential(
     label: str,
     cut_point_rules: list[str],
 ) -> None:
-    with kmir.kcfg_explore(
-        label,
-        terminate_on_thunk=opts.terminate_on_thunk,
-    ) as kcfg_explore:
+    with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
         prover = APRProver(
             kcfg_explore,
             execute_depth=opts.max_depth,
@@ -211,7 +208,6 @@ def _prove_sequential(
             fail_fast=opts.fail_fast,
             maintenance_rate=opts.maintenance_rate,
         )
-
 def apr_proof_from_smir(
     kmir: KMIR,
     id: str,
