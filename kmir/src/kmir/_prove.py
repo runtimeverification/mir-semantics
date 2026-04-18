@@ -287,7 +287,12 @@ def _cut_point_rules(
         or break_every_terminator
         or break_every_step
     ):
-        cut_point_rules.append('KMIR-CONTROL-FLOW.termCallIntrinsic')
+        cut_point_rules.extend(
+            [
+                'KMIR-CONTROL-FLOW.termCallIntrinsic',
+                'KMIR-CONTROL-FLOW.termCallIntrinsicLocal',
+            ]
+        )
     if (
         break_on_function_calls
         or break_on_calls
@@ -298,7 +303,12 @@ def _cut_point_rules(
         cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunction')
     if break_on_function:
         cut_point_rules.append('KMIR-CONTROL-FLOW.termCallFunctionFilter')
-        cut_point_rules.append('KMIR-CONTROL-FLOW.termCallIntrinsicFilter')
+        cut_point_rules.extend(
+            [
+                'KMIR-CONTROL-FLOW.termCallIntrinsicFilter',
+                'KMIR-CONTROL-FLOW.termCallIntrinsicFilterLocal',
+            ]
+        )
     if break_on_terminator_assert or break_every_terminator or break_every_step:
         cut_point_rules.append('KMIR-CONTROL-FLOW.termAssert')
     if break_on_terminator_drop or break_every_terminator or break_every_step:

@@ -316,55 +316,122 @@ The call stack is not necessarily empty at this point so it is left untouched.
 where the returned result should go.
 
 ```k
-  syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+  syntax CallableKind ::= "callableFn"
+                        | "callableStatic"
+                        | "callableGlobalAsm"
+                        | "callableIntrinsic"
+
+  syntax KItem ::= #prepareTerminatorCall(List, CallableKind, String, Body, Operands, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+                 | #execTerminatorCall(kind: CallableKind, functionName: String, args: List, body: Body, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+                 | #execIntrinsic(MonoItemKind, Operands, Place, Span)
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #prepareTerminatorCall(.List, getCallableKind(lookupFunction(Ty)), getFunctionName(lookupFunction(Ty)), #callBody(lookupFunction(Ty)), ARGS, Ty, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
+    requires notBool isIntrinsicFunction(lookupFunction(Ty))
+     andBool #hasCallBody(lookupFunction(Ty))
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty, lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #prepareTerminatorCall(
+             .List,
+             getCallableKind(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)),
+             getFunctionName(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)),
+             #callBody(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)),
+             ARGS,
+             {getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty,
+             DEST,
+             TARGET,
+             UNWIND,
+             SPAN
+           )
         ...
        </k>
       <locals> LOCALS </locals>
       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTy(getTyOf(tyOfLocal(LOCAL), PROJS))
+     andBool notBool isIntrinsicFunction(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty))
+     andBool #hasCallBody(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty))
     [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
 
-  // Intrinsic function call - execute directly without state switching
+  // Intrinsic calls still operate on the original operands because some intrinsic semantics
+  // inspect the operand shape directly instead of only its evaluated value.
   rule [termCallIntrinsic]:
-        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
-         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, _UNWIND), SPAN)) ~> _
+         => #execIntrinsic(lookupFunction(Ty), ARGS, DEST, SPAN) ~> #continueAt(TARGET)
         </k>
-    requires isIntrinsicFunction(FUNC)
-     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+    requires isIntrinsicFunction(lookupFunction(Ty))
+     andBool notBool #functionNameMatchesEnv(getFunctionName(lookupFunction(Ty)))
 
   // Intrinsic function call to a function in the break-on set - same as termCallIntrinsic but separate rule id for cut-point
   rule [termCallIntrinsicFilter]:
-        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
-         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, _UNWIND), SPAN)) ~> _
+         => #execIntrinsic(lookupFunction(Ty), ARGS, DEST, SPAN) ~> #continueAt(TARGET)
         </k>
-    requires isIntrinsicFunction(FUNC)
-     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
+    requires isIntrinsicFunction(lookupFunction(Ty))
+     andBool #functionNameMatchesEnv(getFunctionName(lookupFunction(Ty)))
 
-  // Regular function call - state switch into the callee and defer argument materialization.
+  rule [termCallIntrinsicLocal]:
+        <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, _UNWIND), SPAN)) ~> _
+         => #execIntrinsic(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty), ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        </k>
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTy(getTyOf(tyOfLocal(LOCAL), PROJS))
+     andBool isIntrinsicFunction(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty))
+     andBool notBool #functionNameMatchesEnv(getFunctionName(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)))
+    [preserves-definedness]
+
+  rule [termCallIntrinsicFilterLocal]:
+        <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, _UNWIND), SPAN)) ~> _
+         => #execIntrinsic(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty), ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        </k>
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTy(getTyOf(tyOfLocal(LOCAL), PROJS))
+     andBool isIntrinsicFunction(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty))
+     andBool #functionNameMatchesEnv(getFunctionName(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)))
+    [preserves-definedness]
+
+  // Non-intrinsic calls materialize their arguments while the caller frame is still current.
+  // `spread_arg` is handled before entering the callee, so the callee only sees a flat list
+  // of values to assign to locals `_1`, `_2`, ...
+  rule <k> #prepareTerminatorCall(ACC, KIND, NAME, BODY, .Operands, FTY, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall(KIND, NAME, #normalizeCallValues(NAME, BODY, ACC), BODY, FTY, DEST, TARGET, UNWIND, SPAN)
+        ...
+       </k>
+
+  rule <k> #prepareTerminatorCall(ACC, KIND, NAME, BODY, OP:Operand REST:Operands, FTY, DEST, TARGET, UNWIND, SPAN)
+        => OP ~> #prepareTerminatorCall(ACC, KIND, NAME, BODY, REST, FTY, DEST, TARGET, UNWIND, SPAN)
+        ...
+       </k>
+
+  rule <k> VAL:Value ~> #prepareTerminatorCall(ACC, KIND, NAME, BODY, REST:Operands, FTY, DEST, TARGET, UNWIND, SPAN)
+        => #prepareTerminatorCall(ACC ListItem(VAL), KIND, NAME, BODY, REST, FTY, DEST, TARGET, UNWIND, SPAN)
+        ...
+       </k>
+
+  // Regular function call - state switch into the callee after argument preprocessing is done.
   rule [termCallFunction]:
        <k> #execTerminatorCall(
-             FTY,
-             monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))) #as FUNC,
+             callableFn,
+             NAME,
              ARGS,
+             body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _SPREADARG, _),
+             FTY,
              DEST,
              TARGET,
              UNWIND,
              _SPAN
            ) ~> _
-        => #loadCallArgs(FUNC, ARGS) ~> #execBlock(FIRST)
+        => #execBlock(FIRST)
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
        <nextSlot> NEXT:Int => #reserveNextSlot(NEXT, NEWLOCALS) </nextSlot>
-       <slotStore> STORE => #reserveSlotStore(STORE, NEXT, NEWLOCALS) </slotStore>
+       <slotStore> STORE => #reserveSlotStore(STORE, NEXT, NEWLOCALS, ARGS) </slotStore>
        <currentFrame>
          <currentBody> _ => toKList(BLOCKS) </currentBody>
          <caller> OLDCALLER => CALLER </caller>
@@ -374,25 +441,27 @@ where the returned result should go.
          <locals> LOCALS => #reserveLocals(NEXT, NEWLOCALS) </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-    requires notBool isIntrinsicFunction(FUNC)
-     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
+    requires size(ARGS) <Int size(#reserveLocals(NEXT, NEWLOCALS))
+     andBool notBool #functionNameMatchesEnv(NAME)
 
   // Same as termCallFunction but separate rule id for cut-point filtering.
   rule [termCallFunctionFilter]:
        <k> #execTerminatorCall(
-             FTY,
-             monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))) #as FUNC,
+             callableFn,
+             NAME,
              ARGS,
+             body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _SPREADARG, _),
+             FTY,
              DEST,
              TARGET,
              UNWIND,
              _SPAN
            ) ~> _
-        => #loadCallArgs(FUNC, ARGS) ~> #execBlock(FIRST)
+        => #execBlock(FIRST)
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
        <nextSlot> NEXT:Int => #reserveNextSlot(NEXT, NEWLOCALS) </nextSlot>
-       <slotStore> STORE => #reserveSlotStore(STORE, NEXT, NEWLOCALS) </slotStore>
+       <slotStore> STORE => #reserveSlotStore(STORE, NEXT, NEWLOCALS, ARGS) </slotStore>
        <currentFrame>
          <currentBody> _ => toKList(BLOCKS) </currentBody>
          <caller> OLDCALLER => CALLER </caller>
@@ -402,12 +471,25 @@ where the returned result should go.
          <locals> LOCALS => #reserveLocals(NEXT, NEWLOCALS) </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-    requires notBool isIntrinsicFunction(FUNC)
-     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
+    requires size(ARGS) <Int size(#reserveLocals(NEXT, NEWLOCALS))
+     andBool #functionNameMatchesEnv(NAME)
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
   rule isIntrinsicFunction(_) => false [owise]
+
+  syntax CallableKind ::= getCallableKind(MonoItemKind) [function, total]
+  rule getCallableKind(monoItemFn(_, _, _)) => callableFn
+  rule getCallableKind(monoItemStatic(_, _, _)) => callableStatic
+  rule getCallableKind(monoItemGlobalAsm(_)) => callableGlobalAsm
+  rule getCallableKind(IntrinsicFunction(_)) => callableIntrinsic
+
+  syntax Bool ::= #hasCallBody(MonoItemKind) [function, total]
+  rule #hasCallBody(monoItemFn(_, _, someBody(_))) => true
+  rule #hasCallBody(_) => false [owise]
+
+  syntax Body ::= #callBody(MonoItemKind) [function]
+  rule #callBody(monoItemFn(_, _, someBody(BODY))) => BODY
 
   syntax String ::= getFunctionName(MonoItemKind) [function, total]
   //---------------------------------------------------------------
@@ -456,13 +538,13 @@ where the returned result should go.
   rule <k> #continueAt(noBasicBlockIdx) => .K ... </k>
 ```
 
-After entering the callee, argument materialization is performed separately.
-Arguments refer to the caller's runtime slots on the stack, while the current frame already contains the reserved callee locals.
+Caller-side slot allocation now also initializes the callee argument slots directly.
 
 ```k
   syntax Int ::= #reserveNextSlot(Int, LocalDecls) [function, total]
   syntax List ::= #reserveLocals(Int, LocalDecls) [function, total]
-  syntax Map ::= #reserveSlotStore(Map, Int, LocalDecls) [function, total]
+  syntax Map ::= #reserveSlotStore(Map, Int, LocalDecls, List) [function]
+               | #reserveSlotStoreAux(Map, Int, Bool, LocalDecls, List) [function]
 
   rule #reserveNextSlot(NEXT, .LocalDecls) => NEXT
   rule #reserveNextSlot(NEXT, localDecl(_, _, _) REST:LocalDecls) => #reserveNextSlot(NEXT +Int 1, REST)
@@ -470,151 +552,63 @@ Arguments refer to the caller's runtime slots on the stack, while the current fr
   rule #reserveLocals(_, .LocalDecls) => .List
   rule #reserveLocals(NEXT, localDecl(_, _, _) REST:LocalDecls) => ListItem(NEXT) #reserveLocals(NEXT +Int 1, REST)
 
-  rule #reserveSlotStore(STORE, _, .LocalDecls) => STORE
-  rule #reserveSlotStore(STORE, NEXT, localDecl(TY, _, MUT) REST:LocalDecls)
-    => #reserveSlotStore(STORE[NEXT <- newLocal(TY, MUT)], NEXT +Int 1, REST)
+  rule #reserveSlotStore(STORE, NEXT, DECLS, ARGS) => #reserveSlotStoreAux(STORE, NEXT, false, DECLS, ARGS)
+  [preserves-definedness]
 
-  syntax KItem ::= #loadCallArgs(MonoItemKind, Operands)
-                 | #setArgsFromStack ( Int, Operands)
-                 | #setArgFromStack ( Int, Operand)
-                 | #execIntrinsic ( MonoItemKind, Operands, Place, Span )
+  rule #reserveSlotStoreAux(STORE, _, _, .LocalDecls, _ARGS) => STORE
+  [preserves-definedness]
 
-  rule <k> #loadCallArgs(
-              monoItemFn(_, _, someBody(body(_, _, _, _, _, _))),
-              operandMove(place(local(CLOSURE:Int), .ProjectionElems))
-              operandMove(place(local(TUPLE), .ProjectionElems))
-              .Operands
-            )
-        => #setTupleArgs(2, TUPLEVAL)
-        ...
-       </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
-       <slotStore>
-         ... #frameSlotId(CALLERLOCALS, TUPLE) |-> (typedValue(TUPLEVAL:Value, TUPLETY:Ty, _) => typedValue(Moved, TUPLETY, mutabilityMut))
-             #frameSlotId(CALLERLOCALS, CLOSURE) |-> (CLOSURELOCAL:TypedLocal => typedValue(Moved, tyOfLocal(CLOSURELOCAL), mutabilityMut)) ...
-       </slotStore>
-    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(CALLERLOCALS)
-     andBool 0 <=Int TUPLE andBool TUPLE <Int size(CALLERLOCALS)
-     andBool isTupleType(lookupTy(TUPLETY))
-     andBool isTypedLocal(CLOSURELOCAL)
-     andBool (
-               typeInfoVoidType ==K lookupTy(tyOfLocal(CLOSURELOCAL))
-               orBool isFunType(lookupTy(tyOfLocal(CLOSURELOCAL)))
-             )
-    [priority(40), preserves-definedness]
+  rule #reserveSlotStoreAux(STORE, NEXT, false, localDecl(TY, _, MUT) REST:LocalDecls, ARGS)
+    => #reserveSlotStoreAux(STORE[NEXT <- newLocal(TY, MUT)], NEXT +Int 1, true, REST, ARGS)
+  [preserves-definedness]
 
-  rule <k> #loadCallArgs(
-              monoItemFn(_, _, someBody(body(_, _, _, _, _, _))),
-              operandMove(place(local(CLOSURE:Int), .ProjectionElems))
-              operandMove(place(local(TUPLE), .ProjectionElems))
-              .Operands
-            )
-        => #setLocalValue(place(local(1), .ProjectionElems), CLOSUREVAL) ~> #setTupleArgs(2, TUPLEVAL)
-        ...
-       </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
-       <slotStore>
-         ... #frameSlotId(CALLERLOCALS, TUPLE) |-> (typedValue(TUPLEVAL:Value, TUPLETY:Ty, _) => typedValue(Moved, TUPLETY, mutabilityMut))
-             #frameSlotId(CALLERLOCALS, CLOSURE) |-> (typedValue(CLOSUREVAL:Value, CLOSURETY:Ty, _) => typedValue(Moved, CLOSURETY, mutabilityMut)) ...
-       </slotStore>
-    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(CALLERLOCALS)
-     andBool 0 <=Int TUPLE andBool TUPLE <Int size(CALLERLOCALS)
-     andBool isTupleType(lookupTy(TUPLETY))
-     andBool isRefType(lookupTy(CLOSURETY))
-     andBool isTy(pointeeTy(lookupTy(CLOSURETY)))
-     andBool (
-               lookupTy({pointeeTy(lookupTy(CLOSURETY))}:>Ty) ==K typeInfoVoidType
-               orBool isFunType(lookupTy({pointeeTy(lookupTy(CLOSURETY))}:>Ty))
-             )
-    [priority(45), preserves-definedness]
+  rule #reserveSlotStoreAux(STORE, NEXT, true, localDecl(TY, _, MUT) REST:LocalDecls, ListItem(VAL) ARGREST:List)
+    => #reserveSlotStoreAux(STORE[NEXT <- typedValue(VAL, TY, MUT)], NEXT +Int 1, true, REST, ARGREST)
+  [preserves-definedness]
 
-  rule <k> #loadCallArgs(_FUNC, ARGS) => #setArgsFromStack(1, ARGS) ... </k> [owise]
-
-  // once all arguments have been retrieved, execute
-  rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
-
-  // set arguments one by one, marking off moved operands in the provided (caller) LOCALS
-  rule <k> #setArgsFromStack(IDX, OP:Operand MORE:Operands) ~> CONT
-        =>
-           #setArgFromStack(IDX, OP) ~> #setArgsFromStack(IDX +Int 1, MORE) ~> CONT
-       </k>
-
-  rule <k> #setArgFromStack(IDX, operandConstant(_) #as CONSTOPERAND)
-        =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), CONSTOPERAND)
-        ...
-       </k>
-
-  rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
-        =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), VAL)
-        ...
-       </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
-       <slotStore> ... #frameSlotId(CALLERLOCALS, I) |-> typedValue(VAL:Value, _, _) ... </slotStore>
-    requires 0 <=Int I
-     andBool I <Int size(CALLERLOCALS)
-    [preserves-definedness] // valid list indexing checked
-
-  // TODO: This is not safe, need to add more checks to this.
-  rule <k> #setArgFromStack(IDX, operandMove(place(local(I), _)))
-        =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), VAL)
-        ...
-       </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
-       <slotStore>
-         ... #frameSlotId(CALLERLOCALS, I) |-> (typedValue(VAL:Value, TY:Ty, _)
-           => typedValue(Moved, TY, mutabilityMut)) ...
-       </slotStore>
-    requires 0 <=Int I
-     andBool I <Int size(CALLERLOCALS)
-    [preserves-definedness] // valid list indexing checked
+  rule #reserveSlotStoreAux(STORE, NEXT, true, localDecl(TY, _, MUT) REST:LocalDecls, .List)
+    => #reserveSlotStoreAux(STORE[NEXT <- newLocal(TY, MUT)], NEXT +Int 1, true, REST, .List)
+  [preserves-definedness]
 ```
 
-For closures (like `|x,y| { things using x and y }`), a special calling convention is in effect:
-The first argument of the closure is its environment.
-Its type is currently not extracted (KMIR does not currently support variable-capturing) and it is not initialised.
-The second argument is a _tuple_ of all the arguments, however the function body expects these arguments as single locals.
-
-Using this calling convention should be indicated by the `spread_arg` field in the function body.[^spread_arg]
-However, this field is usually `None` for _closures_, it is only set for internal functions of the Rust execution mechanism.
-Therefore a heuristics is used here:
-* The function has two arguments,
-* the 1st argument has an unknown type (or refers to one),
-* and the 2nd argument is a tuple.
+For calls using Rust's `rust-call` ABI, the function body identifies the tuple-packed
+arguments via its `spread_arg` field.[^spread_arg]
+The caller-side operand traversal first materializes the original MIR arguments as values,
+then expands the final spread argument into the flat callee argument list.
 
 [^spread_arg]: https://doc.rust-lang.org/beta/nightly-rustc/rustc_public/mir/body/struct.Body.html#structfield.spread_arg
 
 ```k
-  syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
-                | isRefType ( TypeInfo ) [function, total]
-                | isFunType ( TypeInfo ) [function, total]
-  // -------------------------------------------------------
-  rule isTupleType(typeInfoTupleType(_, _)) => true
-  rule isTupleType(    _                  ) => false [owise]
-  rule isRefType(typeInfoRefType(_)) => true
-  rule isRefType(    _             ) => false [owise]
-  rule isFunType(typeInfoFunType(_)) => true
-  rule isFunType(    _             ) => false [owise]
+  syntax List ::= #normalizeCallValues(String, Body, List) [function]
+                | #normalizeRustCallValues(Int, Int, List) [function]
+                | #spreadArgValues(Value) [function]
+  syntax Bool ::= #isClosureFunction(String) [function, total]
 
-  syntax KItem ::= #setTupleArgs ( Int , Value )
-                 | #setTupleArgs ( Int , List )
+  // The preferred source of truth is `spread_arg`: for rust-call bodies it marks
+  // the final tuple-packed argument that must be flattened before entering the callee.
+  rule #normalizeCallValues(_NAME, body(_, _, _, _, someLocal(local(SPREAD)), _), VALS)
+    => #normalizeRustCallValues(1, SPREAD, VALS)
 
-  // unpack tuple and set arguments individually
-  rule <k> #setTupleArgs(IDX, Aggregate(variantIdx(0), ARGS)) => #setTupleArgs(IDX, ARGS) ... </k>
+  // StableMIR currently leaves `spread_arg` unset on closure shim bodies, so keep a
+  // narrow fallback for the observed receiver-plus-tuple shape.
+  rule #normalizeCallValues(NAME, body(_, _, _, _, noLocal, _), ListItem(CLOSURE) ListItem(TUPLE) .List)
+    => ListItem(CLOSURE) #spreadArgValues(TUPLE)
+    requires #isClosureFunction(NAME)
 
-  rule <k> #setTupleArgs(IDX, VAL:Value)
-        => #setTupleArgs(IDX, ListItem(VAL))
-        ...
-       </k> [owise]
+  rule #normalizeCallValues(_NAME, body(_, _, _, _, noLocal, _), VALS) => VALS [owise]
 
-  rule <k> #setTupleArgs(_, .List ) => .K ... </k>
+  rule #normalizeRustCallValues(IDX, SPREAD, ListItem(VAL) REST:List)
+    => ListItem(VAL) #normalizeRustCallValues(IDX +Int 1, SPREAD, REST)
+    requires IDX <Int SPREAD
 
-  rule <k> #setTupleArgs(IDX, ListItem(VAL) REST:List)
-        => #setLocalValue(place(local(IDX), .ProjectionElems), VAL) ~> #setTupleArgs(IDX +Int 1, REST)
-        ...
-       </k>
+  rule #normalizeRustCallValues(IDX, SPREAD, ListItem(VAL) .List)
+    => #spreadArgValues(VAL)
+    requires IDX ==Int SPREAD
+
+  rule #spreadArgValues(Aggregate(variantIdx(0), ARGS)) => ARGS
+  rule #spreadArgValues(VAL:Value) => ListItem(VAL) [owise]
+
+  rule #isClosureFunction(NAME) => 0 <=Int findString(NAME, "{closure#", 0)
 ```
 
 
