@@ -43,6 +43,10 @@ More often than not, a slot or list element must be selected by index and is req
 ```k
   syntax Bool ::= allValues ( List ) [function, total, symbol(allValues)]
 
+  rule allValues(.List) => true
+  rule allValues(ListItem(_:Value) REST) => allValues(REST)
+  rule allValues(ListItem(_) _REST) => false [owise]
+
   syntax Int ::= #frameSlotId ( List, Int ) [function]
   // -------------------------------------------------
   rule #frameSlotId(SLOTS, IDX) => {SLOTS[IDX]}:>Int
@@ -58,10 +62,6 @@ More often than not, a slot or list element must be selected by index and is req
     requires 0 <=Int IDX andBool IDX <Int size(VALUES)
      andBool allValues(VALUES)
      [preserves-definedness] // valid indexing and sort coercion checked
-
-  rule allValues(.List) => true
-  rule allValues(ListItem(_:Value) REST) => allValues(REST)
-  rule allValues(ListItem(_) _REST) => false [owise]
 ```
 
 To ensure the sort coercions above do not cause any harm, some definedness-related rules are added here:
