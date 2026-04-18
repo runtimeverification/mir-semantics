@@ -9,6 +9,7 @@ from pyk.kast.inner import KApply, KLabel, KSequence, KToken
 if TYPE_CHECKING:
     from pyk.cterm.show import CTermShow
     from pyk.kast.inner import KInner
+    from pyk.kcfg.kcfg import KCFG
     from pyk.proof.reachability import APRProof
 
     from .smir import SMIRInfo

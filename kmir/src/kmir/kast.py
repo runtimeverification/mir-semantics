@@ -200,7 +200,7 @@ def _make_concrete_call_config_with_locals(
                 'LOCALS_CELL': list_of(slot_ids),
                 'SLOTSTORE_CELL': map_of(zip(slot_ids, localvars, strict=True)),
                 'NEXTSLOT_CELL': token(len(slot_ids)),
-                'GENERATEDCOUNTER_CELL': token(len(slot_ids)),
+                'GENERATEDCOUNTER_CELL': token(0),
             },
         }
     )
@@ -226,7 +226,7 @@ def _make_symbolic_call_config(
             'LOCALS_CELL': list_of(slot_ids),
             'SLOTSTORE_CELL': map_of(zip(slot_ids, locals, strict=True)),
             'NEXTSLOT_CELL': token(len(slot_ids)),
-            'GENERATEDCOUNTER_CELL': token(len(slot_ids)),
+            'GENERATEDCOUNTER_CELL': token(0),
         },
     )
     empty_config = definition.empty_config(KSort('GeneratedTopCell'))
