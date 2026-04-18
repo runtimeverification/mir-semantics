@@ -28,16 +28,28 @@
       unwindActionContinue
     </unwind>
     <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 42 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 42 , 32 , true ) , ty ( 16 ) , mutabilityNot ) )
-      ListItem ( typedValue ( BoolVal ( true ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 29 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 2 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 29 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 30 ) , mutabilityMut ) )
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
+      ListItem ( 4 )
+      ListItem ( 5 )
+      ListItem ( 6 )
     </locals>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> typedValue ( Integer ( 42 , 32 , true ) , ty ( 16 ) , mutabilityNot )
+    2 |-> typedValue ( Integer ( 42 , 32 , true ) , ty ( 16 ) , mutabilityNot )
+    3 |-> typedValue ( BoolVal ( true ) , ty ( 28 ) , mutabilityNot )
+    4 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 29 ) , mutabilityNot )
+    5 |-> typedValue ( Reference ( slotPlace ( 2 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 29 ) , mutabilityNot )
+    6 |-> newLocal ( ty ( 30 ) , mutabilityMut )
+  </slotStore>
+  <nextSlot>
+    7
+  </nextSlot>
 </kmir>

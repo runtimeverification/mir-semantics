@@ -104,9 +104,10 @@ will effectively be no-ops at this level).
             #setLocalValue(PLACE, RVAL)
          ...
        </k>
-       <locals> LOCALS </locals>
-       requires 0 <=Int I andBool I <Int size(LOCALS)
-        andBool notBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
+       <slotStore> ... #frameSlotId(SLOTS, I) |-> LOCAL:TypedLocal ... </slotStore>
+       requires 0 <=Int I andBool I <Int size(SLOTS)
+        andBool notBool #isUnionType(lookupTy(tyOfLocal(LOCAL)))
        [preserves-definedness]
 
   rule [execStmt.union]: <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
@@ -114,9 +115,10 @@ will effectively be no-ops at this level).
             #setLocalValue(PLACE, #evalUnion(RVAL))
          ...
        </k>
-       <locals> LOCALS </locals>
-       requires 0 <=Int I andBool I <Int size(LOCALS)
-        andBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
+       <slotStore> ... #frameSlotId(SLOTS, I) |-> LOCAL:TypedLocal ... </slotStore>
+       requires 0 <=Int I andBool I <Int size(SLOTS)
+        andBool #isUnionType(lookupTy(tyOfLocal(LOCAL)))
        [preserves-definedness]
 
   // RVAL evaluation is implemented in rt/data.md
@@ -213,15 +215,17 @@ value is the value in local `_0`, and will go to the _destination_ in
 the `LOCALS` of the caller's stack frame. Execution continues with the
 context of the enclosing stack frame, at the _target_.
 
-If the returned value is a `Reference`, its stack height must be decremented because a stack frame is popped.
-NB that a stack height of `0` cannot occur here, because the compiler prevents local variable references from escaping.
-
 If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
+  syntax KItem ::= #dropSlots(List)
+
+  rule <k> #dropSlots(SLOTS) => .K ... </k>
+       <slotStore> STORE => removeAll(STORE, List2Set(SLOTS)) </slotStore>
+
   rule [termReturnSome]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
+           #setLocalValue(DEST, VAL) ~> #dropSlots(SLOTS) ~> #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -230,15 +234,16 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(typedValue(VAL:Value, _, _)) _ => NEWLOCALS </locals>
+         <locals> SLOTS => NEWSLOTS </locals>
        //</currentFrame>
+       <slotStore> ... #frameSlotId(SLOTS, 0) |-> typedValue(VAL:Value, _, _) ... </slotStore>
        // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWSLOTS)) STACK => STACK </stack>
 
   // no value to return, skip writing
   rule [termReturnNone]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
-           #execBlockIdx(TARGET)
+           #dropSlots(SLOTS) ~> #execBlockIdx(TARGET)
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
@@ -247,10 +252,11 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <dest> _ => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
-         <locals> ListItem(_:NewLocal) _ => NEWLOCALS </locals>
+         <locals> SLOTS => NEWSLOTS </locals>
        //</currentFrame>
+       <slotStore> ... #frameSlotId(SLOTS, 0) |-> newLocal(_, _) ... </slotStore>
        // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWSLOTS)) STACK => STACK </stack>
 
   syntax List ::= #getBlocks( Ty )               [function, total]
                 | #getBlocksAux( MonoItemKind )  [function, total]
@@ -287,9 +293,10 @@ The call stack is not necessarily empty at this point so it is left untouched.
        <retVal> _ => return(VAL) </retVal>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> ListItem(typedValue(VAL, _, _)) ... </locals>
+         <locals> SLOTS </locals>
          ...
        </currentFrame>
+       <slotStore> ... #frameSlotId(SLOTS, 0) |-> typedValue(VAL:Value, _, _) ... </slotStore>
 
   rule [endprogram-no-return]:
        <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
@@ -298,9 +305,10 @@ The call stack is not necessarily empty at this point so it is left untouched.
        </k>
        <currentFrame>
          <target> noBasicBlockIdx </target>
-         <locals> ListItem(newLocal(_, _)) ... </locals>
+         <locals> SLOTS </locals>
          ...
        </currentFrame>
+       <slotStore> ... #frameSlotId(SLOTS, 0) |-> newLocal(_, _) ... </slotStore>
 ```
 
 
@@ -316,22 +324,14 @@ where the returned result should go.
        </k>
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall({#projectedCallTy(I, PROJS, LOCALS)}:>Ty, lookupFunction({#projectedCallTy(I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty, lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
-      <locals> LOCALS </locals>
-    requires isTy(#projectedCallTy(I, PROJS, LOCALS))
+      <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
+      <slotStore> ... #frameSlotId(SLOTS, I) |-> LOCAL:TypedLocal ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(SLOTS)
+     andBool isTy(getTyOf(tyOfLocal(LOCAL), PROJS))
     [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
-
-  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total]
-
-  rule #projectedCallTy(I, PROJS, LOCALS)
-    => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
-    requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
-    [preserves-definedness]
-
-  rule #projectedCallTy(_, _, _) => TyUnknown [owise]
 
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
@@ -361,9 +361,9 @@ where the returned result should go.
          <dest> OLDDEST => DEST </dest>
          <target> OLDTARGET => TARGET </target>
          <unwind> OLDUNWIND => UNWIND </unwind>
-         <locals> LOCALS </locals>
+         <locals> SLOTS </locals>
        </currentFrame>
-       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, SLOTS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
      andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
@@ -379,9 +379,9 @@ where the returned result should go.
          <dest> OLDDEST => DEST </dest>
          <target> OLDTARGET => TARGET </target>
          <unwind> OLDUNWIND => UNWIND </unwind>
-         <locals> LOCALS </locals>
+         <locals> SLOTS </locals>
        </currentFrame>
-       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, SLOTS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
      andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
@@ -436,12 +436,11 @@ where the returned result should go.
   rule <k> #continueAt(noBasicBlockIdx) => .K ... </k>
 ```
 
-The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the old locals (`OLDLOCALS` below), and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references.
-
-An operand may be a `Reference` (the only way a function could access another function call's `local` variables). For this case, the stack height in the `Reference` must be incremented because a stack frame is added.
+The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the caller's runtime slots, and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references.
 
 ```k
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
+                 | #reserveSlots(LocalDecls)
 
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule [setupCalleeData]: <k> #setUpCalleeData(
@@ -450,7 +449,7 @@ An operand may be a `Reference` (the only way a function could access another fu
               _SPAN
               )
          =>
-           #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
+           #reserveSlots(NEWLOCALS) ~> #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
          ...
        </k>
        //<currentFunc> CALLEE </currentFunc>
@@ -460,19 +459,21 @@ An operand may be a `Reference` (the only way a function could access another fu
         //  <dest> DEST </dest>
         //  <target> TARGET </target>
         //  <unwind> UNWIND </unwind>
-         <locals> _ => #reserveFor(NEWLOCALS) </locals>
+         <locals> _ => .List </locals>
          // assumption: arguments stored as _1 .. _n before actual "local" data
          ...
        </currentFrame>
   // TODO: Haven't handled "noBody" case
 
-  syntax List ::= #reserveFor( LocalDecls ) [function, total]
+  rule <k> #reserveSlots(.LocalDecls) => .K ... </k>
 
-  rule #reserveFor(.LocalDecls) => .List
-
-  rule #reserveFor(localDecl(TY, _, MUT) REST:LocalDecls)
-      =>
-       ListItem(newLocal(TY, MUT)) #reserveFor(REST)
+  rule <k> #reserveSlots(localDecl(TY, _, MUT) REST:LocalDecls) => #reserveSlots(REST) ... </k>
+       <nextSlot> NEXT:Int => NEXT +Int 1 </nextSlot>
+       <currentFrame>
+         <locals> SLOTS => SLOTS ListItem(NEXT) </locals>
+         ...
+       </currentFrame>
+       <slotStore> STORE => STORE[NEXT <- newLocal(TY, MUT)] </slotStore>
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
@@ -495,26 +496,28 @@ An operand may be a `Reference` (the only way a function could access another fu
 
   rule <k> #setArgFromStack(IDX, operandCopy(place(local(I), .ProjectionElems)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
+           #setLocalValue(place(local(IDX), .ProjectionElems), VAL)
         ...
        </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERSLOTS)) _:List </stack>
+       <slotStore> ... #frameSlotId(CALLERSLOTS, I) |-> typedValue(VAL:Value, _, _) ... </slotStore>
     requires 0 <=Int I
-     andBool I <Int size(CALLERLOCALS)
-     andBool isTypedValue(CALLERLOCALS[I])
+     andBool I <Int size(CALLERSLOTS)
     [preserves-definedness] // valid list indexing checked
 
   // TODO: This is not safe, need to add more checks to this.
   rule <k> #setArgFromStack(IDX, operandMove(place(local(I), _)))
         =>
-           #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
+           #setLocalValue(place(local(IDX), .ProjectionElems), VAL)
         ...
        </k>
-       <stack> (ListItem(StackFrame(_, _, _, _, CALLERLOCALS) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
-        </stack>
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERSLOTS)) _:List </stack>
+       <slotStore>
+         ... #frameSlotId(CALLERSLOTS, I) |-> (typedValue(VAL:Value, TY:Ty, _)
+           => typedValue(Moved, TY, mutabilityMut)) ...
+       </slotStore>
     requires 0 <=Int I
-     andBool I <Int size(CALLERLOCALS)
-     andBool isTypedValue(CALLERLOCALS[I])
+     andBool I <Int size(CALLERSLOTS)
     [preserves-definedness] // valid list indexing checked
 ```
 
@@ -542,27 +545,26 @@ Therefore a heuristics is used here:
                 _SPAN
               )
          =>
-           #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+           #reserveSlots(NEWLOCALS) ~> #setTupleArgs(2, TUPLEVAL) ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
        <currentFrame>
          <currentBody> _ => toKList(BLOCKS) </currentBody>
-         <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
-         <stack>
-              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
-              _:List
-          </stack>
+         <locals> CALLERSLOTS => .List </locals>
          ...
        </currentFrame>
-    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
-     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[TUPLE])
-     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
-     andBool isTypedLocal(LOCALS[CLOSURE])
+       <slotStore>
+         ... #frameSlotId(CALLERSLOTS, TUPLE) |-> (typedValue(TUPLEVAL:Value, TUPLETY:Ty, _) => typedValue(Moved, TUPLETY, mutabilityMut))
+             #frameSlotId(CALLERSLOTS, CLOSURE) |-> (CLOSURELOCAL:TypedLocal => typedValue(Moved, tyOfLocal(CLOSURELOCAL), mutabilityMut)) ...
+       </slotStore>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(CALLERSLOTS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(CALLERSLOTS)
+     andBool isTupleType(lookupTy(TUPLETY))
+     andBool isTypedLocal(CLOSURELOCAL)
      andBool (
-               typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
-               orBool isFunType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+               typeInfoVoidType ==K lookupTy(tyOfLocal(CLOSURELOCAL))
+               orBool isFunType(lookupTy(tyOfLocal(CLOSURELOCAL)))
              )
     [priority(40), preserves-definedness]
 
@@ -574,31 +576,29 @@ Therefore a heuristics is used here:
                 _SPAN
               )
          =>
-           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(getValue(LOCALS, CLOSURE)))
-        ~> #setTupleArgs(2, getValue(LOCALS, TUPLE)) ~> #execBlock(FIRST)
+           #reserveSlots(NEWLOCALS) ~> #setLocalValue(place(local(1), .ProjectionElems), CLOSUREVAL)
+        ~> #setTupleArgs(2, TUPLEVAL) ~> #execBlock(FIRST)
           // arguments are tuple components, stored as _2 .. _n
          ...
        </k>
        <currentFrame>
          <currentBody> _ => toKList(BLOCKS) </currentBody>
-         <locals> LOCALS => #reserveFor(NEWLOCALS) </locals>
-         <stack>
-              (ListItem(CALLERFRAME => #updateStackLocal(#updateStackLocal(CALLERFRAME, TUPLE, Moved), CLOSURE, Moved)))
-              _:List
-          </stack>
+         <locals> CALLERSLOTS => .List </locals>
          ...
        </currentFrame>
-    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
-     andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[TUPLE])
-     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
-     andBool isTypedLocal(LOCALS[CLOSURE])
+       <slotStore>
+         ... #frameSlotId(CALLERSLOTS, TUPLE) |-> (typedValue(TUPLEVAL:Value, TUPLETY:Ty, _) => typedValue(Moved, TUPLETY, mutabilityMut))
+             #frameSlotId(CALLERSLOTS, CLOSURE) |-> (typedValue(CLOSUREVAL:Value, CLOSURETY:Ty, _) => typedValue(Moved, CLOSURETY, mutabilityMut)) ...
+       </slotStore>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(CALLERSLOTS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(CALLERSLOTS)
+     andBool isTupleType(lookupTy(TUPLETY))
                // or the closure ref type pointee is missing from the type table
-     andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
-     andBool isTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
+     andBool isRefType(lookupTy(CLOSURETY))
+     andBool isTy(pointeeTy(lookupTy(CLOSURETY)))
      andBool (
-               lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
-               orBool isFunType(lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty))
+               lookupTy({pointeeTy(lookupTy(CLOSURETY))}:>Ty) ==K typeInfoVoidType
+               orBool isFunType(lookupTy({pointeeTy(lookupTy(CLOSURETY))}:>Ty))
              )
     [priority(45), preserves-definedness]
 
@@ -627,7 +627,7 @@ Therefore a heuristics is used here:
   rule <k> #setTupleArgs(_, .List ) => .K ... </k>
 
   rule <k> #setTupleArgs(IDX, ListItem(VAL) REST:List)
-        => #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(VAL)) ~> #setTupleArgs(IDX +Int 1, REST)
+        => #setLocalValue(place(local(IDX), .ProjectionElems), VAL) ~> #setTupleArgs(IDX +Int 1, REST)
         ...
        </k>
 ```

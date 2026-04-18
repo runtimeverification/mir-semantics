@@ -89,7 +89,13 @@ class KMIR(KProve, KRun, KParse):
         return Parser(self.definition)
 
     @contextmanager
-    def kcfg_explore(self, label: str | None = None, terminate_on_thunk: bool = False) -> Iterator[KCFGExplore]:
+    def kcfg_explore(
+        self,
+        label: str | None = None,
+        terminate_on_thunk: bool = False,
+        *,
+        log_succ_rewrites: bool = True,
+    ) -> Iterator[KCFGExplore]:
         with cterm_symbolic(
             self.definition,
             self.definition_dir,
@@ -97,6 +103,7 @@ class KMIR(KProve, KRun, KParse):
             bug_report=self.bug_report,
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
             simplify_each=30,
+            log_succ_rewrites=log_succ_rewrites,
         ) as cts:
             yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics(terminate_on_thunk=terminate_on_thunk))
 
