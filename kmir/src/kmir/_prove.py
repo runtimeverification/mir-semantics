@@ -127,6 +127,7 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         break_every_step=opts.break_every_step,
         break_on_function=opts.break_on_function,
     )
+
     if opts.max_workers and opts.max_workers > 1:
         _prove_parallel(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
     else:
@@ -208,6 +209,8 @@ def _prove_sequential(
             fail_fast=opts.fail_fast,
             maintenance_rate=opts.maintenance_rate,
         )
+
+
 def apr_proof_from_smir(
     kmir: KMIR,
     id: str,
