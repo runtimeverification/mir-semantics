@@ -465,15 +465,27 @@ The local data has to be set up for the call, which requires information about t
        </currentFrame>
   // TODO: Haven't handled "noBody" case
 
-  rule <k> #reserveSlots(.LocalDecls) => .K ... </k>
+  syntax Int ::= #reserveNextSlot(Int, LocalDecls) [function, total]
+  syntax List ::= #reserveLocals(Int, LocalDecls) [function, total]
+  syntax Map ::= #reserveSlotStore(Map, Int, LocalDecls) [function, total]
 
-  rule <k> #reserveSlots(localDecl(TY, _, MUT) REST:LocalDecls) => #reserveSlots(REST) ... </k>
-       <nextSlot> NEXT:Int => NEXT +Int 1 </nextSlot>
+  rule #reserveNextSlot(NEXT, .LocalDecls) => NEXT
+  rule #reserveNextSlot(NEXT, localDecl(_, _, _) REST:LocalDecls) => #reserveNextSlot(NEXT +Int 1, REST)
+
+  rule #reserveLocals(_, .LocalDecls) => .List
+  rule #reserveLocals(NEXT, localDecl(_, _, _) REST:LocalDecls) => ListItem(NEXT) #reserveLocals(NEXT +Int 1, REST)
+
+  rule #reserveSlotStore(STORE, _, .LocalDecls) => STORE
+  rule #reserveSlotStore(STORE, NEXT, localDecl(TY, _, MUT) REST:LocalDecls)
+    => #reserveSlotStore(STORE[NEXT <- newLocal(TY, MUT)], NEXT +Int 1, REST)
+
+  rule <k> #reserveSlots(DECLS:LocalDecls) => .K ... </k>
+       <nextSlot> NEXT:Int => #reserveNextSlot(NEXT, DECLS) </nextSlot>
        <currentFrame>
-         <locals> SLOTS => SLOTS ListItem(NEXT) </locals>
+         <locals> _ => #reserveLocals(NEXT, DECLS) </locals>
          ...
        </currentFrame>
-       <slotStore> STORE => STORE[NEXT <- newLocal(TY, MUT)] </slotStore>
+       <slotStore> STORE => #reserveSlotStore(STORE, NEXT, DECLS) </slotStore>
 
   syntax KItem ::= #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
