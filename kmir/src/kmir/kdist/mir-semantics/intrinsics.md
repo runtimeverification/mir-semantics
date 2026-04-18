@@ -101,19 +101,19 @@ Execution gets stuck (no matching rule) when operands have different types or un
   rule <k> #getType(operandCopy(place(local(I), PROJS)))
         => getTyOf(tyOfLocal(LOCAL), PROJS)
        ... </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
+       <locals> LOCALS </locals>
        <slotStore> ... SLOT:Int |-> LOCAL:TypedLocal ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
-     andBool SLOT ==Int #frameSlotId(SLOTS, I)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool SLOT ==Int #frameSlotId(LOCALS, I)
     [preserves-definedness]
 
   rule <k> #getType(operandMove(place(local(I), PROJS)))
         => getTyOf(tyOfLocal(LOCAL), PROJS)
        ... </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
+       <locals> LOCALS </locals>
        <slotStore> ... SLOT:Int |-> LOCAL:TypedLocal ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
-     andBool SLOT ==Int #frameSlotId(SLOTS, I)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool SLOT ==Int #frameSlotId(LOCALS, I)
     [preserves-definedness]
 
   rule <k> #getType(operandConstant(constOperand(_, _, mirConst(_, TY, _)))) => TY ... </k>

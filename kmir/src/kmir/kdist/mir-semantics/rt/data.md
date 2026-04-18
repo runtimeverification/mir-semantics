@@ -49,9 +49,9 @@ More often than not, a slot or list element must be selected by index and is req
 
   syntax Int ::= #frameSlotId ( List, Int ) [function]
   // -------------------------------------------------
-  rule #frameSlotId(SLOTS, IDX) => {SLOTS[IDX]}:>Int
-    requires 0 <=Int IDX andBool IDX <Int size(SLOTS)
-     andBool isInt(SLOTS[IDX])
+  rule #frameSlotId(LOCALS, IDX) => {LOCALS[IDX]}:>Int
+    requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
+     andBool isInt(LOCALS[IDX])
      [preserves-definedness] // valid indexing and sort coercion checked
 
   // indexing values out of Value lists
@@ -150,13 +150,13 @@ We ensure that any projections of the copy operation are traversed appropriately
 
 ```k
   rule <k> operandCopy(place(local(I), PROJECTIONS))
-        => #traverseProjection(toSlot(#frameSlotId(SLOTS, I)), VAL, PROJECTIONS, .Contexts)
+        => #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), VAL, PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ...
        </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> typedValue(VAL:Value, _, _) ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(VAL:Value, _, _) ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness] // valid list indexing checked
 ```
 
@@ -166,13 +166,13 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
 ```k
   rule <k> operandMove(place(local(I), PROJECTIONS))
-        => #traverseProjection(toSlot(#frameSlotId(SLOTS, I)), VAL, PROJECTIONS, .Contexts)
+        => #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), VAL, PROJECTIONS, .Contexts)
         ~> #readProjection(true)
        ...
        </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> typedValue(VAL:Value, _, _) ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(VAL:Value, _, _) ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness] // valid list indexing checked
 ```
 
@@ -197,26 +197,26 @@ If we are setting a value at a `Place` which has `Projection`s in it, then we mu
     [preserves-definedness] // valid lookup checked
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL:Value) => .K ... </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> (typedValue(_:Value, TY:Ty, MUT:Mutability) => typedValue(VAL, TY, MUT)) ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> (typedValue(_:Value, TY:Ty, MUT:Mutability) => typedValue(VAL, TY, MUT)) ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness] // valid slot indexing and lookup checked
 
   rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL:Value) => .K ... </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> (newLocal(TY:Ty, MUT:Mutability) => typedValue(VAL, TY, MUT)) ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> (newLocal(TY:Ty, MUT:Mutability) => typedValue(VAL, TY, MUT)) ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness] // valid slot indexing and lookup checked
 
   rule <k> #setLocalValue(place(local(I), PROJ), VAL:Value)
-        => #traverseProjection(toSlot(#frameSlotId(SLOTS, I)), CURVAL, PROJ, .Contexts)
+        => #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), CURVAL, PROJ, .Contexts)
         ~> #writeProjection(VAL)
        ...
        </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> typedValue(CURVAL:Value, _, _) ... </slotStore>
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(CURVAL:Value, _, _) ... </slotStore>
     requires 0 <=Int I
-     andBool I <Int size(SLOTS)
+     andBool I <Int size(LOCALS)
      andBool PROJ =/=K .ProjectionElems
     [preserves-definedness] // valid list indexing and sort checked
 
@@ -480,9 +480,9 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
            )
         ...
         </k>
-        <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-        <slotStore> ... #frameSlotId(SLOTS, LOCAL) |-> typedValue(INDEXVAL:Value, _, _) ... </slotStore>
-    requires 0 <=Int LOCAL andBool LOCAL <Int size(SLOTS)
+        <locals> LOCALS </locals>
+        <slotStore> ... #frameSlotId(LOCALS, LOCAL) |-> typedValue(INDEXVAL:Value, _, _) ... </slotStore>
+    requires 0 <=Int LOCAL andBool LOCAL <Int size(LOCALS)
      andBool isInt(#expectUsize(INDEXVAL))
      andBool 0 <=Int #expectUsize(INDEXVAL) andBool #expectUsize(INDEXVAL) <Int size(ELEMENTS)
      andBool allValues(ELEMENTS)
@@ -775,17 +775,17 @@ The most basic ones are simply accessing an operand, either directly or by way o
 
   rule <k> rvalueCast(CASTKIND, operandCopy(place(local(I), PROJS)) #as OPERAND, TY)
         => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal(LOCAL), PROJS), TY) ... </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> LOCAL:TypedLocal ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCAL)
     [preserves-definedness] // valid list indexing checked
 
   rule <k> rvalueCast(CASTKIND, operandMove(place(local(I), PROJS)) #as OPERAND, TY)
         => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal(LOCAL), PROJS), TY) ... </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> LOCAL:TypedLocal ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCAL)
     [preserves-definedness] // valid list indexing checked
 
@@ -974,9 +974,9 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
 ```k
   rule <k> rvalueDiscriminant(place(local(I), PROJS) #as PLACE)
         => #discriminant(operandCopy(PLACE), getTyOf(tyOfLocal(LOCAL), PROJS)) ... </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> LOCAL:TypedLocal ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCAL)
     [preserves-definedness] // valid indexing and sort coercion
 
@@ -1065,20 +1065,20 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
         ~> rvalueRef(REGION, KIND, place(local(I), PROJS))
        ...
        </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> newLocal(TY:Ty, _:Mutability) ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> newLocal(TY:Ty, _:Mutability) ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool #zeroSizedType(lookupTy(TY))
     [preserves-definedness] // valid list indexing checked, zero-sized locals materialise trivially
 
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
-        => #traverseProjection(toSlot(#frameSlotId(SLOTS, I)), CURVAL, PROJS, .Contexts)
+        => #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), CURVAL, PROJS, .Contexts)
         ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(TY, PROJS), 0, noMetadataSize)) // TODO: Sus on this rule
        ...
        </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> typedValue(CURVAL:Value, TY:Ty, _:Mutability) ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(CURVAL:Value, TY:Ty, _:Mutability) ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
 
   syntax KItem ::= #forRef( Mutability , Metadata )
@@ -1128,14 +1128,14 @@ The operation typically creates a pointer with empty metadata.
 
   rule <k> rvalueAddressOf(MUT, place(local(I), PROJS))
          =>
-           #traverseProjection(toSlot(#frameSlotId(SLOTS, I)), CURVAL, PROJS, .Contexts)
+           #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), CURVAL, PROJS, .Contexts)
           ~> #forPtr(MUT, metadata(#metadataSize(TY, PROJS), 0, noMetadataSize)) // TODO These initial values might get overwrote
            // we should use #alignOf to emulate the address
        ...
        </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> typedValue(CURVAL:Value, TY:Ty, _:Mutability) ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(SLOTS)
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(CURVAL:Value, TY:Ty, _:Mutability) ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
 
   // once traversal is finished, reconstruct the last projections and the reference offset/slot, and possibly read the size
@@ -1160,10 +1160,10 @@ a special rule for this case is applied with higher priority.
            // we should use #alignOf to emulate the address
        ...
        </k>
-       <currentFrame> <locals> SLOTS </locals> ... </currentFrame>
-       <slotStore> ... #frameSlotId(SLOTS, I) |-> typedValue(CURVAL:Value, _:Ty, _:Mutability) ... </slotStore>
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(CURVAL:Value, _:Ty, _:Mutability) ... </slotStore>
     requires 0 <=Int I
-     andBool I <Int size(SLOTS)
+     andBool I <Int size(LOCALS)
      andBool isRef(CURVAL)
     [priority(40), preserves-definedness] // valid indexing checked, toPtrLocal can convert the reference
 
