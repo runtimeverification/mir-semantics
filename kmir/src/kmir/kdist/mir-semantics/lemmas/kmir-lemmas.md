@@ -16,7 +16,6 @@ module KMIR-LEMMAS
   imports INT-SYMBOLIC
   imports BOOL
 
-  imports KMIR-AST
   imports RT-DATA
 ```
 ## Simplifications for lists to avoid spurious branching on error cases in control flow
@@ -35,16 +34,17 @@ The lists used in the semantics are cons-lists, so only rules with a head elemen
 
   rule 0 <=Int size(_LIST:List) => true [simplification]
 
-  // Symbolic prove-rs inputs use fresh `List` variables to stand for arrays, slices,
-  // and aggregate argument lists whose elements are still runtime `Value`s. The core
-  // semantics checks this invariant explicitly with `allValues(...)`; this lemma keeps
-  // the corresponding builtin `List:set` definedness from forking on impossible cases.
+  // In symbolic-args-fail.rs:eats_all_args, the branch `if x6.len() > 0 { x6[0] = ...; }`
+  // updates a symbolic array via `ELEMS[0 <- VAL]`. The backend needs both
+  // `allValues(ELEMS)` and an in-bounds index to treat that builtin update as defined.
+  // Without this lemma, the proof bottoms out before the write rule can fire.
 
   rule #Ceil(ELEMS[IDX <- _VAL:Value])
     => #Ceil(ELEMS)
      #And {true #Equals allValues(ELEMS)}
      #And {true #Equals 0 <=Int IDX andBool IDX <Int size(ELEMS)}
     [simplification, symbolic(ELEMS)]
+
 ```
 
 The hooked `range` function selects a segment from a list, by removing elements from front and back.
