@@ -11,7 +11,7 @@ from pyk.kast.inner import KSequence, KVariable, Subst
 from pyk.kast.manip import abstract_term_safely, split_config_from
 from pyk.kcfg import KCFG
 from pyk.kcfg.explore import KCFGExplore
-from pyk.kore.rpc import BoosterServer, DefaultError, KoreClient
+from pyk.kore.rpc import BoosterServer, KoreClient
 from pyk.proof.proof import parallel_advance_proof
 from pyk.proof.reachability import APRProof, APRProver
 
@@ -42,14 +42,14 @@ def prove(opts: ProveOpts) -> APRProof:
 
     if opts.proof_dir is not None:
         target_path = opts.proof_dir / label
-        return _prove(opts, target_path, label, allow_rpc_recovery=False)
+        return _prove(opts, target_path, label)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         target_path = Path(tmp_dir)
-        return _prove(opts, target_path, label, allow_rpc_recovery=True)
+        return _prove(opts, target_path, label)
 
 
-def _prove(opts: ProveOpts, target_path: Path, label: str, *, allow_rpc_recovery: bool) -> APRProof:
+def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
     if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
         _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
         proof = APRProof.read_proof_data(opts.proof_dir, label)
@@ -97,13 +97,12 @@ def _prove(opts: ProveOpts, target_path: Path, label: str, *, allow_rpc_recovery
             break_on_function=opts.break_on_function or None,
         )
 
-        proof_root = opts.proof_dir if opts.proof_dir is not None else target_path
         proof = apr_proof_from_smir(
             kmir,
             label,
             smir_info,
             start_symbol=opts.start_symbol,
-            proof_dir=proof_root,
+            proof_dir=opts.proof_dir,
         )
         if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
             smir_info.dump(proof.proof_dir / proof.id / 'smir.json')
@@ -128,17 +127,11 @@ def _prove(opts: ProveOpts, target_path: Path, label: str, *, allow_rpc_recovery
         break_every_step=opts.break_every_step,
         break_on_function=opts.break_on_function,
     )
-    try:
-        if opts.max_workers and opts.max_workers > 1:
-            _prove_parallel(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
-        else:
-            _prove_sequential(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
-        return proof
-    except (DefaultError, RuntimeError) as err:
-        recovered = _recover_proof_on_rpc_error(proof, err, allow_rpc_recovery=allow_rpc_recovery)
-        if recovered is not None:
-            return recovered
-        raise
+    if opts.max_workers and opts.max_workers > 1:
+        _prove_parallel(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
+    else:
+        _prove_sequential(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
+    return proof
 
 
 def _prove_parallel(
@@ -173,7 +166,6 @@ def _prove_parallel(
             cterm_symbolic = CTermSymbolic(
                 client,
                 kmir.definition,
-                log_succ_rewrites=_record_proof_logs(opts),
             )
             kcfg_explore = KCFGExplore(
                 cterm_symbolic,
@@ -207,7 +199,6 @@ def _prove_sequential(
     with kmir.kcfg_explore(
         label,
         terminate_on_thunk=opts.terminate_on_thunk,
-        log_succ_rewrites=_record_proof_logs(opts),
     ) as kcfg_explore:
         prover = APRProver(
             kcfg_explore,
@@ -220,31 +211,6 @@ def _prove_sequential(
             fail_fast=opts.fail_fast,
             maintenance_rate=opts.maintenance_rate,
         )
-
-
-def _record_proof_logs(opts: ProveOpts) -> bool:
-    # Persisted proofs may later be sectioned using stored rewrite logs.
-    # Ephemeral test proofs do not need them, and omitting them avoids huge RPC payloads.
-    return opts.proof_dir is not None
-
-
-def _recover_proof_on_rpc_error(proof: APRProof, err: Exception, *, allow_rpc_recovery: bool) -> APRProof | None:
-    if not allow_rpc_recovery:
-        return None
-
-    if proof.proof_dir is None or not APRProof.proof_data_exists(proof.id, proof.proof_dir):
-        return None
-
-    if isinstance(err, RuntimeError) and str(err) != 'Empty response received':
-        return None
-
-    recovered = APRProof.read_proof_data(proof.proof_dir, proof.id)
-    if recovered.passed or recovered.failed:
-        _LOGGER.warning(f'Recovered saved proof after RPC error: {proof.id}')
-        return recovered
-
-    return None
-
 
 def apr_proof_from_smir(
     kmir: KMIR,
