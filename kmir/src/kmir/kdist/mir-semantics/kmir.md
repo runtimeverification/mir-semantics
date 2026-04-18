@@ -349,37 +349,57 @@ where the returned result should go.
     requires isIntrinsicFunction(FUNC)
      andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
-  // Regular function call - full state switching and stack setup
+  // Regular function call - state switch into the callee and defer argument materialization.
   rule [termCallFunction]:
-       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
-        => #setUpCalleeData(FUNC, ARGS, SPAN)
+       <k> #execTerminatorCall(
+             FTY,
+             monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))) #as FUNC,
+             ARGS,
+             DEST,
+             TARGET,
+             UNWIND,
+             _SPAN
+           ) ~> _
+        => #loadCallArgs(FUNC, ARGS) ~> #execBlock(FIRST)
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
+       <nextSlot> NEXT:Int => #reserveNextSlot(NEXT, NEWLOCALS) </nextSlot>
+       <slotStore> STORE => #reserveSlotStore(STORE, NEXT, NEWLOCALS) </slotStore>
        <currentFrame>
-         <currentBody> _ </currentBody>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
          <caller> OLDCALLER => CALLER </caller>
          <dest> OLDDEST => DEST </dest>
          <target> OLDTARGET => TARGET </target>
          <unwind> OLDUNWIND => UNWIND </unwind>
-         <locals> LOCALS </locals>
+         <locals> LOCALS => #reserveLocals(NEXT, NEWLOCALS) </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
      andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
-  // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
+  // Same as termCallFunction but separate rule id for cut-point filtering.
   rule [termCallFunctionFilter]:
-       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
-        => #setUpCalleeData(FUNC, ARGS, SPAN)
+       <k> #execTerminatorCall(
+             FTY,
+             monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))) #as FUNC,
+             ARGS,
+             DEST,
+             TARGET,
+             UNWIND,
+             _SPAN
+           ) ~> _
+        => #loadCallArgs(FUNC, ARGS) ~> #execBlock(FIRST)
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
+       <nextSlot> NEXT:Int => #reserveNextSlot(NEXT, NEWLOCALS) </nextSlot>
+       <slotStore> STORE => #reserveSlotStore(STORE, NEXT, NEWLOCALS) </slotStore>
        <currentFrame>
-         <currentBody> _ </currentBody>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
          <caller> OLDCALLER => CALLER </caller>
          <dest> OLDDEST => DEST </dest>
          <target> OLDTARGET => TARGET </target>
          <unwind> OLDUNWIND => UNWIND </unwind>
-         <locals> LOCALS </locals>
+         <locals> LOCALS => #reserveLocals(NEXT, NEWLOCALS) </locals>
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
@@ -436,35 +456,10 @@ where the returned result should go.
   rule <k> #continueAt(noBasicBlockIdx) => .K ... </k>
 ```
 
-The local data has to be set up for the call, which requires information about the local variables of a call. This step is separate from the above call stack setup because it needs to retrieve the locals declaration from the body. Arguments to the call are `Operands` which refer to the caller's runtime slots, and the data is either _copied_ into the new locals using `#setArgs`, or it needs to be _shared_ via references.
+After entering the callee, argument materialization is performed separately.
+Arguments refer to the caller's runtime slots on the stack, while the current frame already contains the reserved callee locals.
 
 ```k
-  syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
-                 | #reserveSlots(LocalDecls)
-
-  // reserve space for local variables and copy/move arguments from old locals into their place
-  rule [setupCalleeData]: <k> #setUpCalleeData(
-              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
-              ARGS,
-              _SPAN
-              )
-         =>
-           #reserveSlots(NEWLOCALS) ~> #setArgsFromStack(1, ARGS) ~> #execBlock(FIRST)
-         ...
-       </k>
-       //<currentFunc> CALLEE </currentFunc>
-       <currentFrame>
-         <currentBody> _ => toKList(BLOCKS) </currentBody>
-        //  <caller> CALLER </caller>
-        //  <dest> DEST </dest>
-        //  <target> TARGET </target>
-        //  <unwind> UNWIND </unwind>
-         <locals> _ => .List </locals>
-         // assumption: arguments stored as _1 .. _n before actual "local" data
-         ...
-       </currentFrame>
-  // TODO: Haven't handled "noBody" case
-
   syntax Int ::= #reserveNextSlot(Int, LocalDecls) [function, total]
   syntax List ::= #reserveLocals(Int, LocalDecls) [function, total]
   syntax Map ::= #reserveSlotStore(Map, Int, LocalDecls) [function, total]
@@ -479,17 +474,61 @@ The local data has to be set up for the call, which requires information about t
   rule #reserveSlotStore(STORE, NEXT, localDecl(TY, _, MUT) REST:LocalDecls)
     => #reserveSlotStore(STORE[NEXT <- newLocal(TY, MUT)], NEXT +Int 1, REST)
 
-  rule <k> #reserveSlots(DECLS:LocalDecls) => .K ... </k>
-       <nextSlot> NEXT:Int => #reserveNextSlot(NEXT, DECLS) </nextSlot>
-       <currentFrame>
-         <locals> _ => #reserveLocals(NEXT, DECLS) </locals>
-         ...
-       </currentFrame>
-       <slotStore> STORE => #reserveSlotStore(STORE, NEXT, DECLS) </slotStore>
-
-  syntax KItem ::= #setArgsFromStack ( Int, Operands)
+  syntax KItem ::= #loadCallArgs(MonoItemKind, Operands)
+                 | #setArgsFromStack ( Int, Operands)
                  | #setArgFromStack ( Int, Operand)
                  | #execIntrinsic ( MonoItemKind, Operands, Place, Span )
+
+  rule <k> #loadCallArgs(
+              monoItemFn(_, _, someBody(body(_, _, _, _, _, _))),
+              operandMove(place(local(CLOSURE:Int), .ProjectionElems))
+              operandMove(place(local(TUPLE), .ProjectionElems))
+              .Operands
+            )
+        => #setTupleArgs(2, TUPLEVAL)
+        ...
+       </k>
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+       <slotStore>
+         ... #frameSlotId(CALLERLOCALS, TUPLE) |-> (typedValue(TUPLEVAL:Value, TUPLETY:Ty, _) => typedValue(Moved, TUPLETY, mutabilityMut))
+             #frameSlotId(CALLERLOCALS, CLOSURE) |-> (CLOSURELOCAL:TypedLocal => typedValue(Moved, tyOfLocal(CLOSURELOCAL), mutabilityMut)) ...
+       </slotStore>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(CALLERLOCALS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(CALLERLOCALS)
+     andBool isTupleType(lookupTy(TUPLETY))
+     andBool isTypedLocal(CLOSURELOCAL)
+     andBool (
+               typeInfoVoidType ==K lookupTy(tyOfLocal(CLOSURELOCAL))
+               orBool isFunType(lookupTy(tyOfLocal(CLOSURELOCAL)))
+             )
+    [priority(40), preserves-definedness]
+
+  rule <k> #loadCallArgs(
+              monoItemFn(_, _, someBody(body(_, _, _, _, _, _))),
+              operandMove(place(local(CLOSURE:Int), .ProjectionElems))
+              operandMove(place(local(TUPLE), .ProjectionElems))
+              .Operands
+            )
+        => #setLocalValue(place(local(1), .ProjectionElems), CLOSUREVAL) ~> #setTupleArgs(2, TUPLEVAL)
+        ...
+       </k>
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+       <slotStore>
+         ... #frameSlotId(CALLERLOCALS, TUPLE) |-> (typedValue(TUPLEVAL:Value, TUPLETY:Ty, _) => typedValue(Moved, TUPLETY, mutabilityMut))
+             #frameSlotId(CALLERLOCALS, CLOSURE) |-> (typedValue(CLOSUREVAL:Value, CLOSURETY:Ty, _) => typedValue(Moved, CLOSURETY, mutabilityMut)) ...
+       </slotStore>
+    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(CALLERLOCALS)
+     andBool 0 <=Int TUPLE andBool TUPLE <Int size(CALLERLOCALS)
+     andBool isTupleType(lookupTy(TUPLETY))
+     andBool isRefType(lookupTy(CLOSURETY))
+     andBool isTy(pointeeTy(lookupTy(CLOSURETY)))
+     andBool (
+               lookupTy({pointeeTy(lookupTy(CLOSURETY))}:>Ty) ==K typeInfoVoidType
+               orBool isFunType(lookupTy({pointeeTy(lookupTy(CLOSURETY))}:>Ty))
+             )
+    [priority(45), preserves-definedness]
+
+  rule <k> #loadCallArgs(_FUNC, ARGS) => #setArgsFromStack(1, ARGS) ... </k> [owise]
 
   // once all arguments have been retrieved, execute
   rule <k> #setArgsFromStack(_, .Operands) ~> CONT => CONT </k>
@@ -548,72 +587,6 @@ Therefore a heuristics is used here:
 [^spread_arg]: https://doc.rust-lang.org/beta/nightly-rustc/rustc_public/mir/body/struct.Body.html#structfield.spread_arg
 
 ```k
-  // reserve space for local variables and copy/move arguments from a tuple inside the old locals into their place
-  rule [setupCalleeClosure]: <k> #setUpCalleeData(
-              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
-                operandMove(place(local(CLOSURE:Int), .ProjectionElems))
-                operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands,
-                _SPAN
-              )
-         =>
-           #reserveSlots(NEWLOCALS) ~> #setTupleArgs(2, TUPLEVAL) ~> #execBlock(FIRST)
-          // arguments are tuple components, stored as _2 .. _n
-         ...
-       </k>
-       <currentFrame>
-         <currentBody> _ => toKList(BLOCKS) </currentBody>
-         <locals> CALLERLOCALS => .List </locals>
-         ...
-       </currentFrame>
-       <slotStore>
-         ... #frameSlotId(CALLERLOCALS, TUPLE) |-> (typedValue(TUPLEVAL:Value, TUPLETY:Ty, _) => typedValue(Moved, TUPLETY, mutabilityMut))
-             #frameSlotId(CALLERLOCALS, CLOSURE) |-> (CLOSURELOCAL:TypedLocal => typedValue(Moved, tyOfLocal(CLOSURELOCAL), mutabilityMut)) ...
-       </slotStore>
-    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(CALLERLOCALS)
-     andBool 0 <=Int TUPLE andBool TUPLE <Int size(CALLERLOCALS)
-     andBool isTupleType(lookupTy(TUPLETY))
-     andBool isTypedLocal(CLOSURELOCAL)
-     andBool (
-               typeInfoVoidType ==K lookupTy(tyOfLocal(CLOSURELOCAL))
-               orBool isFunType(lookupTy(tyOfLocal(CLOSURELOCAL)))
-             )
-    [priority(40), preserves-definedness]
-
-  rule [setupCalleeClosure2]: <k> #setUpCalleeData(
-              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
-                operandMove(place(local(CLOSURE:Int), .ProjectionElems))
-                operandMove(place(local(TUPLE), .ProjectionElems))
-                .Operands,
-                _SPAN
-              )
-         =>
-           #reserveSlots(NEWLOCALS) ~> #setLocalValue(place(local(1), .ProjectionElems), CLOSUREVAL)
-        ~> #setTupleArgs(2, TUPLEVAL) ~> #execBlock(FIRST)
-          // arguments are tuple components, stored as _2 .. _n
-         ...
-       </k>
-       <currentFrame>
-         <currentBody> _ => toKList(BLOCKS) </currentBody>
-         <locals> CALLERLOCALS => .List </locals>
-         ...
-       </currentFrame>
-       <slotStore>
-         ... #frameSlotId(CALLERLOCALS, TUPLE) |-> (typedValue(TUPLEVAL:Value, TUPLETY:Ty, _) => typedValue(Moved, TUPLETY, mutabilityMut))
-             #frameSlotId(CALLERLOCALS, CLOSURE) |-> (typedValue(CLOSUREVAL:Value, CLOSURETY:Ty, _) => typedValue(Moved, CLOSURETY, mutabilityMut)) ...
-       </slotStore>
-    requires 0 <=Int CLOSURE andBool CLOSURE <Int size(CALLERLOCALS)
-     andBool 0 <=Int TUPLE andBool TUPLE <Int size(CALLERLOCALS)
-     andBool isTupleType(lookupTy(TUPLETY))
-               // or the closure ref type pointee is missing from the type table
-     andBool isRefType(lookupTy(CLOSURETY))
-     andBool isTy(pointeeTy(lookupTy(CLOSURETY)))
-     andBool (
-               lookupTy({pointeeTy(lookupTy(CLOSURETY))}:>Ty) ==K typeInfoVoidType
-               orBool isFunType(lookupTy({pointeeTy(lookupTy(CLOSURETY))}:>Ty))
-             )
-    [priority(45), preserves-definedness]
-
   syntax Bool ::= isTupleType ( TypeInfo ) [function, total]
                 | isRefType ( TypeInfo ) [function, total]
                 | isFunType ( TypeInfo ) [function, total]
