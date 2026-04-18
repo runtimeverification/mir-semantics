@@ -41,6 +41,8 @@ Each frame keeps an ordered `locals` list mapping MIR `local(i)` indexes to stab
 More often than not, a slot or list element must be selected by index and is required to be of a certain sort.
 
 ```k
+  syntax Bool ::= allValues ( List ) [function, total, symbol(allValues)]
+
   syntax Int ::= #frameSlotId ( List, Int ) [function]
   // -------------------------------------------------
   rule #frameSlotId(SLOTS, IDX) => {SLOTS[IDX]}:>Int
@@ -56,6 +58,10 @@ More often than not, a slot or list element must be selected by index and is req
     requires 0 <=Int IDX andBool IDX <Int size(VALUES)
      andBool allValues(VALUES)
      [preserves-definedness] // valid indexing and sort coercion checked
+
+  rule allValues(.List) => true
+  rule allValues(ListItem(_:Value) REST) => allValues(REST)
+  rule allValues(ListItem(_) _REST) => false [owise]
 ```
 
 To ensure the sort coercions above do not cause any harm, some definedness-related rules are added here:

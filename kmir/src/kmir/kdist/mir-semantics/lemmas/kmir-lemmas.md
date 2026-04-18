@@ -35,11 +35,6 @@ The lists used in the semantics are cons-lists, so only rules with a head elemen
 
   rule 0 <=Int size(_LIST:List) => true [simplification]
 
-  // --------------------------------------------------
-  rule allValues(.List) => true
-  rule allValues(ListItem(_:Value) REST) => allValues(REST)
-  rule allValues(ListItem(_) _REST) => false [owise]
-
   // Symbolic prove-rs inputs use fresh `List` variables to stand for arrays, slices,
   // and aggregate argument lists whose elements are still runtime `Value`s. The core
   // semantics checks this invariant explicitly with `allValues(...)`; this lemma keeps
