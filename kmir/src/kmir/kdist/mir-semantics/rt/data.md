@@ -298,15 +298,8 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   syntax Contexts ::= List{Context, ""}
 
   syntax Value ::= #buildUpdate ( Value , Contexts ) [function]
-  syntax List  ::= #setRangeElem ( List , Int , Value ) [function]
   // ----------------------------------------------------------
   rule #buildUpdate(VAL, .Contexts) => VAL
-     [preserves-definedness]
-
-  rule #setRangeElem(ELEMS, IDX, VAL)
-      => ELEMS[IDX <- VAL]
-    requires 0 <=Int IDX andBool IDX <Int size(ELEMS)
-     andBool allValues(ELEMS)
      [preserves-definedness]
 
   rule #buildUpdate(VAL, CtxField(IDX, ARGS, I, _) CTXS)
@@ -318,7 +311,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
      [preserves-definedness]
 
   rule #buildUpdate(VAL, CtxIndex(ELEMS, I) CTXS)
-      => #buildUpdate(Range(#setRangeElem(ELEMS, I, VAL)), CTXS)
+      => #buildUpdate(Range(ELEMS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
 
   // we don't expect an update to happen on an entire _subslice_ but define a rule for it anyway
