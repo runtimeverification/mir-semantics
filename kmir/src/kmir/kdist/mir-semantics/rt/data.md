@@ -48,10 +48,10 @@ More often than not, a slot or list element must be selected by index and is req
 
   syntax Int ::= #frameSlotId ( List, Int ) [function]
   // -------------------------------------------------
-  rule #frameSlotId(LOCALS, IDX) => {LOCALS[IDX]}:>Int
-    requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
-     andBool isInt(LOCALS[IDX])
-     [preserves-definedness] // valid indexing and sort coercion checked
+  rule #frameSlotId(ListItem(SLOT:Int) _REST, 0) => SLOT
+  rule #frameSlotId(ListItem(_) REST:List, IDX) => #frameSlotId(REST, IDX -Int 1)
+    requires 0 <Int IDX
+     [preserves-definedness] // valid indexing checked by recursive traversal
 
   // indexing values out of Value lists
   syntax Value ::= getValue ( List, Int ) [function]
