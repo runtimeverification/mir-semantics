@@ -5,13 +5,13 @@
 │
 │  (68 steps)
 ├─ 3
-│   #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: projectionEl
+│   #cast ( PtrLocal ( slotPlace ( 2 , projectionElemWrapStruct  projectionElemToZST
 │   function: main
 │   span: 270
 │
 │  (1 step)
 └─ 4 (leaf, terminal)
-    thunk ( #cast ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: proj
+    thunk ( #cast ( PtrLocal ( slotPlace ( 2 , projectionElemWrapStruct  projectionE
     function: main
     span: 270
 

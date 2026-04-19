@@ -25,13 +25,22 @@
       unwindActionUnreachable
     </unwind>
     <locals>
-      ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
-      ListItem ( typedValue ( BoolVal ( false ) , ty ( 18 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 189 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 1985542055 , 32 , true ) , ty ( 8 ) , mutabilityNot ) )
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
     </locals>
   </currentFrame>
   <stack>
     .List
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 0 ) , mutabilityNot )
+    1 |-> typedValue ( BoolVal ( false ) , ty ( 18 ) , mutabilityNot )
+    2 |-> typedValue ( Integer ( 189 , 8 , false ) , ty ( 9 ) , mutabilityNot )
+    3 |-> typedValue ( Integer ( 1985542055 , 32 , true ) , ty ( 8 ) , mutabilityNot )
+  </slotStore>
+  <nextSlot>
+    4
+  </nextSlot>
 </kmir>

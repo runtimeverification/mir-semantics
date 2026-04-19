@@ -33,26 +33,45 @@
       unwindActionContinue
     </unwind>
     <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 27 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 1 ) , ListItem ( Integer ( 42 , 32 , true ) ) ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 2 ) , ListItem ( Integer ( 42 , 16 , true ) )
-      ListItem ( BoolVal ( false ) ) ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 3 ) , ListItem ( Integer ( 42 , 8 , true ) )
-      ListItem ( Integer ( 43 , 8 , true ) )
-      ListItem ( BoolVal ( true ) ) ) , ty ( 28 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 28 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 29 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 16 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 28 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Moved , ty ( 6 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 9090 , 0 , false ) , ty ( 29 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 26 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 28 ) , mutabilityMut ) )
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
+      ListItem ( 4 )
+      ListItem ( 5 )
+      ListItem ( 6 )
+      ListItem ( 7 )
+      ListItem ( 8 )
+      ListItem ( 9 )
+      ListItem ( 10 )
+      ListItem ( 11 )
+      ListItem ( 12 )
+      ListItem ( 13 )
     </locals>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 27 ) , mutabilityNot )
+    2 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 28 ) , mutabilityNot )
+    3 |-> typedValue ( Aggregate ( variantIdx ( 1 ) , ListItem ( Integer ( 42 , 32 , true ) ) ) , ty ( 28 ) , mutabilityNot )
+    4 |-> typedValue ( Aggregate ( variantIdx ( 2 ) , ListItem ( Integer ( 42 , 16 , true ) )
+    ListItem ( BoolVal ( false ) ) ) , ty ( 28 ) , mutabilityNot )
+    5 |-> typedValue ( Aggregate ( variantIdx ( 3 ) , ListItem ( Integer ( 42 , 8 , true ) )
+    ListItem ( Integer ( 43 , 8 , true ) )
+    ListItem ( BoolVal ( true ) ) ) , ty ( 28 ) , mutabilityNot )
+    6 |-> newLocal ( ty ( 28 ) , mutabilityMut )
+    7 |-> typedValue ( Moved , ty ( 29 ) , mutabilityMut )
+    8 |-> newLocal ( ty ( 16 ) , mutabilityNot )
+    9 |-> newLocal ( ty ( 28 ) , mutabilityNot )
+    10 |-> typedValue ( Moved , ty ( 6 ) , mutabilityMut )
+    11 |-> typedValue ( Integer ( 9090 , 0 , false ) , ty ( 29 ) , mutabilityMut )
+    12 |-> newLocal ( ty ( 26 ) , mutabilityNot )
+    13 |-> newLocal ( ty ( 28 ) , mutabilityMut )
+  </slotStore>
+  <nextSlot>
+    14
+  </nextSlot>
 </kmir>

@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (44 steps)
+│  (45 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
@@ -15,9 +15,9 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
-┃  │  (6 steps)
+┃  │  (5 steps)
 ┃  └─ 6 (stuck, leaf)
-┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+┃      #prepareTerminatorCall ( ty ( 33 ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
 ┃      span: 32
 ┃
 ┗━━┓ subst: .Subst
@@ -27,45 +27,45 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
    │
-   │  (211 steps)
+   │  (215 steps)
    ├─ 7
-   │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
+   │   #traverseProjection ( toSlot ( 2 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    │   span: 87
    ┃
    ┃ (1 step)
    ┣━━┓
    ┃  │
    ┃  ├─ 8
-   ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , project:Value ( range ( #map
+   ┃  │   #traverseProjection ( toSlot ( 2 ) , project:Value ( range ( ARG_ARRAY1:List , 0
    ┃  │   span: 87
    ┃  │
-   ┃  │  (6 steps)
+   ┃  │  (7 steps)
    ┃  ├─ 10
-   ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
+   ┃  │   #traverseProjection ( toSlot ( 2 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    ┃  │   span: 87
    ┃  ┃
    ┃  ┃ (1 step)
    ┃  ┣━━┓
    ┃  ┃  │
    ┃  ┃  ├─ 11
-   ┃  ┃  │   #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( range ( #map
+   ┃  ┃  │   #traverseProjection ( toSlot ( 2 ) , Range ( range ( range ( ARG_ARRAY1:List , 0
    ┃  ┃  │   span: 87
    ┃  ┃  │
-   ┃  ┃  │  (114 steps)
+   ┃  ┃  │  (116 steps)
    ┃  ┃  └─ 13 (stuck, leaf)
-   ┃  ┃      #traverseProjection ( toLocal ( 5 ) , Range ( range ( #mapOffset ( ARG_ARRAY1:Li
+   ┃  ┃      #traverseProjection ( toSlot ( 8 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    ┃  ┃      span: 97
    ┃  ┃
    ┃  ┗━━┓
    ┃     │
    ┃     └─ 12 (stuck, leaf)
-   ┃         #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
+   ┃         #traverseProjection ( toSlot ( 2 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
    ┃         span: 87
    ┃
    ┗━━┓
       │
       └─ 9 (stuck, leaf)
-          #traverseProjection ( toStack ( 1 , local ( 2 ) ) , Range ( range ( #mapOffset (
+          #traverseProjection ( toSlot ( 2 ) , Range ( range ( ARG_ARRAY1:List , 0 , size
           span: 87
 
 

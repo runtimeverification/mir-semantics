@@ -3,9 +3,10 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (566 steps)
+│  (576 steps)
 └─ 3 (stuck, leaf)
-    #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+    #prepareTerminatorCall ( ty ( 38 ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
+    function: main
     span: 32
 
 

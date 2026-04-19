@@ -5,7 +5,7 @@
 │
 │  (76 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toLocal ( 1 ) , Union ( fieldIdx ( 0 ) , Integer ( -1 , 8
+    #traverseProjection ( toSlot ( 2 ) , Union ( fieldIdx ( 0 ) , Integer ( -1 , 8 ,
     function: main
     span: 59
 
