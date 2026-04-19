@@ -321,25 +321,21 @@ where the returned result should go.
                         | "callableGlobalAsm"
                         | "callableIntrinsic"
 
-  syntax KItem ::= #prepareTerminatorCall(List, CallableKind, String, Body, Operands, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+  syntax KItem ::= #prepareTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+                 | #prepareBodyCall(List, CallableKind, String, Body, Operands, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
                  | #execTerminatorCall(kind: CallableKind, functionName: String, args: List, body: Body, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
                  | #execIntrinsic(MonoItemKind, Operands, Place, Span)
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #prepareTerminatorCall(.List, getCallableKind(lookupFunction(Ty)), getFunctionName(lookupFunction(Ty)), #callBody(lookupFunction(Ty)), ARGS, Ty, DEST, TARGET, UNWIND, SPAN)
+        => #prepareTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
-    requires notBool isIntrinsicFunction(lookupFunction(Ty))
-     andBool #hasCallBody(lookupFunction(Ty))
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
         => #prepareTerminatorCall(
-             .List,
-             getCallableKind(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)),
-             getFunctionName(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)),
-             #callBody(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)),
-             ARGS,
              {getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty,
+             lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty),
+             ARGS,
              DEST,
              TARGET,
              UNWIND,
@@ -351,66 +347,45 @@ where the returned result should go.
       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTy(getTyOf(tyOfLocal(LOCAL), PROJS))
-     andBool notBool isIntrinsicFunction(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty))
-     andBool #hasCallBody(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty))
     [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
 
-  // Intrinsic calls still operate on the original operands because some intrinsic semantics
-  // inspect the operand shape directly instead of only its evaluated value.
+  // Dispatch resolved call targets before any body-specific preprocessing.
   rule [termCallIntrinsic]:
-        <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, _UNWIND), SPAN)) ~> _
-         => #execIntrinsic(lookupFunction(Ty), ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        <k> #prepareTerminatorCall(_FTY, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
         </k>
-    requires isIntrinsicFunction(lookupFunction(Ty))
-     andBool notBool #functionNameMatchesEnv(getFunctionName(lookupFunction(Ty)))
+    requires isIntrinsicFunction(FUNC)
+     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Intrinsic function call to a function in the break-on set - same as termCallIntrinsic but separate rule id for cut-point
   rule [termCallIntrinsicFilter]:
-        <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, _UNWIND), SPAN)) ~> _
-         => #execIntrinsic(lookupFunction(Ty), ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+        <k> #prepareTerminatorCall(_FTY, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
+         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
         </k>
-    requires isIntrinsicFunction(lookupFunction(Ty))
-     andBool #functionNameMatchesEnv(getFunctionName(lookupFunction(Ty)))
-
-  rule [termCallIntrinsicLocal]:
-        <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, _UNWIND), SPAN)) ~> _
-         => #execIntrinsic(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty), ARGS, DEST, SPAN) ~> #continueAt(TARGET)
-        </k>
-       <locals> LOCALS </locals>
-       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTy(getTyOf(tyOfLocal(LOCAL), PROJS))
-     andBool isIntrinsicFunction(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty))
-     andBool notBool #functionNameMatchesEnv(getFunctionName(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)))
-    [preserves-definedness]
-
-  rule [termCallIntrinsicFilterLocal]:
-        <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, _UNWIND), SPAN)) ~> _
-         => #execIntrinsic(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty), ARGS, DEST, SPAN) ~> #continueAt(TARGET)
-        </k>
-       <locals> LOCALS </locals>
-       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
-    requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTy(getTyOf(tyOfLocal(LOCAL), PROJS))
-     andBool isIntrinsicFunction(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty))
-     andBool #functionNameMatchesEnv(getFunctionName(lookupFunction({getTyOf(tyOfLocal(LOCAL), PROJS)}:>Ty)))
-    [preserves-definedness]
+    requires isIntrinsicFunction(FUNC)
+     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Non-intrinsic calls materialize their arguments while the caller frame is still current.
   // `spread_arg` is handled before entering the callee, so the callee only sees a flat list
   // of values to assign to locals `_1`, `_2`, ...
-  rule <k> #prepareTerminatorCall(ACC, KIND, NAME, BODY, .Operands, FTY, DEST, TARGET, UNWIND, SPAN)
+  rule <k> #prepareTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #prepareBodyCall(.List, getCallableKind(FUNC), getFunctionName(FUNC), #callBody(FUNC), ARGS, FTY, DEST, TARGET, UNWIND, SPAN)
+        </k>
+    requires notBool isIntrinsicFunction(FUNC)
+     andBool #hasCallBody(FUNC)
+
+  rule <k> #prepareBodyCall(ACC, KIND, NAME, BODY, .Operands, FTY, DEST, TARGET, UNWIND, SPAN)
         => #execTerminatorCall(KIND, NAME, #normalizeCallValues(NAME, BODY, ACC), BODY, FTY, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
 
-  rule <k> #prepareTerminatorCall(ACC, KIND, NAME, BODY, OP:Operand REST:Operands, FTY, DEST, TARGET, UNWIND, SPAN)
-        => OP ~> #prepareTerminatorCall(ACC, KIND, NAME, BODY, REST, FTY, DEST, TARGET, UNWIND, SPAN)
+  rule <k> #prepareBodyCall(ACC, KIND, NAME, BODY, OP:Operand REST:Operands, FTY, DEST, TARGET, UNWIND, SPAN)
+        => OP ~> #prepareBodyCall(ACC, KIND, NAME, BODY, REST, FTY, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
 
-  rule <k> VAL:Value ~> #prepareTerminatorCall(ACC, KIND, NAME, BODY, REST:Operands, FTY, DEST, TARGET, UNWIND, SPAN)
-        => #prepareTerminatorCall(ACC ListItem(VAL), KIND, NAME, BODY, REST, FTY, DEST, TARGET, UNWIND, SPAN)
+  rule <k> VAL:Value ~> #prepareBodyCall(ACC, KIND, NAME, BODY, REST:Operands, FTY, DEST, TARGET, UNWIND, SPAN)
+        => #prepareBodyCall(ACC ListItem(VAL), KIND, NAME, BODY, REST, FTY, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
 
