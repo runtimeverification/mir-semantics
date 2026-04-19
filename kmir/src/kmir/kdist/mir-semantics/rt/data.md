@@ -23,7 +23,6 @@ module RT-DATA
   imports BODY
   imports TYPES
 
-  imports KMIR-AST
   imports RT-VALUE-SYNTAX
   imports RT-NUMBERS
   imports RT-DECODING
