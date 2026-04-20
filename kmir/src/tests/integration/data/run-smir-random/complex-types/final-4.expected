@@ -1,6 +1,6 @@
 <kmir>
   <k>
-    #traverseProjection ( toStack ( 1 , local ( 30 ) ) , Integer ( 155 , 8 , false ) , PointerOffset ( 1 , 8 )  .ProjectionElems , CtxField ( variantIdx ( 0 ) , ListItem ( Integer ( 155 , 8 , false ) ) , 0 , ty ( 23 ) )  CtxFieldUnion ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 155 , 8 , false ) ) ) , ty ( 74 ) )  CtxIndex ( ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 155 , 8 , false ) ) ) ) )
+    #traverseProjection ( toStack ( 1 , local ( 30 ) ) , Range ( .List ) , .ProjectionElems , CtxPointerOffset ( ListItem ( Integer ( 155 , 8 , false ) ) , 1 , 1 )  CtxField ( variantIdx ( 0 ) , ListItem ( Integer ( 155 , 8 , false ) ) , 0 , ty ( 23 ) )  CtxFieldUnion ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 155 , 8 , false ) ) ) , ty ( 74 ) )  CtxIndex ( ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 155 , 8 , false ) ) ) ) )
     ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 52 , 8 , false ) ) ) ) )
     ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 202 , 8 , false ) ) ) ) )
     ListItem ( Union ( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 245 , 8 , false ) ) ) ) )

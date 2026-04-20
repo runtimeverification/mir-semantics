@@ -219,6 +219,25 @@ NB that a stack height of `0` cannot occur here, because the compiler prevents l
 If the local `_0` does not have a value (i.e., it remained uninitialised), the function returns unit and writing the value is skipped.
 
 ```k
+  // `place(local(-1), .ProjectionElems)` is the sentinel destination indicating the
+  // callee is not expected to return a value (e.g. `main`, top-level framework calls,
+  // or `drop_in_place` functions). Without this rule, the return path would fall
+  // through to `#setLocalValue`, which only accepts real local indices and would get
+  // stuck on `local(-1)`.
+  rule [termReturnIgnored]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
+         =>
+           #execBlockIdx(TARGET)
+       </k>
+       <currentFunc> _ => CALLER </currentFunc>
+       <currentBody> _ => #getBlocks(CALLER) </currentBody>
+       <caller> CALLER => NEWCALLER </caller>
+       <dest> place(local(-1), .ProjectionElems) => NEWDEST </dest>
+       <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
+       <unwind> _ => UNWIND </unwind>
+       <locals> _ => NEWLOCALS </locals>
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+    [priority(40)]
+
   rule [termReturnSome]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
          =>
            #setLocalValue(DEST, #decrementRef(VAL)) ~> #execBlockIdx(TARGET)
@@ -349,6 +368,44 @@ where the returned result should go.
     requires isIntrinsicFunction(FUNC)
      andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
+  syntax Bool ::= isNoOpFunction(MonoItemKind) [function]
+  rule isNoOpFunction(monoItemFn(symbol(""), _, noBody)) => true
+  rule isNoOpFunction(_) => false [owise]
+
+  syntax KItem ::= #consumeNoOpArgs(Operands, MaybeBasicBlockIdx)
+                 | #consumeNoOpArg(Operand)
+
+  // SMIR marks some semantically empty shims (e.g. drop glue for trivially droppable slices)
+  // as NoOpSym. They have no body and should continue immediately without switching frames,
+  // but `Move` arguments must still invalidate the caller locals that were moved into the call.
+  rule [termCallNoOp]:
+       <k> #execTerminatorCall(_, monoItemFn(symbol(""), _, noBody), ARGS, _DEST, TARGET, _UNWIND, _SPAN) ~> _
+        => #consumeNoOpArgs(ARGS, TARGET)
+       </k>
+
+  rule <k> #consumeNoOpArgs(.Operands, TARGET) => #continueAt(TARGET) ... </k>
+
+  rule <k> #consumeNoOpArgs(OP:Operand MORE:Operands, TARGET)
+        => #consumeNoOpArg(OP) ~> #consumeNoOpArgs(MORE, TARGET)
+        ...
+       </k>
+
+  rule <k> #consumeNoOpArg(operandConstant(_)) => .K ... </k>
+
+  rule <k> #consumeNoOpArg(operandCopy(place(local(I), .ProjectionElems))) => .K ... </k>
+       <locals> LOCALS </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness]
+
+  rule <k> #consumeNoOpArg(operandMove(place(local(I), _))) => .K ... </k>
+       <locals> LOCALS => LOCALS[I <- typedValue(Moved, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)] </locals>
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness]
+
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
        <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
@@ -365,6 +422,7 @@ where the returned result should go.
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
+     andBool notBool isNoOpFunction(FUNC)
      andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
@@ -383,6 +441,7 @@ where the returned result should go.
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
+     andBool notBool isNoOpFunction(FUNC)
      andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
@@ -442,6 +501,7 @@ An operand may be a `Reference` (the only way a function could access another fu
 
 ```k
   syntax KItem ::= #setUpCalleeData(MonoItemKind, Operands, Span)
+                 | #setUpDropGlueData(MonoItemKind, Value, Span)
 
   // reserve space for local variables and copy/move arguments from old locals into their place
   rule [setupCalleeData]: <k> #setUpCalleeData(
@@ -465,6 +525,21 @@ An operand may be a `Reference` (the only way a function could access another fu
          ...
        </currentFrame>
   // TODO: Haven't handled "noBody" case
+
+  rule [setupDropGlueData]: <k> #setUpDropGlueData(
+              monoItemFn(_, _, someBody(body((FIRST:BasicBlock _) #as BLOCKS, NEWLOCALS, _, _, _, _))),
+              PTR,
+              _SPAN
+              )
+         =>
+           #setLocalValue(place(local(1), .ProjectionElems), #incrementRef(PTR)) ~> #execBlock(FIRST)
+         ...
+       </k>
+       <currentFrame>
+         <currentBody> _ => toKList(BLOCKS) </currentBody>
+         <locals> _ => #reserveFor(NEWLOCALS) </locals>
+         ...
+       </currentFrame>
 
   syntax List ::= #reserveFor( LocalDecls ) [function, total]
 
@@ -669,11 +744,52 @@ Other terminators that matter at the MIR level "Runtime" are `Drop` and `Unreach
 Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error.
 
 ```k
-  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), _SPAN))
+  syntax MaybeTy ::= #dropPlaceTy(Place, List) [function, total]
+
+  rule #dropPlaceTy(place(local(I), PROJS), LOCALS)
+    => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+
+  rule #dropPlaceTy(_, _) => TyUnknown [owise]
+
+  syntax KItem ::= #execDropCall ( MaybeTy, Place, BasicBlockIdx, UnwindAction, Span )
+                 | #callDropGlue ( Ty, BasicBlockIdx, UnwindAction, Span )
+
+  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(PLACE, TARGET, UNWIND), SPAN))
+         =>
+           #execDropCall(#lookupDropFunctionTy(#dropPlaceTy(PLACE, LOCALS)), PLACE, TARGET, UNWIND, SPAN)
+        ...
+       </k>
+       <locals> LOCALS </locals>
+
+  rule <k> #execDropCall(TyUnknown, _PLACE, TARGET, _UNWIND, _SPAN)
          =>
            #execBlockIdx(TARGET)
         ...
        </k>
+
+  rule <k> #execDropCall(FTY:Ty, PLACE, TARGET, UNWIND, SPAN)
+         =>
+           rvalueAddressOf(mutabilityMut, PLACE) ~> #callDropGlue(FTY, TARGET, UNWIND, SPAN)
+        ...
+       </k>
+
+  rule [termCallDropGlue]:
+       <k> PTR:Value ~> #callDropGlue(FTY, TARGET, UNWIND, SPAN) ~> _
+        => #setUpDropGlueData(lookupFunction(FTY), PTR, SPAN)
+       </k>
+       <currentFunc> CALLER => FTY </currentFunc>
+       <currentFrame>
+         <currentBody> _ </currentBody>
+         <caller> OLDCALLER => CALLER </caller>
+         <dest> OLDDEST => place(local(-1), .ProjectionElems) </dest>
+         <target> OLDTARGET => someBasicBlockIdx(TARGET) </target>
+         <unwind> OLDUNWIND => UNWIND </unwind>
+         <locals> LOCALS </locals>
+       </currentFrame>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
 
   syntax MIRError ::= "ReachedUnreachable"
 

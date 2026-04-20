@@ -513,6 +513,20 @@ def make_kore_rules(
 
     type_equations = _make_stratified_rules(kmir, 'lookupTy', 'Ty', 'TypeInfo', 'ty', type_assocs, invalid_type)
 
+    drop_function_assocs: list[tuple[int, KInner]]
+    drop_function_assocs = [
+        (int(ty), KApply('ty', (intToken(int(drop_ty)),))) for ty, drop_ty in smir_info.drop_function_tys.items()
+    ]
+    drop_function_equations = _make_stratified_rules(
+        kmir,
+        'lookupDropFunctionTy',
+        'Ty',
+        'MaybeTy',
+        'ty',
+        drop_function_assocs,
+        KApply('TyUnknown_RT-TYPES_MaybeTy', ()),
+    )
+
     invalid_alloc_n = KApply(
         'InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KApply('allocId', (KVariable('N'),)),)
     )
@@ -527,7 +541,7 @@ def make_kore_rules(
     if break_on_function:
         break_on_rules.append(_mk_break_on_functions_rule(kmir, break_on_function))
 
-    return [*equations, *type_equations, *alloc_equations, *break_on_rules]
+    return [*equations, *type_equations, *drop_function_equations, *alloc_equations, *break_on_rules]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
@@ -556,6 +570,15 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
             functions[ty] = KApply(
                 'IntrinsicFunction',
                 [KApply('symbol(_)_LIB_Symbol_String', [stringToken(sym['IntrinsicSym'])])],
+            )
+        elif 'NoOpSym' in sym:
+            functions[ty] = KApply(
+                'MonoItemKind::MonoItemFn',
+                (
+                    KApply('symbol(_)_LIB_Symbol_String', (stringToken(sym['NoOpSym']),)),
+                    KApply('defId(_)_BODY_DefId_Int', (intToken(ty),)),
+                    KApply('noBody_BODY_MaybeBody', ()),
+                ),
             )
         elif isinstance(sym.get('NormalSym'), str):
             functions[ty] = KApply(

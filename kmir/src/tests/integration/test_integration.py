@@ -43,7 +43,6 @@ PROVE_START_SYMBOLS = {
 }
 PROVE_SHOW_SPECS = [
     'local-raw-fail',
-    'interior-mut-fail',
     'interior-mut3-fail',
     'iter_next_3',
     'assert_eq_exp',
@@ -58,7 +57,6 @@ PROVE_SHOW_SPECS = [
     'raw-ptr-cast-fail',
     'transmute-u8-to-enum-fail',
     'assert-inhabited-fail',
-    'iterator-simple',
     'unions-fail',
     'transmute-maybe-uninit-fail',
     'ptr-through-wrapper-fail',
@@ -71,6 +69,7 @@ PROVE_SHOW_SPECS = [
     'ptr-cast-array-to-wrapper-fail',
     'ptr-cast-array-to-nested-wrapper-fail',
     'ptr-cast-array-to-singleton-wrapped-array-fail',
+    'subslice-drop-unsupported-fail',
 ]
 
 

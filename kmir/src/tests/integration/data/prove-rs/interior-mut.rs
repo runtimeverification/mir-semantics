@@ -20,12 +20,10 @@ impl Counter {
 
 fn main() {
     let counter = Counter::new(0);
-    // println!("Before: {}", counter.get());
 
-    // We only have &counter, but can still mutate inside
+    // We only have &counter, but can still mutate inside.
     counter.increment();
     counter.increment();
 
     assert!(2 == counter.get());
-    // println!("After: {}", counter.get());
 }
