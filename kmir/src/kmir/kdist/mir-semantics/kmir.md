@@ -225,6 +225,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
+         <frameId> _ => FRAMEID </frameId>
          <currentBody> _ => #getBlocks(CALLER) </currentBody>
          <caller> CALLER => NEWCALLER </caller>
          <dest> DEST => NEWDEST </dest>
@@ -233,7 +234,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <locals> ListItem(typedValue(VAL:Value, _, _)) _ => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <stack> ListItem(StackFrame(FRAMEID, NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
 
   // no value to return, skip writing
   rule [termReturnNone]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
@@ -242,6 +243,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
+         <frameId> _ => FRAMEID </frameId>
          <currentBody> _ => #getBlocks(CALLER) </currentBody>
          <caller> CALLER => NEWCALLER </caller>
          <dest> _ => NEWDEST </dest>
@@ -250,7 +252,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <locals> ListItem(_:NewLocal) _ => NEWLOCALS </locals>
        //</currentFrame>
        // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <stack> ListItem(StackFrame(FRAMEID, NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
 
   syntax List ::= #getBlocks( Ty )               [function, total]
                 | #getBlocksAux( MonoItemKind )  [function, total]
@@ -356,6 +358,7 @@ where the returned result should go.
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
        <currentFrame>
+         <frameId> OLDFRAMEID => !_NEWFRAMEID:Int </frameId>
          <currentBody> _ </currentBody>
          <caller> OLDCALLER => CALLER </caller>
          <dest> OLDDEST => DEST </dest>
@@ -363,7 +366,7 @@ where the returned result should go.
          <unwind> OLDUNWIND => UNWIND </unwind>
          <locals> LOCALS </locals>
        </currentFrame>
-       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+       <stack> STACK => ListItem(StackFrame(OLDFRAMEID, OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
      andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
@@ -374,6 +377,7 @@ where the returned result should go.
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
        <currentFrame>
+         <frameId> OLDFRAMEID => !_NEWFRAMEID:Int </frameId>
          <currentBody> _ </currentBody>
          <caller> OLDCALLER => CALLER </caller>
          <dest> OLDDEST => DEST </dest>
@@ -381,7 +385,7 @@ where the returned result should go.
          <unwind> OLDUNWIND => UNWIND </unwind>
          <locals> LOCALS </locals>
        </currentFrame>
-       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+       <stack> STACK => ListItem(StackFrame(OLDFRAMEID, OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
      andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
@@ -498,7 +502,7 @@ An operand may be a `Reference` (the only way a function could access another fu
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
        </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+       <stack> ListItem(StackFrame(_, _, _, _, _, CALLERLOCALS)) _:List </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
      andBool isTypedValue(CALLERLOCALS[I])
@@ -510,7 +514,7 @@ An operand may be a `Reference` (the only way a function could access another fu
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
        </k>
-       <stack> (ListItem(StackFrame(_, _, _, _, CALLERLOCALS) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
+       <stack> (ListItem(StackFrame(_, _, _, _, _, CALLERLOCALS) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
         </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)

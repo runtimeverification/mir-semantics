@@ -18,6 +18,7 @@ module RT-DATA
   imports BYTES
   imports LIST
   imports MAP
+  imports SET
   imports K-EQUAL
 
   imports BODY
@@ -362,12 +363,104 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
   syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
 
-  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
-      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)])
+  rule #updateStackLocal(StackFrame(FRAMEID, CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
+      => StackFrame(FRAMEID, CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)])
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
+
+  syntax Int ::= #frameIdOf ( StackFrame ) [function, total]
+  // --------------------------------------------------------
+  rule #frameIdOf(StackFrame(FRAMEID, _, _, _, _, _)) => FRAMEID
+
+  syntax Int ::= #stackFrameId ( Int , Int , List ) [function, total]
+  // ----------------------------------------------------------------
+  rule #stackFrameId(0, CURRENT_FRAME_ID, _STACK) => CURRENT_FRAME_ID
+  rule #stackFrameId(OFFSET, _CURRENT_FRAME_ID, STACK)
+    => #frameIdOf({STACK[OFFSET -Int 1]}:>StackFrame)
+    requires 0 <Int OFFSET
+     andBool OFFSET <=Int size(STACK)
+     andBool isStackFrame(STACK[OFFSET -Int 1])
+    [preserves-definedness]
+  rule #stackFrameId(_, _, _) => -1 [owise]
+
+  syntax AllocKey ::= #stackAllocKey ( Int , Local , Int , List ) [function, total]
+  // ---------------------------------------------------------------------------
+  rule #stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK)
+    => allocKey(#stackFrameId(STACK_DEPTH, CURRENT_FRAME_ID, STACK), LOCAL)
+
+  syntax ProjectionElems ::= #addressProjs ( ProjectionElems ) [function, total]
+  // -----------------------------------------------------------------------
+  rule #addressProjs(.ProjectionElems) => .ProjectionElems
+  rule #addressProjs(projectionElemToZST REST) => #addressProjs(REST)
+  rule #addressProjs(projectionElemFromZST REST) => #addressProjs(REST)
+  rule #addressProjs(projectionElemWrapStruct REST) => #addressProjs(REST)
+  rule #addressProjs(PROJ REST) => PROJ #addressProjs(REST) [owise]
+
+  syntax MaybeTy ::= #stackAllocTy ( Int , Local , List , List ) [function, total]
+                    | #stackAllocTyInStack ( Int , Local , List ) [function, total]
+                    | #ptrBaseElemTy ( Int , Local , ProjectionElems , List , List ) [function, total]
+                    | #ptrBaseElemTyInStack ( Int , Local , ProjectionElems , List ) [function, total]
+  // ----------------------------------------------------------------------------------------------------------------
+  rule #stackAllocTy(0, local(I:Int), LOCALS, _STACK)
+    => tyOfLocal({LOCALS[I]}:>TypedLocal)
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+  rule #stackAllocTy(OFFSET, LOCAL, _LOCALS, STACK)
+    => #stackAllocTyInStack(OFFSET, LOCAL, STACK)
+    requires 0 <Int OFFSET
+    [preserves-definedness]
+  rule #stackAllocTyInStack(1, local(I:Int), ListItem(StackFrame(... locals: FRAMELOCALS)) _REST)
+    => tyOfLocal({FRAMELOCALS[I]}:>TypedLocal)
+    requires 0 <=Int I
+     andBool I <Int size(FRAMELOCALS)
+     andBool isTypedLocal(FRAMELOCALS[I])
+    [preserves-definedness]
+  rule #stackAllocTyInStack(OFFSET, LOCAL, ListItem(_:StackFrame) REST)
+    => #stackAllocTyInStack(OFFSET -Int 1, LOCAL, REST)
+    requires 1 <Int OFFSET
+    [preserves-definedness]
+  rule #stackAllocTy(_, _, _, _) => TyUnknown [owise]
+  rule #stackAllocTyInStack(_, _, _) => TyUnknown [owise]
+
+  rule #ptrBaseElemTy(0, local(I:Int), PROJS, LOCALS, _STACK)
+    => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), #addressProjs(PROJS))
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+  rule #ptrBaseElemTy(OFFSET, LOCAL, PROJS, _LOCALS, STACK)
+    => #ptrBaseElemTyInStack(OFFSET, LOCAL, PROJS, STACK)
+    requires 0 <Int OFFSET
+    [preserves-definedness]
+  rule #ptrBaseElemTyInStack(1, local(I:Int), PROJS, ListItem(StackFrame(... locals: FRAMELOCALS)) _REST)
+    => getTyOf(tyOfLocal({FRAMELOCALS[I]}:>TypedLocal), #addressProjs(PROJS))
+    requires 0 <=Int I
+     andBool I <Int size(FRAMELOCALS)
+     andBool isTypedLocal(FRAMELOCALS[I])
+    [preserves-definedness]
+  rule #ptrBaseElemTyInStack(OFFSET, LOCAL, PROJS, ListItem(_:StackFrame) REST)
+    => #ptrBaseElemTyInStack(OFFSET -Int 1, LOCAL, PROJS, REST)
+    requires 1 <Int OFFSET
+    [preserves-definedness]
+  rule #ptrBaseElemTy(_, _, _, _, _) => TyUnknown [owise]
+  rule #ptrBaseElemTyInStack(_, _, _, _) => TyUnknown [owise]
+
+  syntax Int ::= #ptrByteStep ( Ty , Int , Local , ProjectionElems , List , List ) [function, total]
+  // --------------------------------------------------------------------------------------------
+  rule #ptrByteStep(TY_SOURCE, _STACK_DEPTH, _LOCAL, _PROJS, _LOCALS, _STACK)
+    => #sizeOf(#lookupMaybeTy({pointeeTy(#lookupMaybeTy(TY_SOURCE))}:>Ty))
+    requires isTy(pointeeTy(#lookupMaybeTy(TY_SOURCE)))
+     andBool #sizeOf(#lookupMaybeTy({pointeeTy(#lookupMaybeTy(TY_SOURCE))}:>Ty)) >Int 0
+    [preserves-definedness]
+  rule #ptrByteStep(_TY_SOURCE, STACK_DEPTH, LOCAL, PROJS, LOCALS, STACK)
+    => #ptrElemSize(#lookupMaybeTy({#ptrBaseElemTy(STACK_DEPTH, LOCAL, PROJS, LOCALS, STACK)}:>Ty))
+    requires isTy(#ptrBaseElemTy(STACK_DEPTH, LOCAL, PROJS, LOCALS, STACK))
+    [preserves-definedness]
+  rule #ptrByteStep(_, _, _, _, _, _) => 1 [owise]
 
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
@@ -1581,6 +1674,128 @@ What can be supported without additional layout consideration is trivial casts b
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
 
+Transmuting a pointer to an integer discards provenance and reinterprets the pointer's
+address as a value of the target integer type.
+The address is computed from a lazily-assigned base address for the allocation plus the
+pointer offset within that allocation.
+
+A stack allocation key uses a stable frame id together with the local index, so the
+same stack slot keeps the same abstract address even when deeper calls change relative
+stack depths.
+
+```k
+  syntax AllocKey ::= allocKey ( Int , Local ) [symbol(allocKey)]
+  syntax AddrEntry ::= addrEntry ( Int , Int ) [symbol(addrEntry)]
+
+  syntax Int ::= #alignUp ( Int , Int ) [function, total]
+  rule #alignUp(ADDR, ALIGN) => ((ADDR +Int ALIGN -Int 1) /Int ALIGN) *Int ALIGN
+    requires ALIGN >Int 0
+    [preserves-definedness]
+  rule #alignUp(ADDR, _) => ADDR [owise]
+
+  syntax Int ::= #addrEntryBase ( AddrEntry ) [function, total]
+  rule #addrEntryBase(addrEntry(BASE, _)) => BASE
+
+  syntax Int ::= #ptrElemSize ( TypeInfo ) [function, total]
+  rule #ptrElemSize(TY_INFO) => #sizeOf(TY_INFO) requires #sizeOf(TY_INFO) >Int 0
+  rule #ptrElemSize(TY_INFO) => 1               requires #sizeOf(TY_INFO) ==Int 0 // ZST
+  rule #ptrElemSize(_)       => 1                [owise]
+
+  syntax KItem ::= #allocAddressFor ( Int , Local , Int , Int )
+  // #allocAddressFor(STACK_DEPTH, LOCAL, SIZE, ALIGN)
+  // Lazily assigns an aligned base address for the allocation at (frame id of STACK_DEPTH, LOCAL).
+  rule <k> #allocAddressFor(STACK_DEPTH, LOCAL, SIZE, ALIGN)
+        => .K
+        ...
+       </k>
+       <currentFrame> <frameId> CURRENT_FRAME_ID </frameId> ... </currentFrame>
+       <stack> STACK </stack>
+       <addressMap>
+         MAP => MAP[#stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK) <- addrEntry(#alignUp(NEXT, ALIGN), SIZE)]
+       </addressMap>
+       <nextAddress>
+         NEXT => #alignUp(NEXT, ALIGN) +Int maxInt(SIZE, 1)
+       </nextAddress>
+    requires 0 <=Int #stackFrameId(STACK_DEPTH, CURRENT_FRAME_ID, STACK)
+     andBool notBool #stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK) in_keys(MAP)
+
+  // Already allocated: no-op
+  rule <k> #allocAddressFor(STACK_DEPTH, LOCAL, _, _) => .K ... </k>
+       <currentFrame> <frameId> CURRENT_FRAME_ID </frameId> ... </currentFrame>
+       <stack> STACK </stack>
+       <addressMap> MAP </addressMap>
+    requires 0 <=Int #stackFrameId(STACK_DEPTH, CURRENT_FRAME_ID, STACK)
+     andBool #stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK) in_keys(MAP)
+```
+
+Transmuting a `PtrLocal` to an integer type: look up or lazily assign the base address,
+then compute `base + byte_offset` where byte_offset comes from the pointer's metadata.
+
+```k
+  // Case 1: address already assigned — compute base + offset
+  rule <k> #cast(
+              PtrLocal(STACK_DEPTH, place(LOCAL, PROJS), _MUT, metadata(_SIZE, PTR_OFFSET, _ORIGIN)),
+              castKindTransmute,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              #addrEntryBase({MAP[#stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK)]}:>AddrEntry)
+                +Int PTR_OFFSET *Int #ptrByteStep(TY_SOURCE, STACK_DEPTH, LOCAL, PROJS, LOCALS, STACK),
+              64,
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+        <currentFrame>
+          <frameId> CURRENT_FRAME_ID </frameId>
+          <locals> LOCALS </locals>
+          ...
+        </currentFrame>
+        <stack> STACK </stack>
+        <addressMap> MAP </addressMap>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool 0 <=Int #stackFrameId(STACK_DEPTH, CURRENT_FRAME_ID, STACK)
+       andBool #stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK) in_keys(MAP)
+      [preserves-definedness]
+
+  // Case 2: address not yet assigned — allocate first, original #cast stays on <k>
+  rule <k> #cast(
+              PtrLocal(STACK_DEPTH, place(LOCAL, PROJS), MUT, META),
+              castKindTransmute,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #allocAddressFor(
+              STACK_DEPTH,
+              LOCAL,
+              #sizeOf(#lookupMaybeTy({#stackAllocTy(STACK_DEPTH, LOCAL, LOCALS, STACK)}:>Ty)),
+              #alignOf(#lookupMaybeTy({#stackAllocTy(STACK_DEPTH, LOCAL, LOCALS, STACK)}:>Ty))
+            )
+          ~> #cast(
+              PtrLocal(STACK_DEPTH, place(LOCAL, PROJS), MUT, META),
+              castKindTransmute,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          ...
+        </k>
+        <currentFrame>
+          <frameId> CURRENT_FRAME_ID </frameId>
+          <locals> LOCALS </locals>
+          ...
+        </currentFrame>
+        <stack> STACK </stack>
+        <addressMap> MAP </addressMap>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool 0 <=Int #stackFrameId(STACK_DEPTH, CURRENT_FRAME_ID, STACK)
+       andBool isTy(#stackAllocTy(STACK_DEPTH, LOCAL, LOCALS, STACK))
+       andBool notBool #stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK) in_keys(MAP)
+      [preserves-definedness]
+```
+
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
 The first cast is reified as a `thunk`, the second one resolves it and eliminates the `thunk`:
 
@@ -1845,12 +2060,151 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
 ```
 
 
+### Pointer provenance casts
+
+`PointerExposeAddress` converts a pointer to an integer (like `ptr as usize`), exposing
+the pointer's provenance so that a future `PointerWithExposedProvenance` cast can recover it.
+
+```k
+  // PointerExposeAddress for PtrLocal: compute address and expose provenance
+  rule <k> #cast(
+              PtrLocal(STACK_DEPTH, place(LOCAL, PROJS), _MUT, metadata(_SIZE, PTR_OFFSET, _ORIGIN)),
+              castKindPointerExposeAddress,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              #addrEntryBase({MAP[#stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK)]}:>AddrEntry)
+                +Int PTR_OFFSET *Int #ptrByteStep(TY_SOURCE, STACK_DEPTH, LOCAL, PROJS, LOCALS, STACK),
+              64,
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+        <currentFrame>
+          <frameId> CURRENT_FRAME_ID </frameId>
+          <locals> LOCALS </locals>
+          ...
+        </currentFrame>
+        <stack> STACK </stack>
+        <addressMap> MAP </addressMap>
+        <exposedSet> EXPOSED => EXPOSED |Set SetItem(#stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK)) </exposedSet>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool 0 <=Int #stackFrameId(STACK_DEPTH, CURRENT_FRAME_ID, STACK)
+       andBool #stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK) in_keys(MAP)
+      [preserves-definedness]
+
+  rule <k> #cast(
+              PtrLocal(STACK_DEPTH, place(LOCAL, PROJS), MUT, META),
+              castKindPointerExposeAddress,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #allocAddressFor(
+              STACK_DEPTH,
+              LOCAL,
+              #sizeOf(#lookupMaybeTy({#stackAllocTy(STACK_DEPTH, LOCAL, LOCALS, STACK)}:>Ty)),
+              #alignOf(#lookupMaybeTy({#stackAllocTy(STACK_DEPTH, LOCAL, LOCALS, STACK)}:>Ty))
+            )
+          ~> #cast(
+              PtrLocal(STACK_DEPTH, place(LOCAL, PROJS), MUT, META),
+              castKindPointerExposeAddress,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          ...
+        </k>
+        <currentFrame>
+          <frameId> CURRENT_FRAME_ID </frameId>
+          <locals> LOCALS </locals>
+          ...
+        </currentFrame>
+        <stack> STACK </stack>
+        <addressMap> MAP </addressMap>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool 0 <=Int #stackFrameId(STACK_DEPTH, CURRENT_FRAME_ID, STACK)
+       andBool isTy(#stackAllocTy(STACK_DEPTH, LOCAL, LOCALS, STACK))
+       andBool notBool #stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK) in_keys(MAP)
+      [preserves-definedness]
+
+  // PointerExposeAddress for Reference
+  rule <k> #cast(
+              Reference(STACK_DEPTH, place(LOCAL, PROJS), _MUT, metadata(_SIZE, PTR_OFFSET, _ORIGIN)),
+              castKindPointerExposeAddress,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #intAsType(
+              #addrEntryBase({MAP[#stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK)]}:>AddrEntry)
+                +Int PTR_OFFSET *Int #ptrByteStep(TY_SOURCE, STACK_DEPTH, LOCAL, PROJS, LOCALS, STACK),
+              64,
+              #numTypeOf(lookupTy(TY_TARGET))
+            )
+          ...
+        </k>
+        <currentFrame>
+          <frameId> CURRENT_FRAME_ID </frameId>
+          <locals> LOCALS </locals>
+          ...
+        </currentFrame>
+        <stack> STACK </stack>
+        <addressMap> MAP </addressMap>
+        <exposedSet> EXPOSED => EXPOSED |Set SetItem(#stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK)) </exposedSet>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool 0 <=Int #stackFrameId(STACK_DEPTH, CURRENT_FRAME_ID, STACK)
+       andBool #stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK) in_keys(MAP)
+      [preserves-definedness]
+
+  rule <k> #cast(
+              Reference(STACK_DEPTH, place(LOCAL, PROJS), MUT, META),
+              castKindPointerExposeAddress,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          =>
+            #allocAddressFor(
+              STACK_DEPTH,
+              LOCAL,
+              #sizeOf(#lookupMaybeTy({#stackAllocTy(STACK_DEPTH, LOCAL, LOCALS, STACK)}:>Ty)),
+              #alignOf(#lookupMaybeTy({#stackAllocTy(STACK_DEPTH, LOCAL, LOCALS, STACK)}:>Ty))
+            )
+          ~> #cast(
+              Reference(STACK_DEPTH, place(LOCAL, PROJS), MUT, META),
+              castKindPointerExposeAddress,
+              TY_SOURCE,
+              TY_TARGET
+            )
+          ...
+        </k>
+        <currentFrame>
+          <frameId> CURRENT_FRAME_ID </frameId>
+          <locals> LOCALS </locals>
+          ...
+        </currentFrame>
+        <stack> STACK </stack>
+        <addressMap> MAP </addressMap>
+      requires #isIntType(lookupTy(TY_TARGET))
+       andBool 0 <=Int #stackFrameId(STACK_DEPTH, CURRENT_FRAME_ID, STACK)
+       andBool isTy(#stackAllocTy(STACK_DEPTH, LOCAL, LOCALS, STACK))
+       andBool notBool #stackAllocKey(STACK_DEPTH, LOCAL, CURRENT_FRAME_ID, STACK) in_keys(MAP)
+      [preserves-definedness]
+```
+
+`PointerWithExposedProvenance` converts an integer to a pointer (`ptr::with_exposed_provenance`),
+recovering the provenance that was previously exposed.
+
+```k
+  // TODO: PointerWithExposedProvenance requires searching the address map and exposed set
+  //       to recover the original allocation. This is left for future implementation.
+```
+
 ### Other casts involving pointers
 
 | CastKind                     | Description |
 |------------------------------|-------------|
-| PointerExposeAddress         |             |
-| PointerWithExposedProvenance |             |
 | FnPtrToPtr                   |             |
 
 ## Decoding constants from their bytes representation to values

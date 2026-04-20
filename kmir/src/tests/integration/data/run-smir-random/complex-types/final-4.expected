@@ -25,6 +25,9 @@
     ty ( 64 )
   </currentFunc>
   <currentFrame>
+    <frameId>
+      4
+    </frameId>
     <currentBody>
       ListItem ( basicBlock (... statements: statement (... kind: statementKindStorageLive ( local ( 2 ) ) , span: span ( 247 ) )  statement (... kind: statementKindStorageLive ( local ( 3 ) ) , span: span ( 248 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 3 ) , projection: .ProjectionElems ) , rvalue: rvalueRef ( region (... kind: regionKindReErased ) , borrowKindMut (... kind: mutBorrowKindTwoPhaseBorrow ) , place (... local: local ( 1 ) , projection: projectionElemDeref  projectionElemField ( fieldIdx ( 1 ) , ty ( 13 ) )  .ProjectionElems ) ) ) , span: span ( 248 ) )  statement (... kind: statementKindStorageLive ( local ( 5 ) ) , span: span ( 246 ) )  statement (... kind: statementKindStorageLive ( local ( 6 ) ) , span: span ( 249 ) )  statement (... kind: statementKindStorageLive ( local ( 7 ) ) , span: span ( 250 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 7 ) , projection: .ProjectionElems ) , rvalue: rvalueRef ( region (... kind: regionKindReErased ) , borrowKindShared , place (... local: local ( 3 ) , projection: .ProjectionElems ) ) ) , span: span ( 250 ) )  statement (... kind: statementKindStorageLive ( local ( 9 ) ) , span: span ( 251 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 9 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place (... local: local ( 3 ) , projection: projectionElemDeref  projectionElemField ( fieldIdx ( 1 ) , ty ( 3 ) )  .ProjectionElems ) ) ) ) , span: span ( 251 ) )  statement (... kind: statementKindStorageLive ( local ( 10 ) ) , span: span ( 252 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 10 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place (... local: local ( 3 ) , projection: projectionElemDeref  projectionElemField ( fieldIdx ( 0 ) , ty ( 3 ) )  .ProjectionElems ) ) ) ) , span: span ( 252 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 6 ) , projection: .ProjectionElems ) , rvalue: rvalueBinaryOp ( binOpSubUnchecked , operandMove ( place (... local: local ( 9 ) , projection: .ProjectionElems ) ) , operandMove ( place (... local: local ( 10 ) , projection: .ProjectionElems ) ) ) ) , span: span ( 51 ) )  statement (... kind: statementKindStorageDead ( local ( 10 ) ) , span: span ( 253 ) )  statement (... kind: statementKindStorageDead ( local ( 9 ) ) , span: span ( 253 ) )  statement (... kind: statementKindStorageDead ( local ( 7 ) ) , span: span ( 254 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 5 ) , projection: .ProjectionElems ) , rvalue: rvalueBinaryOp ( binOpGt , operandMove ( place (... local: local ( 6 ) , projection: .ProjectionElems ) ) , operandConstant ( constOperand (... span: span ( 255 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 3 ) , id: mirConstId ( 6 ) ) ) ) ) ) , span: span ( 246 ) )  .Statements , terminator: terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 5 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 2 ) )  .Branches , otherwise: basicBlockIdx ( 1 ) ) ) , span: span ( 246 ) ) ) )
       ListItem ( basicBlock (... statements: statement (... kind: statementKindStorageDead ( local ( 6 ) ) , span: span ( 255 ) )  statement (... kind: statementKindStorageLive ( local ( 8 ) ) , span: span ( 257 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 8 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place (... local: local ( 3 ) , projection: projectionElemDeref  projectionElemField ( fieldIdx ( 0 ) , ty ( 3 ) )  .ProjectionElems ) ) ) ) , span: span ( 258 ) )  statement (... kind: statementKindStorageLive ( local ( 11 ) ) , span: span ( 259 ) )  statement (... kind: statementKindStorageLive ( local ( 12 ) ) , span: span ( 256 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 12 ) , projection: .ProjectionElems ) , rvalue: rvalueNullaryOp ( nullOpUbChecks , ty ( 4 ) ) ) , span: span ( 260 ) )  .Statements , terminator: terminator (... kind: terminatorKindSwitchInt (... discr: operandMove ( place (... local: local ( 12 ) , projection: .ProjectionElems ) ) , targets: switchTargets (... branches: branch ( 0 , basicBlockIdx ( 4 ) )  .Branches , otherwise: basicBlockIdx ( 3 ) ) ) , span: span ( 256 ) ) ) )
@@ -79,7 +82,7 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 2 ) , mutabilityMut ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 2 ) , mutabilityMut ) )
     ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 68 ) , mutabilityNot ) )
     ListItem ( typedValue ( Range ( ListItem ( Integer ( 155 , 8 , false ) )
     ListItem ( Integer ( 52 , 8 , false ) )
@@ -151,7 +154,7 @@
     ListItem ( newLocal ( ty ( 28 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 28 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 5 ) , mutabilityMut ) ) ) )
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
+    ListItem ( StackFrame ( 0 , ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
     ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , .List ) , ty ( 68 ) , mutabilityNot ) )
     ListItem ( typedValue ( Range ( ListItem ( Integer ( 155 , 8 , false ) )
     ListItem ( Integer ( 52 , 8 , false ) )
@@ -188,4 +191,13 @@
     ListItem ( Integer ( 1776105656 , 32 , true ) )
     ListItem ( Integer ( -252750415 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) ) ) )
   </stack>
+  <addressMap>
+    .Map
+  </addressMap>
+  <nextAddress>
+    4096
+  </nextAddress>
+  <exposedSet>
+    .Set
+  </exposedSet>
 </kmir>

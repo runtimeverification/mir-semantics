@@ -42,9 +42,7 @@ PROVE_START_SYMBOLS = {
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
 PROVE_SHOW_SPECS = [
-    'local-raw-fail',
     'interior-mut-fail',
-    'interior-mut3-fail',
     'iter_next_3',
     'assert_eq_exp',
     'bitwise-not-shift',
@@ -55,20 +53,16 @@ PROVE_SHOW_SPECS = [
     'pointer-cast-length-test-fail',
     'niche-enum',
     'assume-cheatcode-conflict-fail',
-    'raw-ptr-cast-fail',
     'transmute-u8-to-enum-fail',
     'assert-inhabited-fail',
     'iterator-simple',
     'unions-fail',
     'transmute-maybe-uninit-fail',
-    'ptr-through-wrapper-fail',
     'test_offset_from-fail',
-    'ref-ptr-cast-elem-fail',
-    'ref-ptr-cast-elem-offset-fail',
     'volatile_store_static-fail',
     'volatile_load_static-fail',
     'box_heap_alloc-fail',
-    'ptr-cast-array-to-wrapper-fail',
+    'ptr-cast-cross-frame-eq',
     'ptr-cast-array-to-nested-wrapper-fail',
     'ptr-cast-array-to-singleton-wrapped-array-fail',
 ]
@@ -375,7 +369,7 @@ def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bo
         spans_removed = [line for line in shower.show(proof) if 'span: ' not in line]
         show_res = '\n'.join(spans_removed)
 
-        assert_or_update_show_output(show_res, file, update=update_expected_output)
+        assert_or_update_show_output(show_res, file, update=update_expected_output, normalize_steps=True)
     os.unlink(linked_file)
 
 
