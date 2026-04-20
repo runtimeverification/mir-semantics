@@ -31,24 +31,21 @@ if TYPE_CHECKING:
 _LOGGER: Final = logging.getLogger(__name__)
 
 
-def prove(opts: ProveOpts) -> APRProof:
-    """Run a proof creating a new KMIR instance."""
+def prove(opts: ProveOpts) -> list[APRProof]:
+    """Prove one or more start symbols from the same file, kompiling only once."""
     if not opts.rs_file.is_file():
         raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
 
-    start_symbol = opts.start_symbols[0]
-    label = f'{opts.rs_file.stem}.{start_symbol}'
-
     if opts.proof_dir is not None:
-        target_path = opts.proof_dir / label
-        return _prove(opts, target_path, label, start_symbol)
+        target_path = opts.proof_dir / f'{opts.rs_file.stem}.kompiled'
+        return _prove_multi(opts, target_path)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         target_path = Path(tmp_dir)
-        return _prove(opts, target_path, label, start_symbol)
+        return _prove_multi(opts, target_path)
 
 
 def prove_with_kmir(
@@ -73,30 +70,36 @@ def prove_with_kmir(
         start_symbol=start_symbol,
         proof_dir=opts.proof_dir,
     )
-    if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
-        smir_info.dump(proof.proof_dir / proof.id / 'smir.json')
+    if opts.proof_dir is not None:
+        kompiled_smir_path = opts.proof_dir / f'{opts.rs_file.stem}.kompiled' / 'smir.json'
+        kompiled_smir_path.parent.mkdir(parents=True, exist_ok=True)
+        smir_info.dump(kompiled_smir_path)
 
     return _advance_proof(kmir, proof, opts, label)
 
 
-def _prove(opts: ProveOpts, target_path: Path, label: str, start_symbol: str) -> APRProof:
-    if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
-        _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
-        proof = APRProof.read_proof_data(opts.proof_dir, label)
+def _prove_multi(opts: ProveOpts, target_path: Path) -> list[APRProof]:
+    """Prove single or multiple symbols with a single kompilation."""
+    labels = [f'{opts.rs_file.stem}.{sym}' for sym in opts.start_symbols]
 
-        smir_info = SMIRInfo.from_file(target_path / 'smir.json')
-        kmir = KMIR.from_kompiled_kore(
-            smir_info,
-            target_dir=target_path,
-            extra_module=opts.add_module,
-            bug_report=opts.bug_report,
-            symbolic=True,
-            haskell_target=opts.haskell_target,
-            llvm_lib_target=opts.llvm_lib_target,
-            break_on_function=opts.break_on_function or None,
-        )
+    if not labels:
+        raise ValueError('No label to prove')
+
+    # Check which proofs can be resumed
+    resumable: dict[str, APRProof] = {}
+    if not opts.reload and opts.proof_dir is not None:
+        for label in labels:
+            if APRProof.proof_data_exists(label, opts.proof_dir):
+                _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
+                resumable[label] = APRProof.read_proof_data(opts.proof_dir, label)
+
+    # Load SMIR info (once)
+    kompiled_smir_path = target_path / 'smir.json'
+    if len(resumable) == len(labels):
+        # All proofs are resumed, load SMIR from saved data
+        smir_info = SMIRInfo.from_file(kompiled_smir_path)
     else:
-        _LOGGER.info(f'Constructing initial proof: {label}')
+        # Need fresh SMIR for at least one proof
         if opts.parsed_smir is not None:
             smir_info = SMIRInfo(opts.parsed_smir)
         elif opts.smir:
@@ -104,7 +107,7 @@ def _prove(opts: ProveOpts, target_path: Path, label: str, start_symbol: str) ->
         else:
             smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-        smir_info = smir_info.reduce_to(start_symbol)
+        smir_info = smir_info.reduce_to(opts.start_symbols)
         # Report whether the reduced call graph includes any functions without MIR bodies
         missing_body_syms = [
             sym
@@ -116,28 +119,38 @@ def _prove(opts: ProveOpts, target_path: Path, label: str, start_symbol: str) ->
             _LOGGER.info(f'missing-bodies-present={has_missing} count={len(missing_body_syms)}')
             _LOGGER.debug(f'Missing-body function symbols (first 5): {missing_body_syms[:5]}')
 
-        kmir = KMIR.from_kompiled_kore(
-            smir_info,
-            target_dir=target_path,
-            extra_module=opts.add_module,
-            bug_report=opts.bug_report,
-            symbolic=True,
-            haskell_target=opts.haskell_target,
-            llvm_lib_target=opts.llvm_lib_target,
-            break_on_function=opts.break_on_function or None,
-        )
+    kmir = KMIR.from_kompiled_kore(
+        smir_info,
+        target_dir=target_path,
+        extra_module=opts.add_module,
+        bug_report=opts.bug_report,
+        symbolic=True,
+        haskell_target=opts.haskell_target,
+        llvm_lib_target=opts.llvm_lib_target,
+        break_on_function=opts.break_on_function or None,
+    )
 
-        proof = apr_proof_from_smir(
-            kmir,
-            label,
-            smir_info,
-            start_symbol=start_symbol,
-            proof_dir=opts.proof_dir,
-        )
-        if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
-            smir_info.dump(proof.proof_dir / proof.id / 'smir.json')
+    smir_info.dump(kompiled_smir_path)
 
-    return _advance_proof(kmir, proof, opts, label)
+    # Prove each symbol sequentially using shared definition
+    results: list[APRProof] = []
+    for label, start_symbol in zip(labels, opts.start_symbols, strict=True):
+        if label in resumable:
+            proof = resumable[label]
+        else:
+            _LOGGER.info(f'Constructing initial proof: {label}')
+            proof = apr_proof_from_smir(
+                kmir,
+                label,
+                smir_info,
+                start_symbol=start_symbol,
+                proof_dir=opts.proof_dir,
+            )
+
+        proof = _advance_proof(kmir, proof, opts, label)
+        results.append(proof)
+
+    return results
 
 
 def _advance_proof(kmir: KMIR, proof: APRProof, opts: ProveOpts, label: str) -> APRProof:

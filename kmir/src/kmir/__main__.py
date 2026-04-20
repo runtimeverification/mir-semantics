@@ -89,9 +89,13 @@ def _kmir_run(opts: RunOpts) -> None:
 
 
 def _kmir_prove(opts: ProveOpts) -> None:
-    proof = KMIR.prove_program(opts)
-    print(str(proof.summary))
-    if not proof.passed:
+    proofs = KMIR.prove_programs(opts)
+    any_failed = False
+    for proof in proofs:
+        print(str(proof.summary))
+        if not proof.passed:
+            any_failed = True
+    if any_failed:
         sys.exit(1)
 
 

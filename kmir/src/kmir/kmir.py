@@ -121,10 +121,16 @@ class KMIR(KProve, KRun, KParse):
         return result
 
     @staticmethod
-    def prove_program(opts: ProveOpts) -> APRProof:
+    def prove_programs(opts: ProveOpts) -> list[APRProof]:
         from ._prove import prove
 
         return prove(opts)
+
+    @staticmethod
+    def prove_program(opts: ProveOpts) -> APRProof:
+        proofs = KMIR.prove_programs(opts)
+        assert len(proofs) == 1, f'Expected single proof, got {len(proofs)}'
+        return proofs[0]
 
     @staticmethod
     def prove_program_with_kmir(kmir: KMIR, smir_info: SMIRInfo, opts: ProveOpts) -> APRProof:
@@ -171,12 +177,16 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
         self.smir_info = None
         if opts.smir_info:
             self.smir_info = SMIRInfo.from_file(opts.smir_info)
-        elif (
-            proof.proof_dir is not None
-            and (proof.proof_dir / proof.id).is_dir()
-            and (proof.proof_dir / proof.id / 'smir.json').is_file()
-        ):
-            self.smir_info = SMIRInfo.from_file(proof.proof_dir / proof.id / 'smir.json')
+        elif proof.proof_dir is not None:
+            # Look for smir.json in the kompiled directory (e.g. file.kompiled/smir.json)
+            file_stem = proof.id.rsplit('.', 1)[0]
+            kompiled_smir = proof.proof_dir / f'{file_stem}.kompiled' / 'smir.json'
+            if kompiled_smir.is_file():
+                self.smir_info = SMIRInfo.from_file(kompiled_smir)
+            else:
+                _LOGGER.warning(f'SMIR info not found at {kompiled_smir}, span/function annotations unavailable')
+        else:
+            _LOGGER.warning('No SMIR Info or proof dir found, span/function annotations unavailable')
 
     def _span(self, node: KCFG.Node) -> str | None:
         curr_span: int | None = None
