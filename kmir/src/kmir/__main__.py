@@ -587,7 +587,14 @@ def _arg_parser() -> ArgumentParser:
     )
     prove_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
     prove_parser.add_argument(
-        '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
+        '--start-symbol',
+        '--start-symbols',
+        dest='start_symbols',
+        type=str,
+        metavar='SYMBOL',
+        action='append',
+        default=None,
+        help='Symbol name(s) to prove (repeatable, comma-separated allowed)',
     )
     prove_parser.add_argument(
         '--add-module',
