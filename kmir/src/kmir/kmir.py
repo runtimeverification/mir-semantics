@@ -178,13 +178,17 @@ class KMIRAPRNodePrinter(KMIRNodePrinter, APRProofNodePrinter):
         if opts.smir_info:
             self.smir_info = SMIRInfo.from_file(opts.smir_info)
         elif proof.proof_dir is not None:
-            # Look for smir.json in the kompiled directory (e.g. file.kompiled/smir.json)
             file_stem = proof.id.rsplit('.', 1)[0]
+            # Single-symbol: smir.json in the proof's own directory
+            label_smir = proof.proof_dir / proof.id / 'smir.json'
+            # Multi-symbol: smir.json in the shared kompiled directory
             kompiled_smir = proof.proof_dir / f'{file_stem}.kompiled' / 'smir.json'
-            if kompiled_smir.is_file():
+            if label_smir.is_file():
+                self.smir_info = SMIRInfo.from_file(label_smir)
+            elif kompiled_smir.is_file():
                 self.smir_info = SMIRInfo.from_file(kompiled_smir)
             else:
-                _LOGGER.warning(f'SMIR info not found at {kompiled_smir}, span/function annotations unavailable')
+                _LOGGER.warning('SMIR info not found, span/function annotations unavailable')
         else:
             _LOGGER.warning('No SMIR Info or proof dir found, span/function annotations unavailable')
 

@@ -40,7 +40,12 @@ def prove(opts: ProveOpts) -> list[APRProof]:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
 
     if opts.proof_dir is not None:
-        target_path = opts.proof_dir / f'{opts.rs_file.stem}.kompiled'
+        if len(opts.start_symbols) == 1:
+            label = f'{opts.rs_file.stem}.{opts.start_symbols[0]}'
+            target_path = opts.proof_dir / label
+        else:
+            # Multiple start symbols share a separate target dir
+            target_path = opts.proof_dir / f'{opts.rs_file.stem}.kompiled'
         return _prove_multi(opts, target_path)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
