@@ -39,15 +39,16 @@ def prove(opts: ProveOpts) -> APRProof:
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
 
-    label = f'{opts.rs_file.stem}.{opts.start_symbol}'
+    start_symbol = opts.start_symbols[0]
+    label = f'{opts.rs_file.stem}.{start_symbol}'
 
     if opts.proof_dir is not None:
         target_path = opts.proof_dir / label
-        return _prove(opts, target_path, label)
+        return _prove(opts, target_path, label, start_symbol)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         target_path = Path(tmp_dir)
-        return _prove(opts, target_path, label)
+        return _prove(opts, target_path, label, start_symbol)
 
 
 def prove_with_kmir(
@@ -61,14 +62,15 @@ def prove_with_kmir(
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
 
     # No check for rs_file as smir_info already exists
-    label = f'{opts.rs_file.stem}.{opts.start_symbol}'
+    start_symbol = opts.start_symbols[0]
+    label = f'{opts.rs_file.stem}.{start_symbol}'
 
     _LOGGER.info(f'Using pre-built KMIR for proof: {label}')
     proof = apr_proof_from_smir(
         kmir,
         label,
         smir_info,
-        start_symbol=opts.start_symbol,
+        start_symbol=start_symbol,
         proof_dir=opts.proof_dir,
     )
     if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
@@ -77,7 +79,7 @@ def prove_with_kmir(
     return _advance_proof(kmir, proof, opts, label)
 
 
-def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
+def _prove(opts: ProveOpts, target_path: Path, label: str, start_symbol: str) -> APRProof:
     if not opts.reload and opts.proof_dir is not None and APRProof.proof_data_exists(label, opts.proof_dir):
         _LOGGER.info(f'Reading proof from disc: {opts.proof_dir}, {label}')
         proof = APRProof.read_proof_data(opts.proof_dir, label)
@@ -102,7 +104,7 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         else:
             smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
 
-        smir_info = smir_info.reduce_to(opts.start_symbol)
+        smir_info = smir_info.reduce_to(start_symbol)
         # Report whether the reduced call graph includes any functions without MIR bodies
         missing_body_syms = [
             sym
@@ -129,7 +131,7 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
             kmir,
             label,
             smir_info,
-            start_symbol=opts.start_symbol,
+            start_symbol=start_symbol,
             proof_dir=opts.proof_dir,
         )
         if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():

@@ -32,7 +32,7 @@ def _prove_and_store(
     is_smir: bool = False,
     max_depth: int | None = None,
 ) -> APRProof:
-    opts = ProveOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbol=start_symbol, max_depth=max_depth)
+    opts = ProveOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbols=[start_symbol], max_depth=max_depth)
     apr_proof = kmir.prove_program(opts)
     apr_proof.write_proof_data()
     return apr_proof
@@ -292,7 +292,7 @@ def test_cli_prove_add_module(kmir: KMIR, tmp_path: Path) -> None:
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         max_depth=1,
         add_module=str(stored_module_json),
     )
@@ -316,7 +316,7 @@ def test_cli_prove_add_module_k(kmir: KMIR, tmp_path: Path) -> None:
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         max_depth=1,
         add_module=f'{module_file}:TEST-ADD-MODULE',
     )
@@ -340,7 +340,7 @@ def test_cli_prove_add_module_md(kmir: KMIR, tmp_path: Path) -> None:
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         max_depth=1,
         add_module=f'{module_file}:TEST-ADD-MODULE',
     )
@@ -364,7 +364,7 @@ def test_cli_prove_add_module_select_from_multiple(kmir: KMIR, tmp_path: Path) -
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         max_depth=1,
         add_module=f'{module_file}:TEST-ADD-MODULE',
     )
@@ -387,7 +387,7 @@ def test_cli_break_on_function(
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         break_on_function=['foo', 'black_box'],
     )
     apr_proof = KMIR.prove_program(opts)

@@ -43,6 +43,13 @@ _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
+def _flatten_comma_list(values: list[str] | None) -> list[str] | None:
+    """Flatten a list that may contain comma-separated entries, e.g. ['a,b', 'c'] -> ['a', 'b', 'c']."""
+    if values is None:
+        return None
+    return [item for v in values for item in v.split(',') if item.strip()]
+
+
 def _flush_lines(lines: Iterable[str]) -> None:
     """Print lines to stdout one at a time, then release the list if possible."""
     for line in lines:
@@ -717,7 +724,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 maintenance_rate=ns.maintenance_rate,
                 save_smir=ns.save_smir,
                 smir=ns.smir,
-                start_symbol=ns.start_symbol,
+                start_symbols=_flatten_comma_list(ns.start_symbols),
                 break_on_calls=ns.break_on_calls,
                 break_on_function_calls=ns.break_on_function_calls,
                 break_on_intrinsic_calls=ns.break_on_intrinsic_calls,
