@@ -409,3 +409,33 @@ def test_cli_break_on_function(
         PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-break-on-function.expected',
         update=update_expected_output,
     )
+
+
+def test_cli_prove_multi_start_symbols(tmp_path: Path) -> None:
+    """Test proving multiple start symbols with a single kompilation."""
+    from kmir.kmir import KMIR
+
+    rs_file = PROVE_DIR / 'unchecked_arithmetic.rs'
+    start_symbols = ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize']
+
+    opts = ProveOpts(
+        rs_file,
+        proof_dir=tmp_path,
+        smir=False,
+        start_symbols=start_symbols,
+    )
+    proofs = KMIR.prove_programs(opts)
+
+    assert len(proofs) == 3
+    for proof in proofs:
+        assert proof.passed
+
+    # Verify shared kompiled directory was used
+    kompiled_dir = tmp_path / f'{rs_file.stem}.kompiled'
+    assert kompiled_dir.is_dir()
+    assert (kompiled_dir / 'smir.json').is_file()
+
+    # Verify each proof has its own directory
+    for sym in start_symbols:
+        proof_dir = tmp_path / f'{rs_file.stem}.{sym}'
+        assert proof_dir.is_dir()
