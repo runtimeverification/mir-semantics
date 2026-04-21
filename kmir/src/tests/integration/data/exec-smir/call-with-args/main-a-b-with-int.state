@@ -1,19 +1,20 @@
 <kmir>
   <k>
-    #execBlock ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) ) ~> .K
+    #execStmts ( .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 59 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
   </retVal>
   <currentFunc>
-    ty ( 27 )
+    ty ( 25 )
   </currentFunc>
   <currentFrame>
     <currentBody>
-      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 63 ) ) ) )
+      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 56 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 27 ) , id: mirConstId ( 11 ) ) ) ) , args: operandCopy ( place (... local: local ( 1 ) , projection: .ProjectionElems ) )  operandConstant ( constOperand (... span: span ( 57 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindAllocated ( allocation (... bytes: b"\x0b\x00" , provenance: provenanceMap (... ptrs: .ProvenanceMapEntries ) , align: align ( 2 ) , mutability: mutabilityMut ) ) , ty: ty ( 28 ) , id: mirConstId ( 12 ) ) ) )  .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 58 ) ) ) )
+      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 59 ) ) ) )
     </currentBody>
     <caller>
-      ty ( 25 )
+      ty ( -1 )
     </caller>
     <dest>
       place (... local: local ( 0 ) , projection: .ProjectionElems )
@@ -27,12 +28,9 @@
     <locals>
       ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
       ListItem ( typedValue ( Integer ( 10 , 64 , false ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 11 , 16 , true ) , ty ( 28 ) , mutabilityNot ) )
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-    ListItem ( typedValue ( Integer ( 10 , 64 , false ) , ty ( 26 ) , mutabilityNot ) ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>

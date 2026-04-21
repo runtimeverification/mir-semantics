@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (837 steps)
+│  (873 steps)
 ├─ 3 (terminal)
 │   #EndProgram ~> .K
 │   function: main

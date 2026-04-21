@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (56 steps)
+│  (60 steps)
 ├─ 3
 │   #applyBinOp ( binOpAddUnchecked , Integer ( ARG_UINT1:Int , 64 , false ) , Integ
 │   span: 270
@@ -15,7 +15,7 @@
 ┃  │   Integer ( ARG_UINT1:Int +Int ARG_UINT2:Int &Int 18446744073709551615 , 64 , fals
 ┃  │   span: 270
 ┃  │
-┃  │  (70 steps)
+┃  │  (72 steps)
 ┃  ├─ 6 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │
