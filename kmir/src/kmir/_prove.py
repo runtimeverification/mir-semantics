@@ -32,6 +32,7 @@ _LOGGER: Final = logging.getLogger(__name__)
 
 
 def prove(opts: ProveOpts) -> APRProof:
+    """Run a proof creating a new KMIR instance."""
     if not opts.rs_file.is_file():
         raise ValueError(f'Input file does not exist: {opts.rs_file}')
 
@@ -47,6 +48,33 @@ def prove(opts: ProveOpts) -> APRProof:
     with tempfile.TemporaryDirectory() as tmp_dir:
         target_path = Path(tmp_dir)
         return _prove(opts, target_path, label)
+
+
+def prove_with_kmir(
+    kmir: KMIR,
+    smir_info: SMIRInfo,
+    opts: ProveOpts,
+) -> APRProof:
+    """Run a proof using a pre-built KMIR instance, avoiding redundant kompilation."""
+
+    if opts.max_workers is not None and opts.max_workers < 1:
+        raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
+
+    # No check for rs_file as smir_info already exists
+    label = f'{opts.rs_file.stem}.{opts.start_symbol}'
+
+    _LOGGER.info(f'Using pre-built KMIR for proof: {label}')
+    proof = apr_proof_from_smir(
+        kmir,
+        label,
+        smir_info,
+        start_symbol=opts.start_symbol,
+        proof_dir=opts.proof_dir,
+    )
+    if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
+        smir_info.dump(proof.proof_dir / proof.id / 'smir.json')
+
+    return _advance_proof(kmir, proof, opts, label)
 
 
 def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
@@ -107,6 +135,10 @@ def _prove(opts: ProveOpts, target_path: Path, label: str) -> APRProof:
         if proof.proof_dir is not None and (proof.proof_dir / label).is_dir():
             smir_info.dump(proof.proof_dir / proof.id / 'smir.json')
 
+    return _advance_proof(kmir, proof, opts, label)
+
+
+def _advance_proof(kmir: KMIR, proof: APRProof, opts: ProveOpts, label: str) -> APRProof:
     if proof.passed:
         return proof
 
