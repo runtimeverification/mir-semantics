@@ -5,7 +5,7 @@
 │
 │  (580 steps)
 └─ 3 (stuck, leaf)
-    #prepareTerminatorCall ( ty ( 38 ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
+    #prepareTerminatorCall ( ty ( <type-id> ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
     function: main
     span: 32
 

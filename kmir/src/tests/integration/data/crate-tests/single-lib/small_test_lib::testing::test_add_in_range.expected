@@ -16,7 +16,7 @@
 ┃  │
 ┃  │  (5 steps)
 ┃  └─ 6 (stuck, leaf)
-┃      #prepareTerminatorCall ( ty ( 26 ) , monoItemFn ( ... name: symbol ( "_ZN3std7pr
+┃      #prepareTerminatorCall ( ty ( <type-id> ) , monoItemFn ( ... name: symbol ( "_ZN3std7pr
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
