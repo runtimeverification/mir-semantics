@@ -362,7 +362,7 @@ where the returned result should go.
        <locals> LOCALS </locals>
 
   rule <k> #prepareBodyCall(ACC, NAME, BODY, ORIGINAL, .Operands, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
-        => #execTerminatorCall(NAME, #normalizeCallValues(NAME, BODY, ORIGINAL, ACC, CALLERLOCALS), BODY, FTY, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall(NAME, #normalizeCallValues(BODY, ORIGINAL, ACC, CALLERLOCALS), BODY, FTY, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
 
@@ -533,9 +533,9 @@ some shims with `spread_arg` still project from that tuple local in the body.
 [^spread_arg]: https://doc.rust-lang.org/beta/nightly-rustc/rustc_public/mir/body/struct.Body.html#structfield.spread_arg
 
 ```k
-  syntax CallArg ::= "#skipCallArg"
+  syntax KItem ::= "#skipCallArg"
 
-  syntax List ::= #normalizeCallValues(String, Body, Operands, List, List) [function, total]
+  syntax List ::= #normalizeCallValues(Body, Operands, List, List) [function, total]
                 | #spreadArgValues(Value) [function, total]
   syntax Bool ::= #isTupleArg(List, Int) [function, total]
                 | #isTupleType(TypeInfo) [function, total]
@@ -549,7 +549,6 @@ some shims with `spread_arg` still project from that tuple local in the body.
   // old caller-type heuristic while keeping argument materialization outside the
   // callee frame.
   rule #normalizeCallValues(
-         _NAME,
          body(_, _, _, _, noLocal, _),
          operandMove(place(local(CLOSURE), .ProjectionElems))
          operandMove(place(local(TUPLE), .ProjectionElems))
@@ -562,7 +561,6 @@ some shims with `spread_arg` still project from that tuple local in the body.
      andBool #isClosureReceiverDirect(CALLERLOCALS, CLOSURE)
 
   rule #normalizeCallValues(
-         _NAME,
          body(_, _, _, _, noLocal, _),
          operandMove(place(local(CLOSURE), .ProjectionElems))
          operandMove(place(local(TUPLE), .ProjectionElems))
@@ -574,7 +572,7 @@ some shims with `spread_arg` still project from that tuple local in the body.
     requires #isTupleArg(CALLERLOCALS, TUPLE)
      andBool #isClosureReceiverRef(CALLERLOCALS, CLOSURE)
 
-  rule #normalizeCallValues(_NAME, _BODY, _ORIGINAL, VALS, _CALLERLOCALS) => VALS [owise]
+  rule #normalizeCallValues(_BODY, _ORIGINAL, VALS, _CALLERLOCALS) => VALS [owise]
 
   rule #spreadArgValues(Aggregate(variantIdx(0), ARGS)) => ARGS
   rule #spreadArgValues(VAL:Value) => ListItem(VAL) [owise]
