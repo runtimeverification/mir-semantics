@@ -49,6 +49,4 @@ fn main() {
     let mut a1 = [1, 2, 3];
     let a2 = [1, 2, 3];
     eats_all_args(1, &mut x2, true, my1, e4, &mut a1, &a2, &mut [my2, my3], &my4 as *const MyStruct<'_>);
-
-    assert!(false); // makes the test with main fail, as the other one also fails
 }

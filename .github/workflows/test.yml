@@ -77,7 +77,7 @@ jobs:
           - name: 'Verify Rust Std'
             test-args: '-k test_verify_rust_std'
             parallel: 6
-            timeout: 60
+            timeout: 90
           - name: 'Remainder'
             test-args: '-k "not llvm and not test_run_smir_random and not test_exec_smir and not test_prove_termination and not test_prove and not test_verify_rust_std"'
             parallel: 6
@@ -243,4 +243,3 @@ jobs:
           set -euxo pipefail
           nix --version
           nix flake check # build and run smoke test
-

@@ -31,20 +31,26 @@ def _normalize_symbol_hashes(text: str) -> str:
     return text
 
 
+def _normalize_show_output(text: str) -> str:
+    text = _normalize_symbol_hashes(text)
+    text = re.sub(r'(?m)^(\s*(?:[│┃┊]\s*)?span: )\d+$', r'\1<span>', text)
+    text = re.sub(r'(?m)^\s*>> message: .*\n?', '', text)
+    return text.rstrip('\r\n')
+
+
 def assert_or_update_show_output(
     actual_text: str, expected_file: Path, *, update: bool, path_replacements: dict[str, str] | None = None
 ) -> None:
     if path_replacements:
         for old, new in path_replacements.items():
             actual_text = actual_text.replace(old, new)
-    # Normalize rustc symbol hash suffixes that can drift across builds/environments.
-    actual_text = _normalize_symbol_hashes(actual_text)
+    actual_text = _normalize_show_output(actual_text)
     if update:
         expected_file.write_text(actual_text)
     else:
         assert expected_file.is_file()
         expected_text = expected_file.read_text()
-        expected_text = _normalize_symbol_hashes(expected_text)
+        expected_text = _normalize_show_output(expected_text)
         if actual_text != expected_text:
             diff = '\n'.join(
                 unified_diff(

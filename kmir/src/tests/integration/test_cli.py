@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 PROVE_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 MODULES_DIR = (Path(__file__).parent / 'data' / 'modules').resolve(strict=True)
 # Repo root: used to normalise absolute paths in expected-output snapshots so
-# they don't differ between local checkouts and CI (e.g. symbolic-args-fail.main.cli-stats-leaves).
+# they don't differ between local checkouts and CI (e.g. symbolic-structs-fail.eats_struct_args.cli-stats-leaves).
 _REPO_ROOT = str(Path(__file__).resolve().parents[4])
 _PATH_REPLACEMENTS: dict[str, str] = {_REPO_ROOT + '/': '<REPO>/'}
 
@@ -84,10 +84,10 @@ def test_cli_show_printers_snapshot(
     'src,start_symbol,is_smir',
     [
         pytest.param(
-            (PROVE_DIR / 'symbolic-args-fail.rs'),
-            'main',
+            (PROVE_DIR / 'symbolic-structs-fail.rs'),
+            'eats_struct_args',
             False,
-            id='symbolic-args-fail.main',
+            id='symbolic-structs-fail.eats_struct_args',
         ),
         pytest.param(
             (Path(__file__).parent / 'data' / 'exec-smir' / 'niche-enum' / 'niche-enum.smir.json').resolve(strict=True),
@@ -242,9 +242,9 @@ def test_cli_show_to_module(
 
 def test_cli_show_minimize_proof(kmir: KMIR, tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Test --minimize-proof option."""
-    rs_file = PROVE_DIR / 'symbolic-args-fail.rs'
-    start_symbol = 'main'
-    # Use limited depth to create a partial proof with intermediate nodes that can be minimized
+    rs_file = PROVE_DIR / 'symbolic-structs-fail.rs'
+    start_symbol = 'eats_struct_args'
+    # Use a stable -fail test with symbolic branching so max_depth=5 creates intermediate nodes with splits
     apr_proof = _prove_and_store(kmir, rs_file, tmp_path, start_symbol=start_symbol, is_smir=False, max_depth=5)
 
     # Get initial node count

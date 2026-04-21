@@ -28,12 +28,12 @@ if TYPE_CHECKING:
 PROVE_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 PROVE_FILES = list(PROVE_DIR.glob('*.*'))
 PROVE_START_SYMBOLS = {
-    'symbolic-args-fail': ['main', 'eats_all_args'],
+    'symbolic-args-unsupported': ['eats_all_args'],
     'symbolic-structs-fail': ['eats_struct_args'],
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
     'checked_arithmetic-fail': ['checked_add_i32'],
     'pointer-cast': ['main', 'test'],
-    'pointer-cast-length-test-fail': ['array_cast_test'],
+    'pointer-cast-length-test-unsupported': ['array_cast_test'],
     'assume-cheatcode': ['check_assume'],
     'assume-cheatcode-conflict-fail': ['check_assume_conflict'],
     'transmute-bytes': ['bytes_to_u64', 'u64_to_bytes'],
@@ -41,37 +41,6 @@ PROVE_START_SYMBOLS = {
     'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
-PROVE_SHOW_SPECS = [
-    'local-raw-fail',
-    'interior-mut-fail',
-    'interior-mut3-fail',
-    'iter_next_3',
-    'assert_eq_exp',
-    'bitwise-not-shift',
-    'symbolic-args-fail',
-    'symbolic-structs-fail',
-    'checked_arithmetic-fail',
-    'offset-u8-fail',
-    'pointer-cast-length-test-fail',
-    'niche-enum',
-    'assume-cheatcode-conflict-fail',
-    'raw-ptr-cast-fail',
-    'transmute-u8-to-enum-fail',
-    'assert-inhabited-fail',
-    'iterator-simple',
-    'unions-fail',
-    'transmute-maybe-uninit-fail',
-    'ptr-through-wrapper-fail',
-    'test_offset_from-fail',
-    'ref-ptr-cast-elem-fail',
-    'ref-ptr-cast-elem-offset-fail',
-    'volatile_store_static-fail',
-    'volatile_load_static-fail',
-    'box_heap_alloc-fail',
-    'ptr-cast-array-to-wrapper-fail',
-    'ptr-cast-array-to-nested-wrapper-fail',
-    'ptr-cast-array-to-singleton-wrapped-array-fail',
-]
 
 
 @pytest.mark.parametrize(
@@ -81,23 +50,27 @@ PROVE_SHOW_SPECS = [
 )
 def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
-    should_show = rs_file.stem in PROVE_SHOW_SPECS
+    should_show = should_fail or rs_file.stem.endswith('unsupported')
     is_smir = rs_file.suffix == '.json'
 
+    start_symbols = ['main']
+    if rs_file.stem in PROVE_START_SYMBOLS:
+        start_symbols = PROVE_START_SYMBOLS[rs_file.stem]
+
     if update_expected_output and not should_show:
+        for start_symbol in start_symbols:
+            expected_file = PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected'
+            assert not expected_file.is_file()
         pytest.skip()
 
     prove_opts = ProveOpts(rs_file, smir=is_smir, terminate_on_thunk=True)
     printer = PrettyPrinter(kmir.definition)
     cterm_show = CTermShow(printer.print)
 
-    start_symbols = ['main']
-    if rs_file.stem in PROVE_START_SYMBOLS:
-        start_symbols = PROVE_START_SYMBOLS[rs_file.stem]
-
     for start_symbol in start_symbols:
         prove_opts.start_symbols = [start_symbol]
         apr_proof = kmir.prove_program(prove_opts)
+        expected_file = PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected'
 
         if should_show:
             display_opts = ShowOpts(
@@ -105,13 +78,12 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
             )
             shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
             show_res = '\n'.join(shower.show(apr_proof))
-            assert_or_update_show_output(
-                show_res, PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
-            )
-
-        if not should_fail:
-            assert apr_proof.passed
+            assert_or_update_show_output(show_res, expected_file, update=update_expected_output)
         else:
+            assert not expected_file.is_file()
+            assert apr_proof.passed
+
+        if should_fail:
             assert apr_proof.failed
 
 

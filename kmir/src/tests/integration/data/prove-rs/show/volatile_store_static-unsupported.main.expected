@@ -1,0 +1,22 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (10 steps)
+├─ 3
+│   #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00
+│   function: main
+│   span: 54
+│
+│  (1 step)
+└─ 4 (leaf, terminal)
+    thunk ( #decodeConstant ( constantKindAllocated ( allocation ( ... bytes: b"\x00
+    function: main
+    span: 54
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
