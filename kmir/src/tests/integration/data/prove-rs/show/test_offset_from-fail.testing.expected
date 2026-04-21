@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (297 steps)
+│  (294 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
 ┃
@@ -15,7 +15,7 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
 ┃  │
-┃  │  (588 steps)
+┃  │  (570 steps)
 ┃  ├─ 6 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │
@@ -112,7 +112,7 @@
             ┃  ├─ 20
             ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 4 , basicBlockIdx ( 4 ) )
             ┃  │
-            ┃  │  (18 steps)
+            ┃  │  (16 steps)
             ┃  ├─ 22
             ┃  │   #mkPtr ( toAlloc ( allocId ( 2 ) ) , .ProjectionElems , mutabilityNot , metadata
             ┃  │   span: 136

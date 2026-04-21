@@ -34,13 +34,28 @@ from .utils import render_leaf_k_cells, render_rules, render_statistics
 
 if TYPE_CHECKING:
     from argparse import Namespace
-    from collections.abc import Sequence
+    from collections.abc import Iterable, Sequence
     from typing import Final
 
     from .options import KMirOpts
 
 _LOGGER: Final = logging.getLogger(__name__)
 _LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
+
+
+def _flatten_comma_list(values: list[str] | None) -> list[str] | None:
+    """Flatten a list that may contain comma-separated entries, e.g. ['a,b', 'c'] -> ['a', 'b', 'c']."""
+    if values is None:
+        return None
+    return [item for v in values for item in v.split(',') if item.strip()]
+
+
+def _flush_lines(lines: Iterable[str]) -> None:
+    """Print lines to stdout one at a time, then release the list if possible."""
+    for line in lines:
+        print(line)
+    if hasattr(lines, 'clear'):
+        lines.clear()
 
 
 def _kmir_run(opts: RunOpts) -> None:
@@ -74,9 +89,13 @@ def _kmir_run(opts: RunOpts) -> None:
 
 
 def _kmir_prove(opts: ProveOpts) -> None:
-    proof = KMIR.prove_program(opts)
-    print(str(proof.summary))
-    if not proof.passed:
+    proofs = KMIR.prove_programs(opts)
+    any_failed = False
+    for proof in proofs:
+        print(str(proof.summary))
+        if not proof.passed:
+            any_failed = True
+    if any_failed:
         sys.exit(1)
 
 
@@ -171,24 +190,38 @@ def _kmir_show(opts: ShowOpts) -> None:
         omit_cells=tuple(all_omit_cells),
         to_module=opts.to_module is not None,
     )
-    if opts.statistics:
-        if lines and lines[-1] != '':
-            lines.append('')
-        lines.extend(render_statistics(proof))
-    if effective_rule_edges:
-        lines.append('# Rules: ')
-        lines.extend(render_rules(proof, effective_rule_edges))
-    if opts.leaves:
-        if lines and lines[-1] != '':
-            lines.append('')
-        lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show, smir_info=node_printer.smir_info))
 
     # Handle --to-module output
     if opts.to_module:
+        if opts.statistics:
+            lines.extend(render_statistics(proof))
+        if effective_rule_edges:
+            lines.append('# Rules: ')
+            lines.extend(render_rules(proof, effective_rule_edges))
+        if opts.leaves:
+            lines.extend(render_leaf_k_cells(proof, node_printer.cterm_show, smir_info=node_printer.smir_info))
         _write_to_module(kmir, proof, opts.to_module)
         print(f'Module written to: {opts.to_module}')
     else:
-        print('\n'.join(lines))
+        # Stream lines to stdout to avoid holding the entire output in memory
+        last_line = lines[-1] if lines else ''
+        _flush_lines(lines)
+        del lines
+        if opts.statistics:
+            if last_line != '':
+                print()
+            stat_lines = render_statistics(proof)
+            last_line = stat_lines[-1] if stat_lines else last_line
+            _flush_lines(stat_lines)
+        if effective_rule_edges:
+            print('# Rules: ')
+            rule_lines = render_rules(proof, effective_rule_edges)
+            last_line = rule_lines[-1] if rule_lines else last_line
+            _flush_lines(rule_lines)
+        if opts.leaves:
+            if last_line != '':
+                print()
+            _flush_lines(render_leaf_k_cells(proof, node_printer.cterm_show, smir_info=node_printer.smir_info))
 
 
 def _kmir_prune(opts: PruneOpts) -> None:
@@ -565,7 +598,14 @@ def _arg_parser() -> ArgumentParser:
     )
     prove_parser.add_argument('--smir', action='store_true', help='Treat the input file as a smir json.')
     prove_parser.add_argument(
-        '--start-symbol', type=str, metavar='SYMBOL', default='main', help='Symbol name to begin execution from'
+        '--start-symbol',
+        '--start-symbols',
+        dest='start_symbols',
+        type=str,
+        metavar='SYMBOL',
+        action='append',
+        default=None,
+        help='Symbol name(s) to prove (repeatable, comma-separated allowed)',
     )
     prove_parser.add_argument(
         '--add-module',
@@ -688,7 +728,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 maintenance_rate=ns.maintenance_rate,
                 save_smir=ns.save_smir,
                 smir=ns.smir,
-                start_symbol=ns.start_symbol,
+                start_symbols=_flatten_comma_list(ns.start_symbols),
                 break_on_calls=ns.break_on_calls,
                 break_on_function_calls=ns.break_on_function_calls,
                 break_on_intrinsic_calls=ns.break_on_intrinsic_calls,
