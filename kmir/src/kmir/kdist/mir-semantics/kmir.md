@@ -310,7 +310,7 @@ where the returned result should go.
 
 ```k
   syntax KItem ::= #prepareTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
-                 | #prepareBodyCall(List, String, Body, originalArgs: Operands, remainingArgs: Operands, callerLocals: List, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+                 | #execTerminatorCall(String, Body, originalArgs: Operands, callerLocals: List, args: KItem, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span) [strict(5)]
                  | #execTerminatorCall(functionName: String, args: List, body: Body, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
                  | #execIntrinsic(MonoItemKind, Operands, Place, Span)
 
@@ -357,22 +357,12 @@ where the returned result should go.
   // Closure-shim tuple arguments are normalized before entering the callee, so
   // the callee sees the argument values to assign to locals `_1`, `_2`, ...
   rule <k> #prepareTerminatorCall(FTY, monoItemFn(symbol(NAME), _, someBody(BODY)), ARGS, DEST, TARGET, UNWIND, SPAN)
-        => #prepareBodyCall(.List, NAME, BODY, ARGS, ARGS, LOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall(NAME, BODY, ARGS, LOCALS, #readOperands(ARGS), FTY, DEST, TARGET, UNWIND, SPAN)
         </k>
        <locals> LOCALS </locals>
 
-  rule <k> #prepareBodyCall(ACC, NAME, BODY, ORIGINAL, .Operands, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
-        => #execTerminatorCall(NAME, #normalizeCallValues(BODY, ORIGINAL, ACC, CALLERLOCALS), BODY, FTY, DEST, TARGET, UNWIND, SPAN)
-        ...
-       </k>
-
-  rule <k> #prepareBodyCall(ACC, NAME, BODY, ORIGINAL, OP:Operand REST:Operands, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
-        => OP ~> #prepareBodyCall(ACC, NAME, BODY, ORIGINAL, REST, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
-        ...
-       </k>
-
-  rule <k> VAL:Value ~> #prepareBodyCall(ACC, NAME, BODY, ORIGINAL, REST:Operands, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
-        => #prepareBodyCall(ACC ListItem(VAL), NAME, BODY, ORIGINAL, REST, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
+  rule <k> #execTerminatorCall(NAME, BODY, ORIGINAL, CALLERLOCALS, VALS:List, FTY, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall(NAME, #normalizeCallValues(BODY, ORIGINAL, VALS, CALLERLOCALS), BODY, FTY, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
 
