@@ -126,6 +126,12 @@ class KMIR(KProve, KRun, KParse):
 
         return prove(opts)
 
+    @staticmethod
+    def prove_program_with_kmir(kmir: KMIR, smir_info: SMIRInfo, opts: ProveOpts) -> APRProof:
+        from ._prove import prove_with_kmir
+
+        return prove_with_kmir(kmir, smir_info, opts)
+
 
 class KMIRSemantics(DefaultSemantics):
     terminate_on_thunk: bool
