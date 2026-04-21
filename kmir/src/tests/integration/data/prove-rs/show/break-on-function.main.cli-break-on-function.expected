@@ -29,7 +29,7 @@
 │
 │  (3 steps)
 ├─ 7
-│   #prepareTerminatorCall ( ty ( 25 ) , IntrinsicFunction ( symbol ( "black_box" )
+│   #prepareTerminatorCall ( ty ( <type-id> ) , IntrinsicFunction ( symbol ( "black_box" )
 │   function: std::hint::black_box::<i32>
 │   span: /rust/library/core/src/hint.rs:389
 │

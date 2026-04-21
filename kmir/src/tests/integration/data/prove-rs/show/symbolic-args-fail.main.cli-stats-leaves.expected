@@ -5,7 +5,7 @@
 │
 │  (580 steps)
 └─ 3 (stuck, leaf)
-    #prepareTerminatorCall ( ty ( 38 ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
+    #prepareTerminatorCall ( ty ( <type-id> ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
     function: main
     span: no-location:0
 
@@ -33,7 +33,7 @@ Leaf paths from init:
 LEAF <k> CELLS
 ---------------
 Node 3:
-  #prepareTerminatorCall ( ty ( 38 ) , monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>E" ) , id: defId ( 38 ) , body: noBody ) , operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00\x17\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: provenanceMapEntry ( ... offset: 0 , allocId: allocId ( 1 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 39 ) , id: mirConstId ( 25 ) ) ) )  .Operands , place ( ... local: local ( 25 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , span ( 117 ) ) ~> .K
+  #prepareTerminatorCall ( ty ( <type-id> ) , monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>E" ) , id: defId ( 38 ) , body: noBody ) , operandConstant ( constOperand ( ... span: span ( 32 ) , userTy: noUserTypeAnnotationIndex , const: mirConst ( ... kind: constantKindAllocated ( allocation ( ... bytes: b"\x00\x00\x00\x00\x00\x00\x00\x00\x17\x00\x00\x00\x00\x00\x00\x00" , provenance: provenanceMap ( ... ptrs: provenanceMapEntry ( ... offset: 0 , allocId: allocId ( 1 ) )  .ProvenanceMapEntries ) , align: align ( 8 ) , mutability: mutabilityMut ) ) , ty: ty ( 39 ) , id: mirConstId ( 25 ) ) ) )  .Operands , place ( ... local: local ( 25 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , span ( 117 ) ) ~> .K
   >> function: core::panicking::panic::h<hash>
   >> call span: <REPO>/kmir/src/tests/integration/data/prove-rs/symbolic-args-fail.rs:53:5
   >> message: 'assertion failed: false'

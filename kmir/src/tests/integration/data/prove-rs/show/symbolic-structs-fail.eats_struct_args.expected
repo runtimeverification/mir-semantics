@@ -29,7 +29,7 @@
 ┃  ┃  │
 ┃  ┃  │  (5 steps)
 ┃  ┃  └─ 10 (stuck, leaf)
-┃  ┃      #prepareTerminatorCall ( ty ( 27 ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
+┃  ┃      #prepareTerminatorCall ( ty ( <type-id> ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
 ┃  ┃      span: 32
 ┃  ┃
 ┃  ┗━━┓ subst: .Subst
