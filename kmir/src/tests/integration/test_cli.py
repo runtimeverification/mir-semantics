@@ -32,7 +32,7 @@ def _prove_and_store(
     is_smir: bool = False,
     max_depth: int | None = None,
 ) -> APRProof:
-    opts = ProveOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbol=start_symbol, max_depth=max_depth)
+    opts = ProveOpts(rs_or_json, proof_dir=tmp_path, smir=is_smir, start_symbols=[start_symbol], max_depth=max_depth)
     apr_proof = kmir.prove_program(opts)
     apr_proof.write_proof_data()
     return apr_proof
@@ -292,7 +292,7 @@ def test_cli_prove_add_module(kmir: KMIR, tmp_path: Path) -> None:
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         max_depth=1,
         add_module=str(stored_module_json),
     )
@@ -316,7 +316,7 @@ def test_cli_prove_add_module_k(kmir: KMIR, tmp_path: Path) -> None:
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         max_depth=1,
         add_module=f'{module_file}:TEST-ADD-MODULE',
     )
@@ -340,7 +340,7 @@ def test_cli_prove_add_module_md(kmir: KMIR, tmp_path: Path) -> None:
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         max_depth=1,
         add_module=f'{module_file}:TEST-ADD-MODULE',
     )
@@ -364,7 +364,7 @@ def test_cli_prove_add_module_select_from_multiple(kmir: KMIR, tmp_path: Path) -
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         max_depth=1,
         add_module=f'{module_file}:TEST-ADD-MODULE',
     )
@@ -387,7 +387,7 @@ def test_cli_break_on_function(
         rs_file,
         proof_dir=tmp_path,
         smir=False,
-        start_symbol=start_symbol,
+        start_symbols=[start_symbol],
         break_on_function=['foo', 'black_box'],
     )
     apr_proof = KMIR.prove_program(opts)
@@ -409,3 +409,33 @@ def test_cli_break_on_function(
         PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.cli-break-on-function.expected',
         update=update_expected_output,
     )
+
+
+def test_cli_prove_multi_start_symbols(tmp_path: Path) -> None:
+    """Test proving multiple start symbols with a single kompilation."""
+    from kmir.kmir import KMIR
+
+    rs_file = PROVE_DIR / 'unchecked_arithmetic.rs'
+    start_symbols = ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize']
+
+    opts = ProveOpts(
+        rs_file,
+        proof_dir=tmp_path,
+        smir=False,
+        start_symbols=start_symbols,
+    )
+    proofs = KMIR.prove_programs(opts)
+
+    assert len(proofs) == 3
+    for proof in proofs:
+        assert proof.passed
+
+    # Verify shared kompiled directory was used
+    kompiled_dir = tmp_path / f'{rs_file.stem}.kompiled'
+    assert kompiled_dir.is_dir()
+    assert (kompiled_dir / 'smir.json').is_file()
+
+    # Verify each proof has its own directory
+    for sym in start_symbols:
+        proof_dir = tmp_path / f'{rs_file.stem}.{sym}'
+        assert proof_dir.is_dir()
