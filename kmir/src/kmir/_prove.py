@@ -66,9 +66,7 @@ def prove_with_kmir(
     entry in `opts.start_symbols` is used; for multi-symbol proving use `prove()`
     which kompiles once internally but is for external use via `kmir prove`.
     """
-    assert (
-        len(opts.start_symbols) == 1
-    ), f'prove_with_kmir handles a single symbol; got {len(opts.start_symbols)}.'
+    assert len(opts.start_symbols) == 1, f'prove_with_kmir handles a single symbol; got {len(opts.start_symbols)}.'
 
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
