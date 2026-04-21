@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (62 steps)
+│  (57 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃
@@ -15,7 +15,7 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
-┃  │  (96 steps)
+┃  │  (89 steps)
 ┃  ├─ 6 (split)
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
 ┃  ┃
@@ -27,7 +27,7 @@
 ┃  ┃  ├─ 8
 ┃  ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 5 ) )
 ┃  ┃  │
-┃  ┃  │  (7 steps)
+┃  ┃  │  (6 steps)
 ┃  ┃  └─ 10 (stuck, leaf)
 ┃  ┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
 ┃  ┃      span: 32
@@ -55,7 +55,7 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
    │
-   │  (66 steps)
+   │  (60 steps)
    ├─ 7 (terminal)
    │   #EndProgram ~> .K
    │

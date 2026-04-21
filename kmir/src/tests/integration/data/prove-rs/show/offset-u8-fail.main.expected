@@ -5,7 +5,8 @@
 │
 │  (38 steps)
 └─ 3 (stuck, leaf)
-    #traverseProjection ( toAlloc ( allocId ( 0 ) ) , StringVal ( "123" ) , .Project
+    #projectionError
+~> #forPtr ( mutabilityNot , metadata ( noMetadataSize , 0 , no
     span: 48
 
 
