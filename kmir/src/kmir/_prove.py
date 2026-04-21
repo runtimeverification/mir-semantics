@@ -58,7 +58,17 @@ def prove_with_kmir(
     smir_info: SMIRInfo,
     opts: ProveOpts,
 ) -> APRProof:
-    """Run a proof using a pre-built KMIR instance, avoiding redundant kompilation."""
+    """Prove a single symbol using a pre-built KMIR instance.
+
+    The intended use case for this function is internal with the test runner.
+    Use this instead of `prove()` when the caller manages kompilation externally
+    (e.g. the test harness kompiles once and loops over symbols). Only the first
+    entry in `opts.start_symbols` is used; for multi-symbol proving use `prove()`
+    which kompiles once internally but is for external use via `kmir prove`.
+    """
+    assert (
+        len(opts.start_symbols) == 1
+    ), f'prove_with_kmir handles a single symbol; got {len(opts.start_symbols)}.'
 
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
