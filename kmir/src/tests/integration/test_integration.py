@@ -96,7 +96,7 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
         start_symbols = PROVE_START_SYMBOLS[rs_file.stem]
 
     for start_symbol in start_symbols:
-        prove_opts.start_symbol = start_symbol
+        prove_opts.start_symbols = [start_symbol]
         apr_proof = kmir.prove_program(prove_opts)
 
         if should_show:
@@ -333,7 +333,7 @@ def test_verify_rust_std(rs_file: Path, kmir: KMIR, update_expected_output: bool
         cterm_show = CTermShow(printer.print)
 
         for start_symbol in start_symbols:
-            prove_opts.start_symbol = start_symbol
+            prove_opts.start_symbols = [start_symbol]
             apr_proof = KMIR.prove_program_with_kmir(prebuilt_kmir, smir_info, prove_opts)
 
             if should_show:
@@ -378,7 +378,7 @@ def test_crate_examples(main_crate: Path, kmir: KMIR, update_expected_output: bo
 
     # run proofs for all '<start-symbol>.expected' files (failing or not)
     for file in main_crate.parent.glob('*.expected'):
-        opts = ProveOpts(linked_file, smir=True, start_symbol=file.stem)
+        opts = ProveOpts(linked_file, smir=True, start_symbols=[file.stem])
         proof = kmir.prove_program(opts)
 
         printer = PrettyPrinter(kmir.definition)
