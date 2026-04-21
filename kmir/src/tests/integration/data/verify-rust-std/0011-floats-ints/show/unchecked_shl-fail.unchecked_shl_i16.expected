@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (58 steps)
+│  (60 steps)
 ├─ 3
 │   #applyBinOp ( binOpShlUnchecked , Integer ( ARG_INT1:Int , 16 , true ) , Integer
 │   span: 112
@@ -15,7 +15,7 @@
 ┃  │   Integer ( truncate ( ARG_INT1:Int <<Int ARG_UINT2:Int modInt 65536 , 16 , Signed
 ┃  │   span: 112
 ┃  │
-┃  │  (111 steps)
+┃  │  (112 steps)
 ┃  ├─ 6 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │

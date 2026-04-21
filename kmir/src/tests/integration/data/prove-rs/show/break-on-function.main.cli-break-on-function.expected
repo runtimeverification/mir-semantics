@@ -5,32 +5,31 @@
 │
 │  (9 steps)
 ├─ 3
-│   #checkFunctionFilter ( monoItemFn ( ... name: symbol ( "foo" ) , id: defId ( 7 )
-│   function: foo
+│   #execTerminatorCall ( "foo" , .List , body ( ... blocks: basicBlock ( ... statem
+│   function: main
 │   span: /prove-rs/break-on-function.rs:4
 │
 │  (1 step)
 ├─ 4
-│   #setUpCalleeData ( monoItemFn ( ... name: symbol ( "foo" ) , id: defId ( 7 ) , b
+│   #execBlock ( basicBlock ( ... statements: .Statements , terminator: terminator (
 │   function: foo
 │   span: /prove-rs/break-on-function.rs:4
 │
-│  (6 steps)
+│  (9 steps)
 ├─ 5
-│   #checkFunctionFilter ( monoItemFn ( ... name: symbol ( "std::hint::black_box::<i
-│   function: std::hint::black_box::<i32>
+│   #execTerminatorCall ( "std::hint::black_box::<i32>" , ListItem (Integer ( 42 , 3
+│   function: foo
 │   span: /rust/library/core/src/hint.rs:389
 │
 │  (1 step)
 ├─ 6
-│   #setUpCalleeData ( monoItemFn ( ... name: symbol ( "std::hint::black_box::<i32>"
+│   #execBlock ( basicBlock ( ... statements: .Statements , terminator: terminator (
 │   function: std::hint::black_box::<i32>
 │   span: /rust/library/core/src/hint.rs:389
 │
-│  (13 steps)
+│  (3 steps)
 ├─ 7
-│   #checkFunctionFilter ( IntrinsicFunction ( symbol ( "black_box" ) ) )
-~> #execIn
+│   #prepareTerminatorCall ( ty ( 25 ) , IntrinsicFunction ( symbol ( "black_box" )
 │   function: std::hint::black_box::<i32>
 │   span: /rust/library/core/src/hint.rs:389
 │
@@ -40,7 +39,7 @@
 │   function: std::hint::black_box::<i32>
 │   span: /rust/library/core/src/hint.rs:389
 │
-│  (42 steps)
+│  (41 steps)
 ├─ 9 (terminal)
 │   #EndProgram ~> .K
 │   function: main

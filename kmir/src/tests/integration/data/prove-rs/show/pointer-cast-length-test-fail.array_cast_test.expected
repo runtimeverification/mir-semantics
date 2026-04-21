@@ -15,9 +15,9 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 2 ) )
 ┃  │
-┃  │  (7 steps)
+┃  │  (5 steps)
 ┃  └─ 6 (stuck, leaf)
-┃      #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+┃      #prepareTerminatorCall ( ty ( 33 ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
 ┃      span: 32
 ┃
 ┗━━┓ subst: .Subst

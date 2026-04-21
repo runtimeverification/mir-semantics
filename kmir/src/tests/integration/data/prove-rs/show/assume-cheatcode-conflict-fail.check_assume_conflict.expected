@@ -5,7 +5,7 @@
 │
 │  (63 steps)
 └─ 3 (stuck, leaf)
-    #setUpCalleeData ( monoItemFn ( ... name: symbol ( "_ZN4core9panicking5panic17h<hash>
+    #prepareTerminatorCall ( ty ( 26 ) , monoItemFn ( ... name: symbol ( "_ZN4core9p
     span: 32
 
 
