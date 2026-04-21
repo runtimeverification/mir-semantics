@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: src/rust/library/std/src/rt.rs:194
 │
-│  (9 steps)
+│  (17 steps)
 ├─ 3
 │   #execTerminatorCall ( "foo" , .List , body ( ... blocks: basicBlock ( ... statem
 │   function: main
@@ -15,7 +15,7 @@
 │   function: foo
 │   span: /prove-rs/break-on-function.rs:4
 │
-│  (9 steps)
+│  (13 steps)
 ├─ 5
 │   #execTerminatorCall ( "std::hint::black_box::<i32>" , ListItem (Integer ( 42 , 3
 │   function: foo
@@ -39,7 +39,7 @@
 │   function: std::hint::black_box::<i32>
 │   span: /rust/library/core/src/hint.rs:389
 │
-│  (41 steps)
+│  (45 steps)
 ├─ 9 (terminal)
 │   #EndProgram ~> .K
 │   function: main
