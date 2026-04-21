@@ -1050,6 +1050,8 @@ Literal arrays are also built using this RValue.
 
 
   // #readOperands accumulates a list of `TypedLocal` values from operands
+  syntax KResult ::= List
+
   syntax KItem ::= #readOperands ( Operands )
                  | #readOperandsAux( List , Operands )
                  | #readOn( List, Operands )

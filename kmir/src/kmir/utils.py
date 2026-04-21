@@ -289,21 +289,22 @@ def _extract_alloc_id(operands: KInner) -> int | None:
 
 
 def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
-    """If the k cell is `#setUpCalleeData` for a `noBody` callee, return annotation lines with decoded info."""
+    """If the k cell is a pending call to a `noBody` callee, return annotation lines with decoded info."""
 
     from .alloc import Allocation, AllocId, AllocInfo, Memory
     from .linker import _demangle
 
-    setup_call_label = '#setUpCalleeData(_,_,_)_KMIR-CONTROL-FLOW_KItem_MonoItemKind_Operands_Span'
+    prepare_call_label = '#prepareTerminatorCall(_,_,_,_,_,_,_)_KMIR-CONTROL-FLOW_KItem_Ty_MonoItemKind_Operands_Place_MaybeBasicBlockIdx_UnwindAction_Span'
 
     annotations: list[str] = []
 
     match k_cell:
         case KSequence(items=(KApply(label=KLabel(name=label_name), args=args), *_)) | KApply(
             label=KLabel(name=label_name), args=args
-        ) if (label_name == setup_call_label):
+        ) if (label_name == prepare_call_label):
             match args:
                 case [
+                    _,
                     KApply(
                         label=KLabel(name='MonoItemKind::MonoItemFn'),
                         args=[
@@ -313,6 +314,9 @@ def _annotate_nobody_function(k_cell: KInner, smir_info: SMIRInfo) -> list[str]:
                         ],
                     ),
                     operands,
+                    _,
+                    _,
+                    _,
                     KApply(label=KLabel(name='span'), args=[KToken(token=span_str)]),
                 ]:
                     def_id = int(def_id_str)
