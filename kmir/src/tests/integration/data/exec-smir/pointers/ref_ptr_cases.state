@@ -29,14 +29,24 @@
       unwindActionContinue
     </unwind>
     <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
+      ListItem ( 4 )
     </locals>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> newLocal ( ty ( 1 ) , mutabilityNot )
+    2 |-> newLocal ( ty ( 1 ) , mutabilityNot )
+    3 |-> newLocal ( ty ( 1 ) , mutabilityNot )
+    4 |-> newLocal ( ty ( 1 ) , mutabilityNot )
+  </slotStore>
+  <nextSlot>
+    66
+  </nextSlot>
 </kmir>

@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (297 steps)
+│  (298 steps)
 ├─ 3 (split)
 │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
 ┃
@@ -15,7 +15,7 @@
 ┃  ├─ 4
 ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 8 ) )
 ┃  │
-┃  │  (588 steps)
+┃  │  (593 steps)
 ┃  ├─ 6 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │
@@ -43,9 +43,9 @@
    ┃  ├─ 8
    ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 1 , basicBlockIdx ( 7 ) )
    ┃  │
-   ┃  │  (101 steps)
+   ┃  │  (103 steps)
    ┃  └─ 10 (stuck, leaf)
-   ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( 1 , place ( ... local: local
+   ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( slotPlace ( 4 , projectionEle
    ┃
    ┗━━┓ subst: .Subst
       ┃ constraint:
@@ -66,9 +66,9 @@
       ┃  ├─ 12
       ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 2 , basicBlockIdx ( 6 ) )
       ┃  │
-      ┃  │  (101 steps)
+      ┃  │  (103 steps)
       ┃  └─ 14 (stuck, leaf)
-      ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( 1 , place ( ... local: local
+      ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( slotPlace ( 4 , projectionEle
       ┃
       ┗━━┓ subst: .Subst
          ┃ constraint:
@@ -91,7 +91,7 @@
          ┃  │
          ┃  │  (17 steps)
          ┃  └─ 18 (stuck, leaf)
-         ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( 0 , place ( ... local: local
+         ┃      #ProgramError ( #UBErrorPtrOffsetDiff ( PtrLocal ( slotPlace ( 4 , projectionEle
          ┃
          ┗━━┓ subst: .Subst
             ┃ constraint:

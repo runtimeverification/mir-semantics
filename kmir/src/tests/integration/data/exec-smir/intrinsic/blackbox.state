@@ -29,25 +29,45 @@
       unwindActionContinue
     </unwind>
     <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 11 , 32 , false ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) )
-      ListItem ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( noMetadataSize , 0 , noMetadataSize ) ) ) ) , ty ( 47 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Moved , ty ( 41 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 39 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 38 ) , mutabilityNot ) )
-      ListItem ( newLocal ( ty ( 40 ) , mutabilityMut ) )
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
+      ListItem ( 4 )
+      ListItem ( 5 )
+      ListItem ( 6 )
+      ListItem ( 7 )
+      ListItem ( 8 )
+      ListItem ( 9 )
+      ListItem ( 10 )
+      ListItem ( 11 )
+      ListItem ( 12 )
+      ListItem ( 13 )
+      ListItem ( 14 )
     </locals>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> typedValue ( Integer ( 11 , 32 , false ) , ty ( 26 ) , mutabilityNot )
+    2 |-> typedValue ( Moved , ty ( 26 ) , mutabilityMut )
+    3 |-> typedValue ( Moved , ty ( 26 ) , mutabilityMut )
+    4 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) )
+    ListItem ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( noMetadataSize , 0 , noMetadataSize ) ) ) ) , ty ( 47 ) , mutabilityMut )
+    5 |-> typedValue ( Moved , ty ( 25 ) , mutabilityMut )
+    6 |-> typedValue ( Moved , ty ( 25 ) , mutabilityMut )
+    7 |-> typedValue ( Reference ( slotPlace ( 1 , .ProjectionElems ) , mutabilityNot , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot )
+    8 |-> typedValue ( AllocRef ( allocId ( 0 ) , .ProjectionElems , metadata ( noMetadataSize , 0 , noMetadataSize ) ) , ty ( 25 ) , mutabilityNot )
+    9 |-> typedValue ( Moved , ty ( 41 ) , mutabilityMut )
+    10 |-> typedValue ( Moved , ty ( 26 ) , mutabilityMut )
+    11 |-> typedValue ( Moved , ty ( 26 ) , mutabilityMut )
+    12 |-> newLocal ( ty ( 39 ) , mutabilityNot )
+    13 |-> newLocal ( ty ( 38 ) , mutabilityNot )
+    14 |-> newLocal ( ty ( 40 ) , mutabilityMut )
+  </slotStore>
+  <nextSlot>
+    20
+  </nextSlot>
 </kmir>

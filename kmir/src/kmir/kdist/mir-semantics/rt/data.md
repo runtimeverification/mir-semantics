@@ -31,35 +31,35 @@ module RT-DATA
 
 ```
 
-## Operations on local variables
+## Operations on runtime slots
 
-### Indexing into the List of Local Variables in a Stack Frame
+### Resolving MIR locals to runtime slots
 
-The semantics uses lists for stack frames and locals.
-More often than not, an element of the list must be selected by index and is required to be of a certain sort.
-In case of the `<locals>`, we only expect `TypedLocal` to be in the list, and use a dedicated indexing function.
-The same holds for lists used as arguments in the `Value` sort.
+The semantics uses a global `<slotStore>` for runtime local storage.
+Each frame keeps an ordered `locals` list mapping MIR `local(i)` indexes to stable runtime slot handles.
+More often than not, a slot or list element must be selected by index and is required to be of a certain sort.
 
 ```k
-  syntax TypedLocal ::= getLocal ( List, Int ) [function]
-  // ----------------------------------------------
-  rule getLocal(LOCALS, IDX) => {LOCALS[IDX]}:>TypedLocal
-    requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[IDX])
-     [preserves-definedness] // valid indexing and sort coercion checked
+  syntax Bool ::= allValues ( List ) [function, total, symbol(allValues)]
 
-  // indexing values out of TypedValue and Value lists
+  rule allValues(.List) => true
+  rule allValues(ListItem(_:Value) REST) => allValues(REST)
+  rule allValues(ListItem(_) _REST) => false [owise]
+
+  syntax Int ::= #frameSlotId ( List, Int ) [function]
+  // -------------------------------------------------
+  rule #frameSlotId(ListItem(SLOT:Int) _REST, 0) => SLOT
+  rule #frameSlotId(ListItem(_) REST:List, IDX) => #frameSlotId(REST, IDX -Int 1)
+    requires 0 <Int IDX
+     [preserves-definedness] // valid indexing checked by recursive traversal
+
+  // indexing values out of Value lists
   syntax Value ::= getValue ( List, Int ) [function]
-  // ----------------------------------------------
-  rule getValue(LOCALS, IDX) => {valueOf({LOCALS[IDX]}:>TypedValue)}:>Value
-    requires 0 <=Int IDX andBool IDX <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[IDX])
-     andBool isValue(valueOf({LOCALS[IDX]}:>TypedValue))
-     [preserves-definedness] // valid indexing and sort coercion checked
+  // -------------------------------------
 
   rule getValue(VALUES, IDX) => {VALUES[IDX]}:>Value
     requires 0 <=Int IDX andBool IDX <Int size(VALUES)
-     andBool isValue(VALUES[IDX])
+     andBool allValues(VALUES)
      [preserves-definedness] // valid indexing and sort coercion checked
 ```
 
@@ -73,6 +73,7 @@ To ensure the sort coercions above do not cause any harm, some definedness-relat
   // data coerced to sort Value is not undefined if it is of that sort
   rule #Ceil({X}:>Value) => #Ceil(X)
     requires isValue(X)                              [simplification]
+
 ```
 
 ### Evaluating Items to `Value`s
@@ -108,9 +109,9 @@ It is also useful to capture unimplemented semantic constructs so that we can ha
 ### Errors Related to Accessing Local Variables
 
 Access to a `TypedLocal` (whether reading or writing) may fail for a number of reasons.
-It is an error to read a `Moved` local or an uninitialised `NewLocal`.
-Also, locals are accessed via their index in list `<locals>` in a stack frame, which may be out of bounds (but the compiler should guarantee that all local indexes are valid).
-Types (`Ty`, an opaque number assigned by the Stable MIR extraction) are not checked, the local's type is used.
+It is an error to read a `Moved` slot or an uninitialised `NewLocal`.
+MIR locals are first resolved through the current frame's `locals` list, then looked up in `<slotStore>`.
+Types (`Ty`, an opaque number assigned by the Stable MIR extraction) are not checked, the slot's stored type is used.
 
 ### Reading Operands (Local Variables and Constants)
 
@@ -148,13 +149,13 @@ We ensure that any projections of the copy operation are traversed appropriately
 
 ```k
   rule <k> operandCopy(place(local(I), PROJECTIONS))
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
+        => #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), VAL, PROJECTIONS, .Contexts)
         ~> #readProjection(false)
         ...
        </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(VAL:Value, _, _) ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
 
@@ -164,52 +165,58 @@ In contrast to regular write operations, the value does not have to be _mutable_
 
 ```k
   rule <k> operandMove(place(local(I), PROJECTIONS))
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJECTIONS, .Contexts)
+        => #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), VAL, PROJECTIONS, .Contexts)
         ~> #readProjection(true)
        ...
        </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(VAL:Value, _, _) ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 ```
 
 ### Setting Local Variables
 
-The `#setLocalValue` operation writes a `Value` value to a given `Place` within the `List` of local variables currently on top of the stack.
+The `#setLocalValue` operation writes a `Value` to the current frame's MIR local.
+That MIR local is first resolved to a runtime slot in `<slotStore>`.
 If we are setting a value at a `Place` which has `Projection`s in it, then we must first traverse the projections before setting the value.
 
 **Note on mutability:** The Rust compiler validates assignment legality and may reuse immutable locals in MIR (e.g., loop variables), so `#setLocalValue` does not guard on mutability.
 
 ```k
   syntax KItem ::= #setLocalValue( Place, Evaluation ) [strict(2)]
+                 | #setSlotValue ( Int, Evaluation ) [strict(2)]
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
-       </locals>
+  rule <k> #setSlotValue(SLOT, VAL) => .K ... </k>
+       <slotStore> ... SLOT |-> (typedValue(_:Value, TY:Ty, MUT:Mutability) => typedValue(VAL, TY, MUT)) ... </slotStore>
+    [preserves-definedness] // valid lookup checked
+
+  rule <k> #setSlotValue(SLOT, VAL) => .K ... </k>
+       <slotStore> ... SLOT |-> (newLocal(TY:Ty, MUT:Mutability) => typedValue(VAL, TY, MUT)) ... </slotStore>
+    [preserves-definedness] // valid lookup checked
+
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL:Value) => .K ... </k>
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> (typedValue(_:Value, TY:Ty, MUT:Mutability) => typedValue(VAL, TY, MUT)) ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
+    [preserves-definedness] // valid slot indexing and lookup checked
 
-  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL) => .K ... </k>
-       <locals>
-          LOCALS => LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityOf(getLocal(LOCALS, I)))]
-       </locals>
+  rule <k> #setLocalValue(place(local(I), .ProjectionElems), VAL:Value) => .K ... </k>
+       <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> (newLocal(TY:Ty, MUT:Mutability) => typedValue(VAL, TY, MUT)) ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isNewLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
+    [preserves-definedness] // valid slot indexing and lookup checked
 
-  rule <k> #setLocalValue(place(local(I), PROJ), VAL)
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJ, .Contexts)
+  rule <k> #setLocalValue(place(local(I), PROJ), VAL:Value)
+        => #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), CURVAL, PROJ, .Contexts)
         ~> #writeProjection(VAL)
        ...
        </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(CURVAL:Value, _, _) ... </slotStore>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool PROJ =/=K .ProjectionElems
-     andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing and sort checked
 
 ```
@@ -252,54 +259,18 @@ A `Deref` projection in the projections list changes the target of the write ope
   rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> #readProjection(false) => VAL ... </k>
   rule <k> #traverseProjection(_, VAL, .ProjectionElems, _) ~> (#readProjection(true) => #writeMoved ~> VAL) ... </k>
 
-  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toSlot(SLOT), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeProjection(NEW)
-        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
+        => #setSlotValue(SLOT, #buildUpdate(NEW, CONTEXTS))
        ...
        </k>
      [preserves-definedness] // valid context ensured upon context construction
 
-  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> #traverseProjection(toSlot(SLOT), _ORIGINAL, .ProjectionElems, CONTEXTS)
         ~> #writeMoved
-        => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
+        => #setSlotValue(SLOT, #buildUpdate(Moved, CONTEXTS)) // TODO retain Ty and Mutability from _ORIGINAL
        ...
        </k>
-     [preserves-definedness] // valid context ensured upon context construction
-
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeProjection(NEW)
-        => .K
-        ...
-       </k>
-       <stack> STACK
-            => STACK[(FRAME -Int 1) <-
-                      #updateStackLocal(
-                        {STACK[FRAME -Int 1]}:>StackFrame,
-                        I,
-                        #adjustRef(#buildUpdate(NEW, CONTEXTS), 0 -Int FRAME)
-                      )
-                    ]
-       </stack>
-    requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
-     andBool isStackFrame(STACK[FRAME -Int 1])
-     [preserves-definedness] // valid context ensured upon context construction
-
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
-        ~> #writeMoved
-        => .K
-        ...
-       </k>
-       <stack> STACK
-            => STACK[(FRAME -Int 1) <-
-                      #updateStackLocal(
-                        {STACK[FRAME -Int 1]}:>StackFrame,
-                        I,
-                        #adjustRef(#buildUpdate(Moved, CONTEXTS), 0 -Int FRAME)
-                      ) // TODO retain Ty and Mutability from _ORIGINAL
-                    ]
-       </stack>
-    requires 0 <Int FRAME andBool FRAME <=Int size(STACK)
-     andBool isStackFrame(STACK[FRAME -Int 1])
      [preserves-definedness] // valid context ensured upon context construction
 
   // allocations should not be written to, therefore no rule for `toAlloc`
@@ -310,8 +281,7 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
 
 ```k
   // stores the target of the write operation, which may change when references are dereferenced.
-  syntax WriteTo ::= toLocal ( Int )
-                   | toStack ( Int , Local )
+  syntax WriteTo ::= toSlot ( Int )
                    | toAlloc ( AllocId )
 
   // retains information about the value that was deconstructed by a projection
@@ -359,16 +329,6 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule #buildUpdate(Aggregate(variantIdx(0), ListItem(VALUE) .List), CtxWrapStruct CTXS)
     => #buildUpdate(VALUE, CTXS)
 
-
-  syntax StackFrame ::= #updateStackLocal ( StackFrame, Int, Value ) [function]
-
-  rule #updateStackLocal(StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS), I, VAL)
-      => StackFrame(CALLER, DEST, TARGET, UNWIND, LOCALS[I <- typedValue(VAL, tyOfLocal(getLocal(LOCALS, I)), mutabilityMut)])
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
-    [preserves-definedness] // valid list indexing and sort checked
-
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
   syntax ProjectionElems ::= appendP ( ProjectionElems , ProjectionElems ) [function, total]
                            | consP ( ProjectionElem , ProjectionElems ) [function, total]
@@ -389,41 +349,6 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
     // requires I +Int OFF < _SIZE // _SIZE is metadataSize, needs a < operation for this to work
   rule consP(projectionElemToZST, projectionElemFromZST PS:ProjectionElems) => PS [priority(40)]
   rule consP(projectionElemFromZST, projectionElemToZST PS:ProjectionElems) => PS [priority(40)]
-
-  syntax Value ::= #localFromFrame ( StackFrame, Local, Int ) [function]
-
-  rule #localFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET) => #adjustRef(getValue(LOCALS, I), OFFSET)
-    requires 0 <=Int I
-     andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-    [preserves-definedness] // valid list indexing checked
-
-  syntax Value ::= #adjustRef (Value, Int ) [function, total]
-  // --------------------------------------------------------
-  rule #adjustRef(Reference(HEIGHT, PLACE, REFMUT, META), OFFSET)
-    => Reference(HEIGHT +Int OFFSET, PLACE, REFMUT, META)
-  rule #adjustRef(PtrLocal(HEIGHT, PLACE, REFMUT, META), OFFSET)
-    => PtrLocal(HEIGHT +Int OFFSET, PLACE, REFMUT, META)
-  rule #adjustRef(Aggregate(IDX, ARGS), OFFSET)
-    => Aggregate(IDX, #mapOffset(ARGS, OFFSET))
-  rule #adjustRef(Range(ELEMS), OFFSET)
-    => Range(#mapOffset(ELEMS, OFFSET))
-  rule #adjustRef(TL, _) => TL [owise]
-
-  syntax List ::= #mapOffset ( List, Int ) [function, total]
-  // -------------------------------------------------------
-  rule #mapOffset(.List, _)
-    => .List
-  rule #mapOffset(ListItem(ELEM:Value) REST, OFFSET)
-    => ListItem(#adjustRef(ELEM, OFFSET)) #mapOffset(REST, OFFSET)
-  rule #mapOffset(OTHER, _)
-    => OTHER [owise] // should not happen
-
-  syntax Value ::= #incrementRef ( Value )  [function, total]
-                 | #decrementRef ( Value )  [function, total]
-  // --------------------------------------------------------
-  rule #incrementRef(TL) => #adjustRef(TL, 1)
-  rule #decrementRef(TL) => #adjustRef(TL, -1)
 
   syntax Int ::= originSize ( MetadataSize ) [function, total]
   // ---------------------------------------------------------------------
@@ -458,7 +383,7 @@ This is done without consideration of the validity of the Downcast[^downcast].
         ...
         </k>
     requires 0 <=Int I andBool I <Int size(ARGS)
-     andBool isValue(ARGS[I])
+     andBool allValues(ARGS)
     [preserves-definedness] // valid list indexing checked
 
   rule <k> #traverseProjection(
@@ -548,18 +473,18 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
            )
         => #traverseProjection(
              DEST,
-             getValue(ELEMENTS, #expectUsize(getValue(LOCALS, LOCAL))),
+             getValue(ELEMENTS, #expectUsize(INDEXVAL)),
              PROJS,
-             CtxIndex(ELEMENTS, #expectUsize(getValue(LOCALS, LOCAL))) CTXTS
+             CtxIndex(ELEMENTS, #expectUsize(INDEXVAL)) CTXTS
            )
         ...
         </k>
         <locals> LOCALS </locals>
+        <slotStore> ... #frameSlotId(LOCALS, LOCAL) |-> typedValue(INDEXVAL:Value, _, _) ... </slotStore>
     requires 0 <=Int LOCAL andBool LOCAL <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[LOCAL])
-     andBool isInt(#expectUsize(getValue(LOCALS, LOCAL)))
-     andBool 0 <=Int #expectUsize(getValue(LOCALS, LOCAL)) andBool #expectUsize(getValue(LOCALS, LOCAL)) <Int size(ELEMENTS)
-     andBool isValue(ELEMENTS[#expectUsize(getValue(LOCALS, LOCAL))])
+     andBool isInt(#expectUsize(INDEXVAL))
+     andBool 0 <=Int #expectUsize(INDEXVAL) andBool #expectUsize(INDEXVAL) <Int size(ELEMENTS)
+     andBool allValues(ELEMENTS)
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
 
   rule <k> #traverseProjection(
@@ -577,7 +502,7 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
         ...
         </k>
     requires 0 <=Int OFFSET andBool OFFSET <Int size(ELEMENTS)
-     andBool isValue(ELEMENTS[OFFSET])
+     andBool allValues(ELEMENTS)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   rule <k> #traverseProjection(
@@ -596,7 +521,7 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
         </k>
     requires 0 <Int OFFSET andBool OFFSET <=Int MINLEN
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
-     andBool isValue(ELEMENTS[MINLEN -Int OFFSET])
+     andBool allValues(ELEMENTS)
     [preserves-definedness] // ELEMENT indexable and writeable or forced
 
   syntax Int ::= #expectUsize ( Value ) [function]
@@ -716,184 +641,80 @@ An attempt to read more elements than the length of the accessed array is undefi
        </k>
     [preserves-definedness]
 
-  // Ref, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             Reference(slotPlace(SLOT, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
+             toSlot(SLOT),
+             VAL,
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))),
              .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(SIZE, PROJS)
         ...
         </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool 0 <Int PTR_OFFSET
+        <slotStore> ... SLOT |-> typedValue(VAL:Value, _, _) ... </slotStore>
+    requires 0 <Int PTR_OFFSET
     [preserves-definedness]
 
-  // Ref, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
              _DEST,
-             Reference(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             Reference(slotPlace(SLOT, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             PLACEPROJ, // apply reference projections with pointer offset
-             .Contexts
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-        ...
-        </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool PTR_OFFSET ==Int 0
-    [preserves-definedness]
-
-  // Ref, 0 == OFFSET, 0 < PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool 0 <Int PTR_OFFSET
-    [preserves-definedness]
-
-  // Ref, 0 == OFFSET, 0 == PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             Reference(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
+             toSlot(SLOT),
+             VAL,
              PLACEPROJ,
              .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(SIZE, PROJS)
         ...
         </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool PTR_OFFSET ==Int 0
+        <slotStore> ... SLOT |-> typedValue(VAL:Value, _, _) ... </slotStore>
+    requires PTR_OFFSET ==Int 0
     [preserves-definedness]
 
-  // Ptr, 0 < OFFSET, 0 < PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
+             PtrLocal(slotPlace(SLOT, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts // previous contexts obsolete
+             toSlot(SLOT),
+             VAL,
+             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))),
+             .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(SIZE, PROJS)
         ...
         </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool 0 <Int PTR_OFFSET
+        <slotStore> ... SLOT |-> typedValue(VAL:Value, _, _) ... </slotStore>
+    requires 0 <Int PTR_OFFSET
     [preserves-definedness]
 
-  // Ptr, 0 < OFFSET, 0 == PTR_OFFSET, ToStack
   rule <k> #traverseProjection(
              _DEST,
-             PtrLocal(OFFSET, place(LOCAL, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+             PtrLocal(slotPlace(SLOT, PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
              projectionElemDeref PROJS,
              _CTXTS
            )
         => #traverseProjection(
-            toStack(OFFSET, LOCAL),
-             #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET),
-             PLACEPROJ, // apply reference projections
-             .Contexts // add pointer offset context
+             toSlot(SLOT),
+             VAL,
+             PLACEPROJ,
+             .Contexts
            )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-         ...
-        </k>
-        <stack> STACK </stack>
-    requires 0 <Int OFFSET andBool OFFSET <=Int size(STACK)
-     andBool isStackFrame(STACK[OFFSET -Int 1])
-     andBool PTR_OFFSET ==Int 0
-    [preserves-definedness]
-
-  // Ptr, 0 == OFFSET, 0 < PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
-             appendP(PLACEPROJ, PointerOffset(PTR_OFFSET, originSize(ORIGIN_SIZE))), // apply reference projections with pointer offset
-             .Contexts // previous contexts obsolete
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
+          ~> #derefTruncate(SIZE, PROJS)
         ...
         </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool 0 <Int PTR_OFFSET
-    [preserves-definedness]
-
-  // Ptr, 0 == OFFSET, 0 == PTR_OFFSET, Local
-  rule <k> #traverseProjection(
-             _DEST,
-             PtrLocal(OFFSET, place(local(I), PLACEPROJ), _MUT, metadata(SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
-             projectionElemDeref PROJS,
-             _CTXTS
-           )
-        => #traverseProjection(
-             toLocal(I),
-             getValue(LOCALS, I),
-             PLACEPROJ, // apply reference projections
-             .Contexts // add pointer offset context
-           )
-          ~> #derefTruncate(SIZE, PROJS) // then truncate, then continue with remaining projections
-        ...
-        </k>
-        <locals> LOCALS </locals>
-    requires OFFSET ==Int 0
-     andBool 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool 0 ==Int PTR_OFFSET
+        <slotStore> ... SLOT |-> typedValue(VAL:Value, _, _) ... </slotStore>
+    requires 0 ==Int PTR_OFFSET
     [preserves-definedness]
 ```
 
@@ -952,17 +773,19 @@ The most basic ones are simply accessing an operand, either directly or by way o
   rule <k> rvalueUse(OPERAND) => OPERAND ... </k>
 
   rule <k> rvalueCast(CASTKIND, operandCopy(place(local(I), PROJS)) #as OPERAND, TY)
-        => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), TY) ... </k>
+        => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal(LOCAL), PROJS), TY) ... </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
+     andBool isTypedLocal(LOCAL)
     [preserves-definedness] // valid list indexing checked
 
   rule <k> rvalueCast(CASTKIND, operandMove(place(local(I), PROJS)) #as OPERAND, TY)
-        => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), TY) ... </k>
+        => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal(LOCAL), PROJS), TY) ... </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
+     andBool isTypedLocal(LOCAL)
     [preserves-definedness] // valid list indexing checked
 
   rule <k> rvalueCast(CASTKIND, operandConstant(constOperand(_, _, mirConst(_, CONST_TY, _))) #as OPERAND, TY)
@@ -1108,18 +931,18 @@ and an array of the indeicated size gets reconstructed if the provided metadata 
 (potentially removing an indexing operation to get the element).
 
 ```k
-  rule <k> ListItem(PtrLocal(OFFSET, place(LOCAL, PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) 
+  rule <k> ListItem(PtrLocal(slotPlace(SLOT, PROJS), _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) 
            ListItem(Integer(LENGTH, 64, false))
            ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, place(LOCAL, removeIndexTail(PROJS)), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
+        => PtrLocal(slotPlace(SLOT, removeIndexTail(PROJS)), MUT, metadata(dynamicSize(LENGTH), PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
     // requires LENGTH +Int PTR_OFFSET <=Int ORIGIN_SIZE // refuse to create an invalid fat pointer
     //  andBool dynamicSize(1) ==K #metadataSize(lookupTy(_TY)) // expect a slice type
     //  andBool hasIndexTail(PROJS) ???
 
-  rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
-        => PtrLocal(OFFSET, PLACE, MUT, metadata(noMetadataSize, PTR_OFFSET, ORIGIN_SIZE))
+  rule <k> ListItem(PtrLocal(PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
+        => PtrLocal(PLACE, MUT, metadata(noMetadataSize, PTR_OFFSET, ORIGIN_SIZE))
         ...
        </k>
 
@@ -1149,10 +972,11 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
 
 ```k
   rule <k> rvalueDiscriminant(place(local(I), PROJS) #as PLACE)
-        => #discriminant(operandCopy(PLACE), getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)) ... </k>
+        => #discriminant(operandCopy(PLACE), getTyOf(tyOfLocal(LOCAL), PROJS)) ... </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> LOCAL:TypedLocal ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedLocal(LOCALS[I])
+     andBool isTypedLocal(LOCAL)
     [preserves-definedness] // valid indexing and sort coercion
 
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
@@ -1233,32 +1057,32 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
               place(local(I), .ProjectionElems),
               #decodeConstant(
                 constantKindZeroSized,
-                tyOfLocal(getLocal(LOCALS, I)),
-                lookupTy(tyOfLocal(getLocal(LOCALS, I)))
+                TY,
+                lookupTy(TY)
               )
             )
         ~> rvalueRef(REGION, KIND, place(local(I), PROJS))
        ...
        </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> newLocal(TY:Ty, _:Mutability) ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isNewLocal(LOCALS[I])
-     andBool #zeroSizedType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+     andBool #zeroSizedType(lookupTy(TY))
     [preserves-definedness] // valid list indexing checked, zero-sized locals materialise trivially
 
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
-        ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO: Sus on this rule
+        => #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), CURVAL, PROJS, .Contexts)
+        ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(TY, PROJS), 0, noMetadataSize)) // TODO: Sus on this rule
        ...
        </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(CURVAL:Value, TY:Ty, _:Mutability) ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
 
   syntax KItem ::= #forRef( Mutability , Metadata )
 
-  // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
+  // once traversal is finished, reconstruct the last projections and the reference offset/slot, and possibly read the size
   rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forRef(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
         => #mkRef(DEST, #projectionsFor(CTXTS), MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE) )
         ...
@@ -1266,11 +1090,8 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
 
   syntax Evaluation ::= #mkRef( WriteTo , ProjectionElems , Mutability , Metadata ) // [function, total]
   // -----------------------------------------------------------------------------------------------
-  // Create Reference for local variable (stack depth 0, no offset)
-  rule <k> #mkRef(       toLocal(I)     , PROJS, MUT, META) => Reference(   0  , place(local(I), PROJS), MUT, META) ... </k>
-
-  // Create Reference for stack frame variable (stack depth OFFSET, with pointer offset)
-  rule <k> #mkRef(toStack(OFFSET, LOCAL), PROJS, MUT, META) => Reference(OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
+  // Create Reference to a runtime slot.
+  rule <k> #mkRef(toSlot(SLOT), PROJS, MUT, META) => Reference(slotPlace(SLOT, PROJS), MUT, META) ... </k>
 
   // Create AllocRef for heap allocation (assumed zero offset, no offset concept for heap)
   rule <k> #mkRef(toAlloc(ALLOC_ID)     , PROJS,  _ , META) => AllocRef(ALLOC_ID, PROJS, META) ... </k>
@@ -1306,17 +1127,17 @@ The operation typically creates a pointer with empty metadata.
 
   rule <k> rvalueAddressOf(MUT, place(local(I), PROJS))
          =>
-           #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
-          ~> #forPtr(MUT, metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO These initial values might get overwrote
+           #traverseProjection(toSlot(#frameSlotId(LOCALS, I)), CURVAL, PROJS, .Contexts)
+          ~> #forPtr(MUT, metadata(#metadataSize(TY, PROJS), 0, noMetadataSize)) // TODO These initial values might get overwrote
            // we should use #alignOf to emulate the address
        ...
        </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(CURVAL:Value, TY:Ty, _:Mutability) ... </slotStore>
     requires 0 <=Int I andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
 
-  // once traversal is finished, reconstruct the last projections and the reference offset/local, and possibly read the size
+  // once traversal is finished, reconstruct the last projections and the reference offset/slot, and possibly read the size
   rule <k> #traverseProjection(DEST, VAL:Value, .ProjectionElems, CTXTS) ~> #forPtr(MUT, metadata(SIZE, OFFSET, ORIGIN_SIZE))
         => #mkPtr(DEST, #projectionsFor(CTXTS), MUT, metadata(#maybeDynamicSize(SIZE, VAL), OFFSET, ORIGIN_SIZE))
         ...
@@ -1324,8 +1145,7 @@ The operation typically creates a pointer with empty metadata.
 
   syntax Evaluation ::= #mkPtr ( WriteTo, ProjectionElems, Mutability , Metadata ) // [function, total]
   // ------------------------------------------------------------------------------------------
-  rule <k> #mkPtr(         toLocal(I)   , PROJS, MUT, META) => PtrLocal(    0 , place(local(I), PROJS), MUT, META) ... </k>
-  rule <k> #mkPtr(toStack(STACK_OFFSET, LOCAL), PROJS, MUT, META) => PtrLocal(STACK_OFFSET, place(  LOCAL , PROJS), MUT, META) ... </k>
+  rule <k> #mkPtr(toSlot(SLOT), PROJS, MUT, META) => PtrLocal(slotPlace(SLOT, PROJS), MUT, META) ... </k>
 ```
 
 In practice, the `AddressOf` can often be found applied to references that get dereferenced first,
@@ -1335,25 +1155,25 @@ a special rule for this case is applied with higher priority.
 ```k
   rule <k> rvalueAddressOf(MUT, place(local(I), projectionElemDeref .ProjectionElems))
          =>
-           refToPtrLocal(getValue(LOCALS, I), MUT)
+           refToPtrLocal(CURVAL, MUT)
            // we should use #alignOf to emulate the address
        ...
        </k>
        <locals> LOCALS </locals>
+       <slotStore> ... #frameSlotId(LOCALS, I) |-> typedValue(CURVAL:Value, _:Ty, _:Mutability) ... </slotStore>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
-     andBool isTypedValue(LOCALS[I])
-     andBool isRef(getValue(LOCALS, I))
+     andBool isRef(CURVAL)
     [priority(40), preserves-definedness] // valid indexing checked, toPtrLocal can convert the reference
 
   syntax Bool ::= isRef ( Value ) [function, total]
   // -----------------------------------------------------
-  rule isRef(Reference(_, _, _, _)) => true
-  rule isRef(     _OTHER          ) => false [owise]
+  rule isRef(Reference(_, _, _)) => true
+  rule isRef(    _OTHER         ) => false [owise]
 
   syntax Value ::= refToPtrLocal ( Value , Mutability ) [function]
 
-  rule refToPtrLocal(Reference(STACK_OFFSET, PLACE, _, META), MUT) => PtrLocal(STACK_OFFSET, PLACE, MUT, META)
+  rule refToPtrLocal(Reference(PLACE, _, META), MUT) => PtrLocal(PLACE, MUT, META)
 ```
 
 ## Type casts
@@ -1435,8 +1255,8 @@ When the source and target types are pointer types with the same pointee type (i
 the cast preserves the source pointer and its metadata unchanged.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
-          => PtrLocal(OFFSET, PLACE, MUT, META)
+  rule <k> #cast(PtrLocal(PLACE, MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+          => PtrLocal(PLACE, MUT, META)
           ...
         </k>
       requires pointeeTy(lookupTy(TY_SOURCE)) ==K pointeeTy(lookupTy(TY_TARGET))
@@ -1446,11 +1266,10 @@ the cast preserves the source pointer and its metadata unchanged.
 Otherwise, compute the type projection and convert metadata accordingly.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, place(LOCAL, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
+  rule <k> #cast(PtrLocal(slotPlace(SLOT, PROJS), MUT, META), castKindPtrToPtr, TY_SOURCE, TY_TARGET)
           =>
             PtrLocal(
-              OFFSET,
-              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
+              slotPlace(SLOT, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
               MUT,
               #convertMetadata(META, lookupTy(TY_TARGET))
             )
@@ -1543,15 +1362,15 @@ Specifically, pointers to arrays of statically-known length are cast to pointers
 The original metadata is therefore already stored as `staticSize` to avoid having to look it up here.
 
 ```k
-  rule <k> #cast(PtrLocal(OFFSET, PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+  rule <k> #cast(PtrLocal(PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
-            PtrLocal(OFFSET, PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
+            PtrLocal(PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
           ...
         </k>
 
-  rule <k> #cast(Reference(OFFSET, PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
+  rule <k> #cast(Reference(PLACE, MUT, metadata(staticSize(SIZE), PTR_OFFSET, ORIGIN_SIZE)), castKindPointerCoercion(pointerCoercionUnsize), _TY_SOURCE, _TY_TARGET)
           =>
-            Reference(OFFSET, PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
+            Reference(PLACE, MUT, metadata(dynamicSize(SIZE), PTR_OFFSET, ORIGIN_SIZE))
           ...
         </k>
 
@@ -1571,13 +1390,13 @@ Support for `castKindTransmute` in this semantics is very limited because of the
 What can be supported without additional layout consideration is trivial casts between the same underlying type (mutable or not).
 
 ```k
-  rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
+  rule <k> #cast(Reference(_, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 
   rule <k> #cast(AllocRef(_, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 
-  rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
+  rule <k> #cast(PtrLocal(_, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
       requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
 ```
 
@@ -2336,8 +2155,8 @@ The unary operation `unOpPtrMetadata`, when given a reference or pointer to a sl
 * For values with statically-known size, this operation returns a _unit_ value. However, these calls should not occur in practical programs.
 
 ```k
-  rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
-  rule <k> #applyUnOp(unOpPtrMetadata,  PtrLocal(_, _, _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
+  rule <k> #applyUnOp(unOpPtrMetadata, Reference(_, _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
+  rule <k> #applyUnOp(unOpPtrMetadata,  PtrLocal(_, _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
   rule <k> #applyUnOp(unOpPtrMetadata,  AllocRef(  _ , _, metadata(dynamicSize(SIZE), _, _))) => Integer(SIZE, 64, false) ... </k>
 
   // could add a rule for cases without metadata
@@ -2351,26 +2170,25 @@ Raw pointer comparisons ignore mutability, but require the address and metadata 
   syntax Bool ::= #ptrLocalEq(Value, Value) [function, total]
 
   rule #ptrLocalEq(
-          PtrLocal(OFFSET1, PLACE1, _, PTRMETA1),
-          PtrLocal(OFFSET2, PLACE2, _, PTRMETA2)
+          PtrLocal(PLACE1, _, PTRMETA1),
+          PtrLocal(PLACE2, _, PTRMETA2)
        )
-    =>  OFFSET1 ==Int OFFSET2
-     andBool PLACE1 ==K PLACE2
+    =>  PLACE1 ==K PLACE2
      andBool PTRMETA1 ==K PTRMETA2
   rule #ptrLocalEq(_, _) => false [owise]
 
   rule #applyBinOp(
           binOpEq,
-          PtrLocal(_, _, _, _) #as PTR1,
-          PtrLocal(_, _, _, _) #as PTR2,
+          PtrLocal(_, _, _) #as PTR1,
+          PtrLocal(_, _, _) #as PTR2,
           _
        )
     => BoolVal(#ptrLocalEq(PTR1, PTR2))
 
   rule #applyBinOp(
           binOpNe,
-          PtrLocal(_, _, _, _) #as PTR1,
-          PtrLocal(_, _, _, _) #as PTR2,
+          PtrLocal(_, _, _) #as PTR1,
+          PtrLocal(_, _, _) #as PTR2,
           _
        )
     => BoolVal(notBool #ptrLocalEq(PTR1, PTR2))
@@ -2388,22 +2206,22 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
   // Trivial case when adding 0 - valid for any pointer
   rule #applyBinOp(
           binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA ),
+          PtrLocal( PLACE , MUT, POINTEE_METADATA ),
           Integer(VAL, _WIDTH, _SIGNED), // Trivial case when adding 0
           _CHECKED)
     =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, POINTEE_METADATA )
+          PtrLocal( PLACE , MUT, POINTEE_METADATA )
   requires VAL ==Int 0
   [preserves-definedness, priority(40)]
 
   // Check offset bounds against origin pointer with dynamicSize metadata
   rule #applyBinOp(
           binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, dynamicSize(ORIGIN_SIZE)) ),
+          PtrLocal( PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, dynamicSize(ORIGIN_SIZE)) ),
           Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
           _CHECKED)
     =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, dynamicSize(ORIGIN_SIZE)) )
+          PtrLocal( PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, dynamicSize(ORIGIN_SIZE)) )
     requires OFFSET_VAL >=Int 0
      andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
    [preserves-definedness]
@@ -2411,11 +2229,11 @@ A trivial case where `binOpOffset` applies an offset of `0` is added with higher
   // Check offset bounds against origin pointer with staticSize metadata
   rule #applyBinOp(
           binOpOffset,
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, staticSize(ORIGIN_SIZE)) ),
+          PtrLocal( PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET, staticSize(ORIGIN_SIZE)) ),
           Integer(OFFSET_VAL, _WIDTH, _SIGN), // offset: signed (for stable offset) or unsigned (for get_unchecked)
           _CHECKED)
     =>
-          PtrLocal( STACK_DEPTH , PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)) )
+          PtrLocal( PLACE , MUT, metadata(CURRENT_SIZE, CURRENT_OFFSET +Int OFFSET_VAL, staticSize(ORIGIN_SIZE)) )
     requires OFFSET_VAL >=Int 0
      andBool CURRENT_OFFSET +Int OFFSET_VAL <=Int ORIGIN_SIZE
    [preserves-definedness]

@@ -87,20 +87,53 @@ The implementation requires operands to have identical types (`TY1 ==K TY2`) bef
 Execution gets stuck (no matching rule) when operands have different types or unknown type information.
 
 ```k
-  // Raw eq: dereference operands, extract types, and delegate to typed comparison
+  syntax KItem ::= #getType(Operand)
+                 | #execRawEqCheck(KItem)
+                 | #execRawEqValues(Place, Evaluation, Evaluation) [seqstrict(2,3)]
+
+  // Raw eq: first verify type equality, then compare dereferenced values.
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE, _SPAN)
-        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS),
-                                  #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS))
+        => #getType(#withDeref(ARG1))
+        ~> #execRawEqCheck(#getType(#withDeref(ARG2)))
+        ~> #execRawEqValues(PLACE, #withDeref(ARG1), #withDeref(ARG2))
+       ... </k>
+
+  rule <k> #getType(operandCopy(place(local(I), PROJS)))
+        => getTyOf(tyOfLocal(LOCAL), PROJS)
        ... </k>
        <locals> LOCALS </locals>
+       <slotStore> ... SLOT:Int |-> LOCAL:TypedLocal ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool SLOT ==Int #frameSlotId(LOCALS, I)
+    [preserves-definedness]
 
-  // Compare values only if types are identical
-  syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
-  rule <k> #execRawEqTyped(DEST, VAL1:Value, TY1:Ty, VAL2:Value, TY2:Ty)
-        => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
+  rule <k> #getType(operandMove(place(local(I), PROJS)))
+        => getTyOf(tyOfLocal(LOCAL), PROJS)
+       ... </k>
+       <locals> LOCALS </locals>
+       <slotStore> ... SLOT:Int |-> LOCAL:TypedLocal ... </slotStore>
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool SLOT ==Int #frameSlotId(LOCALS, I)
+    [preserves-definedness]
+
+  rule <k> #getType(operandConstant(constOperand(_, _, mirConst(_, TY, _)))) => TY ... </k>
+
+  rule <k> #getType(_OP) => TyUnknown ... </k> [owise]
+
+  rule <k> TY1:Ty ~> #execRawEqCheck(#getType(ARG2))
+        => #getType(ARG2)
+        ~> #execRawEqCheck(TY1)
+       ... </k>
+
+  rule <k> TY2:Ty ~> #execRawEqCheck(TY1:Ty)
+        => .K
        ... </k>
     requires TY1 ==K TY2
     [preserves-definedness]
+
+  rule <k> #execRawEqValues(DEST, VAL1:Value, VAL2:Value)
+        => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
+       ... </k>
 
   // Add deref projection to operands
   syntax Operand ::= #withDeref(Operand) [function, total]
@@ -111,18 +144,6 @@ Execution gets stuck (no matching rule) when operands have different types or un
        // must not overwrite the value, just the reference is moved!
   rule #withDeref(OP) => OP [owise]
 
-  // Extract type from operands (locals with projections, constants, fallback to unknown)
-  syntax MaybeTy ::= #extractOperandType(Operand, List) [function, total]
-  rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
-    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
-    [preserves-definedness]
-  rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
-    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
-    [preserves-definedness]
-  rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _) => TY
-  rule #extractOperandType(_, _) => TyUnknown [owise]
 ```
 
 #### Volatile Store (`std::intrinsics::volatile_store`, `std::ptr::write_volatile`)
@@ -191,8 +212,8 @@ the second argument, so the returned difference is always positive.
 
   rule <k> 
         #ptrOffsetDiff(
-          PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF1, _)),
-          PtrLocal(HEIGHT, PLACE, _, metadata( _ , OFF2, _)),
+          PtrLocal(PLACE, _, metadata( _ , OFF1, _)),
+          PtrLocal(PLACE, _, metadata( _ , OFF2, _)),
           SIGNED_FLAG,
           DEST
        ) => #setLocalValue(DEST, Integer(OFF1 -Int OFF2, 64, SIGNED_FLAG))
@@ -202,8 +223,8 @@ the second argument, so the returned difference is always positive.
 
   rule <k> 
         #ptrOffsetDiff(
-          PtrLocal(_, _, _, _) #as PTR1,
-          PtrLocal(_, _, _, _) #as PTR2,
+          PtrLocal(_, _, _) #as PTR1,
+          PtrLocal(_, _, _) #as PTR2,
           SIGNED_FLAG,
           _DEST
        ) => #UBErrorPtrOffsetDiff(PTR1, PTR2, SIGNED_FLAG)

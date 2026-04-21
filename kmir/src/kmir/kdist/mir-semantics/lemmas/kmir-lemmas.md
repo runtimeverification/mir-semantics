@@ -33,6 +33,18 @@ The lists used in the semantics are cons-lists, so only rules with a head elemen
     [simplification, symbolic(REST)]
 
   rule 0 <=Int size(_LIST:List) => true [simplification]
+
+  // In symbolic-args-fail.rs:eats_all_args, the branch `if x6.len() > 0 { x6[0] = ...; }`
+  // updates a symbolic array via `ELEMS[0 <- VAL]`. The backend needs both
+  // `allValues(ELEMS)` and an in-bounds index to treat that builtin update as defined.
+  // Without this lemma, the proof bottoms out before the write rule can fire.
+
+  rule #Ceil(ELEMS[IDX <- _VAL:Value])
+    => #Ceil(ELEMS)
+     #And {true #Equals allValues(ELEMS)}
+     #And {true #Equals 0 <=Int IDX andBool IDX <Int size(ELEMS)}
+    [simplification, symbolic(ELEMS)]
+
 ```
 
 The hooked `range` function selects a segment from a list, by removing elements from front and back.
@@ -49,29 +61,6 @@ If nothing is removed, the list remains the same. If all elements are removed, n
     requires A +Int B <=Int size(L) [simplification, preserves-definedness]
 
   rule #Ceil(range(L, A, B)) => #Ceil(L) #And #Ceil(A) #And #Ceil(B) #And {true #Equals A +Int B <=Int size(L)} [simplification]
-```
-
-The `#mapOffset` function maps `#adjustRef` over a lists of `Value`s, leaving the list length unchanged.
-Definedness of the list and list elements is also guaranteed.
-
-```k
-  rule size(#mapOffset(L, _)) => size(L) [simplification, preserves-definedness]
-
-  rule #Ceil(#mapOffset(L, _)[I]) => #Ceil(L) #And {true #Equals 0 <=Int I} #And {true #Equals I <Int size(L)} [simplification]
-
-  rule #Ceil(#mapOffset(L, _)) => #Ceil(L) [simplification]
-
-  rule #adjustRef(VAL:Value, 0) => VAL [simplification]
-
-  rule #adjustRef(#adjustRef(VAL, OFFSET1), OFFSET2)
-    => #adjustRef(VAL, OFFSET1 +Int OFFSET2)
-    [simplification]
-
-  rule #mapOffset(L, 0) => L [simplification]
-
-  rule #mapOffset(#mapOffset(L, OFFSET1), OFFSET2)
-    => #mapOffset(L, OFFSET1 +Int OFFSET2)
-    [simplification]
 ```
 
 ## Simplifications for `enum` Discriminants and Variant Indexes

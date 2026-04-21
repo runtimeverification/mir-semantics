@@ -31,27 +31,46 @@
       unwindActionContinue
     </unwind>
     <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 254 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
-      ListItem ( Moved ) ) , ty ( 28 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 255 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( -100 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
-      ListItem ( Moved ) ) , ty ( 26 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( -32640 , 16 , true ) , ty ( 35 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 255 , 16 , true ) , ty ( 35 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( -128 , 16 , true ) , ty ( 35 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
-      ListItem ( Moved ) ) , ty ( 36 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( -32768 , 16 , true ) , ty ( 35 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( -128 , 16 , true ) , ty ( 35 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
-      ListItem ( Moved ) ) , ty ( 36 ) , mutabilityMut ) )
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
+      ListItem ( 4 )
+      ListItem ( 5 )
+      ListItem ( 6 )
+      ListItem ( 7 )
+      ListItem ( 8 )
+      ListItem ( 9 )
+      ListItem ( 10 )
+      ListItem ( 11 )
+      ListItem ( 12 )
+      ListItem ( 13 )
     </locals>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> typedValue ( Integer ( 254 , 8 , false ) , ty ( 9 ) , mutabilityNot )
+    2 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
+    ListItem ( Moved ) ) , ty ( 28 ) , mutabilityMut )
+    3 |-> typedValue ( Integer ( 255 , 8 , false ) , ty ( 9 ) , mutabilityNot )
+    4 |-> typedValue ( Integer ( -100 , 8 , true ) , ty ( 2 ) , mutabilityNot )
+    5 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
+    ListItem ( Moved ) ) , ty ( 26 ) , mutabilityMut )
+    6 |-> typedValue ( Integer ( -128 , 8 , true ) , ty ( 2 ) , mutabilityNot )
+    7 |-> typedValue ( Integer ( -32640 , 16 , true ) , ty ( 35 ) , mutabilityNot )
+    8 |-> typedValue ( Integer ( 255 , 16 , true ) , ty ( 35 ) , mutabilityMut )
+    9 |-> typedValue ( Integer ( -128 , 16 , true ) , ty ( 35 ) , mutabilityMut )
+    10 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
+    ListItem ( Moved ) ) , ty ( 36 ) , mutabilityMut )
+    11 |-> typedValue ( Integer ( -32768 , 16 , true ) , ty ( 35 ) , mutabilityNot )
+    12 |-> typedValue ( Integer ( -128 , 16 , true ) , ty ( 35 ) , mutabilityMut )
+    13 |-> typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
+    ListItem ( Moved ) ) , ty ( 36 ) , mutabilityMut )
+  </slotStore>
+  <nextSlot>
+    24
+  </nextSlot>
 </kmir>

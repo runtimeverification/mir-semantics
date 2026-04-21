@@ -85,6 +85,8 @@ KORE_TEMPLATE: Final = Template(dedent(r"""
                 Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
             ),
             Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
+            Lbl'-LT-'slotStore'-GT-'{}(Lbl'Stop'Map{}()),
+            Lbl'-LT-'nextSlot'-GT-'{}(\dv{SortInt{}}("0"))
         ),
         Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
     )

@@ -28,12 +28,18 @@ module TEST-ADD-MODULE
                ( UNWIND_CELL => unwindActionContinue )
              </unwind>
              <locals>
-               ListItem ( newLocal ( ty ( ( 0 => 1 ) ) , ( mutabilityNot => mutabilityMut ) ) )
+               ListItem ( ( 0 => 1 ) )
              </locals>
            </currentFrame>
            <stack>
-             ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ) ) )
+             ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( 0 ) ) ) )
            </stack>
+           <slotStore>
+             ( 0 |-> newLocal ( ty ( 0 ) , mutabilityNot ) => 0 |-> newLocal ( ty ( 0 ) , mutabilityNot ) 1 |-> newLocal ( ty ( 1 ) , mutabilityMut ) )
+           </slotStore>
+           <nextSlot>
+             ( 1 => 2 )
+           </nextSlot>
          </kmir>
       [priority(20), label(BASIC-BLOCK-1-TO-3)]
 

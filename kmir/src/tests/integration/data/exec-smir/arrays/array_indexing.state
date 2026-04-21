@@ -29,24 +29,41 @@
       unwindActionContinue
     </unwind>
     <locals>
-      ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Range ( ListItem ( Integer ( 1 , 16 , true ) )
-      ListItem ( Integer ( 1 , 16 , true ) )
-      ListItem ( Integer ( 1 , 16 , true ) )
-      ListItem ( Integer ( 1 , 16 , true ) ) ) , ty ( 29 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 1 , 16 , true ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 0 , 64 , false ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 4 , 64 , false ) , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Integer ( 1 , 16 , true ) , ty ( 26 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 1 , 64 , false ) , ty ( 25 ) , mutabilityNot ) )
-      ListItem ( typedValue ( Integer ( 4 , 64 , false ) , ty ( 25 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
-      ListItem ( typedValue ( Moved , ty ( 30 ) , mutabilityMut ) )
-      ListItem ( newLocal ( ty ( 31 ) , mutabilityMut ) )
+      ListItem ( 0 )
+      ListItem ( 1 )
+      ListItem ( 2 )
+      ListItem ( 3 )
+      ListItem ( 4 )
+      ListItem ( 5 )
+      ListItem ( 6 )
+      ListItem ( 7 )
+      ListItem ( 8 )
+      ListItem ( 9 )
+      ListItem ( 10 )
+      ListItem ( 11 )
     </locals>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <slotStore>
+    0 |-> newLocal ( ty ( 1 ) , mutabilityMut )
+    1 |-> typedValue ( Range ( ListItem ( Integer ( 1 , 16 , true ) )
+    ListItem ( Integer ( 1 , 16 , true ) )
+    ListItem ( Integer ( 1 , 16 , true ) )
+    ListItem ( Integer ( 1 , 16 , true ) ) ) , ty ( 29 ) , mutabilityNot )
+    2 |-> typedValue ( Integer ( 1 , 16 , true ) , ty ( 26 ) , mutabilityNot )
+    3 |-> typedValue ( Integer ( 0 , 64 , false ) , ty ( 25 ) , mutabilityNot )
+    4 |-> typedValue ( Integer ( 4 , 64 , false ) , ty ( 25 ) , mutabilityMut )
+    5 |-> typedValue ( Moved , ty ( 30 ) , mutabilityMut )
+    6 |-> typedValue ( Integer ( 1 , 16 , true ) , ty ( 26 ) , mutabilityNot )
+    7 |-> typedValue ( Integer ( 1 , 64 , false ) , ty ( 25 ) , mutabilityNot )
+    8 |-> typedValue ( Integer ( 4 , 64 , false ) , ty ( 25 ) , mutabilityMut )
+    9 |-> typedValue ( Moved , ty ( 30 ) , mutabilityMut )
+    10 |-> typedValue ( Moved , ty ( 30 ) , mutabilityMut )
+    11 |-> newLocal ( ty ( 31 ) , mutabilityMut )
+  </slotStore>
+  <nextSlot>
+    12
+  </nextSlot>
 </kmir>

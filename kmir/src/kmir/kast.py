@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, NamedTuple
 
 from pyk.kast.inner import KApply, KSequence, KSort, KVariable, Subst, build_cons
 from pyk.kast.manip import free_vars, split_config_from
-from pyk.kast.prelude.collections import list_empty, list_of
+from pyk.kast.prelude.collections import list_empty, list_of, map_of
 from pyk.kast.prelude.kint import eqInt, intToken, leInt
 from pyk.kast.prelude.ml import mlEqualsTrue
 from pyk.kast.prelude.utils import token
@@ -19,12 +19,11 @@ from .value import (
     BoolValue,
     DynamicSize,
     IntValue,
-    Local,
     Metadata,
-    Place,
     PtrLocalValue,
     RangeValue,
     RefValue,
+    SlotPlace,
     StaticSize,
 )
 
@@ -192,12 +191,16 @@ def _make_concrete_call_config_with_locals(
             k_cell,
         )
 
+    slot_ids = [token(i) for i in range(len(localvars))]
     subst = Subst(
         {
             **init_subst(),
             **{
                 'K_CELL': k_cell,
-                'LOCALS_CELL': list_of(localvars),
+                'LOCALS_CELL': list_of(slot_ids),
+                'SLOTSTORE_CELL': map_of(zip(slot_ids, localvars, strict=True)),
+                'NEXTSLOT_CELL': token(len(slot_ids)),
+                'GENERATEDCOUNTER_CELL': token(0),
             },
         }
     )
@@ -215,11 +218,15 @@ def _make_symbolic_call_config(
     types: Mapping[Ty, TypeMetadata],
 ) -> tuple[KInner, list[KInner]]:
     locals, constraints = _symbolic_locals(fn_data.args, types)
+    slot_ids = [token(i) for i in range(len(locals))]
     subst = Subst(
         {
             'K_CELL': fn_data.call_terminator,
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
-            'LOCALS_CELL': list_of(locals),
+            'LOCALS_CELL': list_of(slot_ids),
+            'SLOTSTORE_CELL': map_of(zip(slot_ids, locals, strict=True)),
+            'NEXTSLOT_CELL': token(len(slot_ids)),
+            'GENERATEDCOUNTER_CELL': token(0),
         },
     )
     empty_config = definition.empty_config(KSort('GeneratedTopCell'))
@@ -373,7 +380,11 @@ class _ArgGenerator:
                     mlEqualsTrue(leInt(variant_var, token(max_variant))),
                 ]
                 args = self._fresh_var('ENUM_ARGS')
-                return KApply('Value::Aggregate', (KApply('variantIdx', (variant_var,)), args)), idx_range, None
+                return (
+                    KApply('Value::Aggregate', (KApply('variantIdx', (variant_var,)), args)),
+                    idx_range + [mlEqualsTrue(KApply('allValues', (args,)))],
+                    None,
+                )
 
             case StructT(_, _, fields):
                 field_vars: list[KInner] = []
@@ -390,14 +401,18 @@ class _ArgGenerator:
 
             case UnionT():
                 args = self._fresh_var('ARG_UNION')
-                return KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), args)), [], None
+                return (
+                    KApply('Value::Aggregate', (KApply('variantIdx', (token(0),)), args)),
+                    [mlEqualsTrue(KApply('allValues', (args,)))],
+                    None,
+                )
 
             case ArrayT(_, None):
                 elems = self._fresh_var('ARG_ARRAY')
                 l = self._fresh_var('ARG_ARRAY_LEN')
                 return (
                     KApply('Value::Range', (elems,)),
-                    [mlEqualsTrue(eqInt(KApply('sizeList', (elems,)), l))],
+                    [mlEqualsTrue(eqInt(KApply('sizeList', (elems,)), l)), mlEqualsTrue(KApply('allValues', (elems,)))],
                     KApply(
                         'Metadata',
                         (
@@ -450,8 +465,7 @@ class _ArgGenerator:
                     KApply(
                         'Value::Reference',
                         (
-                            token(0),  # Stack OFFSET field
-                            KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
+                            KApply('SlotPlace', (token(ref), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                             metadata if metadata is not None else no_metadata,
                         ),
@@ -468,8 +482,7 @@ class _ArgGenerator:
                     KApply(
                         'Value::PtrLocal',
                         (
-                            token(0),
-                            KApply('place', (KApply('local', (token(ref),)), KApply('ProjectionElems::empty', ()))),
+                            KApply('SlotPlace', (token(ref), KApply('ProjectionElems::empty', ()))),
                             KApply('Mutability::Mut', ()) if mutable else KApply('Mutability::Not', ()),
                             metadata if metadata is not None else no_metadata,
                         ),
@@ -652,15 +665,13 @@ class _RandomArgGen:
         match type_info:
             case PtrT():
                 return PtrLocalValue(
-                    stack_depth=0,
-                    place=Place(local=Local(ref)),
+                    place=SlotPlace(slot=ref),
                     mut=mut,
                     metadata=metadata,
                 )
             case RefT():
                 return RefValue(
-                    stack_depth=0,
-                    place=Place(local=Local(ref)),
+                    place=SlotPlace(slot=ref),
                     mut=mut,
                     metadata=metadata,
                 )
