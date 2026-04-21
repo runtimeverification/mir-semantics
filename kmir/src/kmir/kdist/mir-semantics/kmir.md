@@ -310,7 +310,7 @@ where the returned result should go.
 
 ```k
   syntax KItem ::= #prepareTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
-                 | #prepareBodyCall(List, String, Body, Operands, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+                 | #prepareBodyCall(List, String, Body, originalArgs: Operands, remainingArgs: Operands, callerLocals: List, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
                  | #execTerminatorCall(functionName: String, args: List, body: Body, fty: Ty, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
                  | #execIntrinsic(MonoItemKind, Operands, Place, Span)
 
@@ -354,24 +354,25 @@ where the returned result should go.
      andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Non-intrinsic calls materialize their arguments while the caller frame is still current.
-  // `spread_arg` is handled before entering the callee, so the callee only sees a flat list
-  // of values to assign to locals `_1`, `_2`, ...
+  // Closure-shim tuple arguments are normalized before entering the callee, so
+  // the callee sees the argument values to assign to locals `_1`, `_2`, ...
   rule <k> #prepareTerminatorCall(FTY, monoItemFn(symbol(NAME), _, someBody(BODY)), ARGS, DEST, TARGET, UNWIND, SPAN)
-        => #prepareBodyCall(.List, NAME, BODY, ARGS, FTY, DEST, TARGET, UNWIND, SPAN)
+        => #prepareBodyCall(.List, NAME, BODY, ARGS, ARGS, LOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
         </k>
+       <locals> LOCALS </locals>
 
-  rule <k> #prepareBodyCall(ACC, NAME, BODY, .Operands, FTY, DEST, TARGET, UNWIND, SPAN)
-        => #execTerminatorCall(NAME, #normalizeCallValues(NAME, BODY, ACC), BODY, FTY, DEST, TARGET, UNWIND, SPAN)
+  rule <k> #prepareBodyCall(ACC, NAME, BODY, ORIGINAL, .Operands, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall(NAME, #normalizeCallValues(NAME, BODY, ORIGINAL, ACC, CALLERLOCALS), BODY, FTY, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
 
-  rule <k> #prepareBodyCall(ACC, NAME, BODY, OP:Operand REST:Operands, FTY, DEST, TARGET, UNWIND, SPAN)
-        => OP ~> #prepareBodyCall(ACC, NAME, BODY, REST, FTY, DEST, TARGET, UNWIND, SPAN)
+  rule <k> #prepareBodyCall(ACC, NAME, BODY, ORIGINAL, OP:Operand REST:Operands, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
+        => OP ~> #prepareBodyCall(ACC, NAME, BODY, ORIGINAL, REST, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
 
-  rule <k> VAL:Value ~> #prepareBodyCall(ACC, NAME, BODY, REST:Operands, FTY, DEST, TARGET, UNWIND, SPAN)
-        => #prepareBodyCall(ACC ListItem(VAL), NAME, BODY, REST, FTY, DEST, TARGET, UNWIND, SPAN)
+  rule <k> VAL:Value ~> #prepareBodyCall(ACC, NAME, BODY, ORIGINAL, REST:Operands, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
+        => #prepareBodyCall(ACC ListItem(VAL), NAME, BODY, ORIGINAL, REST, CALLERLOCALS, FTY, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
 
@@ -518,49 +519,99 @@ If an argument contains a `Reference` or local pointer into the caller frame, it
        ListItem(newLocal(TY, MUT)) #initCallLocalsAux(true, REST, .List)
 ```
 
-For calls using Rust's `rust-call` ABI, the function body identifies the tuple-packed
-arguments via its `spread_arg` field.[^spread_arg]
-The caller-side operand traversal first materializes the original MIR arguments as values,
-then expands the final spread argument into the flat callee argument list.
+Some call shims pass tuple-packed arguments while the callee body expects the
+tuple fields as distinct locals.
+The caller-side operand traversal first materializes the original MIR arguments
+as values, then expands only the observed closure-shim shape into the flat
+callee argument list.
+
+The `spread_arg` field identifies the local that stores a tuple-packed argument
+inside a Rust-call body.[^spread_arg]
+It is not by itself enough to decide that the incoming value should be flattened:
+some shims with `spread_arg` still project from that tuple local in the body.
 
 [^spread_arg]: https://doc.rust-lang.org/beta/nightly-rustc/rustc_public/mir/body/struct.Body.html#structfield.spread_arg
 
 ```k
-  syntax List ::= #normalizeCallValues(String, Body, List) [function, total]
-                | #normalizeRustCallValues(Int, Int, List) [function, total]
+  syntax CallArg ::= "#skipCallArg"
+
+  syntax List ::= #normalizeCallValues(String, Body, Operands, List, List) [function, total]
                 | #spreadArgValues(Value) [function, total]
-  syntax Bool ::= #isClosureFunction(String) [function, total]
+  syntax Bool ::= #isTupleArg(List, Int) [function, total]
+                | #isTupleType(TypeInfo) [function, total]
+                | #isClosureReceiverDirect(List, Int) [function, total]
+                | #isClosureReceiverRef(List, Int) [function, total]
+                | #isClosureReceiverType(TypeInfo) [function, total]
+                | #isClosureReceiverRefType(TypeInfo) [function, total]
 
-  // The preferred source of truth is `spread_arg`: for rust-call bodies it marks
-  // the final tuple-packed argument that must be flattened before entering the callee.
-  rule #normalizeCallValues(_NAME, body(_, _, _, _, someLocal(local(SPREAD)), _), VALS)
-    => #normalizeRustCallValues(1, SPREAD, VALS)
+  // Closure shims without a StableMIR `spread_arg` pass a receiver plus a tuple,
+  // but the callee body expects the tuple fields as locals. This preserves the
+  // old caller-type heuristic while keeping argument materialization outside the
+  // callee frame.
+  rule #normalizeCallValues(
+         _NAME,
+         body(_, _, _, _, noLocal, _),
+         operandMove(place(local(CLOSURE), .ProjectionElems))
+         operandMove(place(local(TUPLE), .ProjectionElems))
+         .Operands,
+         ListItem(_CLOSUREVAL) ListItem(TUPLEVAL:Value) .List,
+         CALLERLOCALS
+       )
+    => ListItem(#skipCallArg) #spreadArgValues(TUPLEVAL)
+    requires #isTupleArg(CALLERLOCALS, TUPLE)
+     andBool #isClosureReceiverDirect(CALLERLOCALS, CLOSURE)
 
-  // StableMIR currently leaves `spread_arg` unset on closure shim bodies, so keep a
-  // narrow fallback for the observed receiver-plus-tuple shape.
-  rule #normalizeCallValues(NAME, body(_, _, _, _, noLocal, _), ListItem(CLOSURE) ListItem(TUPLE) .List)
-    => ListItem(CLOSURE) #spreadArgValues(TUPLE)
-    requires #isClosureFunction(NAME)
+  rule #normalizeCallValues(
+         _NAME,
+         body(_, _, _, _, noLocal, _),
+         operandMove(place(local(CLOSURE), .ProjectionElems))
+         operandMove(place(local(TUPLE), .ProjectionElems))
+         .Operands,
+         ListItem(CLOSUREVAL:Value) ListItem(TUPLEVAL:Value) .List,
+         CALLERLOCALS
+       )
+    => ListItem(CLOSUREVAL) #spreadArgValues(TUPLEVAL)
+    requires #isTupleArg(CALLERLOCALS, TUPLE)
+     andBool #isClosureReceiverRef(CALLERLOCALS, CLOSURE)
 
-  rule #normalizeCallValues(_NAME, _BODY, VALS) => VALS [owise]
-
-  rule #normalizeRustCallValues(IDX, SPREAD, ListItem(VAL) REST:List)
-    => ListItem(VAL) #normalizeRustCallValues(IDX +Int 1, SPREAD, REST)
-    requires IDX <Int SPREAD
-
-  rule #normalizeRustCallValues(IDX, SPREAD, ListItem(VAL) REST:List)
-    => #spreadArgValues(VAL) REST
-    requires IDX ==Int SPREAD
-
-  rule #normalizeRustCallValues(_, _, .List) => .List
-
-  rule #normalizeRustCallValues(IDX, SPREAD, VALS:List) => VALS
-    requires IDX >Int SPREAD
+  rule #normalizeCallValues(_NAME, _BODY, _ORIGINAL, VALS, _CALLERLOCALS) => VALS [owise]
 
   rule #spreadArgValues(Aggregate(variantIdx(0), ARGS)) => ARGS
   rule #spreadArgValues(VAL:Value) => ListItem(VAL) [owise]
 
-  rule #isClosureFunction(NAME) => 0 <=Int findString(NAME, "{closure#", 0)
+  rule #isTupleArg(LOCALS, I)
+    => #isTupleType(lookupTy(tyOfLocal({LOCALS[I]}:>TypedLocal)))
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness]
+  rule #isTupleArg(_, _) => false [owise]
+
+  rule #isTupleType(typeInfoTupleType(_, _)) => true
+  rule #isTupleType(_) => false [owise]
+
+  rule #isClosureReceiverDirect(LOCALS, I)
+    => #isClosureReceiverType(lookupTy(tyOfLocal({LOCALS[I]}:>TypedLocal)))
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+  rule #isClosureReceiverDirect(_, _) => false [owise]
+
+  rule #isClosureReceiverRef(LOCALS, I)
+    => #isClosureReceiverRefType(lookupTy(tyOfLocal({LOCALS[I]}:>TypedLocal)))
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+  rule #isClosureReceiverRef(_, _) => false [owise]
+
+  rule #isClosureReceiverType(typeInfoVoidType) => true
+  rule #isClosureReceiverType(typeInfoFunType(_)) => true
+  rule #isClosureReceiverType(_) => false [owise]
+
+  rule #isClosureReceiverRefType(typeInfoRefType(TY)) => #isClosureReceiverType(lookupTy(TY))
+  rule #isClosureReceiverRefType(_) => false [owise]
 ```
 
 
