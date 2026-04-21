@@ -75,7 +75,7 @@ class ProveOpts(KMirOpts):
     save_smir: bool
     smir: bool
     parsed_smir: dict | None
-    start_symbol: str
+    start_symbols: list[str]
     add_module: Path | str | None
     break_on_calls: bool
     break_on_function_calls: bool
@@ -111,7 +111,7 @@ class ProveOpts(KMirOpts):
         save_smir: bool = False,
         smir: bool = False,
         parsed_smir: dict | None = None,
-        start_symbol: str = 'main',
+        start_symbols: list[str] | None = None,
         break_on_calls: bool = False,
         break_on_function_calls: bool = False,
         break_on_intrinsic_calls: bool = False,
@@ -144,7 +144,12 @@ class ProveOpts(KMirOpts):
         self.save_smir = save_smir
         self.smir = smir
         self.parsed_smir = parsed_smir
-        self.start_symbol = start_symbol
+
+        if start_symbols is not None:
+            self.start_symbols = start_symbols
+        else:
+            self.start_symbols = ['main']
+
         self.break_on_calls = break_on_calls
         self.break_on_function_calls = break_on_function_calls
         self.break_on_intrinsic_calls = break_on_intrinsic_calls

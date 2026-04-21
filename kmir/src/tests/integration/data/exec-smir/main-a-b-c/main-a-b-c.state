@@ -1,19 +1,20 @@
 <kmir>
   <k>
-    #execTerminator ( terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) ~> .K
+    #readOperandsAux ( .List , .Operands ) ~> #freezer#execTerminatorCall(_,_,_,_,_,_,_,_,_,_)_KMIR-CONTROL-FLOW_KItem_String_Body_Operands_List_KItem_Ty_Place_MaybeBasicBlockIdx_UnwindAction_Span4_ ( "b" ~> .K , body (... blocks: basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 60 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 27 ) , id: mirConstId ( 11 ) ) ) ) , args: .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 61 ) ) )  basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 62 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 1 ) , span: span ( 63 ) , mut: mutabilityMut )  .LocalDecls , argCount: 0 , varDebugInfo: .VarDebugInfos , spreadArg: noLocal , span: span ( 64 ) ) ~> .K , .Operands ~> .K , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ~> .K , ty ( 26 ) ~> .K , place (... local: local ( 0 ) , projection: .ProjectionElems ) ~> .K , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K , unwindActionContinue ~> .K , span ( 56 ) ~> .K ) ~> .K
   </k>
   <retVal>
     noReturn
   </retVal>
   <currentFunc>
-    ty ( 27 )
+    ty ( 25 )
   </currentFunc>
   <currentFrame>
     <currentBody>
-      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 65 ) ) ) )
+      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 55 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 26 ) , id: mirConstId ( 10 ) ) ) ) , args: .Operands , destination: place (... local: local ( 0 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwind: unwindActionContinue ) , span: span ( 56 ) ) ) )
+      ListItem ( basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 57 ) ) ) )
     </currentBody>
     <caller>
-      ty ( 26 )
+      ty ( -1 )
     </caller>
     <dest>
       place (... local: local ( 0 ) , projection: .ProjectionElems )
@@ -29,8 +30,6 @@
     </locals>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( 25 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) ) ) )
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>

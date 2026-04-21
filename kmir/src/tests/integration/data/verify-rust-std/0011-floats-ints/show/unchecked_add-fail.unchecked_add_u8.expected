@@ -1,0 +1,35 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (68 steps)
+├─ 3
+│   #applyBinOp ( binOpAddUnchecked , Integer ( ARG_UINT1:Int , 8 , false ) , Intege
+│   span: 84
+┃
+┃ (1 step)
+┣━━┓
+┃  │
+┃  ├─ 4
+┃  │   Integer ( ARG_UINT1:Int +Int ARG_UINT2:Int &Int 255 , 8 , false )
+~> #freezer#se
+┃  │   span: 84
+┃  │
+┃  │  (76 steps)
+┃  ├─ 6 (terminal)
+┃  │   #EndProgram ~> .K
+┃  │
+┃  ┊  constraint: true
+┃  ┊  subst: ...
+┃  └─ 2 (leaf, target, terminal)
+┃      #EndProgram ~> .K
+┃
+┗━━┓
+   │
+   └─ 5 (leaf, terminal)
+       thunk ( #applyBinOp ( binOpAddUnchecked , Integer ( ARG_UINT1:Int , 8 , false )
+       span: 84
+
+
+

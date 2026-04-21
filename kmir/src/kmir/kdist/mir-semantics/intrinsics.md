@@ -112,7 +112,7 @@ Execution gets stuck (no matching rule) when operands have different types or un
   rule #withDeref(OP) => OP [owise]
 
   // Extract type from operands (locals with projections, constants, fallback to unknown)
-  syntax MaybeTy ::= #extractOperandType(Operand, List) [function, total]
+  syntax MaybeTy ::= #extractOperandType(Operand, List) [function, total, no-evaluators]
   rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS)
        => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
