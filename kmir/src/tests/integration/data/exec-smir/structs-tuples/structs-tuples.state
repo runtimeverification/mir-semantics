@@ -1,21 +1,6 @@
 <kmir>
   <k>
-    #readOperandsAux ( ListItem ( Integer ( 10 , 32 , true ) ) , operandMove ( place (... local: local ( 6 ) , projection: .ProjectionElems ) )  operandMove ( place (... local: local ( 7 ) , projection: .ProjectionElems ) )  .Operands ) ~> #freezer#execTerminatorCall(_,_,_,_,_,_,_,_,_,_)_KMIR-CONTROL-FLOW_KItem_String_Body_Operands_List_KItem_Ty_Place_MaybeBasicBlockIdx_UnwindAction_Span4_ ( "foo" ~> .K , body (... blocks: basicBlock (... statements: .Statements , terminator: terminator (... kind: terminatorKindReturn , span: span ( 73 ) ) )  .BasicBlocks , locals: localDecl (... ty: ty ( 1 ) , span: span ( 74 ) , mut: mutabilityMut )  localDecl (... ty: ty ( 16 ) , span: span ( 75 ) , mut: mutabilityNot )  localDecl (... ty: ty ( 26 ) , span: span ( 76 ) , mut: mutabilityNot )  localDecl (... ty: ty ( 27 ) , span: span ( 77 ) , mut: mutabilityNot )  .LocalDecls , argCount: 3 , varDebugInfo: varDebugInfo (... name: symbol ( "_i" ) , sourceInfo: sourceInfo (... span: span ( 75 ) , scope: sourceScope ( 0 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsPlace ( place (... local: local ( 1 ) , projection: .ProjectionElems ) ) , argumentIndex: someInt ( 1 ) )  varDebugInfo (... name: symbol ( "_b" ) , sourceInfo: sourceInfo (... span: span ( 76 ) , scope: sourceScope ( 0 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsPlace ( place (... local: local ( 2 ) , projection: .ProjectionElems ) ) , argumentIndex: someInt ( 2 ) )  varDebugInfo (... name: symbol ( "_f" ) , sourceInfo: sourceInfo (... span: span ( 77 ) , scope: sourceScope ( 0 ) ) , composite: noVarDebugInfoFragment , value: varDebugInfoContentsPlace ( place (... local: local ( 3 ) , projection: .ProjectionElems ) ) , argumentIndex: someInt ( 3 ) )  .VarDebugInfos , spreadArg: noLocal , span: span ( 78 ) ) ~> .K , operandMove ( place (... local: local ( 5 ) , projection: .ProjectionElems ) )  operandMove ( place (... local: local ( 6 ) , projection: .ProjectionElems ) )  operandMove ( place (... local: local ( 7 ) , projection: .ProjectionElems ) )  .Operands ~> .K , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
-    ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 10 , 32 , true ) )
-    ListItem ( BoolVal ( false ) )
-    ListItem ( thunk ( UnableToDecode ( b"\x00\x00\x00\x00\x00\x00$@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) ) ) , ty ( 28 ) , mutabilityNot ) )
-    ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 11 , 32 , true ) )
-    ListItem ( BoolVal ( true ) )
-    ListItem ( thunk ( UnableToDecode ( b"\x00\x00\x00\x00\x00\x00$@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) ) ) , ty ( 29 ) , mutabilityNot ) )
-    ListItem ( typedValue ( Moved , ty ( 27 ) , mutabilityMut ) )
-    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
-    ListItem ( typedValue ( Integer ( 10 , 32 , true ) , ty ( 16 ) , mutabilityMut ) )
-    ListItem ( typedValue ( BoolVal ( false ) , ty ( 26 ) , mutabilityMut ) )
-    ListItem ( typedValue ( thunk ( UnableToDecode ( b"\x00\x00\x00\x00\x00\x00$@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) , ty ( 27 ) , mutabilityMut ) )
-    ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
-    ListItem ( newLocal ( ty ( 16 ) , mutabilityMut ) )
-    ListItem ( newLocal ( ty ( 26 ) , mutabilityMut ) )
-    ListItem ( newLocal ( ty ( 27 ) , mutabilityMut ) ) ~> .K , ty ( 25 ) ~> .K , place (... local: local ( 4 ) , projection: .ProjectionElems ) ~> .K , someBasicBlockIdx ( basicBlockIdx ( 1 ) ) ~> .K , unwindActionContinue ~> .K , span ( 51 ) ~> .K ) ~> .K
+    #execStmts ( statement (... kind: statementKindAssign (... place: place (... local: local ( 9 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place (... local: local ( 2 ) , projection: projectionElemField ( fieldIdx ( 0 ) , ty ( 16 ) )  .ProjectionElems ) ) ) ) , span: span ( 65 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 10 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place (... local: local ( 2 ) , projection: projectionElemField ( fieldIdx ( 1 ) , ty ( 26 ) )  .ProjectionElems ) ) ) ) , span: span ( 66 ) )  statement (... kind: statementKindAssign (... place: place (... local: local ( 11 ) , projection: .ProjectionElems ) , rvalue: rvalueUse ( operandCopy ( place (... local: local ( 2 ) , projection: projectionElemField ( fieldIdx ( 2 ) , ty ( 27 ) )  .ProjectionElems ) ) ) ) , span: span ( 67 ) )  .Statements ) ~> #execTerminator ( terminator (... kind: terminatorKindCall (... func: operandConstant ( constOperand (... span: span ( 63 ) , userTy: noUserTypeAnnotationIndex , const: mirConst (... kind: constantKindZeroSized , ty: ty ( 25 ) , id: mirConstId ( 9 ) ) ) ) , args: operandMove ( place (... local: local ( 9 ) , projection: .ProjectionElems ) )  operandMove ( place (... local: local ( 10 ) , projection: .ProjectionElems ) )  operandMove ( place (... local: local ( 11 ) , projection: .ProjectionElems ) )  .Operands , destination: place (... local: local ( 8 ) , projection: .ProjectionElems ) , target: someBasicBlockIdx ( basicBlockIdx ( 2 ) ) , unwind: unwindActionContinue ) , span: span ( 64 ) ) ) ~> .K
   </k>
   <retVal>
     noReturn
@@ -52,8 +37,8 @@
       ListItem ( typedValue ( Moved , ty ( 27 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
       ListItem ( typedValue ( Moved , ty ( 16 ) , mutabilityMut ) )
-      ListItem ( typedValue ( BoolVal ( false ) , ty ( 26 ) , mutabilityMut ) )
-      ListItem ( typedValue ( thunk ( UnableToDecode ( b"\x00\x00\x00\x00\x00\x00$@" , typeInfoPrimitiveType ( primTypeFloat ( floatTyF64 ) ) ) ) , ty ( 27 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
+      ListItem ( typedValue ( Moved , ty ( 27 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 16 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 26 ) , mutabilityMut ) )
