@@ -50,18 +50,19 @@ module KMIR-SPL-TOKEN
     [preserves-definedness]
 
   rule <k> #forceSetPlaceValue(place(local(I), PROJ), VAL)
-        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJ, .Contexts)
+        => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJ, .Contexts, #frameLocals(LOCALS, STACK), .List)
         ~> #writeProjectionForce(VAL)
        ...
        </k>
        <locals> LOCALS </locals>
+       <stack> STACK </stack>
     requires 0 <=Int I
      andBool I <Int size(LOCALS)
      andBool PROJ =/=K .ProjectionElems
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
 
-  rule <k> #traverseProjection(toLocal(I), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> projectionDone(toLocal(I), _ORIGINAL, CONTEXTS)
         ~> #writeProjectionForce(NEW)
         => #setLocalValue(place(local(I), .ProjectionElems), #buildUpdate(NEW, CONTEXTS))
        ...
@@ -71,7 +72,7 @@ module KMIR-SPL-TOKEN
      andBool I <Int size(LOCALS)
      [preserves-definedness]
 
-  rule <k> #traverseProjection(toStack(FRAME, local(I)), _ORIGINAL, .ProjectionElems, CONTEXTS)
+  rule <k> projectionDone(toStack(FRAME, local(I)), _ORIGINAL, CONTEXTS)
         ~> #writeProjectionForce(NEW)
         => .K
        ...
@@ -432,7 +433,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
                         .ProjectionElems
 
   rule [cheatcode-is-spl-account]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -475,12 +476,11 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
       andBool #isSplPubkey(?SplCloseAuthKey)
     [priority(30), preserves-definedness]
 
-  rule <k> #traverseProjection(DEST, SPLDataBuffer(VAL), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize (_), PROJS)
-        => #traverseProjection(DEST, SPLDataBuffer(VAL), PROJS, CTXTS) ...
-       </k>
+  rule #resumeDeref(projectionDone(DEST, SPLDataBuffer(VAL), CTXTS), dynamicSize(_), PROJS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, SPLDataBuffer(VAL), PROJS, CTXTS, FRAME_LOCALS, SEEN)
 
   rule [cheatcode-is-spl-mint]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -516,7 +516,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
     [priority(30), preserves-definedness]
 
   rule [cheatcode-is-spl-rent]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -539,12 +539,11 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
       andBool 0 <=Int ?SplRentBurnPercent andBool ?SplRentBurnPercent <=Int 100
     [priority(30), preserves-definedness]
 
-  // Multisig cheatcode: decompose signer pubkeys into individual byte variables.
-  // Each ?SplSiNBj:Int is a single byte (0..255), giving 32 concrete ListItems per signer.
-  // This allows ==K on pubkey Lists to decompose into integer equalities (fast for SMT),
-  // instead of opaque symbolic List equality (causes Z3 timeout at scale).
+  // Multisig cheatcode: create three symbolic signer pubkeys.
+  // Keep signers as constrained byte Lists instead of expanding every byte here;
+  // the byte-level expansion is too large for the Haskell kompile parser.
   rule [cheatcode-is-spl-multisig]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #forceSetPlaceValue(
            place(LOCAL, appendP(PROJS, DATA_BUFFER_PROJS)),  // navigate to [u8] data buffer
            SPLDataBuffer(
@@ -553,33 +552,9 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
                ListItem(Integer(?SplMultisigN:Int, 8, false))                                             // n: u8
                ListItem(BoolVal(?_SplMultisigInitialised:Bool))                                           // is_initialized: bool
                ListItem(Range(                                                                            // signers: [Pubkey; 3]
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(#mkSplPubkey(
-                   ?SplSi0B0:Int,  ?SplSi0B1:Int,  ?SplSi0B2:Int,  ?SplSi0B3:Int,
-                   ?SplSi0B4:Int,  ?SplSi0B5:Int,  ?SplSi0B6:Int,  ?SplSi0B7:Int,
-                   ?SplSi0B8:Int,  ?SplSi0B9:Int,  ?SplSi0B10:Int, ?SplSi0B11:Int,
-                   ?SplSi0B12:Int, ?SplSi0B13:Int, ?SplSi0B14:Int, ?SplSi0B15:Int,
-                   ?SplSi0B16:Int, ?SplSi0B17:Int, ?SplSi0B18:Int, ?SplSi0B19:Int,
-                   ?SplSi0B20:Int, ?SplSi0B21:Int, ?SplSi0B22:Int, ?SplSi0B23:Int,
-                   ?SplSi0B24:Int, ?SplSi0B25:Int, ?SplSi0B26:Int, ?SplSi0B27:Int,
-                   ?SplSi0B28:Int, ?SplSi0B29:Int, ?SplSi0B30:Int, ?SplSi0B31:Int)))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(#mkSplPubkey(
-                   ?SplSi1B0:Int,  ?SplSi1B1:Int,  ?SplSi1B2:Int,  ?SplSi1B3:Int,
-                   ?SplSi1B4:Int,  ?SplSi1B5:Int,  ?SplSi1B6:Int,  ?SplSi1B7:Int,
-                   ?SplSi1B8:Int,  ?SplSi1B9:Int,  ?SplSi1B10:Int, ?SplSi1B11:Int,
-                   ?SplSi1B12:Int, ?SplSi1B13:Int, ?SplSi1B14:Int, ?SplSi1B15:Int,
-                   ?SplSi1B16:Int, ?SplSi1B17:Int, ?SplSi1B18:Int, ?SplSi1B19:Int,
-                   ?SplSi1B20:Int, ?SplSi1B21:Int, ?SplSi1B22:Int, ?SplSi1B23:Int,
-                   ?SplSi1B24:Int, ?SplSi1B25:Int, ?SplSi1B26:Int, ?SplSi1B27:Int,
-                   ?SplSi1B28:Int, ?SplSi1B29:Int, ?SplSi1B30:Int, ?SplSi1B31:Int)))))
-                 ListItem(Aggregate(variantIdx(0), ListItem(Range(#mkSplPubkey(
-                   ?SplSi2B0:Int,  ?SplSi2B1:Int,  ?SplSi2B2:Int,  ?SplSi2B3:Int,
-                   ?SplSi2B4:Int,  ?SplSi2B5:Int,  ?SplSi2B6:Int,  ?SplSi2B7:Int,
-                   ?SplSi2B8:Int,  ?SplSi2B9:Int,  ?SplSi2B10:Int, ?SplSi2B11:Int,
-                   ?SplSi2B12:Int, ?SplSi2B13:Int, ?SplSi2B14:Int, ?SplSi2B15:Int,
-                   ?SplSi2B16:Int, ?SplSi2B17:Int, ?SplSi2B18:Int, ?SplSi2B19:Int,
-                   ?SplSi2B20:Int, ?SplSi2B21:Int, ?SplSi2B22:Int, ?SplSi2B23:Int,
-                   ?SplSi2B24:Int, ?SplSi2B25:Int, ?SplSi2B26:Int, ?SplSi2B27:Int,
-                   ?SplSi2B28:Int, ?SplSi2B29:Int, ?SplSi2B30:Int, ?SplSi2B31:Int)))))
+                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner0Key:List))))
+                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner1Key:List))))
+                 ListItem(Aggregate(variantIdx(0), ListItem(Range(?SplSigner2Key:List))))
                ))
              )
            )
@@ -593,33 +568,9 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
     requires #functionName(FUNC) ==String "spl_token::entrypoint::cheatcode_is_spl_multisig"
       orBool #functionName(FUNC) ==String "cheatcode_is_spl_multisig"
     ensures #isByte(?SplMultisigM) andBool #isByte(?SplMultisigN)
-      // signer 0
-      andBool #isByte(?SplSi0B0)  andBool #isByte(?SplSi0B1)  andBool #isByte(?SplSi0B2)  andBool #isByte(?SplSi0B3)
-      andBool #isByte(?SplSi0B4)  andBool #isByte(?SplSi0B5)  andBool #isByte(?SplSi0B6)  andBool #isByte(?SplSi0B7)
-      andBool #isByte(?SplSi0B8)  andBool #isByte(?SplSi0B9)  andBool #isByte(?SplSi0B10) andBool #isByte(?SplSi0B11)
-      andBool #isByte(?SplSi0B12) andBool #isByte(?SplSi0B13) andBool #isByte(?SplSi0B14) andBool #isByte(?SplSi0B15)
-      andBool #isByte(?SplSi0B16) andBool #isByte(?SplSi0B17) andBool #isByte(?SplSi0B18) andBool #isByte(?SplSi0B19)
-      andBool #isByte(?SplSi0B20) andBool #isByte(?SplSi0B21) andBool #isByte(?SplSi0B22) andBool #isByte(?SplSi0B23)
-      andBool #isByte(?SplSi0B24) andBool #isByte(?SplSi0B25) andBool #isByte(?SplSi0B26) andBool #isByte(?SplSi0B27)
-      andBool #isByte(?SplSi0B28) andBool #isByte(?SplSi0B29) andBool #isByte(?SplSi0B30) andBool #isByte(?SplSi0B31)
-      // signer 1
-      andBool #isByte(?SplSi1B0)  andBool #isByte(?SplSi1B1)  andBool #isByte(?SplSi1B2)  andBool #isByte(?SplSi1B3)
-      andBool #isByte(?SplSi1B4)  andBool #isByte(?SplSi1B5)  andBool #isByte(?SplSi1B6)  andBool #isByte(?SplSi1B7)
-      andBool #isByte(?SplSi1B8)  andBool #isByte(?SplSi1B9)  andBool #isByte(?SplSi1B10) andBool #isByte(?SplSi1B11)
-      andBool #isByte(?SplSi1B12) andBool #isByte(?SplSi1B13) andBool #isByte(?SplSi1B14) andBool #isByte(?SplSi1B15)
-      andBool #isByte(?SplSi1B16) andBool #isByte(?SplSi1B17) andBool #isByte(?SplSi1B18) andBool #isByte(?SplSi1B19)
-      andBool #isByte(?SplSi1B20) andBool #isByte(?SplSi1B21) andBool #isByte(?SplSi1B22) andBool #isByte(?SplSi1B23)
-      andBool #isByte(?SplSi1B24) andBool #isByte(?SplSi1B25) andBool #isByte(?SplSi1B26) andBool #isByte(?SplSi1B27)
-      andBool #isByte(?SplSi1B28) andBool #isByte(?SplSi1B29) andBool #isByte(?SplSi1B30) andBool #isByte(?SplSi1B31)
-      // signer 2
-      andBool #isByte(?SplSi2B0)  andBool #isByte(?SplSi2B1)  andBool #isByte(?SplSi2B2)  andBool #isByte(?SplSi2B3)
-      andBool #isByte(?SplSi2B4)  andBool #isByte(?SplSi2B5)  andBool #isByte(?SplSi2B6)  andBool #isByte(?SplSi2B7)
-      andBool #isByte(?SplSi2B8)  andBool #isByte(?SplSi2B9)  andBool #isByte(?SplSi2B10) andBool #isByte(?SplSi2B11)
-      andBool #isByte(?SplSi2B12) andBool #isByte(?SplSi2B13) andBool #isByte(?SplSi2B14) andBool #isByte(?SplSi2B15)
-      andBool #isByte(?SplSi2B16) andBool #isByte(?SplSi2B17) andBool #isByte(?SplSi2B18) andBool #isByte(?SplSi2B19)
-      andBool #isByte(?SplSi2B20) andBool #isByte(?SplSi2B21) andBool #isByte(?SplSi2B22) andBool #isByte(?SplSi2B23)
-      andBool #isByte(?SplSi2B24) andBool #isByte(?SplSi2B25) andBool #isByte(?SplSi2B26) andBool #isByte(?SplSi2B27)
-      andBool #isByte(?SplSi2B28) andBool #isByte(?SplSi2B29) andBool #isByte(?SplSi2B30) andBool #isByte(?SplSi2B31)
+      andBool #isSplPubkey(?SplSigner0Key)
+      andBool #isSplPubkey(?SplSigner1Key)
+      andBool #isSplPubkey(?SplSigner2Key)
     [priority(30), preserves-definedness]
 ```
 
@@ -628,7 +579,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ```k
   // RefCell::<&mut [u8]>::borrow / borrow_mut - returns Ref/RefMut wrapper with pointer to data
   rule [spl-borrow-data]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #setSPLBorrowData(DEST, operandCopy(place(LOCAL, PROJS)))
          ~> #continueAt(TARGET)
     </k>
@@ -648,7 +599,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 ```k
   // Account/Mint::unpack_from_slice, bincode::deserialize (for Rent) - extracts struct from SPLDataBuffer
   rule [spl-account-unpack]:
-    <k> #execTerminatorCall(_, FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, OP:Operand .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #splUnpack(DEST, #withDeref(OP))
          ~> #continueAt(TARGET)
     </k>
@@ -662,7 +613,7 @@ The `#initBorrow` helper resets borrow counters to 0 and sets the correct dynami
 
   // Account/Mint::pack_into_slice - writes struct into SPLDataBuffer
   rule [spl-account-pack]:
-    <k> #execTerminatorCall(_, FUNC, SRC:Operand DST:Operand .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, SRC:Operand DST:Operand .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #splPack(#withDeref(SRC), #withDeref(DST)) ~> #continueAt(TARGET)
     </k>
     requires #isSPLPackFunc(#functionName(FUNC))
@@ -684,41 +635,32 @@ zeroed representation.
   // sol_memset(buf, val, len) - fast-path full-buffer zeroization on recognized SPLDataBuffer values.
   // Any other call shape falls back to the ordinary call semantics below.
   rule [spl-sol-memset]:
-    <k> #execTerminatorCall(FTY, FUNC,
+    <k> #prepareTerminatorCall(FTY, monoItemFn(symbol(NAME), _, someBody(BODY)) #as FUNC,
           BUF:Operand VAL:Operand LEN:Operand .Operands,
           DEST, TARGET, UNWIND, SPAN) ~> _CONT
-      => #execSPLSolMemset(FTY, FUNC, #withDeref(BUF), VAL, LEN, BUF, BUF VAL LEN .Operands, DEST, TARGET, UNWIND, SPAN)
+      => #execSPLSolMemset(FTY, NAME, BODY, #withDeref(BUF), VAL, LEN, BUF, BUF VAL LEN .Operands, DEST, TARGET, UNWIND, SPAN)
     </k>
     requires #isSPLSolMemsetFunc(#functionName(FUNC))
     [priority(30), preserves-definedness]
 
-  syntax KItem ::= #execSPLSolMemset ( Ty, MonoItemKind, Evaluation , Evaluation , Evaluation , Operand, Operands, Place, MaybeBasicBlockIdx, UnwindAction, Span ) [seqstrict(3,4,5)]
+  syntax KItem ::= #execSPLSolMemset ( Ty, String, Body, Evaluation , Evaluation , Evaluation , Operand, Operands, Place, MaybeBasicBlockIdx, UnwindAction, Span ) [seqstrict(4,5,6)]
 
-  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandCopy(place(LOCAL, PROJS)), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
+  rule <k> #execSPLSolMemset(_, _, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandCopy(place(LOCAL, PROJS)), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
         => #setLocalValue(place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)), SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
     requires #isZeroMemsetValue(VAL)
      andBool LEN ==Int #splBufferLen(BUF)
      andBool 0 <Int #splBufferLen(BUF)
-  rule <k> #execSPLSolMemset(_, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandMove(place(LOCAL, PROJS)), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
+  rule <k> #execSPLSolMemset(_, _, _, SPLDataBuffer(_) #as BUF, VAL, Integer(LEN, 64, false), operandMove(place(LOCAL, PROJS)), _ARGS, _DEST, TARGET, _UNWIND, _SPAN)
         => #setLocalValue(place(LOCAL, appendP(PROJS, projectionElemDeref .ProjectionElems)), SPLDataBuffer(Integer(0, 8, false))) ~> #continueAt(TARGET) ... </k>
     requires #isZeroMemsetValue(VAL)
      andBool LEN ==Int #splBufferLen(BUF)
      andBool 0 <Int #splBufferLen(BUF)
 
   rule [spl-sol-memset-fallback]:
-    <k> #execSPLSolMemset(FTY, FUNC, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
-      => #setUpCalleeData(FUNC, ARGS, SPAN)
+    <k> #execSPLSolMemset(FTY, NAME, BODY, _BUF, _VAL, _LEN, _BUFOP, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
+      => #execTerminatorCall(NAME, BODY, ARGS, LOCALS, #readOperands(ARGS), FTY, DEST, TARGET, UNWIND, SPAN)
     </k>
-    <currentFunc> CALLER => FTY </currentFunc>
-    <currentFrame>
-      <currentBody> _ </currentBody>
-      <caller> OLDCALLER => CALLER </caller>
-      <dest> OLDDEST => DEST </dest>
-      <target> OLDTARGET => TARGET </target>
-      <unwind> OLDUNWIND => UNWIND </unwind>
-      <locals> LOCALS </locals>
-    </currentFrame>
-    <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+    <locals> LOCALS </locals>
     [owise]
 ```
 
@@ -727,7 +669,7 @@ zeroed representation.
 ```{.k .symbolic}
   // Rent::get - returns stable value, cached in outermost frame
   rule [spl-rent-get]:
-    <k> #execTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #writeSPLSysRent(DEST)
          ~> #continueAt(TARGET)
     </k>
@@ -780,7 +722,7 @@ zeroed representation.
 ## Pubkey comparison shortcut
 ```k
   rule [spl-cmp-pubkeys]:
-    <k> #execTerminatorCall(_, FUNC, ARG1:Operand ARG2:Operand .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, ARG1:Operand ARG2:Operand .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #execSPLCmpPubkeys( DEST, #withDeref(ARG1), #withDeref(ARG2))
          ~> #continueAt(TARGET)
     </k>
@@ -830,7 +772,7 @@ be called prior to capturing initial state and prior to executing the implementa
   // Usage: cheatcode_maybe_same_account(&account1, &account2)
   // Effect: If account1.key == account2.key, then all SPL data fields are constrained equal
   rule [cheatcode-maybe-same-account]:
-    <k> #execTerminatorCall(_, FUNC,
+    <k> #prepareTerminatorCall(_, FUNC,
           operandCopy(place(LOCAL1, PROJS1))
           operandCopy(place(LOCAL2, PROJS2))
           .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT

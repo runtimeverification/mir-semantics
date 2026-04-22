@@ -457,25 +457,17 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
 ```k
   // special traverseProjection rules that call fromPAcc on demand when needed.
   // NB Only applies when more projections follow.
-  rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PROJ PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromPAcc(PACC)            , PROJ PROJS, CtxPAccountPAcc(IACC) CTXTS)
-        ...
-        </k>
+  rule #traverseProjection(DEST, PAccountAccount(PACC, IACC), PROJ PROJS, CTXTS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, #fromPAcc(PACC)            , PROJ PROJS, CtxPAccountPAcc(IACC) CTXTS, FRAME_LOCALS, SEEN)
     [priority(30)]
-  rule <k> #traverseProjection(DEST, PAccountMint(PACC, IMINT), PROJ PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(IMINT) CTXTS)
-        ...
-        </k>
+  rule #traverseProjection(DEST, PAccountMint(PACC, IMINT), PROJ PROJS, CTXTS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(IMINT) CTXTS, FRAME_LOCALS, SEEN)
     [priority(30)]
-  rule <k> #traverseProjection(DEST, PAccountMultisig(PACC, PMULTI), PROJ PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(PMULTI) CTXTS)
-        ...
-        </k>
+  rule #traverseProjection(DEST, PAccountMultisig(PACC, PMULTI), PROJ PROJS, CTXTS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(PMULTI) CTXTS, FRAME_LOCALS, SEEN)
     [priority(30)]
-  rule <k> #traverseProjection(DEST, PAccountRent(PACC, PRENT), PROJ PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(PRENT) CTXTS)
-        ...
-        </k>
+  rule #traverseProjection(DEST, PAccountRent(PACC, PRENT), PROJ PROJS, CTXTS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, #fromPAcc(PACC)          , PROJ PROJS, CtxPAccountPAcc(PRENT) CTXTS, FRAME_LOCALS, SEEN)
     [priority(30)]
 
   // special context node(s) storing the second component
@@ -517,25 +509,25 @@ An `AccountInfo` reference is passed to the function.
 ```k
   // special rule to intercept the cheat code function calls and replace them by #mkPToken<thing>
   rule [cheatcode-is-account]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #mkPTokenAccount(PLACE) ~> #continueAt(TARGET)
     </k>
     requires #functionName(FUNC) ==String "pinocchio_token_program::entrypoint::cheatcode_is_account"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-mint]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #mkPTokenMint(PLACE) ~> #continueAt(TARGET)
     </k>
     requires #functionName(FUNC) ==String "pinocchio_token_program::entrypoint::cheatcode_is_mint"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-multisig]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #mkPTokenMultisig(PLACE) ~> #continueAt(TARGET)
     </k>
     requires #functionName(FUNC) ==String "pinocchio_token_program::entrypoint::cheatcode_is_multisig"
     [priority(30), preserves-definedness]
   rule [cheatcode-is-rent]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(PLACE) .Operands, _DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #mkPTokenRent(PLACE) ~> #continueAt(TARGET)
     </k>
     requires #functionName(FUNC) ==String "pinocchio_token_program::entrypoint::cheatcode_is_rent"
@@ -692,75 +684,26 @@ An `AccountInfo` reference is passed to the function.
 #### `#addMultisig`
 
 ```{.k .symbolic}
-  // Multisig cheatcode: decompose signer pubkeys into individual byte variables.
-  // Each ?SiNBj:Int is a single byte (0..255), giving 32 concrete ListItems per signer.
-  // This allows ==K on pubkey Lists to decompose into integer equalities (fast for SMT),
-  // instead of opaque symbolic List equality (causes Z3 timeout at scale).
+  // Multisig cheatcode: create three symbolic signer pubkeys.
+  // Keep signers as constrained byte Lists instead of expanding every byte here;
+  // the byte-level expansion is too large for the Haskell kompile parser.
   rule #addMultisig(Aggregate(variantIdx(0), _:List ListItem(Integer(DATA_LEN, 64, false))) #as P_ACC)
       => PAccountMultisig(
            #toPAcc(P_ACC),
            IMulti(U8(?M),
                   U8(?N),
                   U8(?INITIALISED),
-                  Signers( ListItem(Key(#mkPubkey(
-                    ?Si0B0:Int,  ?Si0B1:Int,  ?Si0B2:Int,  ?Si0B3:Int,
-                    ?Si0B4:Int,  ?Si0B5:Int,  ?Si0B6:Int,  ?Si0B7:Int,
-                    ?Si0B8:Int,  ?Si0B9:Int,  ?Si0B10:Int, ?Si0B11:Int,
-                    ?Si0B12:Int, ?Si0B13:Int, ?Si0B14:Int, ?Si0B15:Int,
-                    ?Si0B16:Int, ?Si0B17:Int, ?Si0B18:Int, ?Si0B19:Int,
-                    ?Si0B20:Int, ?Si0B21:Int, ?Si0B22:Int, ?Si0B23:Int,
-                    ?Si0B24:Int, ?Si0B25:Int, ?Si0B26:Int, ?Si0B27:Int,
-                    ?Si0B28:Int, ?Si0B29:Int, ?Si0B30:Int, ?Si0B31:Int)))
-                           ListItem(Key(#mkPubkey(
-                    ?Si1B0:Int,  ?Si1B1:Int,  ?Si1B2:Int,  ?Si1B3:Int,
-                    ?Si1B4:Int,  ?Si1B5:Int,  ?Si1B6:Int,  ?Si1B7:Int,
-                    ?Si1B8:Int,  ?Si1B9:Int,  ?Si1B10:Int, ?Si1B11:Int,
-                    ?Si1B12:Int, ?Si1B13:Int, ?Si1B14:Int, ?Si1B15:Int,
-                    ?Si1B16:Int, ?Si1B17:Int, ?Si1B18:Int, ?Si1B19:Int,
-                    ?Si1B20:Int, ?Si1B21:Int, ?Si1B22:Int, ?Si1B23:Int,
-                    ?Si1B24:Int, ?Si1B25:Int, ?Si1B26:Int, ?Si1B27:Int,
-                    ?Si1B28:Int, ?Si1B29:Int, ?Si1B30:Int, ?Si1B31:Int)))
-                           ListItem(Key(#mkPubkey(
-                    ?Si2B0:Int,  ?Si2B1:Int,  ?Si2B2:Int,  ?Si2B3:Int,
-                    ?Si2B4:Int,  ?Si2B5:Int,  ?Si2B6:Int,  ?Si2B7:Int,
-                    ?Si2B8:Int,  ?Si2B9:Int,  ?Si2B10:Int, ?Si2B11:Int,
-                    ?Si2B12:Int, ?Si2B13:Int, ?Si2B14:Int, ?Si2B15:Int,
-                    ?Si2B16:Int, ?Si2B17:Int, ?Si2B18:Int, ?Si2B19:Int,
-                    ?Si2B20:Int, ?Si2B21:Int, ?Si2B22:Int, ?Si2B23:Int,
-                    ?Si2B24:Int, ?Si2B25:Int, ?Si2B26:Int, ?Si2B27:Int,
-                    ?Si2B28:Int, ?Si2B29:Int, ?Si2B30:Int, ?Si2B31:Int)))
+                  Signers( ListItem(Key(?SIGNER0:List))
+                           ListItem(Key(?SIGNER1:List))
+                           ListItem(Key(?SIGNER2:List))
                   )
            )
          )
     ensures #isPByte(?M) andBool #isPByte(?N) andBool #isPByte(?INITIALISED)
-      // signer 0
-      andBool #isPByte(?Si0B0)  andBool #isPByte(?Si0B1)  andBool #isPByte(?Si0B2)  andBool #isPByte(?Si0B3)
-      andBool #isPByte(?Si0B4)  andBool #isPByte(?Si0B5)  andBool #isPByte(?Si0B6)  andBool #isPByte(?Si0B7)
-      andBool #isPByte(?Si0B8)  andBool #isPByte(?Si0B9)  andBool #isPByte(?Si0B10) andBool #isPByte(?Si0B11)
-      andBool #isPByte(?Si0B12) andBool #isPByte(?Si0B13) andBool #isPByte(?Si0B14) andBool #isPByte(?Si0B15)
-      andBool #isPByte(?Si0B16) andBool #isPByte(?Si0B17) andBool #isPByte(?Si0B18) andBool #isPByte(?Si0B19)
-      andBool #isPByte(?Si0B20) andBool #isPByte(?Si0B21) andBool #isPByte(?Si0B22) andBool #isPByte(?Si0B23)
-      andBool #isPByte(?Si0B24) andBool #isPByte(?Si0B25) andBool #isPByte(?Si0B26) andBool #isPByte(?Si0B27)
-      andBool #isPByte(?Si0B28) andBool #isPByte(?Si0B29) andBool #isPByte(?Si0B30) andBool #isPByte(?Si0B31)
-      // signer 1
-      andBool #isPByte(?Si1B0)  andBool #isPByte(?Si1B1)  andBool #isPByte(?Si1B2)  andBool #isPByte(?Si1B3)
-      andBool #isPByte(?Si1B4)  andBool #isPByte(?Si1B5)  andBool #isPByte(?Si1B6)  andBool #isPByte(?Si1B7)
-      andBool #isPByte(?Si1B8)  andBool #isPByte(?Si1B9)  andBool #isPByte(?Si1B10) andBool #isPByte(?Si1B11)
-      andBool #isPByte(?Si1B12) andBool #isPByte(?Si1B13) andBool #isPByte(?Si1B14) andBool #isPByte(?Si1B15)
-      andBool #isPByte(?Si1B16) andBool #isPByte(?Si1B17) andBool #isPByte(?Si1B18) andBool #isPByte(?Si1B19)
-      andBool #isPByte(?Si1B20) andBool #isPByte(?Si1B21) andBool #isPByte(?Si1B22) andBool #isPByte(?Si1B23)
-      andBool #isPByte(?Si1B24) andBool #isPByte(?Si1B25) andBool #isPByte(?Si1B26) andBool #isPByte(?Si1B27)
-      andBool #isPByte(?Si1B28) andBool #isPByte(?Si1B29) andBool #isPByte(?Si1B30) andBool #isPByte(?Si1B31)
-      // signer 2
-      andBool #isPByte(?Si2B0)  andBool #isPByte(?Si2B1)  andBool #isPByte(?Si2B2)  andBool #isPByte(?Si2B3)
-      andBool #isPByte(?Si2B4)  andBool #isPByte(?Si2B5)  andBool #isPByte(?Si2B6)  andBool #isPByte(?Si2B7)
-      andBool #isPByte(?Si2B8)  andBool #isPByte(?Si2B9)  andBool #isPByte(?Si2B10) andBool #isPByte(?Si2B11)
-      andBool #isPByte(?Si2B12) andBool #isPByte(?Si2B13) andBool #isPByte(?Si2B14) andBool #isPByte(?Si2B15)
-      andBool #isPByte(?Si2B16) andBool #isPByte(?Si2B17) andBool #isPByte(?Si2B18) andBool #isPByte(?Si2B19)
-      andBool #isPByte(?Si2B20) andBool #isPByte(?Si2B21) andBool #isPByte(?Si2B22) andBool #isPByte(?Si2B23)
-      andBool #isPByte(?Si2B24) andBool #isPByte(?Si2B25) andBool #isPByte(?Si2B26) andBool #isPByte(?Si2B27)
-      andBool #isPByte(?Si2B28) andBool #isPByte(?Si2B29) andBool #isPByte(?Si2B30) andBool #isPByte(?Si2B31)
-    andBool DATA_LEN ==Int 99 // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
+      andBool size(?SIGNER0) ==Int 32 andBool allBytes(?SIGNER0)
+      andBool size(?SIGNER1) ==Int 32 andBool allBytes(?SIGNER1)
+      andBool size(?SIGNER2) ==Int 32 andBool allBytes(?SIGNER2)
+      andBool DATA_LEN ==Int 99 // size_of(Multisig), see pinocchio_token_interface::state::Transmutable instance
 ```
 
 ```{.k .concrete}
@@ -838,7 +781,7 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
 ```k
   // intercept calls to `borrow_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-data]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))), mutabilityNot)
       ~> #continueAt(TARGET)
     </k>
@@ -847,7 +790,7 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
 
   // intercept calls to `borrow_mut_data_unchecked` and write `PAccountRef` to destination
   rule [cheatcode-borrow-mut-data]:
-    <k> #execTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, operandCopy(place(LOCAL, PROJS)) .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccByteRef(DEST, operandCopy(place(LOCAL, appendP(PROJS, projectionElemDeref projectionElemField(fieldIdx(0), #hack()) .ProjectionElems))), mutabilityMut)
       ~> #continueAt(TARGET)
     </k>
@@ -855,10 +798,18 @@ The `PAccByteRef` carries a stack offset, so it must be adjusted on reads.
     [priority(30), preserves-definedness]
 
   syntax KItem ::= #mkPAccByteRef( Place , Evaluation , Mutability ) [seqstrict(2)]
+  syntax Value ::= #pTokenLocalFromFrame ( StackFrame, Local, Int ) [function]
+
+  rule #pTokenLocalFromFrame(StackFrame(... locals: LOCALS), local(I:Int), OFFSET)
+      => #adjustRef(getValue(LOCALS, I), OFFSET)
+    requires 0 <=Int I
+     andBool I <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[I])
+    [preserves-definedness]
 
   // TODO additional projections not supported at the moment, assumed ref is on stack not local
   rule <k> #mkPAccByteRef(DEST, PtrLocal(OFFSET, place(LOCAL, .ProjectionElems) #as PLACE, _MUT, _EMUL), MUT)
-        => #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, #localFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET))
+        => #mkPAccByteRefLen(DEST, OFFSET, PLACE, MUT, #pTokenLocalFromFrame({STACK[OFFSET -Int 1]}:>StackFrame, LOCAL, OFFSET))
         ...
        </k>
        <stack> STACK </stack>
@@ -915,7 +866,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
 ```k
   // intercept calls to `load_unchecked` and `load_mut_unchecked`
   rule [cheatcode-mk-iface-account-ref]:
-    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccountRef(DEST, OPERAND, PAccountIAcc, true)
       ~> #continueAt(TARGET)
     </k>
@@ -927,7 +878,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     [priority(30), preserves-definedness]
 
   rule [cheatcode-mk-imint-ref]:
-    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccountRef(DEST, OPERAND, PAccountIMint, true)
       ~> #continueAt(TARGET)
     </k>
@@ -939,7 +890,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     [priority(30), preserves-definedness]
 
   rule [cheatcode-mk-imulti-ref]:
-    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccountRef(DEST, OPERAND, PAccountIMulti, true)
       ~> #continueAt(TARGET)
     </k>
@@ -951,7 +902,7 @@ NB Both `load_unchecked` and `load_mut_unchecked` are intercepted in the same wa
     [priority(30), preserves-definedness]
 
   rule [cheatcode-mk-prent-ref]:
-    <k> #execTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, OPERAND .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
     => #mkPAccountRef(DEST, OPERAND, PAccountPRent, false)
       ~> #continueAt(TARGET)
     </k>
@@ -997,7 +948,7 @@ Therefore, the value gets created in a dedicated place on first access.
 
 ```k
   rule [cheatcode-get-sys-prent]:
-    <k> #execTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
+    <k> #prepareTerminatorCall(_, FUNC, .Operands, DEST, TARGET, _UNWIND, _SPAN) ~> _CONT
       => #writeSysRent(DEST)
       ~> #continueAt(TARGET)
     </k>
@@ -1088,10 +1039,8 @@ Write access (as well as moving reads) uses `traverseProjection` and also requir
 ```k
   // special traverseProjection rules that call fromPRent on demand when needed.
   // NB Only applies when more projections follow.
-  rule <k> #traverseProjection(DEST, SysRent(PRent(_, _, _) #as PRENT), PROJ PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromPRent(PRENT), PROJ PROJS, CtxPRent CTXTS)
-        ...
-        </k>
+  rule #traverseProjection(DEST, SysRent(PRent(_, _, _) #as PRENT), PROJ PROJS, CTXTS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, #fromPRent(PRENT), PROJ PROJS, CtxPRent CTXTS, FRAME_LOCALS, SEEN)
     [priority(30)]
 
   // special context node(s) to mark the auto-conversion
@@ -1133,28 +1082,20 @@ NB The projection rule must have higher priority than the one which auto-project
   syntax ProjectionElem ::= "PAccountIAcc" | "PAccountIMint" | "PAccountIMulti" | "PAccountPRent"
 
   // special traverseProjection rules that call fromPAcc on demand when needed
-  rule <k> #traverseProjection(DEST, PAccountAccount(PACC, IACC), PAccountIAcc PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromIAcc(IACC)            , PROJS, CtxPAccountIAcc(PACC) CTXTS)
-        ...
-        </k>
+  rule #traverseProjection(DEST, PAccountAccount(PACC, IACC), PAccountIAcc PROJS, CTXTS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, #fromIAcc(IACC)            , PROJS, CtxPAccountIAcc(PACC) CTXTS, FRAME_LOCALS, SEEN)
      [priority(20)] // avoid matching the default rule to access PAcc
 
-  rule <k> #traverseProjection(DEST, PAccountMint(PACC, IMINT), PAccountIMint PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromIMint(IMINT)        , PROJS, CtxPAccountIMint(PACC) CTXTS)
-        ...
-        </k>
+  rule #traverseProjection(DEST, PAccountMint(PACC, IMINT), PAccountIMint PROJS, CTXTS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, #fromIMint(IMINT)        , PROJS, CtxPAccountIMint(PACC) CTXTS, FRAME_LOCALS, SEEN)
      [priority(20)] // avoid matching the default rule to access PAcc
 
-  rule <k> #traverseProjection(DEST, PAccountMultisig(PACC, IMULTISIG), PAccountIMulti PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromIMulti(IMULTISIG)        , PROJS, CtxPAccountIMulti(PACC) CTXTS)
-        ...
-        </k>
+  rule #traverseProjection(DEST, PAccountMultisig(PACC, IMULTISIG), PAccountIMulti PROJS, CTXTS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, #fromIMulti(IMULTISIG)        , PROJS, CtxPAccountIMulti(PACC) CTXTS, FRAME_LOCALS, SEEN)
      [priority(20)] // avoid matching the default rule to access PAcc
 
-  rule <k> #traverseProjection(DEST, PAccountRent(PACC, PRENT), PAccountPRent PROJS, CTXTS)
-        => #traverseProjection(DEST, #fromPRent(PRENT)        , PROJS, CtxPAccountPRent(PACC) CTXTS)
-        ...
-        </k>
+  rule #traverseProjection(DEST, PAccountRent(PACC, PRENT), PAccountPRent PROJS, CTXTS, FRAME_LOCALS, SEEN)
+        => #traverseProjection(DEST, #fromPRent(PRENT)        , PROJS, CtxPAccountPRent(PACC) CTXTS, FRAME_LOCALS, SEEN)
      [priority(20)] // avoid matching the default rule to access PAcc
 
 
