@@ -449,7 +449,14 @@ class _ArgGenerator:
                         return (
                             KApply('Value::Range', (list_of(elem_vars),)),
                             elem_constraints,
-                            KApply('staticSize', (token(size),)),
+                            KApply(
+                                'Metadata',
+                                (
+                                    KApply('staticSize', (token(size),)),
+                                    token(0),
+                                    KApply('staticSize', (token(size),)),
+                                ),
+                            ),
                         )
 
             case TupleT(components=components):

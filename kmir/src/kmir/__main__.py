@@ -148,7 +148,7 @@ def _kmir_prove_raw(opts: ProveRawOpts) -> None:
             prover: Prover
             if is_functional(claim):
                 assert type(proof) is EqualityProof
-                prover = ImpliesProver(proof, kcfg_explore, assume_defined=False)
+                prover = ImpliesProver(proof, kcfg_explore, assume_defined=True)
                 prover.advance_proof(proof, max_iterations=opts.max_iterations)
             else:
                 assert type(proof) is APRProof
