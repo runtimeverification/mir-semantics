@@ -66,6 +66,7 @@ jobs:
             ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}
             ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-latest
 
+      # Only the Docker job gates tagging; rollback the draft if the primary artifact never shipped.
       - name: 'On failure, delete drafted release'
         if: failure()
         env:
@@ -141,18 +142,6 @@ jobs:
             DRV=$(nix-store --query --deriver ${KMIR})
             nix-store --query --requisites --include-outputs ${DRV} | cachix push k-framework
 
-      - name: 'On failure, delete drafted release'
-        if: failure()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -x
-          VERSION=v$(cat package/version)
-          gh release delete ${VERSION}               \
-            --repo runtimeverification/mir-semantics \
-            --yes                                    \
-            --cleanup-tag
-
   nix-binary-cache:
     name: 'Populate Nix Binary Cache'
     strategy:
@@ -180,15 +169,3 @@ jobs:
             
             # Cachix has not been responding to 'cachix pin' requests made under the hood by kup. So we need to manually verify the push and pin.
             .github/scripts/check-cachix-pin.sh
-
-      - name: 'On failure, delete drafted release'
-        if: failure()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -x
-          VERSION=v$(cat package/version)
-          gh release delete ${VERSION}               \
-            --repo runtimeverification/mir-semantics \
-            --yes                                    \
-            --cleanup-tag
