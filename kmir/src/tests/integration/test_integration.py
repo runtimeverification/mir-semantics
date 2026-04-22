@@ -10,7 +10,6 @@ import pytest
 from pyk.cterm.show import CTermShow
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.pretty import PrettyPrinter
-
 from pyk.proof import Proof
 from pyk.proof.show import APRProofShow
 
