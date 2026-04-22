@@ -32,11 +32,21 @@ make test-unit
 make test-integration
 
 # Run a single test
-uv --directory kmir run pytest kmir/src/tests/integration/test_prove.py::test_prove -k "test_name"
+make test-integration TEST_ARGS='-k "test_name"'
 
 # Generate and parse SMIR for test files
 make smir-parse-tests
 ```
+
+You can pass `PARALLEL=N` to increase parallelism for a given test-run.
+You can add `TEST_ARGS=--update-expected-output` to update golden output files.
+Tests take up to 30 minutes to run, so set your timeout accordingly.
+
+When updating the expected output, make sure to inspect the updated test output and check that it's explained by the changes made to the code.
+If not, please provide a brief explanation of could have happend with the test, or what adjustments are needed.
+
+To run individual tests, add `TEST_ARGS='-k "test_id1 or test_id2"'` to the `make` invocation.
+For very specific queries, skip make and run the `uv --directory kmir run pytest path/to/test/file.py::test_name[test_selector]` directly with appropriate arguments.
 
 ### Code Quality
 ```bash

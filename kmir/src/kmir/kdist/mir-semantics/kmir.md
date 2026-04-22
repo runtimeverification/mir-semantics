@@ -309,6 +309,7 @@ where the returned result should go.
 
 ```k
   syntax KItem ::= #execTerminatorCall(fty: Ty, func: MonoItemKind, args: Operands, destination: Place, target: MaybeBasicBlockIdx, unwind: UnwindAction, Span)
+  syntax KItem ::= #checkFunctionFilter(MonoItemKind)
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), SPAN))
         => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
@@ -336,23 +337,14 @@ where the returned result should go.
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
         <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
-         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
+         => #checkFunctionFilter(FUNC) ~> #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
         </k>
     requires isIntrinsicFunction(FUNC)
-     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
-
-  // Intrinsic function call to a function in the break-on set - same as termCallIntrinsic but separate rule id for cut-point
-  rule [termCallIntrinsicFilter]:
-        <k> #execTerminatorCall(_, FUNC, ARGS, DEST, TARGET, _UNWIND, SPAN) ~> _
-         => #execIntrinsic(FUNC, ARGS, DEST, SPAN) ~> #continueAt(TARGET)
-        </k>
-    requires isIntrinsicFunction(FUNC)
-     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   // Regular function call - full state switching and stack setup
   rule [termCallFunction]:
        <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
-        => #setUpCalleeData(FUNC, ARGS, SPAN)
+        => #checkFunctionFilter(FUNC) ~> #setUpCalleeData(FUNC, ARGS, SPAN)
        </k>
        <currentFunc> CALLER => FTY </currentFunc>
        <currentFrame>
@@ -365,25 +357,15 @@ where the returned result should go.
        </currentFrame>
        <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
-     andBool notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
-  // Function call to a function in the break-on set - same as termCallFunction but separate rule id for cut-point
-  rule [termCallFunctionFilter]:
-       <k> #execTerminatorCall(FTY, FUNC, ARGS, DEST, TARGET, UNWIND, SPAN) ~> _
-        => #setUpCalleeData(FUNC, ARGS, SPAN)
-       </k>
-       <currentFunc> CALLER => FTY </currentFunc>
-       <currentFrame>
-         <currentBody> _ </currentBody>
-         <caller> OLDCALLER => CALLER </caller>
-         <dest> OLDDEST => DEST </dest>
-         <target> OLDTARGET => TARGET </target>
-         <unwind> OLDUNWIND => UNWIND </unwind>
-         <locals> LOCALS </locals>
-       </currentFrame>
-       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
-    requires notBool isIntrinsicFunction(FUNC)
-     andBool #functionNameMatchesEnv(getFunctionName(FUNC))
+  // Filter check injected after every call: fires as a cut-point only when the function matches the break-on list
+  rule [termCallFunctionFilterMatch]:
+       <k> #checkFunctionFilter(FUNC) => .K ... </k>
+    requires #functionNameMatchesEnv(getFunctionName(FUNC))
+
+  rule [termCallFunctionFilterNoMatch]:
+       <k> #checkFunctionFilter(FUNC) => .K ... </k>
+    requires notBool #functionNameMatchesEnv(getFunctionName(FUNC))
 
   syntax Bool ::= isIntrinsicFunction(MonoItemKind) [function]
   rule isIntrinsicFunction(IntrinsicFunction(_)) => true
