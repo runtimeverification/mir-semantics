@@ -191,6 +191,8 @@ class ProveRawOpts(ProveOpts):
         self.include_labels = tuple(include_labels.split(',')) if include_labels is not None else None
         self.exclude_labels = tuple(exclude_labels.split(',')) if exclude_labels is not None else None
         self.bug_report = bug_report
+        self.haskell_target = None
+        self.llvm_lib_target = None
         self.max_depth = max_depth
         self.max_iterations = max_iterations
         self.reload = reload
