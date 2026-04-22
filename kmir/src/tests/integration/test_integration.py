@@ -1,18 +1,16 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 import pytest
 from pyk.cterm.show import CTermShow
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.pretty import PrettyPrinter
 
-# from pyk.proof import EqualityProof, Proof
 from pyk.proof import Proof
 from pyk.proof.show import APRProofShow
 
@@ -28,10 +26,6 @@ if TYPE_CHECKING:
     from pyk.kast.inner import KInner
 
     from kmir.parse.parser import JSON
-
-
-_LOGGER: Final = logging.getLogger(__name__)
-_LOG_FORMAT: Final = '%(levelname)s %(asctime)s %(name)s - %(message)s'
 
 
 PROVE_RS_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
@@ -688,9 +682,6 @@ def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
     claim_labels = kmir.get_claim_index(spec).labels()
     for label in claim_labels:
         proof = Proof.read_proof_data(proof_dir, label)
-        # assert isinstance(proof, EqualityProof)
-        # _LOGGER.warning(f'simplified_antecedent: {proof.simplified_antecedent}')
-        # _LOGGER.warning(f'simplified_consequent: {proof.simplified_consequent}')
         assert proof.passed
 
 
