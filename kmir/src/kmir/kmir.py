@@ -27,12 +27,15 @@ if TYPE_CHECKING:
 
     from pyk.cterm import CTerm
     from pyk.cterm.show import CTermShow
+    from pyk.cterm.symbolic import CTermSymbolic
     from pyk.kast.inner import KInner
     from pyk.kcfg import KCFG
+    from pyk.kcfg.kcfg import KCFGExtendResult
     from pyk.kore.syntax import Pattern
     from pyk.proof.reachability import APRProof
     from pyk.utils import BugReport
 
+    from .cse import CSERuntime
     from .options import DisplayOpts, ProveOpts
 
 
@@ -89,7 +92,12 @@ class KMIR(KProve, KRun, KParse):
         return Parser(self.definition)
 
     @contextmanager
-    def kcfg_explore(self, label: str | None = None, terminate_on_thunk: bool = False) -> Iterator[KCFGExplore]:
+    def kcfg_explore(
+        self,
+        label: str | None = None,
+        terminate_on_thunk: bool = False,
+        cse_runtime: CSERuntime | None = None,
+    ) -> Iterator[KCFGExplore]:
         with cterm_symbolic(
             self.definition,
             self.definition_dir,
@@ -98,7 +106,10 @@ class KMIR(KProve, KRun, KParse):
             id=label if self.bug_report is not None else None,  # NB bug report arg.s must be coherent
             simplify_each=30,
         ) as cts:
-            yield KCFGExplore(cts, kcfg_semantics=KMIRSemantics(terminate_on_thunk=terminate_on_thunk))
+            yield KCFGExplore(
+                cts,
+                kcfg_semantics=KMIRSemantics(terminate_on_thunk=terminate_on_thunk, cse_runtime=cse_runtime),
+            )
 
     def run_smir(
         self,
@@ -141,9 +152,21 @@ class KMIR(KProve, KRun, KParse):
 
 class KMIRSemantics(DefaultSemantics):
     terminate_on_thunk: bool
+    cse_runtime: CSERuntime | None
 
-    def __init__(self, terminate_on_thunk: bool = False) -> None:
+    def __init__(self, terminate_on_thunk: bool = False, cse_runtime: CSERuntime | None = None) -> None:
         self.terminate_on_thunk = terminate_on_thunk
+        self.cse_runtime = cse_runtime
+
+    def can_make_custom_step(self, cterm: CTerm) -> bool:
+        return self.cse_runtime is not None and self.cse_runtime.can_handle(cterm)
+
+    def custom_step(
+        self, cterm: CTerm, cterm_symbolic: CTermSymbolic, _node_id: int | None = None
+    ) -> KCFGExtendResult | None:
+        if self.cse_runtime is None:
+            return None
+        return self.cse_runtime.custom_step(cterm, cterm_symbolic)
 
     def is_terminal(self, cterm: CTerm) -> bool:
         k_cell = cterm.cell('K_CELL')
