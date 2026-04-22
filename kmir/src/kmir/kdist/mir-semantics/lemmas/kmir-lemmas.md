@@ -22,7 +22,12 @@ module KMIR-LEMMAS
 ## Simplifications for Bytes
 
 ```k
-  rule substrBytes(_, N, N) => .Bytes requires 0 <=Int N [simplification]
+  rule #Ceil(substrBytes(B, N, M)) => #Top
+    requires 0 <=Int N andBool N <=Int M andBool M <=Int lengthBytes(B)
+    [simplification]
+
+  rule substrBytes(_, N, N) => .Bytes requires 0 <=Int N              [simplification]
+  rule substrBytes(B, 0, N) => B      requires N ==Int lengthBytes(B) [simplification]
 ```
 
 ## Simplifications for lists to avoid spurious branching on error cases in control flow
