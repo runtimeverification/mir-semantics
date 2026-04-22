@@ -16,6 +16,7 @@ from pyk.proof.proof import parallel_advance_proof
 from pyk.proof.reachability import APRProof, APRProver
 
 from .cargo import cargo_get_smir_json
+from .cse import CSERuntime, CSESummaryStore
 from .kast import SymbolicMode, make_call_config
 from .kmir import KMIR, KMIRSemantics
 from .smir import SMIRInfo
@@ -38,6 +39,7 @@ def prove(opts: ProveOpts) -> list[APRProof]:
 
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
+    _check_cse_options(opts)
 
     if opts.proof_dir is not None:
         if len(opts.start_symbols) == 1:
@@ -70,6 +72,7 @@ def prove_with_kmir(
 
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
+    _check_cse_options(opts)
 
     # No check for rs_file as smir_info already exists
     start_symbol = opts.start_symbols[0]
@@ -88,12 +91,13 @@ def prove_with_kmir(
         kompiled_smir_path.parent.mkdir(parents=True, exist_ok=True)
         smir_info.dump(kompiled_smir_path)
 
-    return _advance_proof(kmir, proof, opts, label)
+    return _advance_proof(kmir, proof, opts, label, smir_info)
 
 
 def _prove_multi(opts: ProveOpts, target_path: Path) -> list[APRProof]:
     """Prove single or multiple symbols with a single kompilation."""
     labels = [f'{opts.rs_file.stem}.{sym}' for sym in opts.start_symbols]
+    break_on_function = _effective_break_on_function(opts)
 
     if not labels:
         raise ValueError('No label to prove')
@@ -140,7 +144,7 @@ def _prove_multi(opts: ProveOpts, target_path: Path) -> list[APRProof]:
         symbolic=True,
         haskell_target=opts.haskell_target,
         llvm_lib_target=opts.llvm_lib_target,
-        break_on_function=opts.break_on_function or None,
+        break_on_function=break_on_function or None,
     )
 
     smir_info.dump(kompiled_smir_path)
@@ -160,16 +164,17 @@ def _prove_multi(opts: ProveOpts, target_path: Path) -> list[APRProof]:
                 proof_dir=opts.proof_dir,
             )
 
-        proof = _advance_proof(kmir, proof, opts, label)
+        proof = _advance_proof(kmir, proof, opts, label, smir_info)
         results.append(proof)
 
     return results
 
 
-def _advance_proof(kmir: KMIR, proof: APRProof, opts: ProveOpts, label: str) -> APRProof:
+def _advance_proof(kmir: KMIR, proof: APRProof, opts: ProveOpts, label: str, smir_info: SMIRInfo) -> APRProof:
     if proof.passed:
         return proof
 
+    break_on_function = _effective_break_on_function(opts)
     cut_point_rules = _cut_point_rules(
         break_on_calls=opts.break_on_calls,
         break_on_function_calls=opts.break_on_function_calls,
@@ -185,14 +190,61 @@ def _advance_proof(kmir: KMIR, proof: APRProof, opts: ProveOpts, label: str) -> 
         break_on_terminator_unreachable=opts.break_on_terminator_unreachable,
         break_every_terminator=opts.break_every_terminator,
         break_every_step=opts.break_every_step,
-        break_on_function=opts.break_on_function,
+        break_on_function=break_on_function,
     )
+    cse_runtime = None
+    if opts.cse_functions:
+        assert opts.cse_summary_store is not None
+        summary_cut_point_rules = _cut_point_rules(
+            break_on_calls=False,
+            break_on_function_calls=False,
+            break_on_intrinsic_calls=False,
+            break_on_thunk=opts.break_on_thunk or opts.terminate_on_thunk,
+            break_every_statement=False,
+            break_on_terminator_goto=False,
+            break_on_terminator_switch_int=False,
+            break_on_terminator_return=False,
+            break_on_terminator_call=False,
+            break_on_terminator_assert=False,
+            break_on_terminator_drop=False,
+            break_on_terminator_unreachable=False,
+            break_every_terminator=False,
+            break_every_step=False,
+            break_on_function=[],
+        )
+        cse_runtime = CSERuntime(
+            functions=opts.cse_functions,
+            store=CSESummaryStore(opts.cse_summary_store),
+            kmir=kmir,
+            smir_info=smir_info,
+            opts=opts,
+            proof_label=label,
+            summary_cut_point_rules=summary_cut_point_rules,
+        )
 
     if opts.max_workers and opts.max_workers > 1:
         _prove_parallel(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
     else:
-        _prove_sequential(kmir, proof, opts=opts, label=label, cut_point_rules=cut_point_rules)
+        _prove_sequential(
+            kmir,
+            proof,
+            opts=opts,
+            label=label,
+            cut_point_rules=cut_point_rules,
+            cse_runtime=cse_runtime,
+        )
     return proof
+
+
+def _check_cse_options(opts: ProveOpts) -> None:
+    if opts.cse_functions and opts.cse_summary_store is None:
+        raise ValueError('Expected --cse-summary-store PATH when --cse-function is used')
+    if opts.cse_functions and opts.max_workers and opts.max_workers > 1:
+        raise ValueError('CSE currently requires max_workers=1')
+
+
+def _effective_break_on_function(opts: ProveOpts) -> list[str]:
+    return list(dict.fromkeys([*opts.break_on_function, *opts.cse_functions]))
 
 
 def _prove_parallel(
@@ -256,8 +308,13 @@ def _prove_sequential(
     opts: ProveOpts,
     label: str,
     cut_point_rules: list[str],
+    cse_runtime: CSERuntime | None = None,
 ) -> None:
-    with kmir.kcfg_explore(label, terminate_on_thunk=opts.terminate_on_thunk) as kcfg_explore:
+    with kmir.kcfg_explore(
+        label,
+        terminate_on_thunk=opts.terminate_on_thunk,
+        cse_runtime=cse_runtime,
+    ) as kcfg_explore:
         prover = APRProver(
             kcfg_explore,
             execute_depth=opts.max_depth,
