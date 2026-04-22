@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (56 steps)
+│  (58 steps)
 ├─ 3
 │   #applyBinOp ( binOpAddUnchecked , Integer ( ARG_INT1:Int , 32 , true ) , Integer
 │   span: 146
@@ -15,7 +15,7 @@
 ┃  │   Integer ( truncate ( ARG_INT1:Int +Int ARG_INT2:Int , 32 , Signed ) , 32 , true
 ┃  │   span: 146
 ┃  │
-┃  │  (70 steps)
+┃  │  (71 steps)
 ┃  ├─ 6 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │

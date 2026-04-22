@@ -3,7 +3,7 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (50 steps)
+│  (52 steps)
 ├─ 3
 │   #applyBinOp ( binOpSubUnchecked , Integer ( 0 , 128 , true ) , Integer ( ARG_INT
 │   span: 178
@@ -16,7 +16,7 @@
 ~> #fre
 ┃  │   span: 178
 ┃  │
-┃  │  (67 steps)
+┃  │  (68 steps)
 ┃  ├─ 6 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │
