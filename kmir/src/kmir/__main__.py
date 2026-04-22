@@ -479,6 +479,20 @@ def _arg_parser() -> ArgumentParser:
         default=None,
         help='Break when calling a function or intrinsic whose name contains this string (repeatable)',
     )
+    prove_args.add_argument(
+        '--cse-function',
+        dest='cse_functions',
+        action='append',
+        default=None,
+        help='Enable composable symbolic execution for a function whose name exactly matches this string (repeatable)',
+    )
+    prove_args.add_argument(
+        '--cse-summary-store',
+        dest='cse_summary_store',
+        type=Path,
+        metavar='PATH',
+        help='Directory used to read and write CSE summaries',
+    )
 
     proof_args = ArgumentParser(add_help=False)
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to operate on')
@@ -746,6 +760,8 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 terminate_on_thunk=ns.terminate_on_thunk,
                 add_module=ns.add_module,
                 break_on_function=ns.break_on_function or [],
+                cse_functions=ns.cse_functions or [],
+                cse_summary_store=ns.cse_summary_store,
             )
         case 'link':
             return LinkOpts(
