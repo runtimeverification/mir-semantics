@@ -80,7 +80,7 @@ jobs:
 
   tag-release:
     runs-on: [ self-hosted, linux ]
-    needs: [ release-docker, nix-cache, nix-binary-cache ]
+    needs: [ release-docker ]
     steps:
       - uses: actions/checkout@v4
         with:
