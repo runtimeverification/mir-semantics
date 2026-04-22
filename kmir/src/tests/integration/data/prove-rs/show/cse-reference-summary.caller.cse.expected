@@ -1,0 +1,25 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: src/rust/library/std/src/rt.rs:194
+│
+│  (41 steps)
+├─ 3
+│   #execTerminatorCall ( "read_nested_ref" , ListItem (Reference ( 0 , place ( ...
+│   function: caller
+│   span: ve-rs/cse-reference-summary.rs:2
+│
+│  (1 step)
+├─ 4
+│   #setLocalValue ( place ( ... local: local ( 4 ) , projection: .ProjectionElems )
+│   function: caller
+│
+│  (32 steps)
+├─ 5 (terminal)
+│   #EndProgram ~> .K
+│   function: caller
+│
+┊  constraint: true
+┊  subst: ...
+└─ 2 (leaf, target, terminal)
+    #EndProgram ~> .K
