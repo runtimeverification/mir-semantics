@@ -1,0 +1,25 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: src/rust/library/std/src/rt.rs:194
+│
+│  (33 steps)
+├─ 3
+│   #execTerminatorCall ( "write_nested_ref" , ListItem (Reference ( 0 , place ( ...
+│   function: mutable_caller
+│   span: ve-rs/cse-reference-summary.rs:6
+│
+│  (1 step)
+├─ 4
+│   #cseWriteBack ( Reference ( 0 , place ( ... local: local ( 1 ) , projection: .Pr
+│   function: mutable_caller
+│
+│  (36 steps)
+├─ 5 (terminal)
+│   #EndProgram ~> .K
+│   function: mutable_caller
+│
+┊  constraint: true
+┊  subst: ...
+└─ 2 (leaf, target, terminal)
+    #EndProgram ~> .K
