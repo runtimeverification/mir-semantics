@@ -1,0 +1,25 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: src/rust/library/std/src/rt.rs:194
+│
+│  (41 steps)
+├─ 3
+│   #execTerminatorCall ( "write_ptr" , ListItem (PtrLocal ( 0 , place ( ... local:
+│   function: ptr_caller
+│   span: ve-rs/cse-reference-summary.rs:43
+│
+│  (1 step)
+├─ 4
+│   #cseWriteBack ( PtrLocal ( 0 , place ( ... local: local ( 1 ) , projection: .Pro
+│   function: ptr_caller
+│
+│  (36 steps)
+├─ 5 (terminal)
+│   #EndProgram ~> .K
+│   function: ptr_caller
+│
+┊  constraint: true
+┊  subst: ...
+└─ 2 (leaf, target, terminal)
+    #EndProgram ~> .K
