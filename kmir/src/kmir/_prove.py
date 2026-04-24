@@ -216,7 +216,6 @@ def _advance_proof(kmir: KMIR, proof: APRProof, opts: ProveOpts, label: str, smi
             functions=opts.cse_functions,
             store=CSESummaryStore(opts.cse_summary_store),
             kmir=kmir,
-            smir_info=smir_info,
             opts=opts,
             proof_label=label,
             summary_cut_point_rules=summary_cut_point_rules,
