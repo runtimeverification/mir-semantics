@@ -2,19 +2,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
+from pyk.cterm import CTerm
+from pyk.kast.inner import KApply
+from pyk.kcfg import KCFG
+from pyk.proof.reachability import APRProof
 
 from kmir.__main__ import _kmir_show
-from kmir.cse import CSESummaryStore
+from kmir.cse import CSESummaryStore, summary_from_proof
 from kmir.kmir import KMIR
 from kmir.options import ProveOpts, ShowOpts
 from kmir.testing.fixtures import assert_or_update_show_output
-
-if TYPE_CHECKING:
-    from pyk.cterm import CTerm
-    from pyk.proof.reachability import APRProof
 
 PROVE_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
 
@@ -62,6 +61,7 @@ CSE_BRANCH_STAGES = [
         start_symbol='caller',
         cse_function='classify',
         expected_outcomes=2,
+        expected_splits=1,
     ),
 ]
 
@@ -157,6 +157,49 @@ def test_cse_partial_summary_with_covered_and_remainder(
         capsys,
         update_expected_output,
     )
+
+
+def test_cse_summary_from_failed_proof_keeps_frontier() -> None:
+    kcfg = KCFG()
+    init = kcfg.create_node(CTerm(_test_cell('init')))
+    target = kcfg.create_node(CTerm(_test_cell('target')))
+    stuck = kcfg.create_node(CTerm(_test_cell('stuck')))
+    kcfg.create_edge(init.id, stuck.id, 1, rules=['stuck-rule'])
+    kcfg.add_stuck(stuck.id)
+    proof = APRProof('cse-summary-stuck-frontier', kcfg, [], init.id, target.id, {})
+
+    summary = summary_from_proof('callee', proof)
+
+    assert summary is not None
+    assert not proof.passed
+    assert summary.complete
+    assert summary.source['proof_status'] == 'failed'
+    assert len(summary.outcomes) == 1
+    assert summary.outcomes[0].metadata['kind'] == 'stuck'
+
+
+def test_cse_summary_extracts_covered_frontier_source() -> None:
+    kcfg = KCFG()
+    init = kcfg.create_node(CTerm(_test_cell('init')))
+    covered = kcfg.create_node(CTerm(_test_cell('covered')))
+    target = kcfg.create_node(CTerm(_test_cell('covered')))
+    kcfg.create_edge(init.id, covered.id, 1, rules=['return-rule'])
+    kcfg.create_cover(covered.id, target.id)
+    proof = APRProof('cse-summary-covered-frontier', kcfg, [], init.id, target.id, {})
+
+    assert not proof.kcfg.is_leaf(covered.id)
+    summary = summary_from_proof('callee', proof)
+
+    assert summary is not None
+    assert proof.passed
+    assert summary.complete
+    assert len(summary.outcomes) == 1
+    assert summary.outcomes[0].metadata['kind'] == 'covered'
+    assert summary.outcomes[0].final == covered.cterm
+
+
+def _test_cell(name: str) -> KApply:
+    return KApply('<top>', (KApply(name),))
 
 
 @pytest.mark.parametrize('case', CSE_REFERENCE_CASES, ids=[case.id for case in CSE_REFERENCE_CASES])
