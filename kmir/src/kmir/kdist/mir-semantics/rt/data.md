@@ -267,6 +267,7 @@ A `Deref` projection in the projections list changes the target of the write ope
 
   syntax KItem ::= #readProjection ( Bool )
                  | #writeProjection ( Value )
+                 | #cseWriteBack ( Value , Value )
                  | "#writeMoved"
                  | "#projectionError"
 
@@ -477,6 +478,25 @@ A `Deref` projection in the projections list changes the target of the write ope
        </k>
 
   rule <k> projectionError(_ERR) => #projectionError ... </k>
+
+  // CSE emits one write-back item per reference effect. The helper reads the
+  // current caller locals/stack when it executes, so consecutive write-backs to
+  // different projections of the same aggregate compose instead of rebuilding
+  // from a stale pre-call snapshot.
+  rule <k> #cseWriteBack(REF, NEW)
+        => #traverseProjection(
+             toLocal(-1),
+             REF,
+             projectionElemDeref .ProjectionElems,
+             .Contexts,
+             #frameLocals(LOCALS, STACK),
+             .List
+           )
+        ~> #writeProjection(#decrementRef(NEW))
+       ...
+       </k>
+       <locals> LOCALS </locals>
+       <stack> STACK </stack>
 
   rule <k> projectionDone(toLocal(I), _ORIGINAL, CONTEXTS)
         ~> #writeProjection(NEW)
@@ -2333,6 +2353,24 @@ The UB case currently gets stuck.
   rule onInt(binOpBitXor, X, Y) => X xorInt Y
   rule onInt(binOpBitAnd, X, Y) => X &Int Y
   rule onInt(binOpBitOr, X, Y)  => X |Int Y
+
+  // Raw pointer dereference alignment checks lower the pointer to usize and
+  // mask its low bits. The base address remains abstract; the pointer metadata
+  // offset is the only byte offset represented in KMIR.
+  rule #applyBinOp(
+          binOpBitAnd,
+          thunk(#cast(
+            PtrLocal(_HEIGHT, _PLACE, _MUT, metadata(_SIZE, PTR_OFFSET, _ORIGIN_SIZE)),
+            castKindTransmute,
+            _TY_SOURCE,
+            TY_TARGET
+          )),
+          Integer(MASK, 64, false),
+          false)
+    =>
+          Integer(PTR_OFFSET &Int MASK, 64, false)
+    requires lookupTy(TY_TARGET) ==K typeInfoPrimitiveType(primTypeUint(uintTyUsize))
+    [preserves-definedness]
 
   syntax Bool ::= onBool( BinOp, Bool, Bool ) [function]
   // ---------------------------------------------------
