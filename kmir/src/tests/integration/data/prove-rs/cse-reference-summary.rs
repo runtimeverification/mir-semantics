@@ -45,6 +45,18 @@ fn write_ptr(x: *mut u32) -> u32 {
     }
 }
 
+fn write_double_ref(x: &mut &mut u32) -> u32 {
+    **x = 17;
+    **x
+}
+
+fn write_double_ptr(x: *mut *mut u32) -> u32 {
+    unsafe {
+        **x = 19;
+        **x
+    }
+}
+
 #[no_mangle]
 pub fn caller(x: u32) {
     let first = &x;
@@ -101,6 +113,24 @@ pub fn ptr_caller(mut x: u32) {
 
     assert!(x == 13);
     assert!(result == 13);
+}
+
+#[no_mangle]
+pub fn double_ref_caller(mut x: u32) {
+    let mut first = &mut x;
+    let result = write_double_ref(&mut first);
+
+    assert!(x == 17);
+    assert!(result == 17);
+}
+
+#[no_mangle]
+pub fn double_ptr_caller(mut x: u32) {
+    let mut first = &mut x as *mut u32;
+    let result = write_double_ptr(&mut first as *mut *mut u32);
+
+    assert!(x == 19);
+    assert!(result == 19);
 }
 
 #[no_mangle]
