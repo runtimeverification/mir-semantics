@@ -12,7 +12,7 @@
 ┃ (branch)
 ┣━━┓ subst: .Subst
 ┃  ┃ constraint:
-┃  ┃     ARG_UINT1:Int >Int 10
+┃  ┃     notBool ARG_UINT1:Int >Int 10
 ┃  │
 ┃  ├─ 4
 ┃  │   #execTerminatorCall ( "classify" , ListItem (Integer ( ARG_UINT1:Int , 32 , fals
@@ -24,7 +24,7 @@
 ┃  │   #setLocalValue ( place ( ... local: local ( 2 ) , projection: .ProjectionElems )
 ┃  │   function: caller
 ┃  │
-┃  │  (41 steps)
+┃  │  (40 steps)
 ┃  ├─ 8 (terminal)
 ┃  │   #EndProgram ~> .K
 ┃  │   function: caller
@@ -36,7 +36,7 @@
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
-   ┃     notBool ARG_UINT1:Int >Int 10
+   ┃     ARG_UINT1:Int >Int 10
    │
    ├─ 5
    │   #execTerminatorCall ( "classify" , ListItem (Integer ( ARG_UINT1:Int , 32 , fals
@@ -48,7 +48,7 @@
    │   #setLocalValue ( place ( ... local: local ( 2 ) , projection: .ProjectionElems )
    │   function: caller
    │
-   │  (40 steps)
+   │  (41 steps)
    ├─ 9 (terminal)
    │   #EndProgram ~> .K
    │   function: caller

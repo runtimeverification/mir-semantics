@@ -5,12 +5,16 @@ from pathlib import Path
 
 import pytest
 from pyk.cterm import CTerm
-from pyk.kast.inner import KApply
+from pyk.cterm.symbolic import CTermExecute
+from pyk.kast.inner import KApply, KRewrite, KSequence, KVariable
+from pyk.kast.prelude.ml import mlEqualsTrue, mlTop
+from pyk.kast.outer import KRule
 from pyk.kcfg import KCFG
+from pyk.kcfg.kcfg import Step
 from pyk.proof.reachability import APRProof
 
 from kmir.__main__ import _kmir_show
-from kmir.cse import CSESummaryStore, summary_from_proof
+from kmir.cse import CSECallInfo, CSEOutcome, CSERuntime, CSESummary, CSESummaryStore, summary_from_proof
 from kmir.kmir import KMIR
 from kmir.options import ProveOpts, ShowOpts
 from kmir.testing.fixtures import assert_or_update_show_output
@@ -24,7 +28,6 @@ class CSECase:
     rs_file: str
     start_symbol: str
     cse_function: str
-    expected_complete: bool = True
     expected_outcomes: int = 1
     expected_splits: int = 0
     seed_start_symbol: str | None = None
@@ -37,7 +40,6 @@ CSE_BRANCH_STAGES = [
         rs_file='cse-branch-summary.rs',
         start_symbol='partial_caller0',
         cse_function='classify',
-        expected_complete=False,
         expected_outcomes=1,
     ),
     CSECase(
@@ -45,7 +47,6 @@ CSE_BRANCH_STAGES = [
         rs_file='cse-branch-summary.rs',
         start_symbol='partial_caller1',
         cse_function='classify',
-        expected_complete=False,
         expected_outcomes=1,
     ),
     CSECase(
@@ -110,6 +111,18 @@ CSE_REFERENCE_CASES = [
         start_symbol='ptr_caller',
         cse_function='write_ptr',
     ),
+    CSECase(
+        id='double-reference-caller',
+        rs_file='cse-reference-summary.rs',
+        start_symbol='double_ref_caller',
+        cse_function='write_double_ref',
+    ),
+    CSECase(
+        id='double-pointer-caller',
+        rs_file='cse-reference-summary.rs',
+        start_symbol='double_ptr_caller',
+        cse_function='write_double_ptr',
+    ),
 ]
 
 
@@ -124,7 +137,7 @@ def test_cse_branch_summary_expected_outputs(
         _assert_cse_case(case, tmp_path, summary_store, capsys, update_expected_output)
 
 
-def test_cse_partial_summary_with_covered_and_remainder(
+def test_cse_summary_updates_when_existing_initial_is_too_strong(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
     update_expected_output: bool,
@@ -139,7 +152,6 @@ def test_cse_partial_summary_with_covered_and_remainder(
         summary_store=summary_store,
     )
     summary = _summary(summary_store, 'classify')
-    assert not summary.complete
     assert len(summary.outcomes) == 1
 
     _assert_cse_case(
@@ -172,7 +184,6 @@ def test_cse_summary_from_failed_proof_keeps_frontier() -> None:
 
     assert summary is not None
     assert not proof.passed
-    assert summary.complete
     assert summary.source['proof_status'] == 'failed'
     assert len(summary.outcomes) == 1
     assert summary.outcomes[0].metadata['kind'] == 'stuck'
@@ -192,14 +203,123 @@ def test_cse_summary_extracts_covered_frontier_source() -> None:
 
     assert summary is not None
     assert proof.passed
-    assert summary.complete
     assert len(summary.outcomes) == 1
     assert summary.outcomes[0].metadata['kind'] == 'covered'
     assert summary.outcomes[0].final == covered.cterm
 
 
+def test_cse_summary_moves_initial_constraints_to_guards() -> None:
+    kcfg = KCFG()
+    init_constraint = mlEqualsTrue(KVariable('CSE_INIT_CONSTRAINT'))
+    init = kcfg.create_node(CTerm(_test_cell('init'), (init_constraint,)))
+    final = kcfg.create_node(CTerm(_test_cell('target'), (init_constraint,)))
+    target = kcfg.create_node(CTerm(_test_cell('target')))
+    kcfg.create_edge(init.id, final.id, 1, rules=['return-rule'])
+    kcfg.create_cover(final.id, target.id)
+    proof = APRProof('cse-summary-initial-constraints-in-guards', kcfg, [], init.id, target.id, {})
+
+    summary = summary_from_proof('callee', proof)
+
+    assert summary is not None
+    assert summary.initial.constraints == ()
+    assert summary.outcomes[0].final.constraints == ()
+    assert summary.outcomes[0].guard == init_constraint
+
+
+def test_cse_summary_serialization_omits_derived_complete() -> None:
+    kcfg = KCFG()
+    init = kcfg.create_node(CTerm(_test_cell('init')))
+    target = kcfg.create_node(CTerm(_test_cell('target')))
+    final = kcfg.create_node(CTerm(_test_cell('target')))
+    kcfg.create_edge(init.id, final.id, 1, rules=['return-rule'])
+    kcfg.create_cover(final.id, target.id)
+    proof = APRProof('cse-summary-no-complete-field', kcfg, [], init.id, target.id, {})
+
+    summary = summary_from_proof('callee', proof)
+
+    assert summary is not None
+    assert 'complete' not in summary.to_dict()
+    assert type(summary).from_dict(summary.to_dict()) == summary
+
+
+def test_cse_summary_apply_uses_stored_backend_rule() -> None:
+    post_k = KApply('#execBlockIdx(_)_KMIR-CONTROL-FLOW_KItem_BasicBlockIdx', (KApply('target'),))
+    post_state = CTerm.from_kast(_k_cell(post_k))
+    rule = KRule(KRewrite(_test_cell('caller'), _k_cell(post_k)))
+    summary = CSESummary(
+        function='callee',
+        initial=CTerm(_locals_cell()),
+        outcomes=(CSEOutcome(guard=mlTop(), final=CTerm(_return_cell()), metadata={}, rule=rule),),
+        source={},
+    )
+
+    class Store:
+        def load(self, function: str) -> CSESummary | None:
+            assert function == 'callee'
+            return summary
+
+        def save(self, summary: CSESummary) -> None:
+            raise AssertionError('existing applicable summary should not be regenerated')
+
+    class Symbolic:
+        added_modules: list[tuple[str, bool]] = []
+        executed_modules: list[tuple[int | None, str | None]] = []
+
+        def add_module(self, module, name_as_id: bool = False) -> str:
+            self.added_modules.append((module.name, name_as_id))
+            return module.name
+
+        def execute(self, cterm, depth=None, cut_point_rules=None, terminal_rules=None, module_name=None):
+            self.executed_modules.append((depth, module_name))
+            return CTermExecute(
+                state=post_state,
+                next_states=(),
+                depth=1,
+                vacuous=False,
+                logs=(),
+            )
+
+    runtime = CSERuntime(
+        functions=['callee'],
+        store=Store(),  # type: ignore[arg-type]
+        kmir=None,  # type: ignore[arg-type]
+        opts=None,  # type: ignore[arg-type]
+        proof_label='test',
+    )
+    runtime.target_call_info = lambda _cterm: CSECallInfo(  # type: ignore[method-assign]
+        function='callee',
+        args=(),
+        destination=KApply('dest'),
+        target=KApply('someBasicBlockIdx_BODY_MaybeBasicBlockIdx', (KApply('target'),)),
+    )
+    runtime.generate_summary = lambda *_args: None  # type: ignore[method-assign]
+
+    symbolic = Symbolic()
+    result = runtime.custom_step(CTerm(_test_cell('caller')), symbolic)  # type: ignore[arg-type]
+
+    assert isinstance(result, Step)
+    assert len(symbolic.added_modules) == 1
+    module_name, name_as_id = symbolic.added_modules[0]
+    assert module_name.startswith('CSE-SUMMARY-CALLEE-')
+    assert name_as_id
+    assert symbolic.executed_modules == [(1, module_name)]
+    assert result.rule_labels == ['CSE.summary.callee']
+
+
 def _test_cell(name: str) -> KApply:
     return KApply('<top>', (KApply(name),))
+
+
+def _k_cell(item: KApply) -> KApply:
+    return KApply('<top>', (KApply('<k>', (KSequence([item]),)),))
+
+
+def _return_cell() -> KApply:
+    return KApply('<top>', (KApply('<retval>', (KApply('noReturn_BODY_ReturnVal'),)),))
+
+
+def _locals_cell() -> KApply:
+    return KApply('<top>', (KApply('<locals>', (KApply('ListItem', (KApply('local0'),)),)),))
 
 
 @pytest.mark.parametrize('case', CSE_REFERENCE_CASES, ids=[case.id for case in CSE_REFERENCE_CASES])
@@ -245,7 +365,6 @@ def _assert_cse_case(
     )
 
     summary = _summary(summary_store, case.cse_function)
-    assert summary.complete is case.expected_complete
     assert len(summary.outcomes) == case.expected_outcomes
     assert len(proof.kcfg.splits()) == case.expected_splits
     assert not proof.kcfg.ndbranches()
