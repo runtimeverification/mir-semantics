@@ -355,6 +355,7 @@ def _make_stratified_rules(
             attrs=(
                 App('function'),
                 App('total'),
+                App('no-evaluators'),  # HS backend only
             ),
         )
         for i in range(strata)
