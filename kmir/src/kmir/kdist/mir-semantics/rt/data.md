@@ -2377,27 +2377,18 @@ This information is read from the layout in the `TypeInfo` if available, or a fi
 
 ```k
 // FIXME: 64 is hardcoded since usize not supported
-  syntax KItem ::= #resolvedNullaryOp( NullOp , Ty , TypeInfo )
-
-  rule <k> rvalueNullaryOp(OP, TY)
-        => #resolvedNullaryOp(OP, TY, lookupTy(TY))
-       ...
-       </k>
-    [preserves-definedness]
-
-  rule <k> #resolvedNullaryOp(nullOpSizeOf, _TY, TYINFO)
-        => Integer(#sizeOf(TYINFO), 64, false)
-       ...
-       </k>
-    requires TYINFO =/=K typeInfoVoidType
-    [preserves-definedness]
-
-  rule <k> #resolvedNullaryOp(nullOpAlignOf, _TY, TYINFO)
-        => Integer(#alignOf(TYINFO), 64, false)
-       ...
-       </k>
-    requires TYINFO =/=K typeInfoVoidType
-    [preserves-definedness]
+rule <k> rvalueNullaryOp(nullOpSizeOf, TY)
+      =>
+           Integer(#sizeOf(lookupTy(TY)), 64, false)
+         ...
+     </k>
+    requires lookupTy(TY) =/=K typeInfoVoidType
+rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
+      =>
+           Integer(#alignOf(lookupTy(TY)), 64, false)
+         ...
+     </k>
+    requires lookupTy(TY) =/=K typeInfoVoidType
 ```
 
 `nullOpOffsetOf(VariantAndFieldIndices)`
