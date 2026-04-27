@@ -164,11 +164,14 @@ Some other integration tests are failing, though:
 * Unexpectedly-failing proofs:
 
 | iter-eq-copied-take-dereftruncate] (repro) | assert False | Special projection rule (transparent cast) does not fire |
-| closure_access_struct]                     | assert False | `#resolvedRvalueRefZS` issue                             |
-| closure-staged]                            | assert False | `#resolvedRvalueRefZS` issue                             |
 | iter_next_1]                               | assert False | Special projection rule (transparent cast) does not fire |
 | spl-multisig-iter-eq-copied-next] (repro)  | assert False | Special projection rule (transparent cast) does not fire |
 | iter_next_2]                               | assert False | Special projection rule (transparent cast) does not fire |
+
+Failing tests from the future:
+
+| closure_access_struct]                     | assert False | `#resolvedRvalueRefZS` issue                             |
+| closure-staged]                            | assert False | `#resolvedRvalueRefZS` issue                             |
 
 * Problems with stuck nodes in expected proof trees (for failing proofs)
 
@@ -184,3 +187,50 @@ Some other integration tests are failing, though:
 | iterator-simple]               | AssertionError: The actual output does not match the expected output: | Harmless step count update, removing intermediate state  |
 | symbolic-args-fail]            | AssertionError: The actual output does not match the expected output: | Harmless, step count update required                     |
 | interior-mut-fail]             | AssertionError: The actual output does not match the expected output: | Harmless, step count update, removing intermediate state |
+
+### `cast` Problems in failing proofs
+
+The new symbol `#resolvedCastTransmute` is not defined with sort `Evaluation`,
+therefore the evaluation does not `thunk` but gets stuck instead.
+
+This affects `interior-mut3-fail` and `ref-ptr-cast-elem-fail`:
+The execution gets stuck where a pointer alignment is checked,
+at the cast from a unit pointer (`*const()`) to a `usize`.
+Before the change, a thunk was created and then checked (after a few more operations).
+
+### Problems with `Aggregate` wrapper in iteration code
+
+The (current) problem in `iter_next_1` appears to be that an `Aggregate`
+wrapper is created around a list to index into (for the `iter`).
+This `Aggregate` does not conform to the types given to the locals involved,
+and is most likely created by an erratic `ProjectionElemWrapStruct`.
+It is unclear where exactly, and why, that projections is created around the list,
+it should have been created around a pointer to it (a `NonNull` wrapper).
+Similar problem appear in `iter_next_2`, `iter-eq-copied-...`, and `spl-multisig-...`.
+
+The code involved in this wrapper projection is very complex, and there may
+have been a problem converting it to avoid the unevaluated functions.
+
+### `#resolvedRvalueRefZS` problems
+
+The `#resolvedRvalueRefZS` rewrite does not fire when a reference to a function is created.
+The simple reason is that the `#zeroSizedType` is `false` for function types. It should return `true`
+(the two tests failing with this error came from a commit after the initial version of the branch).
+
+# Re-doing the no-llvm transformation
+
+The K code here has been transformed to always evaluate the `lookupTy`
+and `lookupAlloc` and `lookupFunction` separately, without nesting any
+other functions.
+However, the actual problem with the HS-only evaluation was different:
+Any function call that LLVM backend would _evaluate to_ an expression
+which calls a HS-only lookup function would crash the LLVM library (and the server).
+
+Instead of eliminating all lookup functions from rewrite rules, one should make
+the functions that internally use these lookup functions also HS-only.
+The prime example was `#getBlocks`, which internally calls `lookupFunction`:
+
+```
+rule #getBlocks(TY) => #getBlocksAux(lookupFunction(TY))
+```
+Rather than the massive refactoring of rewrite rules, one should target such _functions_.
