@@ -36,7 +36,7 @@ The interface function is meant for pointer casts to compute pointee projections
   syntax MaybeProjectionElems ::= ProjectionElems
                                 | "NoProjectionElems"
 
-  syntax MaybeProjectionElems ::= #typeProjection ( TypeInfo , TypeInfo )    [function, total]
+  syntax MaybeProjectionElems ::= #typeProjection ( TypeInfo , TypeInfo )    [function, total, no-evaluators]
   // ---------------------------------------------------------------------------------------
   rule #typeProjection ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => #pointeeProjection(lookupTy(TY1), lookupTy(TY2))
   rule #typeProjection ( _, _ ) => NoProjectionElems [owise]
@@ -82,7 +82,7 @@ and target-side rules, because a type cannot be both a struct and an array simul
 When the source cannot be unwrapped further, target-side unwrapping is handled by `#pointeeProjectionTarget`.
 
 ```k
-  syntax MaybeProjectionElems ::= #pointeeProjection ( TypeInfo , TypeInfo ) [function, total]
+  syntax MaybeProjectionElems ::= #pointeeProjection ( TypeInfo , TypeInfo ) [function, total, no-evaluators]
 ```
 
 A short-cut rule for identical types takes preference.
@@ -158,7 +158,7 @@ After one step of target unwrapping, recurse back to `#pointeeProjection` to mai
 the source-first strategy.
 
 ```k
-  syntax MaybeProjectionElems ::= #pointeeProjectionTarget ( TypeInfo , TypeInfo ) [function, total]
+  syntax MaybeProjectionElems ::= #pointeeProjectionTarget ( TypeInfo , TypeInfo ) [function, total, no-evaluators]
 
   rule #pointeeProjectionTarget(TY1, typeInfoArrayType(TY2, _))
     => maybeConcatProj(
@@ -217,13 +217,6 @@ To make this function total, an optional `MaybeTy` is used.
     requires #zeroFieldOffset(LAYOUT)
   rule #transparentFieldTy(_) => TyUnknown [owise]
 
-  syntax Int ::= #transparentDepth ( TypeInfo ) [function, total]
-
-  rule #transparentDepth(typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
-    => 1 +Int #transparentDepth(lookupTy(FIELD))
-    requires #zeroFieldOffset(LAYOUT)
-  rule #transparentDepth(_) => 0 [owise]
-
   syntax String ::= #typeName ( TypeInfo ) [function, total]
   // -------------------------------------------------------
   rule #typeName(typeInfoUnionType(NAME, _, _, _)) => NAME
@@ -257,17 +250,17 @@ To make this function total, an optional `MaybeTy` is used.
   rule getArrayElemTy(typeInfoArrayType(ELEM_TY, _)) => ELEM_TY
   rule getArrayElemTy(_) => ty(-1) [owise]
 
-  syntax TypeInfo ::= getArrayElemTypeInfo ( TypeInfo ) [function, total]
+  syntax TypeInfo ::= getArrayElemTypeInfo ( TypeInfo ) [function, total, no-evaluators]
   // --------------------------------------------------------------------
   rule getArrayElemTypeInfo(typeInfoArrayType(ELEM_TY, _)) => lookupTy(ELEM_TY)
   rule getArrayElemTypeInfo(_) => typeInfoVoidType [owise]
 
-  syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total]
+  syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total, no-evaluators]
   // -------------------------------------------------------------
   rule #lookupMaybeTy(TY:Ty) => lookupTy(TY)
   rule #lookupMaybeTy(TyUnknown) => typeInfoVoidType
 
-  syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ) [function, total]
+  syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ) [function, total, no-evaluators]
   // ----------------------------------------------------------------------
   rule getTyOf(TyUnknown,             _                      ) => TyUnknown
   rule getTyOf(TY,                    .ProjectionElems       ) => TY
@@ -310,9 +303,9 @@ A [similar function exists in `rustc`](https://doc.rust-lang.org/nightly/nightly
 Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does not.
 
 ```k
-  syntax MetadataSize ::= #metadataSize    ( Ty , ProjectionElems ) [function, total]
-                        | #metadataSize    (  MaybeTy )             [function, total]
-                        | #metadataSizeAux ( TypeInfo )             [function, total]
+  syntax MetadataSize ::= #metadataSize    ( Ty , ProjectionElems ) [function, total, no-evaluators]
+                        | #metadataSize    (  MaybeTy )             [function, total, no-evaluators]
+                        | #metadataSizeAux ( TypeInfo )             [function, total, no-evaluators]
   // --------------------------------------------------------------------------------------
   rule #metadataSize(TY, PROJS) => #metadataSize(getTyOf(TY, PROJS))
 
@@ -327,7 +320,7 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
 
 ```k
   // reading Int-valued TyConsts from allocated bytes
-  syntax Int ::= readTyConstInt ( TyConstKind ) [function]
+  syntax Int ::= readTyConstInt ( TyConstKind ) [function, no-evaluators]
   // -----------------------------------------------------------
   rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Unsigned)
     requires isUintTy(#numTypeOf(lookupTy(TY)))
@@ -362,8 +355,8 @@ The `alignOf` and `sizeOf` nullary operations return the alignment / size in byt
 This information is either hard-wired for primitive types (numbers, first and foremost), or read from the layout in `TypeInfo`.
 
 ```k
-  syntax Int ::= #sizeOf ( TypeInfo )  [function, total]
-               | #alignOf ( TypeInfo ) [function, total]
+  syntax Int ::= #sizeOf ( TypeInfo )  [function, total, no-evaluators]
+               | #alignOf ( TypeInfo ) [function, total, no-evaluators]
 
   // primitive int types: use bit width (both for size and alignment)
   rule #sizeOf(typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]

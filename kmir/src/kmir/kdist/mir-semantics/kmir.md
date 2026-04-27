@@ -252,7 +252,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
 
-  syntax List ::= #getBlocks( Ty )               [function, total]
+  syntax List ::= #getBlocks( Ty )               [function, total, no-evaluators]
                 | #getBlocksAux( MonoItemKind )  [function, total]
 
   rule #getBlocks(TY) => #getBlocksAux(lookupFunction(TY))
@@ -324,7 +324,7 @@ where the returned result should go.
     requires isTy(#projectedCallTy(I, PROJS, LOCALS))
     [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
 
-  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total]
+  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total, no-evaluators]
 
   rule #projectedCallTy(I, PROJS, LOCALS)
     => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)

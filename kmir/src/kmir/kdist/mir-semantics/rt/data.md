@@ -1463,7 +1463,7 @@ Otherwise, compute the type projection and convert metadata accordingly.
 The pointer's metadata needs to be adapted to the new type.
 
 ```k
-  syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total]
+  syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total, no-evaluators]
 ```
 
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
@@ -1696,13 +1696,13 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     requires COUNT >Int 0
     [preserves-definedness]
 
-  syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total]
+  syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total, no-evaluators]
   // -------------------------------------------------------------
   rule #isStaticU8Array(typeInfoArrayType(ELEM_TY, someTyConst(_)))
     => lookupTy(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
   rule #isStaticU8Array(_OTHER) => false [owise]
 
-  syntax Int ::= #staticArrayLenBits ( TypeInfo ) [function, total]
+  syntax Int ::= #staticArrayLenBits ( TypeInfo ) [function, total, no-evaluators]
   // -------------------------------------------------------------
   rule #staticArrayLenBits(typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
     => readTyConstInt(KIND) *Int 8
