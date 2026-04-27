@@ -252,7 +252,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
 
-  syntax List ::= #getBlocks( Ty )               [function, total]
+  syntax List ::= #getBlocks( Ty )               [function, total, no-evaluators]
                 | #getBlocksAux( MonoItemKind )  [function, total]
 
   rule #getBlocks(TY) => #getBlocksAux(lookupFunction(TY))
@@ -324,7 +324,7 @@ where the returned result should go.
     requires isTy(#projectedCallTy(I, PROJS, LOCALS))
     [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
 
-  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total]
+  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total, no-evaluators]
 
   rule #projectedCallTy(I, PROJS, LOCALS)
     => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
@@ -379,13 +379,13 @@ where the returned result should go.
   rule getFunctionName(IntrinsicFunction(symbol(NAME))) => NAME
 
   // Check whether a function name matches any filter in the break-on-functions list.
-  syntax Bool ::= #functionNameMatchesEnv(String) [function, total]
+  syntax Bool ::= #functionNameMatchesEnv(String) [function, total, no-evaluators]
   //----------------------------------------------------------------
   rule #functionNameMatchesEnv(NAME) => #functionNameMatchesEnvStr(NAME, #breakOnFunctionsString(0))
 
   // The Int argument is unused; it exists only so the Haskell backend can
   // pattern-match on it and not error since zero-argument functions cannot use [owise].
-  syntax String ::= #breakOnFunctionsString(Int) [function, total, symbol(breakOnFunctionsString)]
+  syntax String ::= #breakOnFunctionsString(Int) [function, total, symbol(breakOnFunctionsString), no-evaluators]
   //-----------------------------------------------------------------------------------------------
   rule #breakOnFunctionsString(_) => "" [owise] // This gets overridden by corresponding python function
 
