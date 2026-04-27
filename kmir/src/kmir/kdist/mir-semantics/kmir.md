@@ -379,13 +379,13 @@ where the returned result should go.
   rule getFunctionName(IntrinsicFunction(symbol(NAME))) => NAME
 
   // Check whether a function name matches any filter in the break-on-functions list.
-  syntax Bool ::= #functionNameMatchesEnv(String) [function, total]
+  syntax Bool ::= #functionNameMatchesEnv(String) [function, total, no-evaluators]
   //----------------------------------------------------------------
   rule #functionNameMatchesEnv(NAME) => #functionNameMatchesEnvStr(NAME, #breakOnFunctionsString(0))
 
   // The Int argument is unused; it exists only so the Haskell backend can
   // pattern-match on it and not error since zero-argument functions cannot use [owise].
-  syntax String ::= #breakOnFunctionsString(Int) [function, total, symbol(breakOnFunctionsString)]
+  syntax String ::= #breakOnFunctionsString(Int) [function, total, symbol(breakOnFunctionsString), no-evaluators]
   //-----------------------------------------------------------------------------------------------
   rule #breakOnFunctionsString(_) => "" [owise] // This gets overridden by corresponding python function
 
