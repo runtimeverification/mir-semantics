@@ -95,6 +95,7 @@ class ProveOpts(KMirOpts):
     break_on_function: list[str]
     cse_functions: list[str]
     cse_summary_store: Path | None
+    cse_mode: str
 
     def __init__(
         self,
@@ -133,6 +134,7 @@ class ProveOpts(KMirOpts):
         break_on_function: list[str] | None = None,
         cse_functions: list[str] | None = None,
         cse_summary_store: Path | str | None = None,
+        cse_mode: str = 'summary',
     ) -> None:
         self.rs_file = rs_file
         self.proof_dir = Path(proof_dir).resolve() if proof_dir is not None else None
@@ -173,6 +175,7 @@ class ProveOpts(KMirOpts):
         self.break_on_function = break_on_function if break_on_function is not None else []
         self.cse_functions = cse_functions if cse_functions is not None else []
         self.cse_summary_store = Path(cse_summary_store).resolve() if cse_summary_store is not None else None
+        self.cse_mode = cse_mode
 
 
 @dataclass

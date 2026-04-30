@@ -493,6 +493,13 @@ def _arg_parser() -> ArgumentParser:
         metavar='PATH',
         help='Directory used to read and write CSE summaries',
     )
+    prove_args.add_argument(
+        '--cse-mode',
+        dest='cse_mode',
+        choices=('summary', 'trace'),
+        default='summary',
+        help='CSE strategy: function summary rewriting, or structure-preserving execution trace cache.',
+    )
 
     proof_args = ArgumentParser(add_help=False)
     proof_args.add_argument('id', metavar='PROOF_ID', help='The id of the proof to operate on')
@@ -762,6 +769,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 break_on_function=ns.break_on_function or [],
                 cse_functions=ns.cse_functions or [],
                 cse_summary_store=ns.cse_summary_store,
+                cse_mode=ns.cse_mode,
             )
         case 'link':
             return LinkOpts(

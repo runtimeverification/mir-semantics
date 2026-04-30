@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pyk.cterm import CTerm, cterm_build_rule
+from pyk.cterm import CSubst, CTerm, cterm_build_rule
 from pyk.kast.inner import KApply, KInner, KSequence, KToken, KVariable, Subst
 from pyk.kast.manip import (
     abstract_term_safely,
@@ -18,12 +18,13 @@ from pyk.kast.manip import (
     split_config_from,
 )
 from pyk.kast.prelude.collections import list_empty
-from pyk.kast.prelude.kbool import FALSE, andBool, notBool, orBool
+from pyk.kast.prelude.kbool import FALSE, andBool, notBool
 from pyk.kast.outer import KFlatModule, KImport, KRule
 from pyk.kast.prelude.ml import is_top, mlAnd, mlEqualsFalse
 from pyk.kcfg import KCFG
-from pyk.kcfg.kcfg import Branch, Step
+from pyk.kcfg.kcfg import Branch, NDBranch, Step, Stuck, Vacuous
 from pyk.proof.reachability import APRProof, APRProver
+from pyk.utils import shorten_hashes
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -33,6 +34,7 @@ if TYPE_CHECKING:
 
     from .kmir import KMIR
     from .options import ProveOpts
+    from .smir import SMIRInfo
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -54,6 +56,7 @@ _PROJECTION_ELEMS_APPEND = 'ProjectionElems::append'
 _PROJECTION_DEREF = 'ProjectionElem::Deref'
 _REF_VALUE_LABELS = ('Value::Reference', 'Value::PtrLocal')
 _DEREF_EVALUATION_DEPTH = 1
+_REFERENCE_WRITEBACK_MAX_DEPTH = 4096
 
 
 @dataclass(frozen=True)
@@ -171,6 +174,16 @@ class CSESummaryStore:
         return self.path / 'summaries'
 
     @property
+    def traces_dir(self) -> Path:
+        """Return the directory that stores structure-preserving trace entries."""
+        return self.path / 'traces'
+
+    @property
+    def subsumptions_dir(self) -> Path:
+        """Return the directory that stores successful trace subsumption results."""
+        return self.path / 'subsumptions'
+
+    @property
     def proofs_dir(self) -> Path:
         """Return the directory that stores callee summary proof data."""
         return self.path / 'proofs'
@@ -189,6 +202,42 @@ class CSESummaryStore:
         summary_path.write_text(json.dumps(summary.to_dict(), indent=2, sort_keys=True))
         self._write_manifest()
 
+    def load_trace(self, key: str) -> KCFGExtendResult | None:
+        """Load a cached structure-preserving extension result."""
+        trace_path = self._trace_path(key)
+        if not trace_path.is_file():
+            return None
+        return _trace_result_from_dict(json.loads(trace_path.read_text()))
+
+    def has_trace(self, key: str) -> bool:
+        """Return whether KEY has a persisted structure-preserving trace entry."""
+        return self._trace_path(key).is_file()
+
+    def save_trace(self, key: str, result: KCFGExtendResult) -> None:
+        """Persist one structure-preserving extension result if it is serializable."""
+        trace_path = self._trace_path(key)
+        if trace_path.is_file():
+            return
+        trace_path.parent.mkdir(parents=True, exist_ok=True)
+        trace_path.write_text(json.dumps(_trace_result_to_dict(result), sort_keys=True, separators=(',', ':')))
+        self._write_manifest()
+
+    def load_subsumption(self, key: str) -> CSubst | None:
+        """Load a cached successful subsumption result."""
+        subsumption_path = self._subsumption_path(key)
+        if not subsumption_path.is_file():
+            return None
+        return CSubst.from_dict(json.loads(subsumption_path.read_text()))
+
+    def save_subsumption(self, key: str, csubst: CSubst) -> None:
+        """Persist one successful subsumption result for trace replay."""
+        subsumption_path = self._subsumption_path(key)
+        if subsumption_path.is_file():
+            return
+        subsumption_path.parent.mkdir(parents=True, exist_ok=True)
+        subsumption_path.write_text(json.dumps(csubst.to_dict(), sort_keys=True, separators=(',', ':')))
+        self._write_manifest()
+
     def proof_id(self, function: str) -> str:
         """Return the deterministic APR proof id used for FUNCTION summaries."""
         return f'cse-callee.{_safe_function_id(function)}'
@@ -196,6 +245,14 @@ class CSESummaryStore:
     def _summary_path(self, function: str) -> Path:
         """Return the filesystem path for FUNCTION's summary JSON."""
         return self.summaries_dir / f'{_safe_function_id(function)}.json'
+
+    def _trace_path(self, key: str) -> Path:
+        """Return the filesystem path for a cached trace entry."""
+        return self.traces_dir / f'{key}.json'
+
+    def _subsumption_path(self, key: str) -> Path:
+        """Return the filesystem path for a cached subsumption entry."""
+        return self.subsumptions_dir / f'{key}.json'
 
     def _write_manifest(self) -> None:
         """Create the summary-store manifest if it is not already present."""
@@ -222,7 +279,10 @@ class CSERuntime:
     kmir: KMIR
     opts: ProveOpts
     proof_label: str
+    main_cut_point_rules: tuple[str, ...]
     summary_cut_point_rules: tuple[str, ...]
+    trace_function_tys: frozenset[int]
+    _trace_output_keys: set[str]
     _active_summaries: set[str]
 
     def __init__(
@@ -233,6 +293,8 @@ class CSERuntime:
         kmir: KMIR,
         opts: ProveOpts,
         proof_label: str,
+        smir_info: SMIRInfo | None = None,
+        main_cut_point_rules: Iterable[str] = (),
         summary_cut_point_rules: Iterable[str] = (),
     ) -> None:
         """Configure CSE for selected functions, store, and proof-generation options."""
@@ -241,8 +303,30 @@ class CSERuntime:
         self.kmir = kmir
         self.opts = opts
         self.proof_label = proof_label
+        self.main_cut_point_rules = tuple(main_cut_point_rules)
         self.summary_cut_point_rules = tuple(summary_cut_point_rules)
+        self.trace_function_tys = _trace_function_tys(self.functions, smir_info)
+        self._trace_output_keys = set()
         self._active_summaries = set()
+
+    @property
+    def mode(self) -> str:
+        """Return the configured CSE strategy."""
+        return getattr(self.opts, 'cse_mode', 'summary')
+
+    def can_make_custom_step(self, cterm: CTerm) -> bool:
+        """Return whether this runtime wants to handle CTERM."""
+        if self.mode == 'trace':
+            key = _trace_key(cterm)
+            return self._is_trace_target(cterm) or key in self._trace_output_keys or self.store.has_trace(key)
+        return self.target_call_info(cterm) is not None
+
+    def _is_trace_target(self, cterm: CTerm) -> bool:
+        """Return whether trace mode should cache/replay this source state."""
+        if self.target_call_info(cterm) is not None:
+            return True
+        current_ty = _current_function_ty(cterm)
+        return current_ty is not None and current_ty in self.trace_function_tys
 
     def target_call_info(self, cterm: CTerm) -> CSECallInfo | None:
         """Extract supported target call metadata from a stopped call-boundary state."""
@@ -276,6 +360,9 @@ class CSERuntime:
 
     def custom_step(self, cterm: CTerm, cterm_symbolic: CTermSymbolic) -> KCFGExtendResult | None:
         """Apply an existing summary or generate one for the current CSE call boundary."""
+        if self.mode == 'trace':
+            return self._trace_step(cterm, cterm_symbolic)
+
         info = self.target_call_info(cterm)
         if info is None:
             return None
@@ -288,7 +375,7 @@ class CSERuntime:
 
         generated = self.generate_summary(cterm, info, cterm_symbolic)
         if generated is None:
-            return None
+            return self._fallback_call_step(cterm, info, cterm_symbolic)
 
         if summary is not None:
             # The store keeps one summary per function. If the current caller
@@ -296,8 +383,64 @@ class CSERuntime:
             # schema by moving caller-specific initial constraints into guards.
             generated = _update_summary(summary, generated, cterm_symbolic)
             generated = _compile_summary_rules(generated, cterm, info, cterm_symbolic)
+        if not _has_applicable_rules(generated):
+            _LOGGER.info('CSE summary for %s has no backend-applicable rules; falling back to normal step', info.function)
+            return self._fallback_call_step(cterm, info, cterm_symbolic)
         self.store.save(generated)
-        return self._apply_summary(generated, cterm, info, cterm_symbolic)
+        applied = self._apply_summary(generated, cterm, info, cterm_symbolic)
+        if applied is not None:
+            return applied
+        return self._fallback_call_step(cterm, info, cterm_symbolic)
+
+    def _trace_step(self, cterm: CTerm, cterm_symbolic: CTermSymbolic) -> KCFGExtendResult | None:
+        """Replay or record the default proof extension without changing proof shape."""
+        key = _trace_key(cterm)
+        cached = self.store.load_trace(key)
+        if cached is not None:
+            _LOGGER.info('CSE trace cache hit: %s', key)
+            self._remember_trace_outputs(cterm, cached)
+            return cached
+
+        if not self._is_trace_target(cterm) and key not in self._trace_output_keys:
+            return None
+
+        _LOGGER.info('CSE trace cache miss: %s', key)
+        try:
+            executed = cterm_symbolic.execute(
+                cterm,
+                depth=self.opts.max_depth,
+                cut_point_rules=self.main_cut_point_rules,
+            )
+        except (ValueError, RuntimeError) as err:
+            _LOGGER.info('CSE trace backend step failed: %s', err)
+            return None
+
+        result, pending = _trace_results_from_execute(executed)
+        if result is None:
+            return None
+
+        self.store.save_trace(key, result)
+        if pending is not None and executed.depth > 0:
+            pending_key = _trace_key(executed.state)
+            self.store.save_trace(pending_key, pending)
+        self._remember_trace_outputs(cterm, result)
+        if pending is not None:
+            self._remember_trace_outputs(executed.state, pending)
+        return result
+
+    def _remember_trace_outputs(self, source: CTerm, *results: KCFGExtendResult | None) -> None:
+        """Remember states produced by trace replay for scoped subsumption caching."""
+        for result in results:
+            if isinstance(result, Step):
+                self._trace_output_keys.add(_trace_key(result.cterm))
+            elif isinstance(result, Branch):
+                self._trace_output_keys.update(_trace_key(source.add_constraint(constraint)) for constraint in result.constraints)
+            elif isinstance(result, NDBranch):
+                self._trace_output_keys.update(_trace_key(cterm) for cterm in result.cterms)
+
+    def is_trace_output(self, cterm: CTerm) -> bool:
+        """Return whether CTERM was produced by a trace step in this run."""
+        return _trace_key(cterm) in self._trace_output_keys
 
     def _apply_summary(
         self,
@@ -317,15 +460,6 @@ class CSERuntime:
         rules = tuple(outcome.rule for outcome in summary.outcomes if outcome.rule is not None)
         if not rules:
             return None
-        rule_guards = tuple(outcome.guard for outcome in summary.outcomes if outcome.rule is not None)
-        if rule_guards and not any(is_top(guard, weak=True) for guard in rule_guards):
-            coverage = (
-                rule_guards[0]
-                if len(rule_guards) == 1
-                else bool_to_ml_pred(orBool(ml_pred_to_bool(guard) for guard in rule_guards))
-            )
-            if not _is_entailed(cterm, coverage, cterm_symbolic):
-                return None
 
         module_digest = hashlib.sha256(
             json.dumps([rule.to_dict() for rule in rules], sort_keys=True).encode()
@@ -381,6 +515,51 @@ class CSERuntime:
                 common_preds.append(pred)
         branches = [mlAnd(pred for pred in branch_pred if pred not in common_preds) for branch_pred in branch_preds]
         return Branch(tuple(branches), info=f'cse-summary-split:{info.function}')
+
+    def _fallback_call_step(
+        self,
+        cterm: CTerm,
+        info: CSECallInfo,
+        cterm_symbolic: CTermSymbolic,
+    ) -> KCFGExtendResult | None:
+        """Execute one ordinary backend step when CSE cannot summarize/apply a call."""
+        try:
+            executed = cterm_symbolic.execute(cterm, depth=1)
+        except (ValueError, RuntimeError) as err:
+            _LOGGER.info('CSE fallback backend step failed for %s: %s', info.function, err)
+            return None
+
+        base_label = f'CSE.fallback.{info.function}'
+        if executed.depth > 0:
+            return Step(
+                executed.state,
+                executed.depth,
+                executed.logs,
+                [base_label],
+                cut=True,
+                info=f'cse-fallback:{info.function}',
+            )
+
+        if len(executed.next_states) == 1:
+            return Step(
+                executed.next_states[0].state,
+                1,
+                executed.logs,
+                [base_label],
+                cut=True,
+                info=f'cse-fallback:{info.function}',
+            )
+
+        if len(executed.next_states) < 2 or not all(condition for _, condition in executed.next_states):
+            return None
+
+        branch_preds = [flatten_label('#And', condition) for _, condition in executed.next_states if condition]
+        common_preds: list[KInner] = []
+        for pred in branch_preds[0]:
+            if pred not in common_preds and all(pred in branch_pred for branch_pred in branch_preds):
+                common_preds.append(pred)
+        branches = [mlAnd(pred for pred in branch_pred if pred not in common_preds) for branch_pred in branch_preds]
+        return Branch(tuple(branches), info=f'cse-fallback-split:{info.function}')
 
     def generate_summary(
         self,
@@ -445,6 +624,49 @@ class CSERuntime:
             return _compile_summary_rules(summary, call_boundary, info, cterm_symbolic)
         finally:
             self._active_summaries.remove(info.function)
+
+
+class CSEAPRProver(APRProver):
+    """APR prover that replays successful trace subsumptions when available."""
+
+    cse_runtime: CSERuntime
+
+    def __init__(self, cse_runtime: CSERuntime, *args, **kwargs) -> None:
+        """Initialize with the active CSE runtime and APRProver arguments."""
+        super().__init__(*args, **kwargs)
+        self.cse_runtime = cse_runtime
+
+    def _check_subsume(self, node: KCFG.Node, target_node: KCFG.Node, proof_id: str) -> CSubst | None:
+        """Cache successful trace subsumptions to avoid repeating warm leaf implies."""
+        if self.cse_runtime.mode != 'trace':
+            return super()._check_subsume(node, target_node, proof_id)
+        if not self.cse_runtime.is_trace_output(node.cterm):
+            return super()._check_subsume(node, target_node, proof_id)
+
+        target_cterm = target_node.cterm
+        _LOGGER.debug(f'Checking subsumption into target state {proof_id}: {shorten_hashes((node.id, target_cterm))}')
+        if self.fast_check_subsumption and not self._may_subsume(node, target_node):
+            _LOGGER.info(f'Skipping full subsumption check because of fast may subsume check {proof_id}: {node.id}')
+            return None
+
+        key = _subsumption_key(node.cterm, target_cterm, assume_defined=self.assume_defined)
+        cached = self.cse_runtime.store.load_subsumption(key)
+        if cached is not None:
+            _LOGGER.info('CSE trace subsumption cache hit: %s', key)
+            _LOGGER.info(f'Subsumed into target node {proof_id}: {shorten_hashes((node.id, target_node.id))}')
+            return cached
+
+        _LOGGER.info('CSE trace subsumption cache miss: %s', key)
+        result = self.kcfg_explore.cterm_symbolic.implies(
+            node.cterm,
+            target_cterm,
+            assume_defined=self.assume_defined,
+        )
+        csubst = result.csubst
+        if csubst is not None:
+            _LOGGER.info(f'Subsumed into target node {proof_id}: {shorten_hashes((node.id, target_node.id))}')
+            self.cse_runtime.store.save_subsumption(key, csubst)
+        return csubst
 
 
 class _UnsupportedReturnType:
@@ -625,6 +847,7 @@ def _compile_summary_rules(
     call_pattern = KApply(k_item.label, tuple(call_args))
     lhs_config = set_cell(rule_config, 'K_CELL', KSequence([call_pattern]))
 
+    deref_cache: dict[tuple[str, KInner], KInner | None] = {}
     compiled: list[CSEOutcome] = []
     for idx, outcome in enumerate(summary.outcomes):
         rule = _compile_summary_outcome_rule(
@@ -639,6 +862,7 @@ def _compile_summary_rules(
             target_block,
             arg_subst,
             cterm_symbolic,
+            deref_cache,
         )
         compiled.append(
             CSEOutcome(
@@ -657,6 +881,150 @@ def _compile_summary_rules(
     )
 
 
+def _has_applicable_rules(summary: CSESummary) -> bool:
+    """Return true if at least one outcome has a reusable backend rule."""
+    return any(outcome.rule is not None for outcome in summary.outcomes)
+
+
+def _trace_key(cterm: CTerm) -> str:
+    """Return a stable key for exact replay of a proof extension source state."""
+    return hashlib.sha256(json.dumps(cterm.to_dict(), sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def _subsumption_key(source: CTerm, target: CTerm, *, assume_defined: bool) -> str:
+    """Return a stable key for one successful source => target subsumption."""
+    data = {
+        'schema': 1,
+        'source': source.to_dict(),
+        'target': target.to_dict(),
+        'assume_defined': assume_defined,
+    }
+    return hashlib.sha256(json.dumps(data, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def _trace_function_tys(functions: Iterable[str], smir_info: SMIRInfo | None) -> frozenset[int]:
+    """Map selected CSE function names to SMIR function type IDs for trace scope."""
+    if smir_info is None:
+        return frozenset()
+    return frozenset(
+        int(ty)
+        for function in functions
+        if (ty := smir_info.function_tys.get(function)) is not None
+    )
+
+
+def _current_function_ty(cterm: CTerm) -> int | None:
+    """Return the current function Ty ID from <currentFunc>, when concrete."""
+    current_func = cterm.try_cell('CURRENTFUNC_CELL')
+    if not (
+        isinstance(current_func, KApply)
+        and current_func.label.name == 'ty'
+        and len(current_func.args) == 1
+    ):
+        return None
+
+    ty = current_func.args[0]
+    if not (isinstance(ty, KToken) and ty.sort.name == 'Int'):
+        return None
+    return int(ty.token)
+
+
+def _trace_results_from_execute(executed) -> tuple[KCFGExtendResult | None, KCFGExtendResult | None]:
+    """Mirror KCFGExplore's default execute-to-extension conversion.
+
+    KCFGExplore can return two results for one backend execute: a Step to the
+    branch/cut source plus a cached Branch/cut result at that source. Custom
+    semantics can return only one result, so trace mode persists the second
+    result under the intermediate state's key and replays it on the next proof
+    iteration.
+    """
+    next_result = _trace_next_result(executed)
+    if executed.depth > 0:
+        return (
+            Step(executed.state, executed.depth, (), [], info='cse-trace'),
+            next_result,
+        )
+    return next_result, None
+
+
+def _trace_next_result(executed) -> KCFGExtendResult | None:
+    """Return the extension implied by execute.next_states, if any."""
+    next_states = tuple(executed.next_states)
+    if not next_states:
+        if getattr(executed, 'vacuous', False):
+            return Vacuous()
+        if executed.depth == 0:
+            return Stuck()
+        return None
+
+    if len(next_states) == 1:
+        return Step(next_states[0].state, 1, (), [], cut=True, info='cse-trace-cut')
+
+    if all(condition for _, condition in next_states):
+        branch_preds = [flatten_label('#And', condition) for _, condition in next_states if condition]
+        common_preds: list[KInner] = []
+        for pred in branch_preds[0]:
+            if pred not in common_preds and all(pred in branch_pred for branch_pred in branch_preds):
+                common_preds.append(pred)
+        branches = [mlAnd(pred for pred in branch_pred if pred not in common_preds) for branch_pred in branch_preds]
+        return Branch(tuple(branches), info='cse-trace-branch')
+
+    return NDBranch(tuple(next_state for next_state, _ in next_states), (), [])
+
+
+def _trace_result_to_dict(result: KCFGExtendResult) -> dict[str, object]:
+    """Serialize a trace replay result."""
+    if isinstance(result, Step):
+        return {
+            'type': 'step',
+            'cterm': result.cterm.to_dict(),
+            'depth': result.depth,
+            'cut': result.cut,
+            'info': result.info,
+        }
+    if isinstance(result, Branch):
+        return {
+            'type': 'branch',
+            'constraints': [constraint.to_dict() for constraint in result.constraints],
+            'heuristic': result.heuristic,
+            'info': result.info,
+        }
+    if isinstance(result, NDBranch):
+        return {
+            'type': 'ndbranch',
+            'cterms': [cterm.to_dict() for cterm in result.cterms],
+        }
+    if isinstance(result, Stuck):
+        return {'type': 'stuck'}
+    if isinstance(result, Vacuous):
+        return {'type': 'vacuous'}
+    raise TypeError(f'Unsupported CSE trace result: {type(result).__name__}')
+
+
+def _trace_result_from_dict(dct: dict[str, object]) -> KCFGExtendResult:
+    """Deserialize a trace replay result."""
+    result_type = dct.get('type')
+    if result_type == 'step':
+        return Step(
+            CTerm.from_dict(_expect_dict(dct['cterm'])),
+            int(dct['depth']),
+            (),
+            [],
+            cut=bool(dct.get('cut', False)),
+            info=str(dct.get('info', 'cse-trace')),
+        )
+    if result_type == 'branch':
+        constraints = tuple(KInner.from_dict(_expect_dict(item)) for item in _expect_list(dct['constraints']))
+        return Branch(constraints, heuristic=bool(dct.get('heuristic', False)), info=str(dct.get('info', 'cse-trace-branch')))
+    if result_type == 'ndbranch':
+        return NDBranch(tuple(CTerm.from_dict(_expect_dict(item)) for item in _expect_list(dct['cterms'])), (), [])
+    if result_type == 'stuck':
+        return Stuck()
+    if result_type == 'vacuous':
+        return Vacuous()
+    raise ValueError(f'Unsupported CSE trace result type: {result_type}')
+
+
 def _compile_summary_outcome_rule(
     summary: CSESummary,
     call_boundary: CTerm,
@@ -669,6 +1037,7 @@ def _compile_summary_outcome_rule(
     target_block: KInner,
     arg_subst: Subst,
     cterm_symbolic: CTermSymbolic,
+    deref_cache: dict[tuple[str, KInner], KInner | None],
 ) -> KRule | None:
     """Compile one normal-return outcome into a reusable backend rule."""
     ret_val = outcome.final.try_cell('RETVAL_CELL')
@@ -681,7 +1050,16 @@ def _compile_summary_outcome_rule(
     if returned is _UnsupportedReturn:
         return None
 
-    writebacks = _reference_writebacks(call_boundary, info.args, summary.initial, outcome, arg_subst, cterm_symbolic)
+    writebacks = _reference_writebacks(
+        call_boundary,
+        info.args,
+        summary.initial,
+        outcome,
+        arg_subst,
+        cterm_symbolic,
+        deref_cache,
+        final_context=f'final:{idx}',
+    )
     if writebacks is None:
         return None
     writeback_items = tuple(KApply(_CSE_WRITE_BACK, (ref_value, new_value)) for ref_value, new_value in writebacks)
@@ -720,6 +1098,9 @@ def _reference_writebacks(
     outcome: CSEOutcome,
     subst: Subst,
     cterm_symbolic: CTermSymbolic,
+    deref_cache: dict[tuple[str, KInner], KInner | None],
+    *,
+    final_context: str,
 ) -> tuple[tuple[KInner, KInner], ...] | None:
     """Compute caller-side reference/PTR writebacks required by OUTCOME."""
     arg_patterns = _summary_arg_patterns(initial, len(args))
@@ -729,7 +1110,7 @@ def _reference_writebacks(
     writebacks: list[tuple[KInner, KInner]] = []
     for pattern, arg in zip(arg_patterns, args, strict=True):
         if _is_ref_or_pointer(pattern):
-            if not _ref_chain_supported(initial, pattern, cterm_symbolic):
+            if not _ref_chain_supported(initial, pattern, cterm_symbolic, deref_cache, context='initial'):
                 _LOGGER.info('CSE reference outcome rejected: unsupported reference chain')
                 return None
 
@@ -751,6 +1132,8 @@ def _reference_writebacks(
             caller_value,
             subst,
             cterm_symbolic,
+            deref_cache,
+            final_context=final_context,
             depth=0,
         )
         if nested is None:
@@ -769,12 +1152,18 @@ def _nested_reference_writebacks(
     caller_value: KInner,
     subst: Subst,
     cterm_symbolic: CTermSymbolic,
+    deref_cache: dict[tuple[str, KInner], KInner | None],
     *,
+    final_context: str,
     depth: int,
 ) -> tuple[tuple[KInner, KInner], ...] | None:
     """Recursively compare before/after/caller values and emit nested writebacks."""
-    if depth > 8:
+    if depth > _REFERENCE_WRITEBACK_MAX_DEPTH:
+        _LOGGER.info('CSE reference outcome rejected: writeback depth exceeded %s', _REFERENCE_WRITEBACK_MAX_DEPTH)
         return None
+
+    if not _contains_ref_or_pointer((before, after, caller_value)):
+        return ()
 
     if _is_ref_or_pointer(before):
         if not _is_ref_or_pointer(caller_value):
@@ -782,9 +1171,9 @@ def _nested_reference_writebacks(
         # Walk references/PTRs one layer at a time. A single #cseWriteBack
         # also dereferences once, so collapsing &mut &mut T to T here would
         # write the leaf value into the outer reference slot.
-        before_pointee = _deref_value(initial, before, cterm_symbolic)
-        after_pointee = _deref_value(final, before, cterm_symbolic)
-        caller_pointee = _deref_value(caller, caller_value, cterm_symbolic)
+        before_pointee = _deref_cached(initial, before, cterm_symbolic, deref_cache, context='initial')
+        after_pointee = _deref_cached(final, before, cterm_symbolic, deref_cache, context=final_context)
+        caller_pointee = _deref_cached(caller, caller_value, cterm_symbolic, deref_cache, context='caller')
         if before_pointee is None or after_pointee is None or caller_pointee is None:
             return None
 
@@ -798,6 +1187,8 @@ def _nested_reference_writebacks(
             caller_pointee,
             subst,
             cterm_symbolic,
+            deref_cache,
+            final_context=final_context,
             depth=depth + 1,
         )
         if nested is None:
@@ -831,6 +1222,8 @@ def _nested_reference_writebacks(
                 caller_arg,
                 subst,
                 cterm_symbolic,
+                deref_cache,
+                final_context=final_context,
                 depth=depth + 1,
             )
             if nested is None:
@@ -855,6 +1248,8 @@ def _nested_reference_writebacks(
                 caller_item,
                 subst,
                 cterm_symbolic,
+                deref_cache,
+                final_context=final_context,
                 depth=depth + 1,
             )
             if nested is None:
@@ -867,6 +1262,9 @@ def _nested_reference_writebacks(
 
 def _restore_caller_refs(before: KInner, after: KInner, caller: KInner) -> KInner | None:
     """Translate summary-side AFTER back to caller-side reference identities."""
+    if not _contains_ref_or_pointer((before, after, caller)):
+        return after
+
     if _is_ref_or_pointer(before):
         if not (_is_ref_or_pointer(after) and _is_ref_or_pointer(caller)):
             return None
@@ -1305,6 +1703,21 @@ def _deref_value(cterm: CTerm, value: KInner, cterm_symbolic: CTermSymbolic) -> 
     return None
 
 
+def _deref_cached(
+    cterm: CTerm,
+    value: KInner,
+    cterm_symbolic: CTermSymbolic,
+    cache: dict[tuple[str, KInner], KInner | None],
+    *,
+    context: str,
+) -> KInner | None:
+    """Dereference VALUE once, memoized per summary-rule compilation context."""
+    key = (context, value)
+    if key not in cache:
+        cache[key] = _deref_value(cterm, value, cterm_symbolic)
+    return cache[key]
+
+
 def _fully_deref_value(cterm: CTerm, value: KInner, cterm_symbolic: CTermSymbolic) -> KInner | None:
     """Dereference nested reference/PTR values until a non-reference value is reached."""
     current = value
@@ -1318,7 +1731,14 @@ def _fully_deref_value(cterm: CTerm, value: KInner, cterm_symbolic: CTermSymboli
     return None
 
 
-def _ref_chain_supported(cterm: CTerm, value: KInner, cterm_symbolic: CTermSymbolic) -> bool:
+def _ref_chain_supported(
+    cterm: CTerm,
+    value: KInner,
+    cterm_symbolic: CTermSymbolic,
+    deref_cache: dict[tuple[str, KInner], KInner | None],
+    *,
+    context: str,
+) -> bool:
     """Return whether a reference/PTR chain can be dereferenced without stalling."""
     current = value
     for _ in range(8):
@@ -1328,7 +1748,7 @@ def _ref_chain_supported(cterm: CTerm, value: KInner, cterm_symbolic: CTermSymbo
             return True
         if len(current.args) < 3:
             return False
-        next_value = _deref_value(cterm, current, cterm_symbolic)
+        next_value = _deref_cached(cterm, current, cterm_symbolic, deref_cache, context=context)
         if next_value is None or next_value == current:
             return False
         current = next_value
@@ -1414,4 +1834,11 @@ def _expect_dict(value: object) -> dict[str, object]:
     """Return VALUE as a dict or raise a type error for malformed summary data."""
     if not isinstance(value, dict):
         raise TypeError(f'Expected dict, got {type(value).__name__}')
+    return value
+
+
+def _expect_list(value: object) -> list[object]:
+    """Return VALUE as a list or raise a type error for malformed trace data."""
+    if not isinstance(value, list):
+        raise TypeError(f'Expected list, got {type(value).__name__}')
     return value

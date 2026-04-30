@@ -159,7 +159,7 @@ class KMIRSemantics(DefaultSemantics):
         self.cse_runtime = cse_runtime
 
     def can_make_custom_step(self, cterm: CTerm) -> bool:
-        return self.cse_runtime is not None and self.cse_runtime.target_call_info(cterm) is not None
+        return self.cse_runtime is not None and self.cse_runtime.can_make_custom_step(cterm)
 
     def custom_step(
         self, cterm: CTerm, cterm_symbolic: CTermSymbolic, _node_id: int | None = None

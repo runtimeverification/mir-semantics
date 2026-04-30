@@ -16,7 +16,7 @@ from pyk.proof.proof import parallel_advance_proof
 from pyk.proof.reachability import APRProof, APRProver
 
 from .cargo import cargo_get_smir_json
-from .cse import CSERuntime, CSESummaryStore
+from .cse import CSEAPRProver, CSERuntime, CSESummaryStore
 from .kast import SymbolicMode, make_call_config
 from .kmir import KMIR, KMIRSemantics
 from .smir import SMIRInfo
@@ -218,6 +218,8 @@ def _advance_proof(kmir: KMIR, proof: APRProof, opts: ProveOpts, label: str, smi
             kmir=kmir,
             opts=opts,
             proof_label=label,
+            smir_info=smir_info,
+            main_cut_point_rules=cut_point_rules,
             summary_cut_point_rules=summary_cut_point_rules,
         )
 
@@ -243,6 +245,8 @@ def _check_cse_options(opts: ProveOpts) -> None:
 
 
 def _effective_break_on_function(opts: ProveOpts) -> list[str]:
+    if opts.cse_mode == 'trace':
+        return list(dict.fromkeys([*opts.break_on_function, *opts.cse_functions]))
     return list(dict.fromkeys([*opts.break_on_function, *opts.cse_functions]))
 
 
@@ -314,11 +318,19 @@ def _prove_sequential(
         terminate_on_thunk=opts.terminate_on_thunk,
         cse_runtime=cse_runtime,
     ) as kcfg_explore:
-        prover = APRProver(
-            kcfg_explore,
-            execute_depth=opts.max_depth,
-            cut_point_rules=cut_point_rules,
-        )
+        if cse_runtime is not None and cse_runtime.mode == 'trace':
+            prover = CSEAPRProver(
+                cse_runtime,
+                kcfg_explore,
+                execute_depth=opts.max_depth,
+                cut_point_rules=cut_point_rules,
+            )
+        else:
+            prover = APRProver(
+                kcfg_explore,
+                execute_depth=opts.max_depth,
+                cut_point_rules=cut_point_rules,
+            )
         prover.advance_proof(
             proof,
             max_iterations=opts.max_iterations,
