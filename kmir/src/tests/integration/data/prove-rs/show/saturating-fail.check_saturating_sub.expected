@@ -28,7 +28,7 @@
 ┃  ┃  │   #expect ( BoolVal ( notBool truncate ( ARG_INT1:Int -Int ARG_INT2:Int , 32 , Sig
 ┃  ┃  │
 ┃  ┃  │  (2 steps)
-┃  ┃  └─ 10 (stuck, leaf)
+┃  ┃  └─ 12 (stuck, leaf)
 ┃  ┃      #ProgramError ( AssertError ( assertMessageOverflow ( binOpSub , operandCopy ( p
 ┃  ┃
 ┃  ┗━━┓ subst: .Subst
@@ -38,10 +38,43 @@
 ┃     ├─ 9
 ┃     │   #expect ( BoolVal ( notBool truncate ( ARG_INT1:Int -Int ARG_INT2:Int , 32 , Sig
 ┃     │
-┃     │  (26 steps)
-┃     └─ 11 (stuck, leaf)
-┃         #execIntrinsic ( IntrinsicFunction ( symbol ( "saturating_sub" ) ) , operandCopy
-┃         span: 114
+┃     │  (134 steps)
+┃     ├─ 13 (split)
+┃     │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+┃     ┃
+┃     ┃ (branch)
+┃     ┣━━┓ subst: .Subst
+┃     ┃  ┃ constraint:
+┃     ┃  ┃     notBool truncate ( ARG_INT1:Int -Int ARG_INT2:Int , 32 , Signed ) ==K minInt ( maxInt ( ARG_INT1:Int -Int ARG_INT2:Int , -2147483648 ) , 2147483647 )
+┃     ┃  │
+┃     ┃  ├─ 16
+┃     ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+┃     ┃  │
+┃     ┃  │  (58 steps)
+┃     ┃  ├─ 19
+┃     ┃  │   #cast ( Reference ( 0 , place ( ... local: local ( 2 ) , projection: .Projection
+┃     ┃  │   span: 78
+┃     ┃  │
+┃     ┃  │  (1 step)
+┃     ┃  └─ 21 (leaf, terminal)
+┃     ┃      thunk ( #cast ( Reference ( 0 , place ( ... local: local ( 2 ) , projection: .Pr
+┃     ┃      span: 78
+┃     ┃
+┃     ┗━━┓ subst: .Subst
+┃        ┃ constraint:
+┃        ┃     minInt ( maxInt ( ARG_INT1:Int -Int ARG_INT2:Int , -2147483648 ) , 2147483647 ) ==K truncate ( ARG_INT1:Int -Int ARG_INT2:Int , 32 , Signed )
+┃        │
+┃        ├─ 17
+┃        │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 7 ) )
+┃        │
+┃        │  (6 steps)
+┃        ├─ 20 (terminal)
+┃        │   #EndProgram ~> .K
+┃        │
+┃        ┊  constraint: true
+┃        ┊  subst: ...
+┃        └─ 2 (leaf, target, terminal)
+┃            #EndProgram ~> .K
 ┃
 ┗━━┓ subst: .Subst
    ┃ constraint:
@@ -50,13 +83,43 @@
    ├─ 5
    │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 4 ) )
    │
-   │  (16 steps)
-   └─ 7 (stuck, leaf)
-       #execIntrinsic ( IntrinsicFunction ( symbol ( "saturating_sub" ) ) , operandCopy
-       span: 99
+   │  (124 steps)
+   ├─ 7 (split)
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
+   ┃
+   ┃ (branch)
+   ┣━━┓ subst: .Subst
+   ┃  ┃ constraint:
+   ┃  ┃     notBool 0 ==Int maxInt ( ARG_INT1:Int -Int ARG_INT2:Int , -2147483648 )
+   ┃  │
+   ┃  ├─ 10
+   ┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
+   ┃  │
+   ┃  │  (58 steps)
+   ┃  ├─ 14
+   ┃  │   #cast ( Reference ( 0 , place ( ... local: local ( 2 ) , projection: .Projection
+   ┃  │   span: 78
+   ┃  │
+   ┃  │  (1 step)
+   ┃  └─ 18 (leaf, terminal)
+   ┃      thunk ( #cast ( Reference ( 0 , place ( ... local: local ( 2 ) , projection: .Pr
+   ┃      span: 78
+   ┃
+   ┗━━┓ subst: .Subst
+      ┃ constraint:
+      ┃     0 ==Int maxInt ( ARG_INT1:Int -Int ARG_INT2:Int , -2147483648 )
+      │
+      ├─ 11
+      │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 3 ) )
+      │
+      │  (6 steps)
+      ├─ 15 (terminal)
+      │   #EndProgram ~> .K
+      │
+      ┊  constraint: true
+      ┊  subst: ...
+      └─ 2 (leaf, target, terminal)
+          #EndProgram ~> .K
 
-
-┌─ 2 (root, leaf, target, terminal)
-│   #EndProgram ~> .K
 
 
