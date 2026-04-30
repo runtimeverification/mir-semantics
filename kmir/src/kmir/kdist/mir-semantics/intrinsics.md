@@ -212,6 +212,33 @@ the second argument, so the returned difference is always positive.
     [priority(100)]
 ```
 
+#### Saturating Sub (`std::intrinsics::saturating_sub`)
+
+The `saturating_sub` intrinsic computes `a - b`, clamping the result to the bounds of the operand type
+instead of wrapping around on overflow. For signed integers of width `WIDTH`, the result is clamped to
+`[-2^(WIDTH-1), 2^(WIDTH-1) - 1]`; for unsigned integers it is clamped to `[0, 2^WIDTH - 1]` (i.e., the
+result is `0` whenever `a < b`). Both operands must have the same width and signedness.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("saturating_sub")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
+        => #execSaturatingSub(DEST, ARG1, ARG2)
+       ... </k>
+
+  syntax KItem ::= #execSaturatingSub(Place, Evaluation, Evaluation) [seqstrict(2,3)]
+
+  // signed: clamp result to [-2^(WIDTH-1), 2^(WIDTH-1) - 1]
+  rule <k> #execSaturatingSub(DEST, Integer(ARG1, WIDTH, true), Integer(ARG2, WIDTH, true))
+        => #setLocalValue(DEST, Integer(minInt(maxInt(ARG1 -Int ARG2, 0 -Int (1 <<Int (WIDTH -Int 1))), (1 <<Int (WIDTH -Int 1)) -Int 1), WIDTH, true))
+       ... </k>
+    [preserves-definedness]
+
+  // unsigned: clamp result to [0, 2^WIDTH - 1]
+  rule <k> #execSaturatingSub(DEST, Integer(ARG1, WIDTH, false), Integer(ARG2, WIDTH, false))
+        => #setLocalValue(DEST, Integer(maxInt(ARG1 -Int ARG2, 0), WIDTH, false))
+       ... </k>
+    [preserves-definedness]
+```
+
 ```k
 endmodule
 ```
