@@ -87,6 +87,7 @@ class CSEOutcome:
     final: CTerm
     metadata: dict[str, object]
     rule: KRule | None = None
+    rule_var_map: Subst | None = None
 
     def to_dict(self) -> dict[str, object]:
         """Serialize a guarded summary outcome to the stable summary-store schema."""
@@ -95,6 +96,7 @@ class CSEOutcome:
             'final': self.final.to_dict(),
             'metadata': self.metadata,
             'rule': self.rule.to_dict() if self.rule is not None else None,
+            'rule_var_map': self.rule_var_map.to_dict() if self.rule_var_map is not None else None,
         }
 
     @staticmethod
@@ -105,6 +107,9 @@ class CSEOutcome:
             final=CTerm.from_dict(_expect_dict(dct['final'])),
             metadata=dict(_expect_dict(dct.get('metadata', {}))),
             rule=KRule.from_dict(_expect_dict(rule)) if (rule := dct.get('rule')) is not None else None,
+            rule_var_map=Subst.from_dict(_expect_dict(var_map))
+            if (var_map := dct.get('rule_var_map')) is not None
+            else None,
         )
 
 
@@ -467,7 +472,11 @@ class CSERuntime:
         if not rules:
             return None
 
-        direct = _apply_summary_direct(rules, cterm, info.function)
+        direct = _apply_summary_direct(
+            tuple(outcome for outcome in summary.outcomes if outcome.rule is not None),
+            cterm,
+            info.function,
+        )
         if direct is not None:
             return direct
 
@@ -863,7 +872,7 @@ def _compile_summary_rules(
     deref_cache: dict[tuple[str, KInner], KInner | None] = {}
     compiled: list[CSEOutcome] = []
     for idx, outcome in enumerate(summary.outcomes):
-        rule = _compile_summary_outcome_rule(
+        compiled_rule = _compile_summary_outcome_rule(
             summary,
             call_boundary,
             info,
@@ -877,12 +886,15 @@ def _compile_summary_rules(
             cterm_symbolic,
             deref_cache,
         )
+        rule = compiled_rule[0] if compiled_rule is not None else None
+        rule_var_map = compiled_rule[1] if compiled_rule is not None else None
         compiled.append(
             CSEOutcome(
                 guard=outcome.guard,
                 final=outcome.final,
                 metadata=outcome.metadata,
                 rule=rule,
+                rule_var_map=rule_var_map,
             )
         )
 
@@ -1051,7 +1063,7 @@ def _compile_summary_outcome_rule(
     arg_subst: Subst,
     cterm_symbolic: CTermSymbolic,
     deref_cache: dict[tuple[str, KInner], KInner | None],
-) -> KRule | None:
+) -> tuple[KRule, Subst] | None:
     """Compile one normal-return outcome into a reusable backend rule."""
     ret_val = outcome.final.try_cell('RETVAL_CELL')
     returned: KInner | None | _UnsupportedReturnType = _UnsupportedReturn
@@ -1105,13 +1117,13 @@ def _compile_summary_outcome_rule(
             sort_keys=True,
         ).encode()
     ).hexdigest()[:12]
-    rule, _subst = cterm_build_rule(
+    rule, var_map = cterm_build_rule(
         f'CSE.summary.{_safe_function_id(info.function)}.{idx}.{rule_digest}',
         CTerm(lhs_config, init_constraints),
         CTerm(post_config),
         priority=20,
     )
-    return rule
+    return rule, var_map
 
 
 def _reference_writebacks(
@@ -1549,6 +1561,7 @@ def _update_summary(existing: CSESummary, new: CSESummary, cterm_symbolic: CTerm
                 final=CTerm(outcome.final.config, ()),
                 metadata=outcome.metadata,
                 rule=rule,
+                rule_var_map=Subst({}) if rule is not None else None,
             )
             for idx, previous in enumerate(outcomes):
                 # With no reference/PTR arguments, the caller-visible callee
@@ -1605,7 +1618,10 @@ def _deduplicate_outcomes(outcomes: tuple[CSEOutcome, ...]) -> tuple[CSEOutcome,
                 'metadata': outcome.metadata,
             }
         else:
-            key_data = {'rule': outcome.rule.to_dict()}
+            key_data = {
+                'rule': outcome.rule.to_dict(),
+                'rule_var_map': outcome.rule_var_map.to_dict() if outcome.rule_var_map is not None else None,
+            }
         key = hashlib.sha256(json.dumps(key_data, sort_keys=True).encode()).hexdigest()
         if key in seen:
             continue
@@ -1663,7 +1679,7 @@ def _is_unsat(cterm: CTerm, cterm_symbolic: CTermSymbolic) -> bool:
 
 
 def _apply_summary_direct(
-    rules: tuple[KRule, ...],
+    outcomes: tuple[CSEOutcome, ...],
     cterm: CTerm,
     function: str,
 ) -> KCFGExtendResult | None:
@@ -1676,12 +1692,17 @@ def _apply_summary_direct(
     """
     matches: list[tuple[KInner, CTerm]] = []
     source_config = _normalize_k_list_units(cterm.config)
-    for rule in rules:
+    for outcome in outcomes:
+        rule = outcome.rule
+        if rule is None:
+            continue
+        if outcome.rule_var_map is None:
+            return None
         subst = _normalize_k_list_units(extract_lhs(rule.body)).match(source_config)
         if subst is None:
             continue
 
-        condition = subst(rule.requires)
+        condition = outcome.rule_var_map(subst(rule.requires))
         if condition == FALSE:
             continue
 
