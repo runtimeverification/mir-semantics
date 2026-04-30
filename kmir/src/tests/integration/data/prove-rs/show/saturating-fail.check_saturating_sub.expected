@@ -1,0 +1,62 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (35 steps)
+├─ 3 (split)
+│   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 4 ) )
+┃
+┃ (branch)
+┣━━┓ subst: .Subst
+┃  ┃ constraint:
+┃  ┃     notBool ARG_INT1:Int <=Int ARG_INT2:Int
+┃  │
+┃  ├─ 4
+┃  │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 4 ) )
+┃  │
+┃  │  (27 steps)
+┃  ├─ 6 (split)
+┃  │   #expect ( BoolVal ( notBool truncate ( ARG_INT1:Int -Int ARG_INT2:Int , 32 , Sig
+┃  ┃
+┃  ┃ (branch)
+┃  ┣━━┓ subst: .Subst
+┃  ┃  ┃ constraint:
+┃  ┃  ┃     notBool notBool truncate ( ARG_INT1:Int -Int ARG_INT2:Int , 32 , Signed ) ==Int ARG_INT1:Int -Int ARG_INT2:Int ==Bool false
+┃  ┃  │
+┃  ┃  ├─ 8
+┃  ┃  │   #expect ( BoolVal ( notBool truncate ( ARG_INT1:Int -Int ARG_INT2:Int , 32 , Sig
+┃  ┃  │
+┃  ┃  │  (2 steps)
+┃  ┃  └─ 10 (stuck, leaf)
+┃  ┃      #ProgramError ( AssertError ( assertMessageOverflow ( binOpSub , operandCopy ( p
+┃  ┃
+┃  ┗━━┓ subst: .Subst
+┃     ┃ constraint:
+┃     ┃     notBool truncate ( ARG_INT1:Int -Int ARG_INT2:Int , 32 , Signed ) ==Int ARG_INT1:Int -Int ARG_INT2:Int ==Bool false
+┃     │
+┃     ├─ 9
+┃     │   #expect ( BoolVal ( notBool truncate ( ARG_INT1:Int -Int ARG_INT2:Int , 32 , Sig
+┃     │
+┃     │  (26 steps)
+┃     └─ 11 (stuck, leaf)
+┃         #execIntrinsic ( IntrinsicFunction ( symbol ( "saturating_sub" ) ) , operandCopy
+┃         span: 114
+┃
+┗━━┓ subst: .Subst
+   ┃ constraint:
+   ┃     ARG_INT1:Int <=Int ARG_INT2:Int
+   │
+   ├─ 5
+   │   #selectBlock ( switchTargets ( ... branches: branch ( 0 , basicBlockIdx ( 4 ) )
+   │
+   │  (16 steps)
+   └─ 7 (stuck, leaf)
+       #execIntrinsic ( IntrinsicFunction ( symbol ( "saturating_sub" ) ) , operandCopy
+       span: 99
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+

@@ -40,6 +40,7 @@ PROVE_START_SYMBOLS = {
     'test_offset_from-fail': ['testing'],
     'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next': ['repro'],
+    'saturating-fail': ['check_saturating_sub'],
 }
 PROVE_SHOW_SPECS = [
     'local-raw-fail',
@@ -71,6 +72,7 @@ PROVE_SHOW_SPECS = [
     'ptr-cast-array-to-wrapper-fail',
     'ptr-cast-array-to-nested-wrapper-fail',
     'ptr-cast-array-to-singleton-wrapped-array-fail',
+    'saturating-fail',
 ]
 
 
