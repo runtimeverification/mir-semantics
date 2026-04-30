@@ -12,13 +12,16 @@ from pyk.kast.inner import KApply, KInner, KSequence, KToken, KVariable, Subst
 from pyk.kast.manip import (
     abstract_term_safely,
     bool_to_ml_pred,
+    bottom_up,
+    extract_lhs,
+    extract_rhs,
     flatten_label,
     ml_pred_to_bool,
     set_cell,
     split_config_from,
 )
 from pyk.kast.prelude.collections import list_empty
-from pyk.kast.prelude.kbool import FALSE, andBool, notBool
+from pyk.kast.prelude.kbool import FALSE, TRUE, andBool, notBool
 from pyk.kast.outer import KFlatModule, KImport, KRule
 from pyk.kast.prelude.ml import is_top, mlAnd, mlEqualsFalse
 from pyk.kcfg import KCFG
@@ -282,6 +285,7 @@ class CSERuntime:
     main_cut_point_rules: tuple[str, ...]
     summary_cut_point_rules: tuple[str, ...]
     trace_function_tys: frozenset[int]
+    _added_summary_modules: set[tuple[int, str]]
     _trace_output_keys: set[str]
     _active_summaries: set[str]
 
@@ -306,6 +310,7 @@ class CSERuntime:
         self.main_cut_point_rules = tuple(main_cut_point_rules)
         self.summary_cut_point_rules = tuple(summary_cut_point_rules)
         self.trace_function_tys = _trace_function_tys(self.functions, smir_info)
+        self._added_summary_modules = set()
         self._trace_output_keys = set()
         self._active_summaries = set()
 
@@ -382,7 +387,8 @@ class CSERuntime:
             # exposes a missing case, merge that proof back into the existing
             # schema by moving caller-specific initial constraints into guards.
             generated = _update_summary(summary, generated, cterm_symbolic)
-            generated = _compile_summary_rules(generated, cterm, info, cterm_symbolic)
+            if any(outcome.rule is None for outcome in generated.outcomes):
+                generated = _compile_summary_rules(generated, cterm, info, cterm_symbolic)
         if not _has_applicable_rules(generated):
             _LOGGER.info('CSE summary for %s has no backend-applicable rules; falling back to normal step', info.function)
             return self._fallback_call_step(cterm, info, cterm_symbolic)
@@ -461,6 +467,10 @@ class CSERuntime:
         if not rules:
             return None
 
+        direct = _apply_summary_direct(rules, cterm, info.function)
+        if direct is not None:
+            return direct
+
         module_digest = hashlib.sha256(
             json.dumps([rule.to_dict() for rule in rules], sort_keys=True).encode()
         ).hexdigest()[:16]
@@ -470,7 +480,10 @@ class CSERuntime:
         module = KFlatModule(module_name, rules, imports=imports)
 
         try:
-            cterm_symbolic.add_module(module, name_as_id=True)
+            module_key = (id(cterm_symbolic), module_name)
+            if module_key not in self._added_summary_modules:
+                cterm_symbolic.add_module(module, name_as_id=True)
+                self._added_summary_modules.add(module_key)
             executed = cterm_symbolic.execute(cterm, depth=1, module_name=module_name)
         except (ValueError, RuntimeError) as err:
             _LOGGER.info('CSE summary backend step failed for %s: %s', info.function, err)
@@ -1082,8 +1095,18 @@ def _compile_summary_outcome_rule(
     post_config = set_cell(rule_config, 'K_CELL', KSequence(k_items))
     guard = arg_subst(outcome.guard)
     init_constraints = () if is_top(guard, weak=True) else (guard,)
+    rule_digest = hashlib.sha256(
+        json.dumps(
+            {
+                'lhs': lhs_config.to_dict(),
+                'requires': [constraint.to_dict() for constraint in init_constraints],
+                'rhs': post_config.to_dict(),
+            },
+            sort_keys=True,
+        ).encode()
+    ).hexdigest()[:12]
     rule, _subst = cterm_build_rule(
-        f'CSE.summary.{info.function}.{idx}',
+        f'CSE.summary.{_safe_function_id(info.function)}.{idx}.{rule_digest}',
         CTerm(lhs_config, init_constraints),
         CTerm(post_config),
         priority=20,
@@ -1423,31 +1446,27 @@ def _update_summary(existing: CSESummary, new: CSESummary, cterm_symbolic: CTerm
     if new.initial.config == existing.initial.config:
         aligned = new
     elif _contains_ref_or_pointer((*_local_items(new.initial), *_local_items(existing.initial))):
+        outcomes = _deduplicate_outcomes(
+            tuple(outcome for outcome in (*existing.outcomes, *new.outcomes) if outcome.rule is not None)
+        )
+        if not outcomes:
+            outcomes = new.outcomes
         return CSESummary(
             function=existing.function,
-            initial=CTerm(new.initial.config, ()),
-            outcomes=tuple(
-                CSEOutcome(
-                    guard=_guard_with_constraints(
-                        outcome.guard,
-                        (*new.initial.constraints, *outcome.final.constraints),
-                    ),
-                    final=CTerm(outcome.final.config, ()),
-                    metadata=outcome.metadata,
-                    # Summary updates refresh rules after merge/replacement.
-                    # Do not keep a rule whose lhs may be tied to an older
-                    # stored call-boundary schema.
-                    rule=None,
-                )
-                for outcome in new.outcomes
-            ),
+            # Reference/PTR summaries are compiled against the caller-side
+            # schema needed to dereference and write back through borrowed
+            # values. Preserve every compiled variant instead of rewriting
+            # older rules onto the current call boundary.
+            initial=existing.initial,
+            outcomes=outcomes,
             source={
                 **existing.source,
                 **new.source,
                 'updated_summary': True,
-                'replaced_reference_schema': True,
+                'merged_reference_variants': True,
                 'previous_outcome_count': len(existing.outcomes),
                 'new_outcome_count': len(new.outcomes),
+                'merged_outcome_count': len(outcomes),
             },
         )
     else:
@@ -1574,6 +1593,27 @@ def _update_summary(existing: CSESummary, new: CSESummary, cterm_symbolic: CTerm
     )
 
 
+def _deduplicate_outcomes(outcomes: tuple[CSEOutcome, ...]) -> tuple[CSEOutcome, ...]:
+    """Keep compiled summary outcomes in insertion order, dropping duplicate rules."""
+    result: list[CSEOutcome] = []
+    seen: set[str] = set()
+    for outcome in outcomes:
+        if outcome.rule is None:
+            key_data = {
+                'guard': outcome.guard.to_dict(),
+                'final': outcome.final.to_dict(),
+                'metadata': outcome.metadata,
+            }
+        else:
+            key_data = {'rule': outcome.rule.to_dict()}
+        key = hashlib.sha256(json.dumps(key_data, sort_keys=True).encode()).hexdigest()
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(outcome)
+    return tuple(result)
+
+
 def _normalize_complement_guard(
     guard: KInner,
     previous_guards: tuple[KInner, ...],
@@ -1620,6 +1660,135 @@ def _is_unsat(cterm: CTerm, cterm_symbolic: CTermSymbolic) -> bool:
     except (ValueError, RuntimeError) as err:
         _LOGGER.debug('CSE satisfiability check is inconclusive: %s', err)
         return False
+
+
+def _apply_summary_direct(
+    rules: tuple[KRule, ...],
+    cterm: CTerm,
+    function: str,
+) -> KCFGExtendResult | None:
+    """Apply compiled summary rules without a backend module when matching is syntactic.
+
+    The compiled K rules remain the source of truth: this fast path only
+    extracts their lhs/rhs and side condition. If more than one rule can apply
+    on an unconstrained call boundary, return a Branch over the rule guards so
+    the following per-branch custom step can instantiate exactly one rule.
+    """
+    matches: list[tuple[KInner, CTerm]] = []
+    source_config = _normalize_k_list_units(cterm.config)
+    for rule in rules:
+        subst = _normalize_k_list_units(extract_lhs(rule.body)).match(source_config)
+        if subst is None:
+            continue
+
+        condition = subst(rule.requires)
+        if condition == FALSE:
+            continue
+
+        next_cterm = CTerm(
+            _normalize_k_list_units(subst(extract_rhs(rule.body))),
+            _constraints_with_condition(cterm.constraints, condition),
+        )
+        if not _is_summary_post_state(next_cterm):
+            return None
+        matches.append((condition, next_cterm))
+
+    if not matches:
+        return None
+
+    selected = [match for match in matches if _condition_is_known(match[0], cterm.constraints)]
+    if len(selected) == 1:
+        return Step(
+            selected[0][1],
+            1,
+            (),
+            [f'CSE.summary.{function}'],
+            cut=True,
+            info=f'cse-summary:{function}',
+        )
+    if len(selected) > 1:
+        return None
+
+    if len(matches) == 1:
+        return Step(
+            matches[0][1],
+            1,
+            (),
+            [f'CSE.summary.{function}'],
+            cut=True,
+            info=f'cse-summary:{function}',
+        )
+
+    branch_conditions = tuple(
+        _condition_without_known_constraints(condition, cterm.constraints) for condition, _ in matches
+    )
+    if len(branch_conditions) < 2 or any(is_top(condition, weak=True) for condition in branch_conditions):
+        return None
+    return Branch(branch_conditions, info=f'cse-summary-split:{function}')
+
+
+def _constraints_with_condition(constraints: tuple[KInner, ...], condition: KInner) -> tuple[KInner, ...]:
+    if condition == TRUE or _condition_is_known(condition, constraints):
+        return constraints
+    return (*constraints, _condition_to_ml_pred(condition))
+
+
+def _condition_is_known(condition: KInner, constraints: tuple[KInner, ...]) -> bool:
+    if condition == TRUE:
+        return True
+    condition_conjuncts = _condition_ml_conjuncts(condition)
+    known_conjuncts = _known_ml_conjuncts(constraints)
+    return all(conjunct in known_conjuncts for conjunct in condition_conjuncts)
+
+
+def _condition_without_known_constraints(condition: KInner, constraints: tuple[KInner, ...]) -> KInner:
+    known_conjuncts = _known_ml_conjuncts(constraints)
+    return mlAnd(conjunct for conjunct in _condition_ml_conjuncts(condition) if conjunct not in known_conjuncts)
+
+
+def _condition_to_ml_pred(condition: KInner) -> KInner:
+    return mlAnd(_condition_ml_conjuncts(condition))
+
+
+def _condition_ml_conjuncts(condition: KInner) -> tuple[KInner, ...]:
+    return tuple(bool_to_ml_pred(conjunct) for conjunct in _bool_conjuncts(condition))
+
+
+def _known_ml_conjuncts(constraints: tuple[KInner, ...]) -> set[KInner]:
+    return {
+        conjunct
+        for constraint in constraints
+        for conjunct in flatten_label('#And', constraint)
+        if not is_top(conjunct, weak=True)
+    }
+
+
+def _bool_conjuncts(condition: KInner) -> tuple[KInner, ...]:
+    if condition == TRUE:
+        return ()
+    return tuple(flatten_label('_andBool_', condition))
+
+
+def _normalize_k_list_units(term: KInner) -> KInner:
+    """Normalize builtin K list units so Python-side matching mirrors backend matching."""
+
+    def _normalize(_term: KInner) -> KInner:
+        if not isinstance(_term, KApply) or _term.label.name != '_List_':
+            return _term
+        items = tuple(item for item in flatten_label('_List_', _term) if not _is_k_list_unit(item))
+        if not items:
+            return KApply('.List')
+
+        result = items[-1]
+        for item in reversed(items[:-1]):
+            result = KApply('_List_', (item, result))
+        return result
+
+    return bottom_up(_normalize, term)
+
+
+def _is_k_list_unit(term: KInner) -> bool:
+    return isinstance(term, KApply) and term.label.name == '.List' and not term.args
 
 
 def _is_summary_post_state(cterm: CTerm) -> bool:
