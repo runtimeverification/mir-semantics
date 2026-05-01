@@ -112,6 +112,26 @@ class CSEOutcome:
             else None,
         )
 
+    def to_apply_dict(self) -> dict[str, object]:
+        """Serialize only the compiled data needed by the warm apply path."""
+        return {
+            'rule': self.rule.to_dict() if self.rule is not None else None,
+            'rule_var_map': self.rule_var_map.to_dict() if self.rule_var_map is not None else None,
+        }
+
+    @staticmethod
+    def from_apply_dict(dct: dict[str, object]) -> CSEOutcome:
+        """Deserialize one apply-only outcome from the compiled sidecar schema."""
+        return CSEOutcome(
+            guard=TRUE,
+            final=_unused_apply_cterm(),
+            metadata={},
+            rule=KRule.from_dict(_expect_dict(rule)) if (rule := dct.get('rule')) is not None else None,
+            rule_var_map=Subst.from_dict(_expect_dict(var_map))
+            if (var_map := dct.get('rule_var_map')) is not None
+            else None,
+        )
+
 
 @dataclass(frozen=True)
 class CSESummary:
@@ -163,6 +183,68 @@ class CSESummary:
             source=dict(_expect_dict(dct.get('source', {}))),
         )
 
+    def to_apply_dict(self) -> dict[str, object]:
+        """Serialize the compact warm-apply projection of this summary."""
+        return {
+            'schema': 1,
+            'function': self.function,
+            'outcomes': [
+                outcome.to_apply_dict()
+                for outcome in self.outcomes
+                if outcome.rule is not None and outcome.rule_var_map is not None
+            ],
+            'source': self.source,
+        }
+
+    @staticmethod
+    def from_apply_dict(dct: dict[str, object]) -> CSESummary:
+        """Deserialize an apply-only summary sidecar."""
+        schema = dct.get('schema')
+        if schema != 1:
+            raise ValueError(f'Unsupported CSE apply summary schema: {schema}')
+        function = dct['function']
+        if not isinstance(function, str):
+            raise TypeError(f'Expected str, got {type(function).__name__}')
+        outcomes = dct['outcomes']
+        if not isinstance(outcomes, list):
+            raise TypeError(f'Expected list, got {type(outcomes).__name__}')
+        return CSESummary(
+            function=function,
+            initial=_unused_apply_cterm(),
+            outcomes=tuple(CSEOutcome.from_apply_dict(_expect_dict(outcome)) for outcome in outcomes),
+            source={**dict(_expect_dict(dct.get('source', {}))), 'apply_only': True},
+        )
+
+
+def _unused_apply_cterm() -> CTerm:
+    """Return a placeholder CTerm for apply-only summaries.
+
+    Warm summary application only needs compiled rules and variable maps.
+    Full semantic data remains in the canonical summary JSON and is loaded
+    lazily if apply fails and merge/regeneration is needed.
+    """
+    return CTerm.top()
+
+
+def _apply_only_summary(summary: CSESummary) -> CSESummary:
+    """Project SUMMARY to the fields required by the warm apply path."""
+    return CSESummary(
+        function=summary.function,
+        initial=_unused_apply_cterm(),
+        outcomes=tuple(
+            CSEOutcome(
+                guard=TRUE,
+                final=_unused_apply_cterm(),
+                metadata={},
+                rule=outcome.rule,
+                rule_var_map=outcome.rule_var_map,
+            )
+            for outcome in summary.outcomes
+            if outcome.rule is not None and outcome.rule_var_map is not None
+        ),
+        source={**summary.source, 'apply_only': True},
+    )
+
 
 class CSESummaryStore:
     """Filesystem store for one JSON summary and one proof directory per function."""
@@ -173,13 +255,21 @@ class CSESummaryStore:
         """Initialize the summary store directories and manifest at PATH."""
         self.path = Path(path).resolve()
         self.summaries_dir.mkdir(parents=True, exist_ok=True)
+        self.apply_summaries_dir.mkdir(parents=True, exist_ok=True)
         self.proofs_dir.mkdir(parents=True, exist_ok=True)
+        self._summary_cache: dict[str, CSESummary] = {}
+        self._apply_summary_cache: dict[str, CSESummary] = {}
         self._write_manifest()
 
     @property
     def summaries_dir(self) -> Path:
         """Return the directory that stores serialized summaries."""
         return self.path / 'summaries'
+
+    @property
+    def apply_summaries_dir(self) -> Path:
+        """Return the directory that stores compact compiled-rule summaries."""
+        return self.path / 'apply-summaries'
 
     @property
     def traces_dir(self) -> Path:
@@ -198,16 +288,39 @@ class CSESummaryStore:
 
     def load(self, function: str) -> CSESummary | None:
         """Load the single persisted summary for FUNCTION, if one exists."""
+        if function in self._summary_cache:
+            return self._summary_cache[function]
         summary_path = self._summary_path(function)
         if not summary_path.is_file():
             return None
-        return CSESummary.from_dict(json.loads(summary_path.read_text()))
+        summary = CSESummary.from_dict(json.loads(summary_path.read_text()))
+        self._summary_cache[function] = summary
+        return summary
+
+    def load_for_apply(self, function: str) -> CSESummary | None:
+        """Load the cheapest summary projection needed by the warm apply path."""
+        if function in self._apply_summary_cache:
+            return self._apply_summary_cache[function]
+        apply_path = self._apply_summary_path(function)
+        if apply_path.is_file():
+            summary = CSESummary.from_apply_dict(json.loads(apply_path.read_text()))
+            self._apply_summary_cache[function] = summary
+            return summary
+        summary = self.load(function)
+        if summary is not None:
+            self._apply_summary_cache[function] = _apply_only_summary(summary)
+        return summary
 
     def save(self, summary: CSESummary) -> None:
         """Persist SUMMARY under its function key and keep the manifest present."""
         summary_path = self._summary_path(summary.function)
         summary_path.parent.mkdir(parents=True, exist_ok=True)
         summary_path.write_text(json.dumps(summary.to_dict(), indent=2, sort_keys=True))
+        apply_path = self._apply_summary_path(summary.function)
+        apply_path.parent.mkdir(parents=True, exist_ok=True)
+        apply_path.write_text(json.dumps(summary.to_apply_dict(), sort_keys=True, separators=(',', ':')))
+        self._summary_cache[summary.function] = summary
+        self._apply_summary_cache[summary.function] = _apply_only_summary(summary)
         self._write_manifest()
 
     def load_trace(self, key: str) -> KCFGExtendResult | None:
@@ -253,6 +366,10 @@ class CSESummaryStore:
     def _summary_path(self, function: str) -> Path:
         """Return the filesystem path for FUNCTION's summary JSON."""
         return self.summaries_dir / f'{_safe_function_id(function)}.json'
+
+    def _apply_summary_path(self, function: str) -> Path:
+        """Return the compact apply-only summary path for FUNCTION."""
+        return self.apply_summaries_dir / f'{_safe_function_id(function)}.json'
 
     def _trace_path(self, key: str) -> Path:
         """Return the filesystem path for a cached trace entry."""
@@ -377,11 +494,12 @@ class CSERuntime:
         if info is None:
             return None
 
-        summary = self.store.load(info.function)
+        summary = self.store.load_for_apply(info.function)
         if summary is not None:
             applied = self._apply_summary(summary, cterm, info, cterm_symbolic)
             if applied is not None:
                 return applied
+            summary = self.store.load(info.function)
 
         generated = self.generate_summary(cterm, info, cterm_symbolic)
         if generated is None:
