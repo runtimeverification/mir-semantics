@@ -59,17 +59,22 @@ def _flush_lines(lines: Iterable[str]) -> None:
 
 
 def _kmir_run(opts: RunOpts) -> None:
-    if opts.file:
-        smir_info = SMIRInfo.from_file(Path(opts.file))
+    if opts.rs_file:
+        if opts.smir:
+            smir_info = SMIRInfo.from_file(opts.rs_file)
+        else:
+            from .cargo import cargo_get_smir_json
+
+            smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
+    elif opts.bin:
+        cargo = CargoProject(Path.cwd())
+        _LOGGER.warning(f'Requested to run {opts.bin} but multi-exec projects currently not supported')
+        smir_info = cargo.smir_for_project(clean=False)
     else:
         cargo = CargoProject(Path.cwd())
-        # multi-exec projects currently not supported
-        if opts.bin:
-            _LOGGER.warning(f'Requested to run {opts.bin} but multi-exec projects currently not supported')
-        # target = opts.bin if opts.bin else cargo.default_target
         smir_info = cargo.smir_for_project(clean=False)
 
-    def run(target_dir: Path):
+    def run(target_dir: Path) -> None:
         kmir = KMIR.from_kompiled_kore(
             smir_info,
             target_dir=target_dir,
@@ -332,10 +337,14 @@ def _arg_parser() -> ArgumentParser:
     run_parser = command_parser.add_parser('run', help='run stable MIR programs', parents=[kcli_args.logging_args])
     run_target_selection = run_parser.add_mutually_exclusive_group()
     run_target_selection.add_argument(
-        '--bin', metavar='TARGET', help='Cargo binary target name to run (mutually exclusive with --file)'
+        'rs_file', nargs='?', metavar='FILE', help='Rust or SMIR JSON file to run (use --smir for SMIR JSON)'
     )
     run_target_selection.add_argument(
-        '--file', metavar='SMIR', help='SMIR JSON file to execute (mutually exclusive with --bin)'
+        '--bin', metavar='TARGET', help='Cargo binary target name to run (mutually exclusive with FILE)'
+    )
+    run_parser.add_argument('--smir', action='store_true', help='Treat the input file as a SMIR JSON.')
+    run_parser.add_argument(
+        '--save-smir', action='store_true', help='Do not delete the intermediate generated SMIR JSON file.'
     )
     run_parser.add_argument('--target-dir', type=Path, metavar='TARGET_DIR', help='SMIR kompilation target directory')
     run_parser.add_argument('--depth', type=int, metavar='DEPTH', help='Maximum number of execution steps')
@@ -657,8 +666,10 @@ def _parse_args(ns: Namespace) -> KMirOpts:
     match ns.command:
         case 'run':
             return RunOpts(
+                rs_file=ns.rs_file,
+                smir=ns.smir,
+                save_smir=ns.save_smir,
                 bin=ns.bin,
-                file=ns.file,
                 target_dir=ns.target_dir,
                 depth=ns.depth,
                 start_symbol=ns.start_symbol,
