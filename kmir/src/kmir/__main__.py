@@ -330,7 +330,9 @@ def _arg_parser() -> ArgumentParser:
     kcli_args = KCLIArgs()
 
     run_parser = command_parser.add_parser('run', help='run stable MIR programs', parents=[kcli_args.logging_args])
-    run_parser.add_argument('rs_file', metavar='FILE', help='Rust file, SMIR JSON (with --smir), or cargo target (with --bin)')
+    run_parser.add_argument(
+        'rs_file', metavar='FILE', help='Rust file, SMIR JSON (with --smir), or cargo target (with --bin)'
+    )
     run_input_mode = run_parser.add_mutually_exclusive_group()
     run_input_mode.add_argument('--smir', action='store_true', help='Treat the input as a SMIR JSON file.')
     run_input_mode.add_argument('--bin', action='store_true', help='Treat the input as a cargo binary target name.')
