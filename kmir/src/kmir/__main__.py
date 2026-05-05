@@ -59,6 +59,11 @@ def _flush_lines(lines: Iterable[str]) -> None:
 
 
 def _kmir_run(opts: RunOpts) -> None:
+    if not opts.rs_file and not opts.bin:
+        raise SystemExit('kmir run: error: either FILE or --bin is required')
+    if opts.smir and not opts.rs_file:
+        raise SystemExit('kmir run: error: --smir requires a FILE argument')
+
     if opts.rs_file:
         if opts.smir:
             smir_info = SMIRInfo.from_file(opts.rs_file)
@@ -66,12 +71,9 @@ def _kmir_run(opts: RunOpts) -> None:
             from .cargo import cargo_get_smir_json
 
             smir_info = SMIRInfo(cargo_get_smir_json(opts.rs_file, save_smir=opts.save_smir))
-    elif opts.bin:
-        cargo = CargoProject(Path.cwd())
-        _LOGGER.warning(f'Requested to run {opts.bin} but multi-exec projects currently not supported')
-        smir_info = cargo.smir_for_project(clean=False)
     else:
         cargo = CargoProject(Path.cwd())
+        _LOGGER.warning(f'Requested to run {opts.bin} but multi-exec projects currently not supported')
         smir_info = cargo.smir_for_project(clean=False)
 
     def run(target_dir: Path) -> None:
