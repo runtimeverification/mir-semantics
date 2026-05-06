@@ -207,6 +207,25 @@ computing the rotation.
     [preserves-definedness]
 ```
 
+#### Byte Swap (`std::intrinsics::bswap`)
+
+The `bswap` intrinsic reverses the byte order of an integer value. This is used for endianness conversion.
+We convert the integer to little-endian bytes, then read them back as big-endian (which reverses the order).
+
+```k
+  syntax KItem ::= #execBswap(Place, Evaluation) [strict(2)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("bswap")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execBswap(DEST, ARG)
+       ... </k>
+
+  rule <k> #execBswap(DEST, Integer(VAL, WIDTH, SIGN))
+        => #setLocalValue(DEST, Integer(Bytes2Int(Int2Bytes(WIDTH /Int 8, truncate(VAL, WIDTH, Unsigned), LE), BE, Unsigned), WIDTH, SIGN))
+       ... </k>
+    requires WIDTH >Int 0
+    [preserves-definedness]
+```
+
 #### Ptr Offset Computations (`std::intrinsics::ptr_offset_from`, `std::intrinsics::ptr_offset_from_unsigned`)
 
 The `ptr_offset_from[_unsigned]` calculates the distance between two pointers within the same allocation,
