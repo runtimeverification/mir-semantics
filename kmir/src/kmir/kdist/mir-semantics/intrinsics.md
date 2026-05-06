@@ -250,6 +250,31 @@ The `ctpop` intrinsic counts the number of set bits (population count) in an int
     [preserves-definedness]
 ```
 
+#### Count Leading Zeros (`std::intrinsics::ctlz_nonzero`)
+
+The `ctlz_nonzero` intrinsic counts the number of leading zero bits in an integer value that is
+guaranteed to be nonzero. For an N-bit integer with value V, this is N minus the position of the
+highest set bit.
+
+```k
+  syntax KItem ::= #execCtlz(Place, Evaluation) [strict(2)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ctlz_nonzero")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execCtlz(DEST, ARG)
+       ... </k>
+
+  syntax Int ::= #log2floor(Int) [function]
+  rule #log2floor(1) => 0
+  rule #log2floor(N) => 1 +Int #log2floor(N >>Int 1)
+    requires N >Int 1
+
+  rule <k> #execCtlz(DEST, Integer(VAL, WIDTH, SIGN))
+        => #setLocalValue(DEST, Integer(WIDTH -Int 1 -Int #log2floor(truncate(VAL, WIDTH, Unsigned)), WIDTH, SIGN))
+       ... </k>
+    requires truncate(VAL, WIDTH, Unsigned) >Int 0
+    [preserves-definedness]
+```
+
 #### Ptr Offset Computations (`std::intrinsics::ptr_offset_from`, `std::intrinsics::ptr_offset_from_unsigned`)
 
 The `ptr_offset_from[_unsigned]` calculates the distance between two pointers within the same allocation,
