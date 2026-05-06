@@ -21,8 +21,10 @@ class KMirOpts: ...
 class RunOpts(KMirOpts):
     start_symbol: str
     depth: int
-    bin: str | None
-    file: str | None
+    rs_file: Path
+    smir: bool
+    save_smir: bool
+    bin: bool
     target_dir: Path | None
     symbolic: bool
     haskell_target: str | None
@@ -31,21 +33,25 @@ class RunOpts(KMirOpts):
 
     def __init__(
         self,
+        rs_file: str | Path,
         start_symbol: str,
         depth: int,
         *,
-        bin: str | None = None,
-        file: str | None = None,
+        smir: bool = False,
+        save_smir: bool = False,
+        bin: bool = False,
         target_dir: str | Path | None = None,
         symbolic: bool = False,
         haskell_target: str | None = None,
         llvm_lib_target: str | None = None,
         llvm_target: str | None = None,
     ):
+        self.rs_file = Path(rs_file).resolve()
         self.start_symbol = start_symbol
         self.depth = depth
+        self.smir = smir
+        self.save_smir = save_smir
         self.bin = bin
-        self.file = file
         self.target_dir = Path(target_dir).resolve() if target_dir is not None else None
         self.symbolic = symbolic
         self.haskell_target = haskell_target

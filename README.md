@@ -69,7 +69,7 @@ Every subcommand supports `--help` for the full option list.
 
 | Command | Purpose |
 | --- | --- |
-| `kmir run` | Execute a Rust program from SMIR JSON |
+| `kmir run` | Execute a Rust program (from `.rs`, SMIR JSON with `--smir`, or cargo target with `--bin`) |
 | `kmir prove` | Prove properties of a Rust source file (recommended entry point) |
 | `kmir show` | Inspect a proof graph — nodes, deltas, rules, statistics |
 | `kmir view` | Interactive proof viewer |
