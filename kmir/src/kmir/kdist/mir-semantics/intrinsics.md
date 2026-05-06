@@ -226,6 +226,30 @@ We convert the integer to little-endian bytes, then read them back as big-endian
     [preserves-definedness]
 ```
 
+#### Count Set Bits (`std::intrinsics::ctpop`)
+
+The `ctpop` intrinsic counts the number of set bits (population count) in an integer value.
+
+```k
+  syntax KItem ::= #execCtpop(Place, Evaluation) [strict(2)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ctpop")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execCtpop(DEST, ARG)
+       ... </k>
+
+  syntax Int ::= #popcount(Int) [function, total]
+  rule #popcount(0) => 0
+  rule #popcount(N) => (N &Int 1) +Int #popcount(N >>Int 1)
+    requires N >Int 0
+  rule #popcount(N) => #popcount(N *Int -1)
+    requires N <Int 0
+
+  rule <k> #execCtpop(DEST, Integer(VAL, WIDTH, SIGN))
+        => #setLocalValue(DEST, Integer(#popcount(truncate(VAL, WIDTH, Unsigned)), WIDTH, SIGN))
+       ... </k>
+    [preserves-definedness]
+```
+
 #### Ptr Offset Computations (`std::intrinsics::ptr_offset_from`, `std::intrinsics::ptr_offset_from_unsigned`)
 
 The `ptr_offset_from[_unsigned]` calculates the distance between two pointers within the same allocation,
