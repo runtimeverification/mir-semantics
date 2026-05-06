@@ -9,7 +9,7 @@ The tests below this directory are intended to be run with `kmir run`, comparing
 * Generate stable-mir JSON `NAME.smir.json` for the test program (using `deps/stable-mir-pretty`)
 * run the program once to generate the expected output state
   ```
-  /mir-semantics $ poetry -C kmir run -- kmir run path/to/NAME.smir.json > <path>/<to>/<NAME>.run.state
+  /mir-semantics $ uv --project kmir/ run kmir run path/to/NAME.smir.json --smir > <path>/<to>/<NAME>.run.state
   ```
 * check that the output is as expected
 * add test to `EXEC_DATA` array in `kmir/src/tests/integration/test_integration.py`
