@@ -162,6 +162,22 @@ These functions are global static data  accessed from many places, and will be e
   syntax TypeInfo ::= lookupTyKore ( Ty )    [function, total, symbol(lookupTyKore), no-evaluators]
 ```
 
+## Map-based lookup functions (concrete mode)
+
+These functions perform lookups from `Map`s stored in the configuration, used in concrete (LLVM) mode.
+They return the same defaults as the Kore versions when a key is not found.
+
+```k
+  syntax MonoItemKind ::= lookupFunctionMap ( Map , Ty ) [function, total]
+  rule lookupFunctionMap(M, ty(I)) => {M [ ty(I) ] orDefault monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(I), noBody)}:>MonoItemKind
+
+  syntax TypeInfo ::= lookupTyMap ( Map , Ty ) [function, total]
+  rule lookupTyMap(M, TY) => {M [ TY ] orDefault typeInfoVoidType}:>TypeInfo
+
+  syntax Evaluation ::= lookupAllocMap ( Map , AllocId ) [function, total]
+  rule lookupAllocMap(M, AID) => {M [ AID ] orDefault InvalidAlloc(AID)}:>Evaluation
+```
+
 ```k
 endmodule
 ```
