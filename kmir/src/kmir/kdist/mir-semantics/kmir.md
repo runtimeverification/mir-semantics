@@ -105,8 +105,9 @@ will effectively be no-ops at this level).
          ...
        </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
        requires 0 <=Int I andBool I <Int size(LOCALS)
-        andBool notBool #isUnionType(lookupTyKore(tyOfLocal(getLocal(LOCALS, I))))
+        andBool notBool #isUnionType(lookupTy(TYPESMAP, tyOfLocal(getLocal(LOCALS, I))))
        [preserves-definedness]
 
   rule [execStmt.union]: <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
@@ -115,8 +116,9 @@ will effectively be no-ops at this level).
          ...
        </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
        requires 0 <=Int I andBool I <Int size(LOCALS)
-        andBool #isUnionType(lookupTyKore(tyOfLocal(getLocal(LOCALS, I))))
+        andBool #isUnionType(lookupTy(TYPESMAP, tyOfLocal(getLocal(LOCALS, I))))
        [preserves-definedness]
 
   // RVAL evaluation is implemented in rt/data.md
@@ -312,15 +314,17 @@ where the returned result should go.
   syntax KItem ::= #checkFunctionFilter(MonoItemKind)
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall(Ty, lookupFunctionKore(Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall(Ty, lookupFunction(FUNCSMAP, Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
+       <functions> FUNCSMAP </functions>
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall({#projectedCallTy(I, PROJS, LOCALS)}:>Ty, lookupFunctionKore({#projectedCallTy(I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall({#projectedCallTy(I, PROJS, LOCALS)}:>Ty, lookupFunction(FUNCSMAP, {#projectedCallTy(I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
       <locals> LOCALS </locals>
+      <functions> FUNCSMAP </functions>
     requires isTy(#projectedCallTy(I, PROJS, LOCALS))
     [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
 
@@ -537,14 +541,15 @@ Therefore a heuristics is used here:
           </stack>
          ...
        </currentFrame>
+       <types> TYPESMAP </types>
     requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
      andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
      andBool isTypedValue(LOCALS[TUPLE])
-     andBool isTupleType(lookupTyKore(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTupleType(lookupTy(TYPESMAP, tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
      andBool isTypedLocal(LOCALS[CLOSURE])
      andBool (
-               typeInfoVoidType ==K lookupTyKore(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
-               orBool isFunType(lookupTyKore(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+               typeInfoVoidType ==K lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
+               orBool isFunType(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
              )
     [priority(40), preserves-definedness]
 
@@ -570,17 +575,18 @@ Therefore a heuristics is used here:
           </stack>
          ...
        </currentFrame>
+       <types> TYPESMAP </types>
     requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
      andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
      andBool isTypedValue(LOCALS[TUPLE])
-     andBool isTupleType(lookupTyKore(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTupleType(lookupTy(TYPESMAP, tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
      andBool isTypedLocal(LOCALS[CLOSURE])
                // or the closure ref type pointee is missing from the type table
-     andBool isRefType(lookupTyKore(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
-     andBool isTy(pointeeTy(lookupTyKore(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
+     andBool isRefType(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+     andBool isTy(pointeeTy(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
      andBool (
-               lookupTyKore({pointeeTy(lookupTyKore(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
-               orBool isFunType(lookupTyKore({pointeeTy(lookupTyKore(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty))
+               lookupTy(TYPESMAP, {pointeeTy(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
+               orBool isFunType(lookupTy(TYPESMAP, {pointeeTy(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty))
              )
     [priority(45), preserves-definedness]
 
