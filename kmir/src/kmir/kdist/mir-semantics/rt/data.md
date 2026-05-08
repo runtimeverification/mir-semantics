@@ -124,10 +124,10 @@ Constant operands are simply decoded according to their type.
 
 ```k
   rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
-        => #decodeConstant(KIND, TY, lookupTy(TY))
+        => #decodeConstant(KIND, TY, lookupTyKore(TY))
        ...
        </k>
-    requires typeInfoVoidType =/=K lookupTy(TY)
+    requires typeInfoVoidType =/=K lookupTyKore(TY)
 ```
 
 Function pointers are zero-sized constants whose `Ty` is a key in the function table instaed of the type table.
@@ -137,8 +137,8 @@ Function pointers are zero-sized constants whose `Ty` is a key in the function t
         => FunPtr(TY)
        ...
        </k>
-    requires typeInfoVoidType ==K lookupTy(TY) // not a valid type info
-     andBool lookupFunction(TY) =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
+    requires typeInfoVoidType ==K lookupTyKore(TY) // not a valid type info
+     andBool lookupFunctionKore(TY) =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
 ```
 
 ### Copying and Moving
@@ -910,14 +910,14 @@ even though this could be supported.
            )
         => #traverseProjection(
              toAlloc(ALLOC_ID),
-             {lookupAlloc(ALLOC_ID)}:>Value,
+             {lookupAllocKore(ALLOC_ID)}:>Value,
              ALLOC_PROJS, // alloc projections
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(METADATA_SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
-    requires isValue(lookupAlloc(ALLOC_ID))
+    requires isValue(lookupAllocKore(ALLOC_ID))
     [preserves-definedness] // sort projection checked
 ```
 
@@ -1115,7 +1115,7 @@ and an array of the indeicated size gets reconstructed if the provided metadata 
         ...
        </k>
     // requires LENGTH +Int PTR_OFFSET <=Int ORIGIN_SIZE // refuse to create an invalid fat pointer
-    //  andBool dynamicSize(1) ==K #metadataSize(lookupTy(_TY)) // expect a slice type
+    //  andBool dynamicSize(1) ==K #metadataSize(lookupTyKore(_TY)) // expect a slice type
     //  andBool hasIndexTail(PROJS) ???
 
   rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
@@ -1158,12 +1158,12 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => Integer(#lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX), 0, false) // HACK: bit width 0 means "flexible"
+        => Integer(#lookupDiscrAux(discriminantsOf(lookupTyKore(TY)), IDX), 0, false) // HACK: bit width 0 means "flexible"
         ...
        </k>
-    requires asInt(IDX) <Int size(discriminantsOf(lookupTy(TY)))
+    requires asInt(IDX) <Int size(discriminantsOf(lookupTyKore(TY)))
      andBool 0 <=Int asInt(IDX) // must not be `err(_)`
-     andBool 0 <Int size(discriminantsOf(lookupTy(TY))) // must be an enum
+     andBool 0 <Int size(discriminantsOf(lookupTyKore(TY))) // must be an enum
     [preserves-definedness]
 
   // // default 0 for non-enum types. May be undefined behaviour, though.
@@ -1234,7 +1234,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
               #decodeConstant(
                 constantKindZeroSized,
                 tyOfLocal(getLocal(LOCALS, I)),
-                lookupTy(tyOfLocal(getLocal(LOCALS, I)))
+                lookupTyKore(tyOfLocal(getLocal(LOCALS, I)))
               )
             )
         ~> rvalueRef(REGION, KIND, place(local(I), PROJS))
@@ -1243,7 +1243,7 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
        <locals> LOCALS </locals>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isNewLocal(LOCALS[I])
-     andBool #zeroSizedType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+     andBool #zeroSizedType(lookupTyKore(tyOfLocal(getLocal(LOCALS, I))))
     [preserves-definedness] // valid list indexing checked, zero-sized locals materialise trivially
 
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
@@ -1383,10 +1383,10 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   // int casts
   rule <k> #cast(Integer(VAL, WIDTH, _SIGNEDNESS), castKindIntToInt, _, TY)
           =>
-            #intAsType(VAL, WIDTH, #numTypeOf(lookupTy(TY)))
+            #intAsType(VAL, WIDTH, #numTypeOf(lookupTyKore(TY)))
           ...
         </k>
-      requires #isIntType(lookupTy(TY))
+      requires #isIntType(lookupTyKore(TY))
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
@@ -1395,19 +1395,19 @@ Boolean values can also be cast to Integers (encoding `true` as `1`).
 ```k
   rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
           =>
-            #intAsType(1, 8, #numTypeOf(lookupTy(TY)))
+            #intAsType(1, 8, #numTypeOf(lookupTyKore(TY)))
           ...
         </k>
-      requires #isIntType(lookupTy(TY))
+      requires #isIntType(lookupTyKore(TY))
        andBool VAL
       [preserves-definedness] // ensures #numTypeOf is defined
 
   rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
           =>
-            #intAsType(0, 8, #numTypeOf(lookupTy(TY)))
+            #intAsType(0, 8, #numTypeOf(lookupTyKore(TY)))
           ...
         </k>
-      requires #isIntType(lookupTy(TY))
+      requires #isIntType(lookupTyKore(TY))
        andBool notBool VAL
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
@@ -1439,7 +1439,7 @@ the cast preserves the source pointer and its metadata unchanged.
           => PtrLocal(OFFSET, PLACE, MUT, META)
           ...
         </k>
-      requires pointeeTy(lookupTy(TY_SOURCE)) ==K pointeeTy(lookupTy(TY_TARGET))
+      requires pointeeTy(lookupTyKore(TY_SOURCE)) ==K pointeeTy(lookupTyKore(TY_TARGET))
       [priority(45), preserves-definedness] // valid map lookups checked
 ```
 
@@ -1450,13 +1450,13 @@ Otherwise, compute the type projection and convert metadata accordingly.
           =>
             PtrLocal(
               OFFSET,
-              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
+              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTyKore(TY_SOURCE), lookupTyKore(TY_TARGET))}:>ProjectionElems)),
               MUT,
-              #convertMetadata(META, lookupTy(TY_TARGET))
+              #convertMetadata(META, lookupTyKore(TY_TARGET))
             )
           ...
         </k>
-      requires NoProjectionElems =/=K #typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+      requires NoProjectionElems =/=K #typeProjection(lookupTyKore(TY_SOURCE), lookupTyKore(TY_TARGET))
       [preserves-definedness] // valid map lookups checked
 ```
 
@@ -1572,13 +1572,13 @@ What can be supported without additional layout consideration is trivial casts b
 
 ```k
   rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
-      requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
+      requires lookupTyKore(TY_SOURCE) ==K lookupTyKore(TY_TARGET)
 
   rule <k> #cast(AllocRef(_, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
-      requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
+      requires lookupTyKore(TY_SOURCE) ==K lookupTyKore(TY_TARGET)
 
   rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
-      requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
+      requires lookupTyKore(TY_SOURCE) ==K lookupTyKore(TY_TARGET)
 ```
 
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
@@ -1593,8 +1593,8 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
             ) => DATA
           ...
        </k>
-    requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
-     andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
+    requires lookupTyKore(TY_SRC_INNER) ==K lookupTyKore(TY_DEST_OUTER) // cast is a round-trip
+     andBool lookupTyKore(TY_DEST_INNER) ==K lookupTyKore(TY_SRC_OUTER) // and is well-formed (invariant)
 ```
 
 Transmuting a value `T` into a single-field wrapper struct `G<T>` (or vice versa) is sound when the struct
@@ -1610,7 +1610,7 @@ The layout is the same for the wrapped type and so the cast in either direction 
             Aggregate(variantIdx(0), ListItem(VAL))
           ...
         </k>
-      requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
+      requires #transparentFieldTy(lookupTyKore(TY_TARGET)) ==K TY_SOURCE
 
   // Down: Wrapper(T) -> T
   rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
@@ -1618,7 +1618,7 @@ The layout is the same for the wrapped type and so the cast in either direction 
             VAL
           ...
         </k>
-      requires {#transparentFieldTy(lookupTy(TY_SOURCE))}:>Ty ==K TY_TARGET
+      requires {#transparentFieldTy(lookupTyKore(TY_SOURCE))}:>Ty ==K TY_TARGET
 ```
 
 Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.
@@ -1634,12 +1634,12 @@ Casting a byte array/slice to an integer reinterprets the bytes in little-endian
             #intAsType(
               #littleEndianFromBytes(ELEMS),
               size(ELEMS) *Int 8,
-              #numTypeOf(lookupTy(TY_TARGET))
+              #numTypeOf(lookupTyKore(TY_TARGET))
             )
           ...
         </k>
-      requires #isIntType(lookupTy(TY_TARGET))
-       andBool size(ELEMS) *Int 8 ==Int #bitWidth(#numTypeOf(lookupTy(TY_TARGET)))
+      requires #isIntType(lookupTyKore(TY_TARGET))
+       andBool size(ELEMS) *Int 8 ==Int #bitWidth(#numTypeOf(lookupTyKore(TY_TARGET)))
        andBool #areLittleEndianBytes(ELEMS)
       [preserves-definedness] // ensures #numTypeOf is defined
 
@@ -1671,8 +1671,8 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
             Range(#littleEndianBytesFromInt(VAL, WIDTH))
           ...
         </k>
-      requires #isStaticU8Array(lookupTy(TY_TARGET))
-       andBool WIDTH ==Int #staticArrayLenBits(lookupTy(TY_TARGET))
+      requires #isStaticU8Array(lookupTyKore(TY_TARGET))
+       andBool WIDTH ==Int #staticArrayLenBits(lookupTyKore(TY_TARGET))
       //  andBool WIDTH >=Int 0  ensured by the above
       //  andBool WIDTH % 8 == 0 ensured by the above
       [preserves-definedness] // ensures element type/length are well-formed
@@ -1699,7 +1699,7 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
   syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total, no-evaluators]
   // -------------------------------------------------------------
   rule #isStaticU8Array(typeInfoArrayType(ELEM_TY, someTyConst(_)))
-    => lookupTy(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
+    => lookupTyKore(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
   rule #isStaticU8Array(_OTHER) => false [owise]
 
   syntax Int ::= #staticArrayLenBits ( TypeInfo ) [function, total, no-evaluators]
@@ -1734,17 +1734,17 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
         =>
            #UBErrorInvalidDiscriminantsInEnumCast
       </k>
-      requires #isEnumWithoutFields(lookupTy(TY_TO))
-        andBool notBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO) )
+      requires #isEnumWithoutFields(lookupTyKore(TY_TO))
+        andBool notBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTyKore(TY_TO) )
 
   rule <k>
            #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO )
         =>
-           Aggregate( #findVariantIdxFromTy( truncate(VAL, WIDTH, Unsigned), lookupTy(TY_TO) ) , .List )
+           Aggregate( #findVariantIdxFromTy( truncate(VAL, WIDTH, Unsigned), lookupTyKore(TY_TO) ) , .List )
        ...
       </k>
-      requires #isEnumWithoutFields(lookupTy(TY_TO))
-        andBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO))
+      requires #isEnumWithoutFields(lookupTyKore(TY_TO))
+        andBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTyKore(TY_TO))
 
   syntax VariantIdx ::= #findVariantIdxFromTy ( Int , TypeInfo ) [function, total]
   //------------------------------------------------------------------------------
@@ -1772,7 +1772,7 @@ mapped to the elements.
 
   rule <k> #transmuteElems(VALS, TY_FROM, TY_TO)
         =>
-           #transmuteElemsAux(.List, VALS, getArrayElemTy(lookupTy(TY_FROM)), getArrayElemTy(lookupTy(TY_TO)))
+           #transmuteElemsAux(.List, VALS, getArrayElemTy(lookupTyKore(TY_FROM)), getArrayElemTy(lookupTyKore(TY_TO)))
        ...
       </k>
 
@@ -1809,9 +1809,9 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
            #UBInvalidTransmuteMaybeUninit
        ...
       </k>
-      requires #isUnionType(lookupTy(TY_TO))
-        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+      requires #isUnionType(lookupTyKore(TY_TO))
+        andBool #typeNameIs(lookupTyKore(TY_TO), "std::mem::MaybeUninit<")
+        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTyKore(TY_TO), 1)), 0)
 
   rule <k>
            #cast( VAL:Value , castKindTransmute , TY_FROM , TY_TO )
@@ -1819,9 +1819,9 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
            Union( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem(VAL) .List ))
        ...
       </k>
-      requires #isUnionType(lookupTy(TY_TO))
-        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+      requires #isUnionType(lookupTyKore(TY_TO))
+        andBool #typeNameIs(lookupTyKore(TY_TO), "std::mem::MaybeUninit<")
+        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTyKore(TY_TO), 1)), 0)
 
   // Converting static or dynamic sized array of `T` to array of `std::mem::MaybeUninit<T>`.
   // FIXME: Might need to check sizes as this cast could come from transmute_unchecked
@@ -1831,13 +1831,13 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
            #transmuteElems(LIST, TY_FROM, TY_TO)
        ...
       </k>
-      requires #isArrayType(lookupTy(TY_FROM)) andBool #isArrayType(lookupTy(TY_TO))
-        andBool #isUnionType(getArrayElemTypeInfo(lookupTy(TY_TO)))
-        andBool #typeNameIs(getArrayElemTypeInfo(lookupTy(TY_TO)), "std::mem::MaybeUninit<")
-        andBool getArrayElemTypeInfo(lookupTy(TY_FROM))
+      requires #isArrayType(lookupTyKore(TY_FROM)) andBool #isArrayType(lookupTyKore(TY_TO))
+        andBool #isUnionType(getArrayElemTypeInfo(lookupTyKore(TY_TO)))
+        andBool #typeNameIs(getArrayElemTypeInfo(lookupTyKore(TY_TO)), "std::mem::MaybeUninit<")
+        andBool getArrayElemTypeInfo(lookupTyKore(TY_FROM))
                   ==K #lookupMaybeTy(getFieldTy(   // ManuallyDrop<T> field 0 Ty (T)
                         #lookupMaybeTy(getFieldTy( // MaybeUninit<T> field 1 Ty (ManuallyDrop<T>)
-                            getArrayElemTypeInfo(lookupTy(TY_TO)), // Array Element Ty
+                            getArrayElemTypeInfo(lookupTyKore(TY_TO)), // Array Element Ty
                             1
                           )),
                         0
@@ -1909,7 +1909,7 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
         => AllocRef(ALLOC_ID, .ProjectionElems, metadata(#metadataSize(POINTEE_TY), 0, #metadataSize(POINTEE_TY)))
         ...
        </k>
-    requires isValue(lookupAlloc(ALLOC_ID))
+    requires isValue(lookupAllocKore(ALLOC_ID))
      andBool lengthBytes(BYTES) ==Int 8 // no dynamic metadata
 
   rule <k> #decodeConstant(
@@ -1926,7 +1926,7 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
                                                             // assumes usize == u64
         ...
        </k>
-    requires isValue(lookupAlloc(ALLOC_ID))
+    requires isValue(lookupAllocKore(ALLOC_ID))
     andBool lengthBytes(BYTES) ==Int 16 // fat pointer (assumes usize == u64)
     [preserves-definedness] // Byte length checked to be sufficient
 ```
@@ -2315,16 +2315,16 @@ This information is read from the layout in the `TypeInfo` if available, or a fi
 // FIXME: 64 is hardcoded since usize not supported
 rule <k> rvalueNullaryOp(nullOpSizeOf, TY)
       =>
-           Integer(#sizeOf(lookupTy(TY)), 64, false)
+           Integer(#sizeOf(lookupTyKore(TY)), 64, false)
          ...
      </k>
-    requires lookupTy(TY) =/=K typeInfoVoidType
+    requires lookupTyKore(TY) =/=K typeInfoVoidType
 rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
       =>
-           Integer(#alignOf(lookupTy(TY)), 64, false)
+           Integer(#alignOf(lookupTyKore(TY)), 64, false)
          ...
      </k>
-    requires lookupTy(TY) =/=K typeInfoVoidType
+    requires lookupTyKore(TY) =/=K typeInfoVoidType
 ```
 
 `nullOpOffsetOf(VariantAndFieldIndices)`

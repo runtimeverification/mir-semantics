@@ -38,7 +38,7 @@ The interface function is meant for pointer casts to compute pointee projections
 
   syntax MaybeProjectionElems ::= #typeProjection ( TypeInfo , TypeInfo )    [function, total, no-evaluators]
   // ---------------------------------------------------------------------------------------
-  rule #typeProjection ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => #pointeeProjection(lookupTy(TY1), lookupTy(TY2))
+  rule #typeProjection ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => #pointeeProjection(lookupTyKore(TY1), lookupTyKore(TY2))
   rule #typeProjection ( _, _ ) => NoProjectionElems [owise]
 ```
 
@@ -109,24 +109,24 @@ the source should be wrapped rather than unwrapped (e.g., `*const [u8;2] → *co
   rule #pointeeProjection(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
     => maybeConcatProj(
           projectionElemField(fieldIdx(0), FIELD),
-          #pointeeProjection(lookupTy(FIELD), OTHER)
+          #pointeeProjection(lookupTyKore(FIELD), OTHER)
         )
     requires #zeroFieldOffset(LAYOUT)
 
   rule #pointeeProjection(SRC:TypeInfo, typeInfoStructType(_NAME, _ADTDEF, FIELD .Tys, LAYOUT))
     => maybeConcatProj(
           projectionElemWrapStruct,
-          #pointeeProjection(SRC, lookupTy(FIELD))
+          #pointeeProjection(SRC, lookupTyKore(FIELD))
         )
     requires #isArrayType(SRC)
     andBool #zeroFieldOffset(LAYOUT)
-    andBool lookupTy(FIELD) ==K SRC
+    andBool lookupTyKore(FIELD) ==K SRC
     [priority(42)]
 
   rule #pointeeProjection(typeInfoArrayType(TY1, _), TY2)
     => maybeConcatProj(
           projectionElemConstantIndex(0, 0, false),
-          #pointeeProjection(lookupTy(TY1), TY2)
+          #pointeeProjection(lookupTyKore(TY1), TY2)
         )
 ```
 
@@ -163,13 +163,13 @@ the source-first strategy.
   rule #pointeeProjectionTarget(TY1, typeInfoArrayType(TY2, _))
     => maybeConcatProj(
           projectionElemSingletonArray,
-          #pointeeProjection(TY1, lookupTy(TY2))
+          #pointeeProjection(TY1, lookupTyKore(TY2))
         )
 
   rule #pointeeProjectionTarget(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
     => maybeConcatProj(
           projectionElemWrapStruct,
-          #pointeeProjection(OTHER, lookupTy(FIELD))
+          #pointeeProjection(OTHER, lookupTyKore(FIELD))
         )
     requires #zeroFieldOffset(LAYOUT)
 
@@ -252,12 +252,12 @@ To make this function total, an optional `MaybeTy` is used.
 
   syntax TypeInfo ::= getArrayElemTypeInfo ( TypeInfo ) [function, total, no-evaluators]
   // --------------------------------------------------------------------
-  rule getArrayElemTypeInfo(typeInfoArrayType(ELEM_TY, _)) => lookupTy(ELEM_TY)
+  rule getArrayElemTypeInfo(typeInfoArrayType(ELEM_TY, _)) => lookupTyKore(ELEM_TY)
   rule getArrayElemTypeInfo(_) => typeInfoVoidType [owise]
 
   syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total, no-evaluators]
   // -------------------------------------------------------------
-  rule #lookupMaybeTy(TY:Ty) => lookupTy(TY)
+  rule #lookupMaybeTy(TY:Ty) => lookupTyKore(TY)
   rule #lookupMaybeTy(TyUnknown) => typeInfoVoidType
 
   syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ) [function, total, no-evaluators]
@@ -265,11 +265,11 @@ To make this function total, an optional `MaybeTy` is used.
   rule getTyOf(TyUnknown,             _                      ) => TyUnknown
   rule getTyOf(TY,                    .ProjectionElems       ) => TY
 
-  rule getTyOf(TY, projectionElemDeref                  PROJS ) => getTyOf(pointeeTy(lookupTy(TY)), PROJS)
+  rule getTyOf(TY, projectionElemDeref                  PROJS ) => getTyOf(pointeeTy(lookupTyKore(TY)), PROJS)
   rule getTyOf( _, projectionElemField(_, TY)           PROJS ) => getTyOf(TY, PROJS) // could also look it up
   
-  rule getTyOf(TY, projectionElemIndex(_)               PROJS) => getTyOf(elemTy(lookupTy(TY)), PROJS)
-  rule getTyOf(TY, projectionElemConstantIndex(_, _, _) PROJS) => getTyOf(elemTy(lookupTy(TY)), PROJS)
+  rule getTyOf(TY, projectionElemIndex(_)               PROJS) => getTyOf(elemTy(lookupTyKore(TY)), PROJS)
+  rule getTyOf(TY, projectionElemConstantIndex(_, _, _) PROJS) => getTyOf(elemTy(lookupTyKore(TY)), PROJS)
   rule getTyOf(TY, projectionElemSubslice(_, _, _)      PROJS) => getTyOf(TY, PROJS) // TODO assumes TY is already a slice type
 
   rule getTyOf(TY, projectionElemDowncast(_)            PROJS) => getTyOf(TY, PROJS) // unchanged type, just setting variantIdx
@@ -310,7 +310,7 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
   rule #metadataSize(TY, PROJS) => #metadataSize(getTyOf(TY, PROJS))
 
   rule #metadataSize(TyUnknown) => noMetadataSize
-  rule #metadataSize(TY) => #metadataSizeAux(lookupTy(TY))
+  rule #metadataSize(TY) => #metadataSizeAux(lookupTyKore(TY))
 
   rule #metadataSizeAux(typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
   rule #metadataSizeAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(CONST))
@@ -323,13 +323,13 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
   syntax Int ::= readTyConstInt ( TyConstKind ) [function, no-evaluators]
   // -----------------------------------------------------------
   rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Unsigned)
-    requires isUintTy(#numTypeOf(lookupTy(TY)))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TY))) /Int 8
+    requires isUintTy(#numTypeOf(lookupTyKore(TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTyKore(TY))) /Int 8
     [preserves-definedness]
 
   rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Signed  )
-    requires isIntTy(#numTypeOf(lookupTy(TY)))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TY))) /Int 8
+    requires isIntTy(#numTypeOf(lookupTyKore(TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTyKore(TY))) /Int 8
     [preserves-definedness]
 ```
 
@@ -398,9 +398,9 @@ This information is either hard-wired for primitive types (numbers, first and fo
   rule #alignOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
   rule #alignOf(typeInfoUnionType(_, _, _, noLayoutShape)) => 1
   // arrays with known length have the alignment of the element type, and a size multiplying element count and element size
-  rule #sizeOf(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(lookupTy(ELEM_TY)) *Int readTyConstInt(KIND)
+  rule #sizeOf(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(lookupTyKore(ELEM_TY)) *Int readTyConstInt(KIND)
   rule #sizeOf(typeInfoArrayType(  _    ,    noTyConst                 )) => 0
-  rule #alignOf(typeInfoArrayType(ELEM_TY, _)) => #alignOf(lookupTy(ELEM_TY))
+  rule #alignOf(typeInfoArrayType(ELEM_TY, _)) => #alignOf(lookupTyKore(ELEM_TY))
   // thin ptr and ref types have the size of `usize` and twice that for fat pointers/refs. Alignment is that of `usize`
   rule #sizeOf(typeInfoPtrType(POINTEE_TY))
     => #sizeOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))

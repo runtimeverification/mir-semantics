@@ -451,14 +451,14 @@ def make_kore_rules(
         ),
     )
     default_function = _mk_equation(
-        kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
+        kmir, 'lookupFunctionKore', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
     ).let_attrs(((App('owise')),))
 
     equations: list[Axiom] = [default_function]
 
     for fty, kind in _functions(kmir, smir_info).items():
         equations.append(
-            _mk_equation(kmir, 'lookupFunction', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
+            _mk_equation(kmir, 'lookupFunctionKore', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
         )
 
     # stratify type and alloc lookups
@@ -478,7 +478,7 @@ def make_kore_rules(
         for ty, info in (type_mapping.args for type_mapping in type_mappings if isinstance(type_mapping, KApply))
     ]
 
-    type_equations = _make_stratified_rules(kmir, 'lookupTy', 'Ty', 'TypeInfo', 'ty', type_assocs, invalid_type)
+    type_equations = _make_stratified_rules(kmir, 'lookupTyKore', 'Ty', 'TypeInfo', 'ty', type_assocs, invalid_type)
 
     invalid_alloc_n = KApply(
         'InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KApply('allocId', (KVariable('N'),)),)
@@ -486,7 +486,7 @@ def make_kore_rules(
     decoded_allocs = [_decode_alloc(smir_info=smir_info, raw_alloc=alloc) for alloc in smir_info._smir['allocs']]
     allocs = [(get_int_arg(alloc_id), value) for (alloc_id, value) in decoded_allocs]
     alloc_equations = _make_stratified_rules(
-        kmir, 'lookupAlloc', 'AllocId', 'Evaluation', 'allocId', allocs, invalid_alloc_n
+        kmir, 'lookupAllocKore', 'AllocId', 'Evaluation', 'allocId', allocs, invalid_alloc_n
     )
 
     # Generate break-on-function filter rule if filters are provided

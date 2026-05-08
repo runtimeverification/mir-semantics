@@ -65,12 +65,12 @@ Arrays are decoded iteratively, using a known (expected) length or the length of
 
 ```k
 rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))))
-      => #decodeArrayAllocation(BYTES, lookupTy(ELEMTY), readTyConstInt(LEN))
+      => #decodeArrayAllocation(BYTES, lookupTyKore(ELEMTY), readTyConstInt(LEN))
   requires isInt(readTyConstInt(LEN))
   [preserves-definedness]
 
 rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst))
-      => #decodeSliceAllocation(BYTES, lookupTy(ELEMTY))
+      => #decodeSliceAllocation(BYTES, lookupTyKore(ELEMTY))
 ```
 
 ### Struct decoding
@@ -118,7 +118,7 @@ rule #msBytes(machineSize(NBITS)) => NBITS /Int 8 [owise, preserves-definedness]
 syntax Int ::= #neededBytesForOffsets ( Tys , MachineSizes ) [function, total, no-evaluators]
 rule #neededBytesForOffsets(.Tys, .MachineSizes) => 0
 rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
-  => maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)), #neededBytesForOffsets(TYS, OFFSETS))
+  => maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTyKore(TY)), #neededBytesForOffsets(TYS, OFFSETS))
 // Any remaining pattern indicates a length mismatch between types and offsets.
 rule #neededBytesForOffsets(_, _) => -1 [owise]
 
@@ -129,12 +129,12 @@ rule #decodeFieldsWithOffsets(_, _TYS, .MachineSizes) => .List [owise]
 rule #decodeFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
   => ListItem(
        #decodeValue(
-         substrBytes(BYTES, #msBytes(OFFSET), #msBytes(OFFSET) +Int #elemSize(lookupTy(TY))),
-         lookupTy(TY)
+         substrBytes(BYTES, #msBytes(OFFSET), #msBytes(OFFSET) +Int #elemSize(lookupTyKore(TY))),
+         lookupTyKore(TY)
        )
      )
      #decodeFieldsWithOffsets(BYTES, TYS, OFFSETS)
-  requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(lookupTy(TY)))
+  requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(lookupTyKore(TY)))
   [preserves-definedness]
 ```
 
@@ -172,7 +172,7 @@ Known element sizes for common types:
 
   // ---- Arrays and slices ----
   rule #elemSize(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))))
-    => #elemSize(lookupTy(ELEM_TY)) *Int readTyConstInt(LEN)
+    => #elemSize(lookupTyKore(ELEM_TY)) *Int readTyConstInt(LEN)
   // Slice `[T]` has dynamic size; plain value is unsized
   rule #elemSize(typeInfoArrayType(_ELEM_TY, noTyConst)) => 0
 
@@ -190,7 +190,7 @@ Known element sizes for common types:
   rule #elemSize(typeInfoTupleType(_TYS, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
   rule #elemSize(typeInfoTupleType(.Tys, noLayoutShape)) => 0
   rule #elemSize(typeInfoTupleType(TY TYS, noLayoutShape))
-    => #elemSize(lookupTy(TY)) +Int #elemSize(typeInfoTupleType(TYS, noLayoutShape))
+    => #elemSize(lookupTyKore(TY)) +Int #elemSize(typeInfoTupleType(TYS, noLayoutShape))
 
   // ---- Structs and Enums with layout ----
   rule #elemSize(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)

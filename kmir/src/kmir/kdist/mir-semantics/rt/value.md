@@ -152,14 +152,14 @@ These functions are global static data  accessed from many places, and will be e
 
 ```k
   // // function store, Ty -> MonoItemFn
-  syntax MonoItemKind ::= lookupFunction ( Ty ) [function, total, symbol(lookupFunction), no-evaluators]
+  syntax MonoItemKind ::= lookupFunctionKore ( Ty ) [function, total, symbol(lookupFunctionKore), no-evaluators]
 
   // // static allocations: AllocId -> AllocData (Value or error)
-  syntax Evaluation ::= lookupAlloc ( AllocId ) [function, total, symbol(lookupAlloc), no-evaluators]
+  syntax Evaluation ::= lookupAllocKore ( AllocId ) [function, total, symbol(lookupAllocKore), no-evaluators]
                       | InvalidAlloc ( AllocId ) // error marker
 
   // // static information about the base type interning in the MIR: Ty -> TypeInfo
-  syntax TypeInfo ::= lookupTy ( Ty )    [function, total, symbol(lookupTy), no-evaluators]
+  syntax TypeInfo ::= lookupTyKore ( Ty )    [function, total, symbol(lookupTyKore), no-evaluators]
 ```
 
 ```k
