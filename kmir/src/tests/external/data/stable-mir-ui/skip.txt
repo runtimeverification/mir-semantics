@@ -376,7 +376,6 @@ tests/ui/consts/const-cast.rs
 tests/ui/consts/const-contents.rs
 tests/ui/consts/const-deref.rs
 tests/ui/consts/const_discriminant.rs
-tests/ui/consts/const-endianess.rs
 tests/ui/consts/const-enum-byref.rs
 tests/ui/consts/const-enum-byref-self.rs
 tests/ui/consts/const-enum-cast.rs
@@ -1350,7 +1349,6 @@ tests/ui/rfcs/rfc-2151-raw-identifiers/attr.rs
 tests/ui/rfcs/rfc-2151-raw-identifiers/items.rs
 tests/ui/rfcs/rfc-2151-raw-identifiers/macros.rs
 tests/ui/rfcs/rfc-2294-if-let-guard/drop-order.rs
-tests/ui/rfcs/rfc-2294-if-let-guard/run-pass.rs
 tests/ui/rfcs/rfc-2302-self-struct-ctor/rfc-2302-self-struct-ctor.rs
 tests/ui/rfcs/rfc-2361-dbg-macro/dbg-macro-expected-behavior.rs
 tests/ui/runtime/atomic-print.rs
