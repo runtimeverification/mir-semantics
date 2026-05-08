@@ -13,6 +13,7 @@ module RT-VALUE-SYNTAX
   imports BODY
   imports LIB
   imports MONO
+  imports MAP
 ```
 
 ## Values in MIR
@@ -135,6 +136,16 @@ The basic operations of reading and writing those values can use K's "heating" a
 ```
 
 # Static data
+
+In symbolic mode (Haskell/booster backend), static data is stored as generated, hardcoded functions that return KORE.
+In concrete mode (LLVM backend), it is stored in `Map`s in the configuration.
+The `MaybeMap` sort wraps this choice: `someMap(M)` means use map lookups. `noMap` means use generated functions.
+
+```k
+  syntax MaybeMap ::= "noMap" | someMap(Map)
+```
+
+## Lookup functions
 
 These functions are global static data  accessed from many places, and will be extended for the particular program.
 
