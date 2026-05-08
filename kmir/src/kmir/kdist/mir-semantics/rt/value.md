@@ -178,6 +178,24 @@ They return the same defaults as the Kore versions when a key is not found.
   rule lookupAllocMap(M, AID) => {M [ AID ] orDefault InvalidAlloc(AID)}:>Evaluation
 ```
 
+## Top-level lookup functions
+
+These dispatch to either the map-based or Kore-based lookup depending on the `MaybeMap` value.
+
+```k
+  syntax MonoItemKind ::= lookupFunction ( MaybeMap , Ty ) [function, total]
+  rule lookupFunction(noMap, TY) => lookupFunctionKore(TY)
+  rule lookupFunction(someMap(M), TY) => lookupFunctionMap(M, TY)
+
+  syntax TypeInfo ::= lookupTy ( MaybeMap , Ty ) [function, total]
+  rule lookupTy(noMap, TY) => lookupTyKore(TY)
+  rule lookupTy(someMap(M), TY) => lookupTyMap(M, TY)
+
+  syntax Evaluation ::= lookupAlloc ( MaybeMap , AllocId ) [function, total]
+  rule lookupAlloc(noMap, AID) => lookupAllocKore(AID)
+  rule lookupAlloc(someMap(M), AID) => lookupAllocMap(M, AID)
+```
+
 ```k
 endmodule
 ```
