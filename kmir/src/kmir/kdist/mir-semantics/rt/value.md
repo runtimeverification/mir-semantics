@@ -142,7 +142,8 @@ In concrete mode (LLVM backend), it is stored in `Map`s in the configuration.
 The `MaybeMap` sort wraps this choice: `someMap(M)` means use map lookups. `noMap` means use generated functions.
 
 ```k
-  syntax MaybeMap ::= "noMap" | someMap(Map)
+  syntax MaybeMap ::= "noMap"      [symbol(MaybeMap::noMap)]
+                    | someMap(Map) [symbol(MaybeMap::someMap)]
 ```
 
 ## Lookup functions
