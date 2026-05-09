@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import cterm_symbolic
 from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken
+from pyk.kore.syntax import App
 from pyk.kast.prelude.collections import map_of
 from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.utils import token
@@ -86,6 +87,28 @@ class KMIR(KProve, KRun, KParse):
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
         THUNK: Final = KLabel('thunk(_)_RT-DATA_Value_Evaluation')
+
+    _MAP_CELL_LABELS: Final = frozenset({
+        "Lbl'-LT-'functions'-GT-'",
+        "Lbl'-LT-'types'-GT-'",
+        "Lbl'-LT-'memory'-GT-'",
+    })
+
+    _NOMAP: Final = App("LblMaybeMap'ColnColn'noMap")
+
+    @staticmethod
+    def strip_map_cells(pattern: Pattern) -> Pattern:
+        """Replace contents of <functions>, <types>, <memory> cells with noMap."""
+
+        def _strip(p: Pattern) -> Pattern:
+            if isinstance(p, App) and p.symbol in KMIR._MAP_CELL_LABELS:
+                return App(p.symbol, p.sorts, (KMIR._NOMAP,))
+            return p
+
+        return pattern.top_down(_strip)
+
+    def kore_to_pretty(self, pattern: Pattern) -> str:
+        return super().kore_to_pretty(self.strip_map_cells(pattern))
 
     @cached_property
     def parser(self) -> Parser:
