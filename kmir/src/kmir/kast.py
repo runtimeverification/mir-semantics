@@ -230,11 +230,15 @@ def _make_symbolic_call_config(
     types: Mapping[Ty, TypeMetadata],
 ) -> tuple[KInner, list[KInner]]:
     locals, constraints = _symbolic_locals(fn_data.args, types)
+    nomap = KApply('MaybeMap::noMap')
     subst = Subst(
         {
             'K_CELL': fn_data.call_terminator,
             'STACK_CELL': list_empty(),  # FIXME see #560, problems matching a symbolic stack
             'LOCALS_CELL': list_of(locals),
+            'FUNCTIONS_CELL': nomap,
+            'TYPES_CELL': nomap,
+            'MEMORY_CELL': nomap,
         },
     )
     empty_config = definition.empty_config(KSort('GeneratedTopCell'))
