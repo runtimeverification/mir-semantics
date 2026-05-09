@@ -310,45 +310,12 @@ def kompile_smir(
         return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=kdist.which(llvm_lib_target))
 
     else:
-        target_llvmdt_path = target_llvm_path / 'dt'
-        _LOGGER.info(f'Creating directory {target_llvmdt_path}')
-        target_llvmdt_path.mkdir(parents=True, exist_ok=True)
-
-        # Process LLVM definition (only SMIR rules for concrete execution)
-        _LOGGER.info('Writing LLVM definition file')
+        # No per-program LLVM kompile needed: program data goes into map cells in the
+        # initial configuration, not into definition.kore. Use the pre-built kdist definition.
         llvm_def_dir = kdist.which(llvm_target)
-        llvm_def_file = llvm_def_dir / 'definition.kore'
-        llvm_def_output = target_llvm_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, smir_rules, llvm_def_output)
-
-        import subprocess
-
-        _LOGGER.info('Running llvm-kompile-matching')
-        subprocess.run(
-            ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
-        )
-        _LOGGER.info('Running llvm-kompile')
-        subprocess.run(
-            [
-                'llvm-kompile',
-                str(llvm_def_output),
-                str(target_llvmdt_path),
-                'main',
-                '-O2',
-                '--',
-                '-o',
-                target_llvm_path / 'interpreter',
-            ],
-            check=True,
-        )
-        blacklist = ['definition.kore', 'interpreter', 'dt']
-        to_copy = [file.name for file in llvm_def_dir.iterdir() if file.name not in blacklist]
-        for file in to_copy:
-            _LOGGER.info(f'Copying file {file}')
-            shutil.copy2(llvm_def_dir / file, target_llvm_path / file)
-
+        _LOGGER.info(f'Using pre-built LLVM definition: {llvm_def_dir}')
         kompile_digest.write(target_dir)
-        return KompiledConcrete(llvm_dir=target_llvm_path)
+        return KompiledConcrete(llvm_dir=llvm_def_dir)
 
 
 def _make_stratified_rules(

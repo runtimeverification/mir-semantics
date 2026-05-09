@@ -73,16 +73,22 @@ def make_call_config(
     smir_info: SMIRInfo,
     start_symbol: str,
     mode: CallConfigMode,
+    cell_maps: dict[str, KInner] | None = None,
 ) -> CallConfig:
     fn_data = _FunctionData.load(smir_info=smir_info, start_symbol=start_symbol)
     match mode:
         case ConcreteMode():
+            if cell_maps is None:
+                raise ValueError('cell_maps is required for ConcreteMode')
             config = _make_concrete_call_config(
                 definition=definition,
                 fn_data=fn_data,
+                cell_maps=cell_maps,
             )
             return CallConfig(config=config, constraints=())
         case SymbolicMode():
+            if cell_maps is not None:
+                raise ValueError('cell_maps must not be provided for SymbolicMode')
             config, constraints = _make_symbolic_call_config(
                 definition=definition,
                 fn_data=fn_data,
@@ -90,11 +96,14 @@ def make_call_config(
             )
             return CallConfig(config=config, constraints=tuple(constraints))
         case RandomMode(seed):
+            if cell_maps is None:
+                raise ValueError('cell_maps is required for RandomMode')
             config = _make_random_call_config(
                 definition=definition,
                 fn_data=fn_data,
                 types=smir_info.types,
                 seed=seed,
+                cell_maps=cell_maps,
             )
             return CallConfig(config=config, constraints=())
 
@@ -140,6 +149,7 @@ def _make_concrete_call_config(
     *,
     definition: KDefinition,
     fn_data: _FunctionData,
+    cell_maps: dict[str, KInner],
 ) -> KInner:
     if fn_data.args:
         raise ValueError(f'Cannot create concrete call configuration for {fn_data.symbol}: function has parameters')
@@ -149,6 +159,7 @@ def _make_concrete_call_config(
         fn_data=fn_data,
         localvars=[],
         seed=None,
+        cell_maps=cell_maps,
     )
 
 
@@ -158,6 +169,7 @@ def _make_random_call_config(
     fn_data: _FunctionData,
     types: Mapping[Ty, TypeMetadata],
     seed: int,
+    cell_maps: dict[str, KInner],
 ) -> KInner:
     localvars = _random_locals(Random(seed), fn_data.args, types)
     return _make_concrete_call_config_with_locals(
@@ -165,6 +177,7 @@ def _make_random_call_config(
         fn_data=fn_data,
         localvars=localvars,
         seed=seed,
+        cell_maps=cell_maps,
     )
 
 
@@ -174,6 +187,7 @@ def _make_concrete_call_config_with_locals(
     fn_data: _FunctionData,
     localvars: list[KInner],
     seed: int | None,
+    cell_maps: dict[str, KInner],
 ) -> KInner:
     def init_subst() -> dict[str, KInner]:
         init_config = definition.init_config(KSort('GeneratedTopCell'))
@@ -199,6 +213,7 @@ def _make_concrete_call_config_with_locals(
                 'K_CELL': k_cell,
                 'LOCALS_CELL': list_of(localvars),
             },
+            **cell_maps,
         }
     )
 

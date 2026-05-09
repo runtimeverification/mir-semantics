@@ -97,11 +97,13 @@ def test_run_smir_random(
     update_expected_output: bool,
 ) -> None:
     # When
+    cell_maps = kmir._make_smir_maps(smir_info)
     init_kast, _ = make_call_config(
         kmir.definition,
         smir_info=smir_info,
         start_symbol='test',
         mode=RandomMode(seed),
+        cell_maps=cell_maps,
     )
     init_kore = kmir.kast_to_kore(init_kast, sort=GENERATED_TOP_CELL)
     actual_init = kore_print(
