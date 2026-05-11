@@ -1914,9 +1914,10 @@ For allocated constants without provenance, the decoder works directly with the 
               _TY,
               TYPEINFO
             )
-        => #decodeValue(BYTES, TYPEINFO)
+        => #decodeValue(TYPESMAP, BYTES, TYPEINFO)
         ...
        </k>
+       <types> TYPESMAP </types>
 ```
 
 Zero-sized types can be decoded trivially into their respective representation.

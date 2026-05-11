@@ -36,20 +36,29 @@ and arrays (where layout is trivial).
 ### Decoding `PrimitiveType`s
 
 ```k
-  syntax Evaluation ::= #decodeValue ( Bytes , TypeInfo ) [function, total, symbol(decodeValue), no-evaluators]
-                      | UnableToDecode  ( Bytes , TypeInfo )    [symbol(Evaluation::UnableToDecode)]
+  syntax Evaluation ::= UnableToDecode  ( Bytes , TypeInfo )    [symbol(Evaluation::UnableToDecode)]
                       | UnableToDecodePy ( msg: String )        [symbol(Evaluation::UnableToDecodePy)]
+```
 
+```{.k .concrete}
+  syntax Evaluation ::= #decodeValue ( MaybeMap , Bytes , TypeInfo ) [function, total, symbol(decodeValue)]
+```
+
+```{.k .symbolic}
+  syntax Evaluation ::= #decodeValue ( MaybeMap , Bytes , TypeInfo ) [function, total, symbol(decodeValue), no-evaluators]
+```
+
+```k
   // Boolean: should be one byte with value one or zero
-  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool)) => BoolVal(false)
+  rule #decodeValue(_, BYTES, typeInfoPrimitiveType(primTypeBool)) => BoolVal(false)
     requires 0 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
-  rule #decodeValue(BYTES, typeInfoPrimitiveType(primTypeBool)) => BoolVal(true)
+  rule #decodeValue(_, BYTES, typeInfoPrimitiveType(primTypeBool)) => BoolVal(true)
     requires 1 ==Int Bytes2Int(BYTES, LE, Unsigned) andBool lengthBytes(BYTES) ==Int 1
 
   // Integer: handled in separate module for numeric operation_s
-  rule #decodeValue(BYTES, TYPEINFO) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
-    requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPEINFO)
+  rule #decodeValue(TYPESMAP, BYTES, TYPEINFO) => #decodeInteger(BYTES, #intTypeOf(TYPEINFO))
+    requires #isIntType(TYPEINFO) andBool lengthBytes(BYTES) ==Int #elemSize(TYPESMAP, TYPEINFO)
      [preserves-definedness]
 
   // TODO Char type
@@ -63,13 +72,23 @@ and arrays (where layout is trivial).
 
 Arrays are decoded iteratively, using a known (expected) length or the length of the byte array.
 
-```k
-rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))))
-      => #decodeArrayAllocation(BYTES, lookupTyKore(ELEMTY), readTyConstInt(noMap, LEN)) // TODO temporary noMap, convert #decodeValue
+```{.k .concrete}
+rule #decodeValue(TYPESMAP, BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))))
+      => #decodeArrayAllocation(BYTES, lookupTy(TYPESMAP, ELEMTY), readTyConstInt(TYPESMAP, LEN))
+  requires isInt(readTyConstInt(TYPESMAP, LEN))
+  [preserves-definedness]
+
+rule #decodeValue(TYPESMAP, BYTES, typeInfoArrayType(ELEMTY, noTyConst))
+      => #decodeSliceAllocation(BYTES, lookupTy(TYPESMAP, ELEMTY))
+```
+
+```{.k .symbolic}
+rule #decodeValue(_, BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))))
+      => #decodeArrayAllocation(BYTES, lookupTyKore(ELEMTY), readTyConstInt(noMap, LEN))
   requires isInt(readTyConstInt(noMap, LEN))
   [preserves-definedness]
 
-rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst))
+rule #decodeValue(_, BYTES, typeInfoArrayType(ELEMTY, noTyConst))
       => #decodeSliceAllocation(BYTES, lookupTyKore(ELEMTY))
 ```
 
@@ -85,22 +104,22 @@ When using layout offsets we always return fields in declaration order within th
 // Struct decoding rules (top level)
 // ---------------------------------------------------------------------------
 // Use the offsets when they are provided and the input length is sufficient.
-rule #decodeValue(BYTES, typeInfoStructType(_, _, TYS, LAYOUT))
-      => Aggregate(variantIdx(0), #decodeFieldsWithOffsets(BYTES, TYS, #layoutOffsets(LAYOUT)))
+rule #decodeValue(TYPESMAP, BYTES, typeInfoStructType(_, _, TYS, LAYOUT))
+      => Aggregate(variantIdx(0), #decodeFieldsWithOffsets(TYPESMAP, BYTES, TYS, #layoutOffsets(LAYOUT)))
   requires #layoutOffsets(LAYOUT) =/=K .MachineSizes
-   andBool 0 <=Int #neededBytesForOffsets(TYS, #layoutOffsets(LAYOUT))
-   andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYS, #layoutOffsets(LAYOUT))
+   andBool 0 <=Int #neededBytesForOffsets(TYPESMAP, TYS, #layoutOffsets(LAYOUT))
+   andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYPESMAP, TYS, #layoutOffsets(LAYOUT))
   [preserves-definedness]
 
-rule #decodeValue(BYTES, typeInfoTupleType(.Tys, _))
+rule #decodeValue(_, BYTES, typeInfoTupleType(.Tys, _))
       => Aggregate(variantIdx(0), .List)
   requires lengthBytes(BYTES) ==Int 0
 
-rule #decodeValue(BYTES, typeInfoTupleType(TYS, LAYOUT))
-      => Aggregate(variantIdx(0), #decodeFieldsWithOffsets(BYTES, TYS, #layoutOffsets(LAYOUT)))
+rule #decodeValue(TYPESMAP, BYTES, typeInfoTupleType(TYS, LAYOUT))
+      => Aggregate(variantIdx(0), #decodeFieldsWithOffsets(TYPESMAP, BYTES, TYS, #layoutOffsets(LAYOUT)))
   requires #layoutOffsets(LAYOUT) =/=K .MachineSizes
-   andBool 0 <=Int #neededBytesForOffsets(TYS, #layoutOffsets(LAYOUT))
-   andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYS, #layoutOffsets(LAYOUT))
+   andBool 0 <=Int #neededBytesForOffsets(TYPESMAP, TYS, #layoutOffsets(LAYOUT))
+   andBool lengthBytes(BYTES) >=Int #neededBytesForOffsets(TYPESMAP, TYS, #layoutOffsets(LAYOUT))
   [preserves-definedness]
 
 // ---------------------------------------------------------------------------
@@ -110,31 +129,61 @@ rule #decodeValue(BYTES, typeInfoTupleType(TYS, LAYOUT))
 syntax Int ::= #msBytes ( MachineSize ) [function, total]
 rule #msBytes(machineSize(mirInt(NBITS))) => NBITS /Int 8 [preserves-definedness]
 rule #msBytes(machineSize(NBITS)) => NBITS /Int 8 [owise, preserves-definedness]
+```
 
-// Minimum number of input bytes required to decode all fields by the chosen offsets.
-// Uses builtin maxInt to compute max(offset + size). The lists of types and
-// offsets must have the same length; if not, this function returns -1 to signal
-// an invalid layout for decoding.
-syntax Int ::= #neededBytesForOffsets ( Tys , MachineSizes ) [function, total, no-evaluators]
-rule #neededBytesForOffsets(.Tys, .MachineSizes) => 0
-rule #neededBytesForOffsets(TY TYS, OFFSET OFFSETS)
-  => maxInt(#msBytes(OFFSET) +Int #elemSize(lookupTyKore(TY)), #neededBytesForOffsets(TYS, OFFSETS))
-// Any remaining pattern indicates a length mismatch between types and offsets.
-rule #neededBytesForOffsets(_, _) => -1 [owise]
+Minimum number of input bytes required to decode all fields by the chosen offsets.
+Uses builtin maxInt to compute max(offset + size). The lists of types and
+offsets must have the same length; if not, this function returns -1 to signal
+an invalid layout for decoding.
 
-// Decode each field at its byte offset and return values in declaration order.
-syntax List ::= #decodeFieldsWithOffsets ( Bytes , Tys , MachineSizes ) [function, total, no-evaluators]
-rule #decodeFieldsWithOffsets(_, .Tys, _OFFSETS) => .List
-rule #decodeFieldsWithOffsets(_, _TYS, .MachineSizes) => .List [owise]
-rule #decodeFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
+```{.k .concrete}
+syntax Int ::= #neededBytesForOffsets ( MaybeMap , Tys , MachineSizes ) [function, total]
+rule #neededBytesForOffsets(_, .Tys, .MachineSizes) => 0
+rule #neededBytesForOffsets(TYPESMAP, TY TYS, OFFSET OFFSETS)
+  => maxInt(#msBytes(OFFSET) +Int #elemSize(TYPESMAP, lookupTy(TYPESMAP, TY)), #neededBytesForOffsets(TYPESMAP, TYS, OFFSETS))
+rule #neededBytesForOffsets(_, _, _) => -1 [owise]
+```
+
+```{.k .symbolic}
+syntax Int ::= #neededBytesForOffsets ( MaybeMap , Tys , MachineSizes ) [function, total, no-evaluators]
+rule #neededBytesForOffsets(_, .Tys, .MachineSizes) => 0
+rule #neededBytesForOffsets(_, TY TYS, OFFSET OFFSETS)
+  => maxInt(#msBytes(OFFSET) +Int #elemSize(noMap, lookupTyKore(TY)), #neededBytesForOffsets(noMap, TYS, OFFSETS))
+rule #neededBytesForOffsets(_, _, _) => -1 [owise]
+```
+
+Decode each field at its byte offset and return values in declaration order.
+Any remaining pattern indicates a length mismatch between types and offsets.
+
+```{.k .concrete}
+syntax List ::= #decodeFieldsWithOffsets ( MaybeMap , Bytes , Tys , MachineSizes ) [function, total]
+rule #decodeFieldsWithOffsets(_, _, .Tys, _OFFSETS) => .List
+rule #decodeFieldsWithOffsets(_, _, _TYS, .MachineSizes) => .List [owise]
+rule #decodeFieldsWithOffsets(TYPESMAP, BYTES, TY TYS, OFFSET OFFSETS)
   => ListItem(
-       #decodeValue(
-         substrBytes(BYTES, #msBytes(OFFSET), #msBytes(OFFSET) +Int #elemSize(lookupTyKore(TY))),
+       #decodeValue(TYPESMAP,
+         substrBytes(BYTES, #msBytes(OFFSET), #msBytes(OFFSET) +Int #elemSize(TYPESMAP, lookupTy(TYPESMAP, TY))),
+         lookupTy(TYPESMAP, TY)
+       )
+     )
+     #decodeFieldsWithOffsets(TYPESMAP, BYTES, TYS, OFFSETS)
+  requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(TYPESMAP, lookupTy(TYPESMAP, TY)))
+  [preserves-definedness]
+```
+
+```{.k .symbolic}
+syntax List ::= #decodeFieldsWithOffsets ( MaybeMap , Bytes , Tys , MachineSizes ) [function, total, no-evaluators]
+rule #decodeFieldsWithOffsets(_, _, .Tys, _OFFSETS) => .List
+rule #decodeFieldsWithOffsets(_, _, _TYS, .MachineSizes) => .List [owise]
+rule #decodeFieldsWithOffsets(_, BYTES, TY TYS, OFFSET OFFSETS)
+  => ListItem(
+       #decodeValue(noMap,
+         substrBytes(BYTES, #msBytes(OFFSET), #msBytes(OFFSET) +Int #elemSize(noMap, lookupTyKore(TY))),
          lookupTyKore(TY)
        )
      )
-     #decodeFieldsWithOffsets(BYTES, TYS, OFFSETS)
-  requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(lookupTyKore(TY)))
+     #decodeFieldsWithOffsets(noMap, BYTES, TYS, OFFSETS)
+  requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(noMap, lookupTyKore(TY)))
   [preserves-definedness]
 ```
 
@@ -143,69 +192,86 @@ rule #decodeFieldsWithOffsets(BYTES, TY TYS, OFFSET OFFSETS)
 All unimplemented cases will become thunks by way of this default rule:
 
 ```k
-  rule #decodeValue(BYTES, TYPEINFO) => UnableToDecode(BYTES, TYPEINFO) [owise]
+  rule #decodeValue(_, BYTES, TYPEINFO) => UnableToDecode(BYTES, TYPEINFO) [owise]
 ```
 
 ## Helper function to determine the expected byte length for a type
 
-```k
+```{.k .concrete}
   // TODO: this function should go into the rt/types.md module
-  syntax Int ::= #elemSize ( TypeInfo ) [function, total, no-evaluators]
+  syntax Int ::= #elemSize ( MaybeMap , TypeInfo ) [function, total]
+```
+
+```{.k .symbolic}
+  syntax Int ::= #elemSize ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
 ```
 
 Known element sizes for common types:
 
 ```k
   // ---- Primitive types ----
-  rule #elemSize(typeInfoPrimitiveType(primTypeBool)) => 1
+  rule #elemSize(_, typeInfoPrimitiveType(primTypeBool)) => 1
   // Rust `char` is a 32-bit Unicode scalar value
-  rule #elemSize(typeInfoPrimitiveType(primTypeChar)) => 4
-  rule #elemSize(TYPEINFO) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
+  rule #elemSize(_, typeInfoPrimitiveType(primTypeChar)) => 4
+  rule #elemSize(_, TYPEINFO) => #bitWidth(#intTypeOf(TYPEINFO)) /Int 8
     requires #isIntType(TYPEINFO)
   // Floating-point sizes
-  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF16)))  => 2
-  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF32)))  => 4
-  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF64)))  => 8
-  rule #elemSize(typeInfoPrimitiveType(primTypeFloat(floatTyF128))) => 16
+  rule #elemSize(_, typeInfoPrimitiveType(primTypeFloat(floatTyF16)))  => 2
+  rule #elemSize(_, typeInfoPrimitiveType(primTypeFloat(floatTyF32)))  => 4
+  rule #elemSize(_, typeInfoPrimitiveType(primTypeFloat(floatTyF64)))  => 8
+  rule #elemSize(_, typeInfoPrimitiveType(primTypeFloat(floatTyF128))) => 16
   // `str` is unsized; size only known with metadata (e.g., in fat pointers)
-  rule #elemSize(typeInfoPrimitiveType(primTypeStr)) => 0
+  rule #elemSize(_, typeInfoPrimitiveType(primTypeStr)) => 0
 
-  // ---- Arrays and slices ----
-  rule #elemSize(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))))
-    => #elemSize(lookupTyKore(ELEM_TY)) *Int readTyConstInt(noMap, LEN) // TODO temporary noMap, convert #elemSize
   // Slice `[T]` has dynamic size; plain value is unsized
-  rule #elemSize(typeInfoArrayType(_ELEM_TY, noTyConst)) => 0
+  rule #elemSize(_, typeInfoArrayType(_ELEM_TY, noTyConst)) => 0
 
   // ---- thin and fat pointers ----
-  rule #elemSize(typeInfoRefType(TY)) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-    requires dynamicSize(1) ==K #metadataSize(noMap, TY)
-  rule #elemSize(typeInfoRefType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+  rule #elemSize(TYPESMAP, typeInfoRefType(TY)) => #elemSize(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+    requires dynamicSize(1) ==K #metadataSize(TYPESMAP, TY)
+  rule #elemSize(TYPESMAP, typeInfoRefType(_)) => 2 *Int #elemSize(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     [owise]
-  rule #elemSize(typeInfoPtrType(TY)) => #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-    requires dynamicSize(1) ==K #metadataSize(noMap, TY)
-  rule #elemSize(typeInfoPtrType(_)) => 2 *Int #elemSize(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+  rule #elemSize(TYPESMAP, typeInfoPtrType(TY)) => #elemSize(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+    requires dynamicSize(1) ==K #metadataSize(TYPESMAP, TY)
+  rule #elemSize(TYPESMAP, typeInfoPtrType(_)) => 2 *Int #elemSize(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
     [owise]
 
   // ---- Tuples ----
-  rule #elemSize(typeInfoTupleType(_TYS, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
-  rule #elemSize(typeInfoTupleType(.Tys, noLayoutShape)) => 0
-  rule #elemSize(typeInfoTupleType(TY TYS, noLayoutShape))
-    => #elemSize(lookupTyKore(TY)) +Int #elemSize(typeInfoTupleType(TYS, noLayoutShape))
+  rule #elemSize(_, typeInfoTupleType(_TYS, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
+  rule #elemSize(_, typeInfoTupleType(.Tys, noLayoutShape)) => 0
 
   // ---- Structs and Enums with layout ----
-  rule #elemSize(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
-  rule #elemSize(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE))))   => #msBytes(SIZE)
+  rule #elemSize(_, typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE)))) => #msBytes(SIZE)
+  rule #elemSize(_, typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, SIZE))))   => #msBytes(SIZE)
 
   // ---- Function item types ----
   // Function items are zero-sized; function pointers are handled by PtrType
-  rule #elemSize(typeInfoFunType(_)) => 0
+  rule #elemSize(_, typeInfoFunType(_)) => 0
 
-  rule #elemSize(typeInfoVoidType) => 0
+  rule #elemSize(_, typeInfoVoidType) => 0
 
   // Fallback to keep the function total for any remaining cases
-  rule #elemSize(_) => 0 [owise]
+  rule #elemSize(_, _) => 0 [owise]
 
-  rule 0 <=Int #elemSize(_) => true [simplification, preserves-definedness]
+  rule 0 <=Int #elemSize(_, _) => true [simplification, preserves-definedness]
+```
+
+Rules that differ between concrete and symbolic execution (array and tuple element lookups):
+
+```{.k .concrete}
+  rule #elemSize(TYPESMAP, typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))))
+    => #elemSize(TYPESMAP, lookupTy(TYPESMAP, ELEM_TY)) *Int readTyConstInt(TYPESMAP, LEN)
+
+  rule #elemSize(TYPESMAP, typeInfoTupleType(TY TYS, noLayoutShape))
+    => #elemSize(TYPESMAP, lookupTy(TYPESMAP, TY)) +Int #elemSize(TYPESMAP, typeInfoTupleType(TYS, noLayoutShape))
+```
+
+```{.k .symbolic}
+  rule #elemSize(_, typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))))
+    => #elemSize(noMap, lookupTyKore(ELEM_TY)) *Int readTyConstInt(noMap, LEN)
+
+  rule #elemSize(_, typeInfoTupleType(TY TYS, noLayoutShape))
+    => #elemSize(noMap, lookupTyKore(TY)) +Int #elemSize(noMap, typeInfoTupleType(TYS, noLayoutShape))
 ```
 
 
@@ -217,7 +283,7 @@ Enum decoding is for now restricted to a few special cases.
 If there are no fields, the enum can be decoded by using their data as the discriminant.
 
 ```k
-  rule #decodeValue(
+  rule #decodeValue(_,
          BYTES
        , typeInfoEnumType(...
            name: _
@@ -307,7 +373,7 @@ per-variant layout offsets.
 
 ```k
   // General entry rule: direct-tag enum with at least one field somewhere.
-  rule #decodeValue(
+  rule #decodeValue(_,
          BYTES
        , typeInfoEnumType(...
            name: _
@@ -354,7 +420,7 @@ per-variant layout offsets.
   rule #decodeEnumDirectFields(BYTES, variantIdx(IDX), FIELD_TYPESS, VARIANT_LAYOUTS, _ENUM_TYPE)
     => Aggregate(
          variantIdx(IDX),
-         #decodeFieldsWithOffsets(BYTES, #nthTys(FIELD_TYPESS, IDX), #nthVariantOffsets(VARIANT_LAYOUTS, IDX))
+         #decodeFieldsWithOffsets(noMap, BYTES, #nthTys(FIELD_TYPESS, IDX), #nthVariantOffsets(VARIANT_LAYOUTS, IDX)) // TODO temporary noMap, convert #decodeEnumDirectFields
        )
     requires 0 <=Int IDX
     [preserves-definedness]
@@ -406,7 +472,7 @@ However, in this case only a `None` can actually be decoded.
 Any pointer or reference would have a very different encoding in KMIR, not a non-zero address.
 
 ```k
-  rule #decodeValue(
+  rule #decodeValue(_,
          BYTES
        , typeInfoEnumType(...
            name: _
@@ -475,16 +541,16 @@ results.
 
   rule #decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, ACC)
     => #decodeArrayElements(
-         substrBytes(BYTES, #elemSize(ELEMTYPEINFO), lengthBytes(BYTES)),
+         substrBytes(BYTES, #elemSize(noMap, ELEMTYPEINFO), lengthBytes(BYTES)), // TODO temporary noMap, convert #decodeArrayElements
          ELEMTYPEINFO,
          LEN -Int 1,
-         ACC ListItem(#decodeValue(
-           substrBytes(BYTES, 0, #elemSize(ELEMTYPEINFO)),
+         ACC ListItem(#decodeValue(noMap,
+           substrBytes(BYTES, 0, #elemSize(noMap, ELEMTYPEINFO)),
            ELEMTYPEINFO
          ))
        )
     requires LEN >Int 0
-     andBool lengthBytes(BYTES) >=Int #elemSize(ELEMTYPEINFO)  // enough bytes remaining
+     andBool lengthBytes(BYTES) >=Int #elemSize(noMap, ELEMTYPEINFO)  // enough bytes remaining
     [preserves-definedness]
 ```
 
@@ -501,12 +567,12 @@ by the element size, then uses the same element-by-element decoding approach as 
     => Range(#decodeArrayElements(
                 BYTES,
                 ELEMTYPEINFO,
-                lengthBytes(BYTES) /Int #elemSize(ELEMTYPEINFO),
+                lengthBytes(BYTES) /Int #elemSize(noMap, ELEMTYPEINFO), // TODO temporary noMap, convert #decodeSliceAllocation
                 .List
              )
       )
-    requires lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO) ==Int 0  // element size divides cleanly
-     andBool 0 <Int #elemSize(ELEMTYPEINFO)
+    requires lengthBytes(BYTES) %Int #elemSize(noMap, ELEMTYPEINFO) ==Int 0
+     andBool 0 <Int #elemSize(noMap, ELEMTYPEINFO)
     [preserves-definedness]
 ```
 
