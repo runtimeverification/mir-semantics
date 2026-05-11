@@ -988,8 +988,9 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 ```k
   syntax Evaluation ::= #mkArray ( Evaluation , Int ) [strict(1)]
 
-  rule <k> rvalueRepeat(ELEM, tyConst(KIND, _)) => #mkArray(ELEM, readTyConstInt(KIND)) ... </k>
-    requires isInt(readTyConstInt(KIND))
+  rule <k> rvalueRepeat(ELEM, tyConst(KIND, _)) => #mkArray(ELEM, readTyConstInt(TYPESMAP, KIND)) ... </k>
+    <types> TYPESMAP </types>
+    requires isInt(readTyConstInt(TYPESMAP, KIND))
     [preserves-definedness]
 
   rule <k> #mkArray(ELEMENT:Value, N) => Range(makeList(N, ELEMENT)) ... </k>
@@ -1691,7 +1692,7 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
         </k>
         <types> TYPESMAP </types>
       requires #isStaticU8Array(lookupTy(TYPESMAP, TY_TARGET))
-       andBool WIDTH ==Int #staticArrayLenBits(lookupTy(TYPESMAP, TY_TARGET))
+       andBool WIDTH ==Int #staticArrayLenBits(TYPESMAP, lookupTy(TYPESMAP, TY_TARGET))
       //  andBool WIDTH >=Int 0  ensured by the above
       //  andBool WIDTH % 8 == 0 ensured by the above
       [preserves-definedness] // ensures element type/length are well-formed
@@ -1721,12 +1722,25 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     => lookupTyKore(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
   rule #isStaticU8Array(_OTHER) => false [owise]
 
-  syntax Int ::= #staticArrayLenBits ( TypeInfo ) [function, total, no-evaluators]
-  // -------------------------------------------------------------
-  rule #staticArrayLenBits(typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
-    => readTyConstInt(KIND) *Int 8
+```
+
+```{.k .concrete}
+  syntax Int ::= #staticArrayLenBits ( MaybeMap , TypeInfo ) [function, total]
+  rule #staticArrayLenBits(TYPESMAP, typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
+    => readTyConstInt(TYPESMAP, KIND) *Int 8
     [preserves-definedness]
-  rule #staticArrayLenBits(_OTHER) => 0 [owise]
+  rule #staticArrayLenBits(_, _OTHER) => 0 [owise]
+```
+
+```{.k .symbolic}
+  syntax Int ::= #staticArrayLenBits ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
+  rule #staticArrayLenBits(_, typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
+    => readTyConstInt(noMap, KIND) *Int 8
+    [preserves-definedness]
+  rule #staticArrayLenBits(_, _OTHER) => 0 [owise]
+```
+
+```k
 ```
 
 A transmutation from an integer to an enum is wellformed if:

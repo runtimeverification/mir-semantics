@@ -65,8 +65,8 @@ Arrays are decoded iteratively, using a known (expected) length or the length of
 
 ```k
 rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))))
-      => #decodeArrayAllocation(BYTES, lookupTyKore(ELEMTY), readTyConstInt(LEN))
-  requires isInt(readTyConstInt(LEN))
+      => #decodeArrayAllocation(BYTES, lookupTyKore(ELEMTY), readTyConstInt(noMap, LEN)) // TODO temporary noMap, convert #decodeValue
+  requires isInt(readTyConstInt(noMap, LEN))
   [preserves-definedness]
 
 rule #decodeValue(BYTES, typeInfoArrayType(ELEMTY, noTyConst))
@@ -172,7 +172,7 @@ Known element sizes for common types:
 
   // ---- Arrays and slices ----
   rule #elemSize(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(LEN, _))))
-    => #elemSize(lookupTyKore(ELEM_TY)) *Int readTyConstInt(LEN)
+    => #elemSize(lookupTyKore(ELEM_TY)) *Int readTyConstInt(noMap, LEN) // TODO temporary noMap, convert #elemSize
   // Slice `[T]` has dynamic size; plain value is unsized
   rule #elemSize(typeInfoArrayType(_ELEM_TY, noTyConst)) => 0
 

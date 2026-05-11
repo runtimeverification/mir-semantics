@@ -313,21 +313,35 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
   rule #metadataSize(TY) => #metadataSizeAux(lookupTyKore(TY))
 
   rule #metadataSizeAux(typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
-  rule #metadataSizeAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(CONST))
+  rule #metadataSizeAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(noMap, CONST)) // TODO temporary noMap, convert #metadataSizeAux
   rule #metadataSizeAux(    _OTHER                                          ) => noMetadataSize     [owise]
 ```
 
 
-```k
+```{.k .concrete}
   // reading Int-valued TyConsts from allocated bytes
-  syntax Int ::= readTyConstInt ( TyConstKind ) [function, no-evaluators]
+  syntax Int ::= readTyConstInt ( MaybeMap , TyConstKind ) [function]
   // -----------------------------------------------------------
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Unsigned)
+  rule readTyConstInt( TYPESMAP, tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Unsigned)
+    requires isUintTy(#numTypeOf(lookupTy(TYPESMAP, TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TYPESMAP, TY))) /Int 8
+    [preserves-definedness]
+
+  rule readTyConstInt( TYPESMAP, tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Signed  )
+    requires isIntTy(#numTypeOf(lookupTy(TYPESMAP, TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TYPESMAP, TY))) /Int 8
+    [preserves-definedness]
+```
+
+```{.k .symbolic}
+  syntax Int ::= readTyConstInt ( MaybeMap , TyConstKind ) [function, no-evaluators]
+
+  rule readTyConstInt( _, tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Unsigned)
     requires isUintTy(#numTypeOf(lookupTyKore(TY)))
      andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTyKore(TY))) /Int 8
     [preserves-definedness]
 
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Signed  )
+  rule readTyConstInt( _, tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Signed  )
     requires isIntTy(#numTypeOf(lookupTyKore(TY)))
      andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTyKore(TY))) /Int 8
     [preserves-definedness]
@@ -398,7 +412,7 @@ This information is either hard-wired for primitive types (numbers, first and fo
   rule #alignOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
   rule #alignOf(typeInfoUnionType(_, _, _, noLayoutShape)) => 1
   // arrays with known length have the alignment of the element type, and a size multiplying element count and element size
-  rule #sizeOf(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(lookupTyKore(ELEM_TY)) *Int readTyConstInt(KIND)
+  rule #sizeOf(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(lookupTyKore(ELEM_TY)) *Int readTyConstInt(noMap, KIND) // TODO temporary noMap, convert #sizeOf
   rule #sizeOf(typeInfoArrayType(  _    ,    noTyConst                 )) => 0
   rule #alignOf(typeInfoArrayType(ELEM_TY, _)) => #alignOf(lookupTyKore(ELEM_TY))
   // thin ptr and ref types have the size of `usize` and twice that for fat pointers/refs. Alignment is that of `usize`
