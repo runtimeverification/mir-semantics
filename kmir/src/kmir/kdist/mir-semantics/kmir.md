@@ -227,7 +227,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
-         <currentBody> _ => #getBlocks(CALLER) </currentBody>
+         <currentBody> _ => #getBlocks(FUNCSMAP, CALLER) </currentBody>
          <caller> CALLER => NEWCALLER </caller>
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
@@ -236,6 +236,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <functions> FUNCSMAP </functions>
 
   // no value to return, skip writing
   rule [termReturnNone]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
@@ -244,7 +245,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
-         <currentBody> _ => #getBlocks(CALLER) </currentBody>
+         <currentBody> _ => #getBlocks(FUNCSMAP, CALLER) </currentBody>
          <caller> CALLER => NEWCALLER </caller>
          <dest> _ => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
@@ -253,11 +254,22 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <functions> FUNCSMAP </functions>
 
-  syntax List ::= #getBlocks( Ty )               [function, total, no-evaluators]
-                | #getBlocksAux( MonoItemKind )  [function, total]
+```
 
-  rule #getBlocks(TY) => #getBlocksAux(lookupFunctionKore(TY))
+```{.k .concrete}
+  syntax List ::= #getBlocks( MaybeMap, Ty )  [function, total]
+  rule #getBlocks(FUNCSMAP, TY) => #getBlocksAux(lookupFunction(FUNCSMAP, TY))
+```
+
+```{.k .symbolic}
+  syntax List ::= #getBlocks( MaybeMap, Ty )  [function, total, no-evaluators]
+  rule #getBlocks(_, TY) => #getBlocksAux(lookupFunctionKore(TY))
+```
+
+```k
+  syntax List ::= #getBlocksAux( MonoItemKind )  [function, total]
 
   // returns blocks from the body
   rule #getBlocksAux(monoItemFn(_, _, noBody)) => .List

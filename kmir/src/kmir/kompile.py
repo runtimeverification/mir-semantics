@@ -529,7 +529,20 @@ def _make_lookup_bridge_axioms() -> list[Axiom]:
     ty_var = EVar('VarTY', ty_sort)
     aid_var = EVar('VarAID', allocid_sort)
 
+    list_sort = SortApp('SortList')
+
     bridges = [
+        # #getBlocks(MM, TY) => #getBlocksAux(lookupFunctionKore(TY))
+        FunctionRule(
+            lhs=App("Lbl'Hash'getBlocks'LParUndsCommUndsRParUnds'KMIR-CONTROL-FLOW'Unds'List'Unds'MaybeMap'Unds'Ty", (), (mm_var, ty_var)),
+            rhs=App("Lbl'Hash'getBlocksAux'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'List'Unds'MonoItemKind", (), (App('LbllookupFunctionKore', (), (ty_var,)),)),
+            req=None, ens=None,
+            sort=list_sort,
+            arg_sorts=(maybemap_sort, ty_sort),
+            anti_left=None, priority=50,
+            uid='getBlocks-bridge',
+            label='getBlocks-bridge',
+        ),
         # lookupFunction(MM, TY) => lookupFunctionKore(TY)
         FunctionRule(
             lhs=App("LbllookupFunction'LParUndsCommUndsRParUnds'RT-VALUE-SYNTAX'Unds'MonoItemKind'Unds'MaybeMap'Unds'Ty", (), (mm_var, ty_var)),
