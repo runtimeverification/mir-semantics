@@ -461,7 +461,12 @@ def make_kore_rules(
     if break_on_function:
         break_on_rules.append(_mk_break_on_functions_rule(kmir, break_on_function))
 
-    return [*equations, *type_equations, *alloc_equations, *break_on_rules]
+    # Bridge axioms: lookupX(MaybeMap, Key) => lookupXKore(Key)
+    # In symbolic execution, lookupX is [no-evaluators] so its K rules are not compiled.
+    # These axioms delegate to lookupXKore which has the per-program equations.
+    bridge_axioms = _make_lookup_bridge_axioms()
+
+    return [*equations, *type_equations, *alloc_equations, *break_on_rules, *bridge_axioms]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
@@ -502,6 +507,65 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
             )
 
     return functions
+
+
+def _make_lookup_bridge_axioms() -> list[Axiom]:
+    """Generate bridge axioms: lookupX(MaybeMap, Key) => lookupXKore(Key).
+
+    In symbolic execution, lookupX is [no-evaluators], so its K rules are not compiled.
+    These axioms bridge from the two-argument wrapper to the single-argument Kore
+    version, which has per-program equations.
+    """
+    from pyk.kore.rule import FunctionRule
+
+    maybemap_sort = SortApp('SortMaybeMap')
+    ty_sort = SortApp('SortTy')
+    allocid_sort = SortApp('SortAllocId')
+    mono_sort = SortApp('SortMonoItemKind')
+    typeinfo_sort = SortApp('SortTypeInfo')
+    eval_sort = SortApp('SortEvaluation')
+
+    mm_var = EVar('VarMM', maybemap_sort)
+    ty_var = EVar('VarTY', ty_sort)
+    aid_var = EVar('VarAID', allocid_sort)
+
+    bridges = [
+        # lookupFunction(MM, TY) => lookupFunctionKore(TY)
+        FunctionRule(
+            lhs=App("LbllookupFunction'LParUndsCommUndsRParUnds'RT-VALUE-SYNTAX'Unds'MonoItemKind'Unds'MaybeMap'Unds'Ty", (), (mm_var, ty_var)),
+            rhs=App('LbllookupFunctionKore', (), (ty_var,)),
+            req=None, ens=None,
+            sort=mono_sort,
+            arg_sorts=(maybemap_sort, ty_sort),
+            anti_left=None, priority=50,
+            uid='lookupFunction-bridge',
+            label='lookupFunction-bridge',
+        ),
+        # lookupTy(MM, TY) => lookupTyKore(TY)
+        FunctionRule(
+            lhs=App("LbllookupTy'LParUndsCommUndsRParUnds'RT-VALUE-SYNTAX'Unds'TypeInfo'Unds'MaybeMap'Unds'Ty", (), (mm_var, ty_var)),
+            rhs=App('LbllookupTyKore', (), (ty_var,)),
+            req=None, ens=None,
+            sort=typeinfo_sort,
+            arg_sorts=(maybemap_sort, ty_sort),
+            anti_left=None, priority=50,
+            uid='lookupTy-bridge',
+            label='lookupTy-bridge',
+        ),
+        # lookupAlloc(MM, AID) => lookupAllocKore(AID)
+        FunctionRule(
+            lhs=App("LbllookupAlloc'LParUndsCommUndsRParUnds'RT-VALUE-SYNTAX'Unds'Evaluation'Unds'MaybeMap'Unds'AllocId", (), (mm_var, aid_var)),
+            rhs=App('LbllookupAllocKore', (), (aid_var,)),
+            req=None, ens=None,
+            sort=eval_sort,
+            arg_sorts=(maybemap_sort, allocid_sort),
+            anti_left=None, priority=50,
+            uid='lookupAlloc-bridge',
+            label='lookupAlloc-bridge',
+        ),
+    ]
+
+    return [r.to_axiom().let_attrs((App("UNIQUE'Unds'ID", (), (String(r.uid),)),)) for r in bridges]
 
 
 def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> Axiom:

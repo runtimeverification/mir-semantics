@@ -137,8 +137,8 @@ The basic operations of reading and writing those values can use K's "heating" a
 
 # Static data
 
-In symbolic mode (Haskell/booster backend), static data is stored as generated, hardcoded functions that return KORE.
-In concrete mode (LLVM backend), it is stored in `Map`s in the configuration.
+In symbolic execution (Haskell/booster backend), static data is stored as generated, hardcoded functions that return KORE.
+In concrete execution (LLVM backend), it is stored in `Map`s in the configuration.
 The `MaybeMap` sort wraps this choice: `someMap(M)` means use map lookups. `noMap` means use generated functions.
 
 ```k
@@ -146,9 +146,9 @@ The `MaybeMap` sort wraps this choice: `someMap(M)` means use map lookups. `noMa
                     | someMap(Map) [symbol(MaybeMap::someMap)]
 ```
 
-## Lookup functions
+## Lookup functions (for symbolic execution)
 
-These functions are global static data  accessed from many places, and will be extended for the particular program.
+These functions are global static data accessed from many places, and will be extended for the particular program.
 
 
 ```k
@@ -163,9 +163,9 @@ These functions are global static data  accessed from many places, and will be e
   syntax TypeInfo ::= lookupTyKore ( Ty )    [function, total, symbol(lookupTyKore), no-evaluators]
 ```
 
-## Map-based lookup functions (concrete mode)
+## Lookup functions (for concrete execution)
 
-These functions perform lookups from `Map`s stored in the configuration, used in concrete (LLVM) mode.
+These functions perform lookups from Maps stored in the configuration, used in concrete execution (LLVM backend).
 They return the same defaults as the Kore versions when a key is not found.
 
 ```k
@@ -181,20 +181,37 @@ They return the same defaults as the Kore versions when a key is not found.
 
 ## Top-level lookup functions
 
-These dispatch to either the map-based or Kore-based lookup depending on the `MaybeMap` value.
+These dispatch to either the map-based or Kore-based lookup depending on the backend.
 
-```k
+In **concrete execution** (LLVM), the cells hold `someMap(M)` and the functions dispatch to map lookups.
+The `noMap` case should not occur in concrete execution, so it returns a default/error.
+
+```{.k .concrete}
   syntax MonoItemKind ::= lookupFunction ( MaybeMap , Ty ) [function, total]
-  rule lookupFunction(noMap, TY) => lookupFunctionKore(TY)
   rule lookupFunction(someMap(M), TY) => lookupFunctionMap(M, TY)
+  rule lookupFunction(noMap, ty(I)) => monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(I), noBody)
 
   syntax TypeInfo ::= lookupTy ( MaybeMap , Ty ) [function, total]
-  rule lookupTy(noMap, TY) => lookupTyKore(TY)
   rule lookupTy(someMap(M), TY) => lookupTyMap(M, TY)
+  rule lookupTy(noMap, _) => typeInfoVoidType
 
   syntax Evaluation ::= lookupAlloc ( MaybeMap , AllocId ) [function, total]
-  rule lookupAlloc(noMap, AID) => lookupAllocKore(AID)
   rule lookupAlloc(someMap(M), AID) => lookupAllocMap(M, AID)
+  rule lookupAlloc(noMap, AID) => InvalidAlloc(AID)
+```
+
+In **symbolic execution** (Haskell/booster), the cells hold `noMap` and the functions are `[no-evaluators]`,
+with per-program axioms injected into `definition.kore` providing the actual equations.
+
+```{.k .symbolic}
+  syntax MonoItemKind ::= lookupFunction ( MaybeMap , Ty ) [function, total, no-evaluators]
+  rule lookupFunction(_, TY) => lookupFunctionKore(TY)
+
+  syntax TypeInfo ::= lookupTy ( MaybeMap , Ty ) [function, total, no-evaluators]
+  rule lookupTy(_, TY) => lookupTyKore(TY)
+
+  syntax Evaluation ::= lookupAlloc ( MaybeMap , AllocId ) [function, total, no-evaluators]
+  rule lookupAlloc(_, AID) => lookupAllocKore(AID)
 ```
 
 ```k
