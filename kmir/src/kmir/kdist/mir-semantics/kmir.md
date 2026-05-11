@@ -343,7 +343,7 @@ where the returned result should go.
   syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total, no-evaluators]
 
   rule #projectedCallTy(I, PROJS, LOCALS)
-    => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+    => getTyOf(noMap, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS) // TODO temporary noMap, convert #projectedCallTy
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]

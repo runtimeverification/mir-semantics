@@ -114,11 +114,11 @@ Execution gets stuck (no matching rule) when operands have different types or un
   // Extract type from operands (locals with projections, constants, fallback to unknown)
   syntax MaybeTy ::= #extractOperandType(Operand, List) [function, total, no-evaluators]
   rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+       => getTyOf(noMap, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS) // TODO temporary noMap, convert #extractOperandType
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
   rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+       => getTyOf(noMap, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS) // TODO temporary noMap, convert #extractOperandType
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
   rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _) => TY

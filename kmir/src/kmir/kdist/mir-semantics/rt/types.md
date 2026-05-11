@@ -260,25 +260,53 @@ To make this function total, an optional `MaybeTy` is used.
   rule #lookupMaybeTy(TY:Ty) => lookupTyKore(TY)
   rule #lookupMaybeTy(TyUnknown) => typeInfoVoidType
 
-  syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ) [function, total, no-evaluators]
+```
+
+```{.k .concrete}
+  syntax MaybeTy ::= getTyOf( MaybeMap , MaybeTy , ProjectionElems ) [function, total]
   // ----------------------------------------------------------------------
-  rule getTyOf(TyUnknown,             _                      ) => TyUnknown
-  rule getTyOf(TY,                    .ProjectionElems       ) => TY
+  rule getTyOf(_, TyUnknown,             _                      ) => TyUnknown
+  rule getTyOf(_, TY,                    .ProjectionElems       ) => TY
 
-  rule getTyOf(TY, projectionElemDeref                  PROJS ) => getTyOf(pointeeTy(lookupTyKore(TY)), PROJS)
-  rule getTyOf( _, projectionElemField(_, TY)           PROJS ) => getTyOf(TY, PROJS) // could also look it up
-  
-  rule getTyOf(TY, projectionElemIndex(_)               PROJS) => getTyOf(elemTy(lookupTyKore(TY)), PROJS)
-  rule getTyOf(TY, projectionElemConstantIndex(_, _, _) PROJS) => getTyOf(elemTy(lookupTyKore(TY)), PROJS)
-  rule getTyOf(TY, projectionElemSubslice(_, _, _)      PROJS) => getTyOf(TY, PROJS) // TODO assumes TY is already a slice type
+  rule getTyOf(TYPESMAP, TY, projectionElemDeref                  PROJS ) => getTyOf(TYPESMAP, pointeeTy(lookupTy(TYPESMAP, TY)), PROJS)
+  rule getTyOf(TYPESMAP,  _, projectionElemField(_, TY)           PROJS ) => getTyOf(TYPESMAP, TY, PROJS)
 
-  rule getTyOf(TY, projectionElemDowncast(_)            PROJS) => getTyOf(TY, PROJS) // unchanged type, just setting variantIdx
+  rule getTyOf(TYPESMAP, TY, projectionElemIndex(_)               PROJS) => getTyOf(TYPESMAP, elemTy(lookupTy(TYPESMAP, TY)), PROJS)
+  rule getTyOf(TYPESMAP, TY, projectionElemConstantIndex(_, _, _) PROJS) => getTyOf(TYPESMAP, elemTy(lookupTy(TYPESMAP, TY)), PROJS)
+  rule getTyOf(TYPESMAP, TY, projectionElemSubslice(_, _, _)      PROJS) => getTyOf(TYPESMAP, TY, PROJS) // TODO assumes TY is already a slice type
 
-  rule getTyOf( _, projectionElemOpaqueCast(TY)         PROJS) => getTyOf(TY, PROJS)
+  rule getTyOf(TYPESMAP, TY, projectionElemDowncast(_)            PROJS) => getTyOf(TYPESMAP, TY, PROJS)
 
-  rule getTyOf( _, projectionElemSubtype(TY)            PROJS) => getTyOf(TY, PROJS)
+  rule getTyOf(TYPESMAP,  _, projectionElemOpaqueCast(TY)         PROJS) => getTyOf(TYPESMAP, TY, PROJS)
+
+  rule getTyOf(TYPESMAP,  _, projectionElemSubtype(TY)            PROJS) => getTyOf(TYPESMAP, TY, PROJS)
   // -----------------------------------------------------------
-  rule getTyOf(_, _) => TyUnknown [owise]
+  rule getTyOf(_, _, _) => TyUnknown [owise]
+```
+
+```{.k .symbolic}
+  syntax MaybeTy ::= getTyOf( MaybeMap , MaybeTy , ProjectionElems ) [function, total, no-evaluators]
+  // ----------------------------------------------------------------------
+  rule getTyOf(_, TyUnknown,             _                      ) => TyUnknown
+  rule getTyOf(_, TY,                    .ProjectionElems       ) => TY
+
+  rule getTyOf(_, TY, projectionElemDeref                  PROJS ) => getTyOf(noMap, pointeeTy(lookupTyKore(TY)), PROJS)
+  rule getTyOf(_,  _, projectionElemField(_, TY)           PROJS ) => getTyOf(noMap, TY, PROJS)
+
+  rule getTyOf(_, TY, projectionElemIndex(_)               PROJS) => getTyOf(noMap, elemTy(lookupTyKore(TY)), PROJS)
+  rule getTyOf(_, TY, projectionElemConstantIndex(_, _, _) PROJS) => getTyOf(noMap, elemTy(lookupTyKore(TY)), PROJS)
+  rule getTyOf(_, TY, projectionElemSubslice(_, _, _)      PROJS) => getTyOf(noMap, TY, PROJS) // TODO assumes TY is already a slice type
+
+  rule getTyOf(_, TY, projectionElemDowncast(_)            PROJS) => getTyOf(noMap, TY, PROJS)
+
+  rule getTyOf(_,  _, projectionElemOpaqueCast(TY)         PROJS) => getTyOf(noMap, TY, PROJS)
+
+  rule getTyOf(_,  _, projectionElemSubtype(TY)            PROJS) => getTyOf(noMap, TY, PROJS)
+  // -----------------------------------------------------------
+  rule getTyOf(_, _, _) => TyUnknown [owise]
+```
+
+```k
 
 
   syntax MaybeTy ::= pointeeTy ( TypeInfo ) [function, total]
@@ -302,19 +330,38 @@ NB that the need for metadata is determined for the _pointee_ type, not the poin
 A [similar function exists in `rustc`](https://doc.rust-lang.org/nightly/nightly-rustc/src/rustc_middle/ty/util.rs.html#224-235) to determine whether or not a type needs dynamic metadata.
 Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does not.
 
-```k
-  syntax MetadataSize ::= #metadataSize    ( Ty , ProjectionElems ) [function, total, no-evaluators]
-                        | #metadataSize    (  MaybeTy )             [function, total, no-evaluators]
-                        | #metadataSizeAux ( TypeInfo )             [function, total, no-evaluators]
+```{.k .concrete}
+  syntax MetadataSize ::= #metadataSize    ( MaybeMap , Ty , ProjectionElems ) [function, total]
+                        | #metadataSize    ( MaybeMap , MaybeTy )              [function, total]
   // --------------------------------------------------------------------------------------
-  rule #metadataSize(TY, PROJS) => #metadataSize(getTyOf(TY, PROJS))
+  rule #metadataSize(TYPESMAP, TY, PROJS) => #metadataSize(TYPESMAP, getTyOf(TYPESMAP, TY, PROJS))
 
-  rule #metadataSize(TyUnknown) => noMetadataSize
-  rule #metadataSize(TY) => #metadataSizeAux(lookupTyKore(TY))
+  rule #metadataSize(_, TyUnknown) => noMetadataSize
+  rule #metadataSize(TYPESMAP, TY) => #metadataSizeAux(TYPESMAP, lookupTy(TYPESMAP, TY))
+```
 
-  rule #metadataSizeAux(typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
-  rule #metadataSizeAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(noMap, CONST)) // TODO temporary noMap, convert #metadataSizeAux
-  rule #metadataSizeAux(    _OTHER                                          ) => noMetadataSize     [owise]
+```{.k .symbolic}
+  syntax MetadataSize ::= #metadataSize    ( MaybeMap , Ty , ProjectionElems ) [function, total, no-evaluators]
+                        | #metadataSize    ( MaybeMap , MaybeTy )              [function, total, no-evaluators]
+  // --------------------------------------------------------------------------------------
+  rule #metadataSize(_, TY, PROJS) => #metadataSize(noMap, getTyOf(noMap, TY, PROJS))
+
+  rule #metadataSize(_, TyUnknown) => noMetadataSize
+  rule #metadataSize(_, TY) => #metadataSizeAux(noMap, lookupTyKore(TY))
+```
+
+```{.k .concrete}
+  syntax MetadataSize ::= #metadataSizeAux ( MaybeMap , TypeInfo )  [function, total]
+  rule #metadataSizeAux(_, typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
+  rule #metadataSizeAux(TYPESMAP, typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(TYPESMAP, CONST))
+  rule #metadataSizeAux(_, _OTHER                                              ) => noMetadataSize     [owise]
+```
+
+```{.k .symbolic}
+  syntax MetadataSize ::= #metadataSizeAux ( MaybeMap , TypeInfo )  [function, total, no-evaluators]
+  rule #metadataSizeAux(_, typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
+  rule #metadataSizeAux(_, typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(noMap, CONST))
+  rule #metadataSizeAux(_, _OTHER                                              ) => noMetadataSize     [owise]
 ```
 
 
@@ -418,10 +465,10 @@ This information is either hard-wired for primitive types (numbers, first and fo
   // thin ptr and ref types have the size of `usize` and twice that for fat pointers/refs. Alignment is that of `usize`
   rule #sizeOf(typeInfoPtrType(POINTEE_TY))
     => #sizeOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-          *Int (#if #metadataSize(POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
+          *Int (#if #metadataSize(noMap, POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
   rule #sizeOf(typeInfoRefType(POINTEE_TY))
     => #sizeOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-          *Int (#if #metadataSize(POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
+          *Int (#if #metadataSize(noMap, POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
   rule #alignOf(typeInfoPtrType(_)) => #alignOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
   rule #alignOf(typeInfoRefType(_)) => #alignOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
   // other types (fun and void types) have size and alignment 0
