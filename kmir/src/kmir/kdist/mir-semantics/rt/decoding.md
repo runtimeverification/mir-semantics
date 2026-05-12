@@ -74,22 +74,22 @@ Arrays are decoded iteratively, using a known (expected) length or the length of
 
 ```{.k .concrete}
 rule #decodeValue(TYPESMAP, BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))))
-      => #decodeArrayAllocation(BYTES, lookupTy(TYPESMAP, ELEMTY), readTyConstInt(TYPESMAP, LEN))
+      => #decodeArrayAllocation(TYPESMAP, BYTES, lookupTy(TYPESMAP, ELEMTY), readTyConstInt(TYPESMAP, LEN))
   requires isInt(readTyConstInt(TYPESMAP, LEN))
   [preserves-definedness]
 
 rule #decodeValue(TYPESMAP, BYTES, typeInfoArrayType(ELEMTY, noTyConst))
-      => #decodeSliceAllocation(BYTES, lookupTy(TYPESMAP, ELEMTY))
+      => #decodeSliceAllocation(TYPESMAP, BYTES, lookupTy(TYPESMAP, ELEMTY))
 ```
 
 ```{.k .symbolic}
 rule #decodeValue(_, BYTES, typeInfoArrayType(ELEMTY, someTyConst(tyConst(LEN, _))))
-      => #decodeArrayAllocation(BYTES, lookupTyKore(ELEMTY), readTyConstInt(noMap, LEN))
+      => #decodeArrayAllocation(noMap, BYTES, lookupTyKore(ELEMTY), readTyConstInt(noMap, LEN))
   requires isInt(readTyConstInt(noMap, LEN))
   [preserves-definedness]
 
 rule #decodeValue(_, BYTES, typeInfoArrayType(ELEMTY, noTyConst))
-      => #decodeSliceAllocation(BYTES, lookupTyKore(ELEMTY))
+      => #decodeSliceAllocation(noMap, BYTES, lookupTyKore(ELEMTY))
 ```
 
 ### Struct decoding
@@ -542,25 +542,40 @@ The byte consumption approach allows for validation - if there are surplus bytes
 bytes for the declared array length, the function will get stuck rather than produce incorrect
 results.
 
-```k
-  syntax Value ::= #decodeArrayAllocation ( Bytes, TypeInfo, Int ) [function, no-evaluators]
-                   // bytes, element type info, array length, type map (for recursion)
+```{.k .concrete}
+  syntax Value ::= #decodeArrayAllocation ( MaybeMap, Bytes, TypeInfo, Int ) [function]
+  rule #decodeArrayAllocation(TYPESMAP, BYTES, ELEMTYPEINFO, LEN)
+    => Range(#decodeArrayElements(TYPESMAP, BYTES, ELEMTYPEINFO, LEN, .List))
 
-  rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, LEN)
-    => Range(#decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, .List))
-
-  syntax List ::= #decodeArrayElements ( Bytes, TypeInfo, Int, List ) [function, no-evaluators]
-                  // bytes, elem type info, remaining length, accumulated list
-
-  rule #decodeArrayElements(BYTES, _ELEMTYPEINFO, LEN, ACC)
-    => ACC
-    requires LEN <=Int 0
-     andBool lengthBytes(BYTES) ==Int 0  // exact match - no surplus bytes
-    [preserves-definedness]
-
-  rule #decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, ACC)
+  syntax List ::= #decodeArrayElements ( MaybeMap, Bytes, TypeInfo, Int, List ) [function]
+                  // type map, bytes, elem type info, remaining length, accumulated list
+  rule #decodeArrayElements(TYPESMAP, BYTES, ELEMTYPEINFO, LEN, ACC)
     => #decodeArrayElements(
-         substrBytes(BYTES, #elemSize(noMap, ELEMTYPEINFO), lengthBytes(BYTES)), // TODO temporary noMap, convert #decodeArrayElements
+         TYPESMAP,
+         substrBytes(BYTES, #elemSize(TYPESMAP, ELEMTYPEINFO), lengthBytes(BYTES)),
+         ELEMTYPEINFO,
+         LEN -Int 1,
+         ACC ListItem(#decodeValue(TYPESMAP,
+           substrBytes(BYTES, 0, #elemSize(TYPESMAP, ELEMTYPEINFO)),
+           ELEMTYPEINFO
+         ))
+       )
+    requires LEN >Int 0
+     andBool lengthBytes(BYTES) >=Int #elemSize(TYPESMAP, ELEMTYPEINFO)  // enough bytes remaining
+    [preserves-definedness]
+```
+
+```{.k .symbolic}
+  syntax Value ::= #decodeArrayAllocation ( MaybeMap, Bytes, TypeInfo, Int ) [function, no-evaluators]
+  rule #decodeArrayAllocation(_, BYTES, ELEMTYPEINFO, LEN)
+    => Range(#decodeArrayElements(noMap, BYTES, ELEMTYPEINFO, LEN, .List))
+
+  syntax List ::= #decodeArrayElements ( MaybeMap, Bytes, TypeInfo, Int, List ) [function, no-evaluators]
+                  // type map, bytes, elem type info, remaining length, accumulated list
+  rule #decodeArrayElements(_, BYTES, ELEMTYPEINFO, LEN, ACC)
+    => #decodeArrayElements(
+         noMap,
+         substrBytes(BYTES, #elemSize(noMap, ELEMTYPEINFO), lengthBytes(BYTES)),
          ELEMTYPEINFO,
          LEN -Int 1,
          ACC ListItem(#decodeValue(noMap,
@@ -573,20 +588,44 @@ results.
     [preserves-definedness]
 ```
 
+```k
+  rule #decodeArrayElements(_, BYTES, _ELEMTYPEINFO, LEN, ACC)
+    => ACC
+    requires LEN <=Int 0
+     andBool lengthBytes(BYTES) ==Int 0  // exact match - no surplus bytes
+    [preserves-definedness]
+```
+
 ## Slice Allocations
 
 Slices are arrays with dynamic length.
 The `#decodeSliceAllocation` function computes the array length by dividing the total byte length
 by the element size, then uses the same element-by-element decoding approach as arrays.
 
-```k
-  syntax Value ::= #decodeSliceAllocation ( Bytes, TypeInfo ) [function, no-evaluators]
-  // -------------------------------------------------------------------
-  rule #decodeSliceAllocation(BYTES, ELEMTYPEINFO)
+```{.k .concrete}
+  syntax Value ::= #decodeSliceAllocation ( MaybeMap, Bytes, TypeInfo ) [function]
+  rule #decodeSliceAllocation(TYPESMAP, BYTES, ELEMTYPEINFO)
     => Range(#decodeArrayElements(
+                TYPESMAP,
                 BYTES,
                 ELEMTYPEINFO,
-                lengthBytes(BYTES) /Int #elemSize(noMap, ELEMTYPEINFO), // TODO temporary noMap, convert #decodeSliceAllocation
+                lengthBytes(BYTES) /Int #elemSize(TYPESMAP, ELEMTYPEINFO),
+                .List
+             )
+      )
+    requires lengthBytes(BYTES) %Int #elemSize(TYPESMAP, ELEMTYPEINFO) ==Int 0
+     andBool 0 <Int #elemSize(TYPESMAP, ELEMTYPEINFO)
+    [preserves-definedness]
+```
+
+```{.k .symbolic}
+  syntax Value ::= #decodeSliceAllocation ( MaybeMap, Bytes, TypeInfo ) [function, no-evaluators]
+  rule #decodeSliceAllocation(_, BYTES, ELEMTYPEINFO)
+    => Range(#decodeArrayElements(
+                noMap,
+                BYTES,
+                ELEMTYPEINFO,
+                lengthBytes(BYTES) /Int #elemSize(noMap, ELEMTYPEINFO),
                 .List
              )
       )
