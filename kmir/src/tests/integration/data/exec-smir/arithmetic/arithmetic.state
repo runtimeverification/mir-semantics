@@ -67,4 +67,13 @@
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
   </stack>
+  <functions>
+    noMap
+  </functions>
+  <types>
+    noMap
+  </types>
+  <memory>
+    noMap
+  </memory>
 </kmir>

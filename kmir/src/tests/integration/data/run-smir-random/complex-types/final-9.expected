@@ -176,4 +176,13 @@
     ListItem ( Integer ( -939805772 , 32 , true ) )
     ListItem ( Integer ( 1329338341 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) ) ) )
   </stack>
+  <functions>
+    noMap
+  </functions>
+  <types>
+    noMap
+  </types>
+  <memory>
+    noMap
+  </memory>
 </kmir>
