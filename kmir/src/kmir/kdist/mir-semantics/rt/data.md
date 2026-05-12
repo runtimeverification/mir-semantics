@@ -1468,7 +1468,7 @@ Otherwise, compute the type projection and convert metadata accordingly.
               OFFSET,
               place(LOCAL, appendP(PROJS, {#typeProjection(TYPESMAP, lookupTy(TYPESMAP, TY_SOURCE), lookupTy(TYPESMAP, TY_TARGET))}:>ProjectionElems)),
               MUT,
-              #convertMetadata(META, lookupTy(TYPESMAP, TY_TARGET))
+              #convertMetadata(TYPESMAP, META, lookupTy(TYPESMAP, TY_TARGET))
             )
           ...
         </k>
@@ -1479,16 +1479,20 @@ Otherwise, compute the type projection and convert metadata accordingly.
 
 The pointer's metadata needs to be adapted to the new type.
 
-```k
-  syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total, no-evaluators]
+```{.k .concrete}
+  syntax Metadata ::= #convertMetadata ( MaybeMap , Metadata , TypeInfo ) [function, total]
+```
+
+```{.k .symbolic}
+  syntax Metadata ::= #convertMetadata ( MaybeMap , Metadata , TypeInfo ) [function, total, no-evaluators]
 ```
 
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
 ```k
-  rule #convertMetadata(     metadata(SIZE, OFFSET, _) , typeInfoRefType(POINTEE_TY) ) => metadata(noMetadataSize, OFFSET, SIZE)
-    requires #metadataSize(noMap, POINTEE_TY) ==K noMetadataSize                                                      [priority(60)]
-  rule #convertMetadata(     metadata(SIZE, OFFSET, _) , typeInfoPtrType(POINTEE_TY) ) => metadata(noMetadataSize, OFFSET, SIZE)
-    requires #metadataSize(noMap, POINTEE_TY) ==K noMetadataSize                                                      [priority(60)]
+  rule #convertMetadata(TYPESMAP, metadata(SIZE, OFFSET, _) , typeInfoRefType(POINTEE_TY) ) => metadata(noMetadataSize, OFFSET, SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K noMetadataSize                                                      [priority(60)]
+  rule #convertMetadata(TYPESMAP, metadata(SIZE, OFFSET, _) , typeInfoPtrType(POINTEE_TY) ) => metadata(noMetadataSize, OFFSET, SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K noMetadataSize                                                      [priority(60)]
 ```
 
 Conversely, when casting a pointer to an element to a pointer to a slice or array,
@@ -1498,17 +1502,17 @@ the original allocation size must be checked to be sufficient.
 
 ```k
   // no metadata to begin with, fill it in from target type (NB dynamicSize(1) if dynamic)
-  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, _)    , typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(noMap, POINTEE_TY), OFFSET, noMetadataSize)
-  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, ORIGIN_SIZE )    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(noMap, POINTEE_TY), OFFSET, ORIGIN_SIZE)
+  rule #convertMetadata(TYPESMAP, metadata(noMetadataSize, OFFSET, _)    , typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, noMetadataSize)
+  rule #convertMetadata(TYPESMAP, metadata(noMetadataSize, OFFSET, ORIGIN_SIZE )    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
 ```
 
 Conversion from an array to a slice pointer requires adding metadata (`dynamicSize`) with the previously-static length.
 ```k
   // convert static length to dynamic length
-  rule #convertMetadata(metadata(staticSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, staticSize(SIZE))
-    requires #metadataSize(noMap, POINTEE_TY) ==K dynamicSize(1)
-  rule #convertMetadata(metadata(staticSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, staticSize(SIZE))
-    requires #metadataSize(noMap, POINTEE_TY) ==K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(staticSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, staticSize(SIZE))
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(staticSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, staticSize(SIZE))
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1)
 ```
 
 Conversion from a slice to an array pointer, or between different static length array pointers, is allowed in all cases.
@@ -1517,29 +1521,29 @@ It may however be illegal to _dereference_ (i.e., access) the created pointer, d
 **TODO** we can mark cases of insufficient original length as "InvalidCast" in the future, similar to the above future work.
 
 ```k
-  rule #convertMetadata(metadata(staticSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(noMap, POINTEE_TY), OFFSET, ORIGIN_SIZE)
-    requires #metadataSize(noMap, POINTEE_TY) =/=K dynamicSize(1)
-  rule #convertMetadata(metadata(staticSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(noMap, POINTEE_TY), OFFSET, ORIGIN_SIZE)
-    requires #metadataSize(noMap, POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(staticSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(staticSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) =/=K dynamicSize(1)
 
-  rule #convertMetadata(metadata(dynamicSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(noMap, POINTEE_TY), OFFSET, ORIGIN_SIZE)
-    requires #metadataSize(noMap, POINTEE_TY) =/=K dynamicSize(1)
-  rule #convertMetadata(metadata(dynamicSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(noMap, POINTEE_TY), OFFSET, ORIGIN_SIZE)
-    requires #metadataSize(noMap, POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(dynamicSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(dynamicSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) =/=K dynamicSize(1)
 ```
 
 For a cast bwetween two pointer types with `dynamicSize` metadata (unlikely to occur), the dynamic size value is retained.
 
 ```k
-  rule #convertMetadata(metadata(dynamicSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, dynamicSize(SIZE))
-    requires #metadataSize(noMap, POINTEE_TY) ==K dynamicSize(1)
-  rule #convertMetadata(metadata(dynamicSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, dynamicSize(SIZE))
-    requires #metadataSize(noMap, POINTEE_TY) ==K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(dynamicSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, dynamicSize(SIZE))
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(dynamicSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, dynamicSize(SIZE))
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1)
 ```
 
 ```k
   // non-pointer and non-ref target type (should not happen!)
-  rule #convertMetadata( metadata(SIZE, OFFSET, _)    ,  _OTHER_INFO               ) => metadata(noMetadataSize, OFFSET, SIZE) [priority(100)]
+  rule #convertMetadata(_, metadata(SIZE, OFFSET, _)    ,  _OTHER_INFO               ) => metadata(noMetadataSize, OFFSET, SIZE) [priority(100)]
 ```
 
 `PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
