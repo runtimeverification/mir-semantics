@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 import pytest
 from pyk.kast.prelude.k import GENERATED_TOP_CELL
-from pyk.kore.tools import kore_print
 from pyk.ktool.krun import llvm_interpret
 
 from kmir.kast import RandomMode, make_call_config
@@ -106,11 +105,7 @@ def test_run_smir_random(
         cell_maps=cell_maps,
     )
     init_kore = kmir.kast_to_kore(init_kast, sort=GENERATED_TOP_CELL)
-    actual_init = kore_print(
-        definition_dir=kmir.definition_dir,
-        pattern=init_kore,
-        output='pretty',
-    )
+    actual_init = kmir.kore_to_pretty(init_kore)
 
     # Then
     if update_expected_output:
@@ -123,11 +118,7 @@ def test_run_smir_random(
         definition_dir=kmir.definition_dir,
         pattern=init_kore,
     )
-    actual_final = kore_print(
-        definition_dir=kmir.definition_dir,
-        pattern=final_kore,
-        output='pretty',
-    )
+    actual_final = kmir.kore_to_pretty(final_kore)
 
     # Then
     if update_expected_output:
