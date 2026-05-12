@@ -171,12 +171,25 @@ This is actually a 2-step compatibility:
 The `MaybeUninit<X>` union contains a `ManuallyDrop<X>` (when filled),
 which is a singleton struct (see above).
 
-```k
+```{.k .concrete}
+  rule #pointeeProjection(TYPESMAP, MAYBEUNINIT_TYINFO, ELEM_TYINFO)
+    => maybeConcatProj(
+          projectionElemField(fieldIdx(1), {getFieldTy(MAYBEUNINIT_TYINFO, 1)}:>Ty),
+          maybeConcatProj(
+            projectionElemField(fieldIdx(0), {getFieldTy(#lookupMaybeTy(TYPESMAP, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)}:>Ty),
+           .ProjectionElems // TODO recursion?
+          )
+        )
+    requires #typeNameIs(MAYBEUNINIT_TYINFO, "std::mem::MaybeUninit<")
+     andBool #lookupMaybeTy(TYPESMAP, getFieldTy(#lookupMaybeTy(TYPESMAP, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
+```
+
+```{.k .symbolic}
   rule #pointeeProjection(_, MAYBEUNINIT_TYINFO, ELEM_TYINFO)
     => maybeConcatProj(
           projectionElemField(fieldIdx(1), {getFieldTy(MAYBEUNINIT_TYINFO, 1)}:>Ty),
           maybeConcatProj(
-            projectionElemField(fieldIdx(0), {getFieldTy(#lookupMaybeTy(noMap, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)}:>Ty), // TODO temporary noMap, convert #pointeeProjection MaybeUninit rule
+            projectionElemField(fieldIdx(0), {getFieldTy(#lookupMaybeTy(noMap, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)}:>Ty),
            .ProjectionElems // TODO recursion?
           )
         )
