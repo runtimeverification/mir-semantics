@@ -859,9 +859,78 @@
                 ],
                 "arity": 1,
                 "variable": false
+              },
+              {
+                "node": "KApply",
+                "label": {
+                  "node": "KLabel",
+                  "name": "<functions>",
+                  "params": []
+                },
+                "args": [
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "MaybeMap::noMap",
+                      "params": []
+                    },
+                    "args": [],
+                    "arity": 0,
+                    "variable": false
+                  }
+                ],
+                "arity": 1,
+                "variable": false
+              },
+              {
+                "node": "KApply",
+                "label": {
+                  "node": "KLabel",
+                  "name": "<types>",
+                  "params": []
+                },
+                "args": [
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "MaybeMap::noMap",
+                      "params": []
+                    },
+                    "args": [],
+                    "arity": 0,
+                    "variable": false
+                  }
+                ],
+                "arity": 1,
+                "variable": false
+              },
+              {
+                "node": "KApply",
+                "label": {
+                  "node": "KLabel",
+                  "name": "<memory>",
+                  "params": []
+                },
+                "args": [
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "MaybeMap::noMap",
+                      "params": []
+                    },
+                    "args": [],
+                    "arity": 0,
+                    "variable": false
+                  }
+                ],
+                "arity": 1,
+                "variable": false
               }
             ],
-            "arity": 5,
+            "arity": 8,
             "variable": false
           },
           {
