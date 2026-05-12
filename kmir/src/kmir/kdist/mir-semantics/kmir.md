@@ -332,23 +332,41 @@ where the returned result should go.
        <functions> FUNCSMAP </functions>
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall({#projectedCallTy(I, PROJS, LOCALS)}:>Ty, lookupFunction(FUNCSMAP, {#projectedCallTy(I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall({#projectedCallTy(TYPESMAP, I, PROJS, LOCALS)}:>Ty, lookupFunction(FUNCSMAP, {#projectedCallTy(TYPESMAP, I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
       <locals> LOCALS </locals>
       <functions> FUNCSMAP </functions>
-    requires isTy(#projectedCallTy(I, PROJS, LOCALS))
+      <types> TYPESMAP </types>
+    requires isTy(#projectedCallTy(TYPESMAP, I, PROJS, LOCALS))
     [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
+```
 
-  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total, no-evaluators]
+```{.k .concrete}
+  syntax MaybeTy ::= #projectedCallTy(MaybeMap, Int, ProjectionElems, List) [function, total]
 
-  rule #projectedCallTy(I, PROJS, LOCALS)
-    => getTyOf(noMap, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS) // TODO temporary noMap, convert #projectedCallTy
+  rule #projectedCallTy(TYPESMAP, I, PROJS, LOCALS)
+    => getTyOf(TYPESMAP, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
 
-  rule #projectedCallTy(_, _, _) => TyUnknown [owise]
+  rule #projectedCallTy(_, _, _, _) => TyUnknown [owise]
+```
+
+```{.k .symbolic}
+  syntax MaybeTy ::= #projectedCallTy(MaybeMap, Int, ProjectionElems, List) [function, total, no-evaluators]
+
+  rule #projectedCallTy(_, I, PROJS, LOCALS)
+    => getTyOf(noMap, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+
+  rule #projectedCallTy(_, _, _, _) => TyUnknown [owise]
+```
+
+```k
 
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
