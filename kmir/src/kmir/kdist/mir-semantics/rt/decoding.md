@@ -373,7 +373,7 @@ per-variant layout offsets.
 
 ```k
   // General entry rule: direct-tag enum with at least one field somewhere.
-  rule #decodeValue(_,
+  rule #decodeValue(TYPESMAP,
          BYTES
        , typeInfoEnumType(...
            name: _
@@ -404,6 +404,7 @@ per-variant layout offsets.
          ) #as ENUM_TYPE
        )
     => #decodeEnumDirectFields(
+         TYPESMAP,
          BYTES,
          #findVariantIdx(#decodeEnumDirectTag(BYTES, TAG_WIDTH), DISCRIMINANTS),
          FIELD_TYPESS,
@@ -415,20 +416,38 @@ per-variant layout offsets.
   // ---------------------------------------------------------------------------
   // #decodeEnumDirectFields: given the variant index, decode its fields
   // ---------------------------------------------------------------------------
-  syntax Evaluation ::= #decodeEnumDirectFields ( Bytes , VariantIdx , Tyss , LayoutShapes , TypeInfo ) [function, total, no-evaluators]
-  // --------------------------------------------------------------------------------------------------------------------------
-  rule #decodeEnumDirectFields(BYTES, variantIdx(IDX), FIELD_TYPESS, VARIANT_LAYOUTS, _ENUM_TYPE)
+```
+
+```{.k .concrete}
+  syntax Evaluation ::= #decodeEnumDirectFields ( MaybeMap , Bytes , VariantIdx , Tyss , LayoutShapes , TypeInfo ) [function, total]
+  rule #decodeEnumDirectFields(TYPESMAP, BYTES, variantIdx(IDX), FIELD_TYPESS, VARIANT_LAYOUTS, _ENUM_TYPE)
     => Aggregate(
          variantIdx(IDX),
-         #decodeFieldsWithOffsets(noMap, BYTES, #nthTys(FIELD_TYPESS, IDX), #nthVariantOffsets(VARIANT_LAYOUTS, IDX)) // TODO temporary noMap, convert #decodeEnumDirectFields
+         #decodeFieldsWithOffsets(TYPESMAP, BYTES, #nthTys(FIELD_TYPESS, IDX), #nthVariantOffsets(VARIANT_LAYOUTS, IDX))
        )
     requires 0 <=Int IDX
     [preserves-definedness]
+```
 
+```{.k .symbolic}
+  syntax Evaluation ::= #decodeEnumDirectFields ( MaybeMap , Bytes , VariantIdx , Tyss , LayoutShapes , TypeInfo ) [function, total, no-evaluators]
+  rule #decodeEnumDirectFields(_, BYTES, variantIdx(IDX), FIELD_TYPESS, VARIANT_LAYOUTS, _ENUM_TYPE)
+    => Aggregate(
+         variantIdx(IDX),
+         #decodeFieldsWithOffsets(noMap, BYTES, #nthTys(FIELD_TYPESS, IDX), #nthVariantOffsets(VARIANT_LAYOUTS, IDX))
+       )
+    requires 0 <=Int IDX
+    [preserves-definedness]
+```
+
+```k
   // Error cases: variant not found or other failure
-  rule #decodeEnumDirectFields(BYTES, _, _FIELD_TYPESS, _VARIANT_LAYOUTS, ENUM_TYPE)
+  rule #decodeEnumDirectFields(_, BYTES, _, _FIELD_TYPESS, _VARIANT_LAYOUTS, ENUM_TYPE)
     => UnableToDecode(BYTES, ENUM_TYPE)
     [owise]
+```
+
+```k
 
   // ---------------------------------------------------------------------------
   // #decodeEnumDirectTag: read the tag bytes as an unsigned little-endian int
