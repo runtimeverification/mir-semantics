@@ -8,13 +8,12 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import cterm_symbolic
 from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken
-from pyk.kore.syntax import App
 from pyk.kast.prelude.collections import map_of
-from pyk.kast.prelude.kint import intToken
 from pyk.kast.prelude.utils import token
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kcfg.show import NodePrinter
+from pyk.kore.syntax import App
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRun
 from pyk.proof.show import APRProofNodePrinter
@@ -88,11 +87,13 @@ class KMIR(KProve, KRun, KParse):
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
         THUNK: Final = KLabel('thunk(_)_RT-DATA_Value_Evaluation')
 
-    _MAP_CELL_LABELS: Final = frozenset({
-        "Lbl'-LT-'functions'-GT-'",
-        "Lbl'-LT-'types'-GT-'",
-        "Lbl'-LT-'memory'-GT-'",
-    })
+    _MAP_CELL_LABELS: Final = frozenset(
+        {
+            "Lbl'-LT-'functions'-GT-'",
+            "Lbl'-LT-'types'-GT-'",
+            "Lbl'-LT-'memory'-GT-'",
+        }
+    )
 
     _NOMAP: Final = App("LblMaybeMap'ColnColn'noMap")
 
@@ -152,13 +153,13 @@ class KMIR(KProve, KRun, KParse):
         """Build map cell substitutions for concrete execution."""
         from .kompile import _decode_alloc, _functions
 
-        SOME_MAP = 'MaybeMap::someMap'
+        some_map = 'MaybeMap::someMap'
 
         # Functions map: ty(N) |-> MonoItemKind
         func_entries: dict[KInner, KInner] = {}
         for ty, body in _functions(self, smir_info).items():
             func_entries[KApply('ty', (token(ty),))] = body
-        functions_map = KApply(SOME_MAP, (map_of(func_entries),))
+        functions_map = KApply(some_map, (map_of(func_entries),))
 
         # Types map: ty(N) |-> TypeInfo
         type_entries: dict[KInner, KInner] = {}
@@ -167,16 +168,16 @@ class KMIR(KProve, KRun, KParse):
             if parse_result is not None:
                 type_mapping, _ = parse_result
                 if isinstance(type_mapping, KApply) and len(type_mapping.args) == 2:
-                    ty, tyinfo = type_mapping.args
-                    type_entries[ty] = tyinfo
-        types_map = KApply(SOME_MAP, (map_of(type_entries),))
+                    ty_key, tyinfo = type_mapping.args
+                    type_entries[ty_key] = tyinfo
+        types_map = KApply(some_map, (map_of(type_entries),))
 
         # Allocs map: allocId(N) |-> Value
         alloc_entries: dict[KInner, KInner] = {}
         for raw_alloc in smir_info._smir['allocs']:
             alloc_id_term, value_term = _decode_alloc(smir_info=smir_info, raw_alloc=raw_alloc)
             alloc_entries[alloc_id_term] = value_term
-        allocs_map = KApply(SOME_MAP, (map_of(alloc_entries),))
+        allocs_map = KApply(some_map, (map_of(alloc_entries),))
 
         return {
             'FUNCTIONS_CELL': functions_map,
