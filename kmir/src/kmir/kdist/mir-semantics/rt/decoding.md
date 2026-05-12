@@ -138,17 +138,19 @@ an invalid layout for decoding.
 
 ```{.k .concrete}
 syntax Int ::= #neededBytesForOffsets ( MaybeMap , Tys , MachineSizes ) [function, total]
-rule #neededBytesForOffsets(_, .Tys, .MachineSizes) => 0
 rule #neededBytesForOffsets(TYPESMAP, TY TYS, OFFSET OFFSETS)
   => maxInt(#msBytes(OFFSET) +Int #elemSize(TYPESMAP, lookupTy(TYPESMAP, TY)), #neededBytesForOffsets(TYPESMAP, TYS, OFFSETS))
-rule #neededBytesForOffsets(_, _, _) => -1 [owise]
 ```
 
 ```{.k .symbolic}
 syntax Int ::= #neededBytesForOffsets ( MaybeMap , Tys , MachineSizes ) [function, total, no-evaluators]
-rule #neededBytesForOffsets(_, .Tys, .MachineSizes) => 0
 rule #neededBytesForOffsets(_, TY TYS, OFFSET OFFSETS)
   => maxInt(#msBytes(OFFSET) +Int #elemSize(noMap, lookupTyKore(TY)), #neededBytesForOffsets(noMap, TYS, OFFSETS))
+```
+
+```k
+rule #neededBytesForOffsets(_, .Tys, .MachineSizes) => 0
+// Any remaining pattern indicates a length mismatch between types and offsets.
 rule #neededBytesForOffsets(_, _, _) => -1 [owise]
 ```
 
@@ -157,8 +159,6 @@ Any remaining pattern indicates a length mismatch between types and offsets.
 
 ```{.k .concrete}
 syntax List ::= #decodeFieldsWithOffsets ( MaybeMap , Bytes , Tys , MachineSizes ) [function, total]
-rule #decodeFieldsWithOffsets(_, _, .Tys, _OFFSETS) => .List
-rule #decodeFieldsWithOffsets(_, _, _TYS, .MachineSizes) => .List [owise]
 rule #decodeFieldsWithOffsets(TYPESMAP, BYTES, TY TYS, OFFSET OFFSETS)
   => ListItem(
        #decodeValue(TYPESMAP,
@@ -173,8 +173,6 @@ rule #decodeFieldsWithOffsets(TYPESMAP, BYTES, TY TYS, OFFSET OFFSETS)
 
 ```{.k .symbolic}
 syntax List ::= #decodeFieldsWithOffsets ( MaybeMap , Bytes , Tys , MachineSizes ) [function, total, no-evaluators]
-rule #decodeFieldsWithOffsets(_, _, .Tys, _OFFSETS) => .List
-rule #decodeFieldsWithOffsets(_, _, _TYS, .MachineSizes) => .List [owise]
 rule #decodeFieldsWithOffsets(_, BYTES, TY TYS, OFFSET OFFSETS)
   => ListItem(
        #decodeValue(noMap,
@@ -185,6 +183,11 @@ rule #decodeFieldsWithOffsets(_, BYTES, TY TYS, OFFSET OFFSETS)
      #decodeFieldsWithOffsets(noMap, BYTES, TYS, OFFSETS)
   requires lengthBytes(BYTES) >=Int (#msBytes(OFFSET) +Int #elemSize(noMap, lookupTyKore(TY)))
   [preserves-definedness]
+```
+
+```k
+rule #decodeFieldsWithOffsets(_, _, .Tys, _OFFSETS) => .List
+rule #decodeFieldsWithOffsets(_, _, _TYS, .MachineSizes) => .List [owise]
 ```
 
 ### Error marker (becomes thunk) for other (unimplemented) cases

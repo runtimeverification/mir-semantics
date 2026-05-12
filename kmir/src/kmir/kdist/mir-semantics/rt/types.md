@@ -221,8 +221,6 @@ the source-first strategy.
           #pointeeProjection(TYPESMAP, OTHER, lookupTy(TYPESMAP, FIELD))
         )
     requires #zeroFieldOffset(LAYOUT)
-
-  rule #pointeeProjectionTarget(_, _, _) => NoProjectionElems [owise]
 ```
 
 ```{.k .symbolic}
@@ -240,7 +238,9 @@ the source-first strategy.
           #pointeeProjection(noMap, OTHER, lookupTyKore(FIELD))
         )
     requires #zeroFieldOffset(LAYOUT)
+```
 
+```k
   rule #pointeeProjectionTarget(_, _, _) => NoProjectionElems [owise]
 ```
 
@@ -323,29 +323,27 @@ To make this function total, an optional `MaybeTy` is used.
 ```{.k .concrete}
   syntax TypeInfo ::= getArrayElemTypeInfo ( MaybeMap , TypeInfo ) [function, total]
   rule getArrayElemTypeInfo(TYPESMAP, typeInfoArrayType(ELEM_TY, _)) => lookupTy(TYPESMAP, ELEM_TY)
-  rule getArrayElemTypeInfo(_, _) => typeInfoVoidType [owise]
 
   syntax TypeInfo ::= #lookupMaybeTy ( MaybeMap , MaybeTy ) [function, total]
   rule #lookupMaybeTy(TYPESMAP, TY:Ty) => lookupTy(TYPESMAP, TY)
-  rule #lookupMaybeTy(_, TyUnknown) => typeInfoVoidType
 ```
 
 ```{.k .symbolic}
   syntax TypeInfo ::= getArrayElemTypeInfo ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
   rule getArrayElemTypeInfo(_, typeInfoArrayType(ELEM_TY, _)) => lookupTyKore(ELEM_TY)
-  rule getArrayElemTypeInfo(_, _) => typeInfoVoidType [owise]
 
   syntax TypeInfo ::= #lookupMaybeTy ( MaybeMap , MaybeTy ) [function, total, no-evaluators]
   rule #lookupMaybeTy(_, TY:Ty) => lookupTyKore(TY)
+```
+
+```k
+  rule getArrayElemTypeInfo(_, _) => typeInfoVoidType [owise]
   rule #lookupMaybeTy(_, TyUnknown) => typeInfoVoidType
 ```
 
 ```{.k .concrete}
   syntax MaybeTy ::= getTyOf( MaybeMap , MaybeTy , ProjectionElems ) [function, total]
   // ----------------------------------------------------------------------
-  rule getTyOf(_, TyUnknown,             _                      ) => TyUnknown
-  rule getTyOf(_, TY,                    .ProjectionElems       ) => TY
-
   rule getTyOf(TYPESMAP, TY, projectionElemDeref                  PROJS ) => getTyOf(TYPESMAP, pointeeTy(lookupTy(TYPESMAP, TY)), PROJS)
   rule getTyOf(TYPESMAP,  _, projectionElemField(_, TY)           PROJS ) => getTyOf(TYPESMAP, TY, PROJS)
 
@@ -358,16 +356,11 @@ To make this function total, an optional `MaybeTy` is used.
   rule getTyOf(TYPESMAP,  _, projectionElemOpaqueCast(TY)         PROJS) => getTyOf(TYPESMAP, TY, PROJS)
 
   rule getTyOf(TYPESMAP,  _, projectionElemSubtype(TY)            PROJS) => getTyOf(TYPESMAP, TY, PROJS)
-  // -----------------------------------------------------------
-  rule getTyOf(_, _, _) => TyUnknown [owise]
 ```
 
 ```{.k .symbolic}
   syntax MaybeTy ::= getTyOf( MaybeMap , MaybeTy , ProjectionElems ) [function, total, no-evaluators]
   // ----------------------------------------------------------------------
-  rule getTyOf(_, TyUnknown,             _                      ) => TyUnknown
-  rule getTyOf(_, TY,                    .ProjectionElems       ) => TY
-
   rule getTyOf(_, TY, projectionElemDeref                  PROJS ) => getTyOf(noMap, pointeeTy(lookupTyKore(TY)), PROJS)
   rule getTyOf(_,  _, projectionElemField(_, TY)           PROJS ) => getTyOf(noMap, TY, PROJS)
 
@@ -380,7 +373,11 @@ To make this function total, an optional `MaybeTy` is used.
   rule getTyOf(_,  _, projectionElemOpaqueCast(TY)         PROJS) => getTyOf(noMap, TY, PROJS)
 
   rule getTyOf(_,  _, projectionElemSubtype(TY)            PROJS) => getTyOf(noMap, TY, PROJS)
-  // -----------------------------------------------------------
+```
+
+```k
+  rule getTyOf(_, TyUnknown,             _                      ) => TyUnknown
+  rule getTyOf(_, TY,                    .ProjectionElems       ) => TY
   rule getTyOf(_, _, _) => TyUnknown [owise]
 ```
 
@@ -413,8 +410,6 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
                         | #metadataSize    ( MaybeMap , MaybeTy )              [function, total]
   // --------------------------------------------------------------------------------------
   rule #metadataSize(TYPESMAP, TY, PROJS) => #metadataSize(TYPESMAP, getTyOf(TYPESMAP, TY, PROJS))
-
-  rule #metadataSize(_, TyUnknown) => noMetadataSize
   rule #metadataSize(TYPESMAP, TY) => #metadataSizeAux(TYPESMAP, lookupTy(TYPESMAP, TY))
 ```
 
@@ -423,22 +418,25 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
                         | #metadataSize    ( MaybeMap , MaybeTy )              [function, total, no-evaluators]
   // --------------------------------------------------------------------------------------
   rule #metadataSize(_, TY, PROJS) => #metadataSize(noMap, getTyOf(noMap, TY, PROJS))
-
-  rule #metadataSize(_, TyUnknown) => noMetadataSize
   rule #metadataSize(_, TY) => #metadataSizeAux(noMap, lookupTyKore(TY))
+```
+
+```k
+  rule #metadataSize(_, TyUnknown) => noMetadataSize
 ```
 
 ```{.k .concrete}
   syntax MetadataSize ::= #metadataSizeAux ( MaybeMap , TypeInfo )  [function, total]
-  rule #metadataSizeAux(_, typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
   rule #metadataSizeAux(TYPESMAP, typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(TYPESMAP, CONST))
-  rule #metadataSizeAux(_, _OTHER                                              ) => noMetadataSize     [owise]
 ```
 
 ```{.k .symbolic}
   syntax MetadataSize ::= #metadataSizeAux ( MaybeMap , TypeInfo )  [function, total, no-evaluators]
-  rule #metadataSizeAux(_, typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
   rule #metadataSizeAux(_, typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(noMap, CONST))
+```
+
+```k
+  rule #metadataSizeAux(_, typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
   rule #metadataSizeAux(_, _OTHER                                              ) => noMetadataSize     [owise]
 ```
 

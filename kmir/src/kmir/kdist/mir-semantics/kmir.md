@@ -350,8 +350,6 @@ where the returned result should go.
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
-
-  rule #projectedCallTy(_, _, _, _) => TyUnknown [owise]
 ```
 
 ```{.k .symbolic}
@@ -362,11 +360,10 @@ where the returned result should go.
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
-
-  rule #projectedCallTy(_, _, _, _) => TyUnknown [owise]
 ```
 
 ```k
+  rule #projectedCallTy(_, _, _, _) => TyUnknown [owise]
 
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
