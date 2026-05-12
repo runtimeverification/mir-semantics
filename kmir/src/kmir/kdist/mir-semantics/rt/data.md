@@ -1696,7 +1696,7 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
           ...
         </k>
         <types> TYPESMAP </types>
-      requires #isStaticU8Array(lookupTy(TYPESMAP, TY_TARGET))
+      requires #isStaticU8Array(TYPESMAP, lookupTy(TYPESMAP, TY_TARGET))
        andBool WIDTH ==Int #staticArrayLenBits(TYPESMAP, lookupTy(TYPESMAP, TY_TARGET))
       //  andBool WIDTH >=Int 0  ensured by the above
       //  andBool WIDTH % 8 == 0 ensured by the above
@@ -1721,12 +1721,20 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     requires COUNT >Int 0
     [preserves-definedness]
 
-  syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total, no-evaluators]
-  // -------------------------------------------------------------
-  rule #isStaticU8Array(typeInfoArrayType(ELEM_TY, someTyConst(_)))
-    => lookupTyKore(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
-  rule #isStaticU8Array(_OTHER) => false [owise]
+```
 
+```{.k .concrete}
+  syntax Bool ::= #isStaticU8Array ( MaybeMap , TypeInfo ) [function, total]
+  rule #isStaticU8Array(TYPESMAP, typeInfoArrayType(ELEM_TY, someTyConst(_)))
+    => lookupTy(TYPESMAP, ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
+  rule #isStaticU8Array(_, _OTHER) => false [owise]
+```
+
+```{.k .symbolic}
+  syntax Bool ::= #isStaticU8Array ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
+  rule #isStaticU8Array(_, typeInfoArrayType(ELEM_TY, someTyConst(_)))
+    => lookupTyKore(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
+  rule #isStaticU8Array(_, _OTHER) => false [owise]
 ```
 
 ```{.k .concrete}
