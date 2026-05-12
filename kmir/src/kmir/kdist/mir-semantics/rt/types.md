@@ -35,11 +35,18 @@ The interface function is meant for pointer casts to compute pointee projections
 ```k
   syntax MaybeProjectionElems ::= ProjectionElems
                                 | "NoProjectionElems"
+```
 
-  syntax MaybeProjectionElems ::= #typeProjection ( TypeInfo , TypeInfo )    [function, total, no-evaluators]
-  // ---------------------------------------------------------------------------------------
-  rule #typeProjection ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => #pointeeProjection(lookupTyKore(TY1), lookupTyKore(TY2))
-  rule #typeProjection ( _, _ ) => NoProjectionElems [owise]
+```{.k .concrete}
+  syntax MaybeProjectionElems ::= #typeProjection ( MaybeMap , TypeInfo , TypeInfo )    [function, total]
+  rule #typeProjection ( TYPESMAP, typeInfoPtrType(TY1), typeInfoPtrType(TY2) ) => #pointeeProjection(TYPESMAP, lookupTy(TYPESMAP, TY1), lookupTy(TYPESMAP, TY2))
+  rule #typeProjection ( _, _, _ ) => NoProjectionElems [owise]
+```
+
+```{.k .symbolic}
+  syntax MaybeProjectionElems ::= #typeProjection ( MaybeMap , TypeInfo , TypeInfo )    [function, total, no-evaluators]
+  rule #typeProjection ( _, typeInfoPtrType(TY1), typeInfoPtrType(TY2) ) => #pointeeProjection(noMap, lookupTyKore(TY1), lookupTyKore(TY2))
+  rule #typeProjection ( _, _, _ ) => NoProjectionElems [owise]
 ```
 
 Note that certain projections can cancel each other, such as casting from one transparent wrapper to another.
@@ -81,22 +88,26 @@ attempting to unwrap the target type. This eliminates non-deterministic overlap 
 and target-side rules, because a type cannot be both a struct and an array simultaneously.
 When the source cannot be unwrapped further, target-side unwrapping is handled by `#pointeeProjectionTarget`.
 
-```k
-  syntax MaybeProjectionElems ::= #pointeeProjection ( TypeInfo , TypeInfo ) [function, total, no-evaluators]
+```{.k .concrete}
+  syntax MaybeProjectionElems ::= #pointeeProjection ( MaybeMap , TypeInfo , TypeInfo ) [function, total]
+```
+
+```{.k .symbolic}
+  syntax MaybeProjectionElems ::= #pointeeProjection ( MaybeMap , TypeInfo , TypeInfo ) [function, total, no-evaluators]
 ```
 
 A short-cut rule for identical types takes preference.
 ```k
-  rule #pointeeProjection(T , T) => .ProjectionElems  [priority(40)]
+  rule #pointeeProjection(_, T , T) => .ProjectionElems  [priority(40)]
 ```
 
 Pointers to zero-sized types can be converted from and to. No recursion beyond the ZST.
 **TODO** Problem: our ZSTs have different representation: compare empty arrays and empty structs/unit tuples.
 ```k
-  rule #pointeeProjection(SRC, OTHER) => projectionElemToZST   .ProjectionElems
+  rule #pointeeProjection(_, SRC, OTHER) => projectionElemToZST   .ProjectionElems
     requires #zeroSizedType(OTHER) andBool notBool #zeroSizedType(SRC)
     [priority(45)]
-  rule #pointeeProjection(SRC, OTHER) => projectionElemFromZST .ProjectionElems
+  rule #pointeeProjection(_, SRC, OTHER) => projectionElemFromZST .ProjectionElems
     requires #zeroSizedType(SRC) andBool notBool #zeroSizedType(OTHER)
     [priority(45)]
 ```
@@ -105,28 +116,53 @@ Source-side: unwrap structs and arrays from the source type first.
 
 When source is an array and target is a transparent wrapper whose inner type equals the source,
 the source should be wrapped rather than unwrapped (e.g., `*const [u8;2] → *const Wrapper([u8;2])`).
-```k
-  rule #pointeeProjection(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
+```{.k .concrete}
+  rule #pointeeProjection(TYPESMAP, typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
     => maybeConcatProj(
           projectionElemField(fieldIdx(0), FIELD),
-          #pointeeProjection(lookupTyKore(FIELD), OTHER)
+          #pointeeProjection(TYPESMAP, lookupTy(TYPESMAP, FIELD), OTHER)
         )
     requires #zeroFieldOffset(LAYOUT)
 
-  rule #pointeeProjection(SRC:TypeInfo, typeInfoStructType(_NAME, _ADTDEF, FIELD .Tys, LAYOUT))
+  rule #pointeeProjection(TYPESMAP, SRC:TypeInfo, typeInfoStructType(_NAME, _ADTDEF, FIELD .Tys, LAYOUT))
     => maybeConcatProj(
           projectionElemWrapStruct,
-          #pointeeProjection(SRC, lookupTyKore(FIELD))
+          #pointeeProjection(TYPESMAP, SRC, lookupTy(TYPESMAP, FIELD))
+        )
+    requires #isArrayType(SRC)
+    andBool #zeroFieldOffset(LAYOUT)
+    andBool lookupTy(TYPESMAP, FIELD) ==K SRC
+    [priority(42)]
+
+  rule #pointeeProjection(TYPESMAP, typeInfoArrayType(TY1, _), TY2)
+    => maybeConcatProj(
+          projectionElemConstantIndex(0, 0, false),
+          #pointeeProjection(TYPESMAP, lookupTy(TYPESMAP, TY1), TY2)
+        )
+```
+
+```{.k .symbolic}
+  rule #pointeeProjection(_, typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
+    => maybeConcatProj(
+          projectionElemField(fieldIdx(0), FIELD),
+          #pointeeProjection(noMap, lookupTyKore(FIELD), OTHER)
+        )
+    requires #zeroFieldOffset(LAYOUT)
+
+  rule #pointeeProjection(_, SRC:TypeInfo, typeInfoStructType(_NAME, _ADTDEF, FIELD .Tys, LAYOUT))
+    => maybeConcatProj(
+          projectionElemWrapStruct,
+          #pointeeProjection(noMap, SRC, lookupTyKore(FIELD))
         )
     requires #isArrayType(SRC)
     andBool #zeroFieldOffset(LAYOUT)
     andBool lookupTyKore(FIELD) ==K SRC
     [priority(42)]
 
-  rule #pointeeProjection(typeInfoArrayType(TY1, _), TY2)
+  rule #pointeeProjection(_, typeInfoArrayType(TY1, _), TY2)
     => maybeConcatProj(
           projectionElemConstantIndex(0, 0, false),
-          #pointeeProjection(lookupTyKore(TY1), TY2)
+          #pointeeProjection(noMap, lookupTyKore(TY1), TY2)
         )
 ```
 
@@ -136,7 +172,7 @@ The `MaybeUninit<X>` union contains a `ManuallyDrop<X>` (when filled),
 which is a singleton struct (see above).
 
 ```k
-  rule #pointeeProjection(MAYBEUNINIT_TYINFO, ELEM_TYINFO)
+  rule #pointeeProjection(_, MAYBEUNINIT_TYINFO, ELEM_TYINFO)
     => maybeConcatProj(
           projectionElemField(fieldIdx(1), {getFieldTy(MAYBEUNINIT_TYINFO, 1)}:>Ty),
           maybeConcatProj(
@@ -150,30 +186,49 @@ which is a singleton struct (see above).
 
 Fallback: source is not unwrappable, delegate to target-side.
 ```k
-  rule #pointeeProjection(SRC, TGT) => #pointeeProjectionTarget(SRC, TGT) [owise]
+  rule #pointeeProjection(TYPESMAP, SRC, TGT) => #pointeeProjectionTarget(TYPESMAP, SRC, TGT) [owise]
 ```
 
 Target-side fallback: only reached when source cannot be unwrapped further.
 After one step of target unwrapping, recurse back to `#pointeeProjection` to maintain
 the source-first strategy.
 
-```k
-  syntax MaybeProjectionElems ::= #pointeeProjectionTarget ( TypeInfo , TypeInfo ) [function, total, no-evaluators]
+```{.k .concrete}
+  syntax MaybeProjectionElems ::= #pointeeProjectionTarget ( MaybeMap , TypeInfo , TypeInfo ) [function, total]
 
-  rule #pointeeProjectionTarget(TY1, typeInfoArrayType(TY2, _))
+  rule #pointeeProjectionTarget(TYPESMAP, TY1, typeInfoArrayType(TY2, _))
     => maybeConcatProj(
           projectionElemSingletonArray,
-          #pointeeProjection(TY1, lookupTyKore(TY2))
+          #pointeeProjection(TYPESMAP, TY1, lookupTy(TYPESMAP, TY2))
         )
 
-  rule #pointeeProjectionTarget(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+  rule #pointeeProjectionTarget(TYPESMAP, OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
     => maybeConcatProj(
           projectionElemWrapStruct,
-          #pointeeProjection(OTHER, lookupTyKore(FIELD))
+          #pointeeProjection(TYPESMAP, OTHER, lookupTy(TYPESMAP, FIELD))
         )
     requires #zeroFieldOffset(LAYOUT)
 
-  rule #pointeeProjectionTarget(_, _) => NoProjectionElems [owise]
+  rule #pointeeProjectionTarget(_, _, _) => NoProjectionElems [owise]
+```
+
+```{.k .symbolic}
+  syntax MaybeProjectionElems ::= #pointeeProjectionTarget ( MaybeMap , TypeInfo , TypeInfo ) [function, total, no-evaluators]
+
+  rule #pointeeProjectionTarget(_, TY1, typeInfoArrayType(TY2, _))
+    => maybeConcatProj(
+          projectionElemSingletonArray,
+          #pointeeProjection(noMap, TY1, lookupTyKore(TY2))
+        )
+
+  rule #pointeeProjectionTarget(_, OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+    => maybeConcatProj(
+          projectionElemWrapStruct,
+          #pointeeProjection(noMap, OTHER, lookupTyKore(FIELD))
+        )
+    requires #zeroFieldOffset(LAYOUT)
+
+  rule #pointeeProjectionTarget(_, _, _) => NoProjectionElems [owise]
 ```
 
 ```k

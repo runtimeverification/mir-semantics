@@ -1466,14 +1466,14 @@ Otherwise, compute the type projection and convert metadata accordingly.
           =>
             PtrLocal(
               OFFSET,
-              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTy(TYPESMAP, TY_SOURCE), lookupTy(TYPESMAP, TY_TARGET))}:>ProjectionElems)),
+              place(LOCAL, appendP(PROJS, {#typeProjection(TYPESMAP, lookupTy(TYPESMAP, TY_SOURCE), lookupTy(TYPESMAP, TY_TARGET))}:>ProjectionElems)),
               MUT,
               #convertMetadata(META, lookupTy(TYPESMAP, TY_TARGET))
             )
           ...
         </k>
         <types> TYPESMAP </types>
-      requires NoProjectionElems =/=K #typeProjection(lookupTy(TYPESMAP, TY_SOURCE), lookupTy(TYPESMAP, TY_TARGET))
+      requires NoProjectionElems =/=K #typeProjection(TYPESMAP, lookupTy(TYPESMAP, TY_SOURCE), lookupTy(TYPESMAP, TY_TARGET))
       [preserves-definedness] // valid map lookups checked
 ```
 
