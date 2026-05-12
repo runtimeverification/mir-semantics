@@ -176,12 +176,12 @@ which is a singleton struct (see above).
     => maybeConcatProj(
           projectionElemField(fieldIdx(1), {getFieldTy(MAYBEUNINIT_TYINFO, 1)}:>Ty),
           maybeConcatProj(
-            projectionElemField(fieldIdx(0), {getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)}:>Ty),
+            projectionElemField(fieldIdx(0), {getFieldTy(#lookupMaybeTy(noMap, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)}:>Ty), // TODO temporary noMap, convert #pointeeProjection MaybeUninit rule
            .ProjectionElems // TODO recursion?
           )
         )
     requires #typeNameIs(MAYBEUNINIT_TYINFO, "std::mem::MaybeUninit<")
-     andBool #lookupMaybeTy(getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
+     andBool #lookupMaybeTy(noMap, getFieldTy(#lookupMaybeTy(noMap, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
 ```
 
 Fallback: source is not unwrappable, delegate to target-side.
@@ -305,16 +305,26 @@ To make this function total, an optional `MaybeTy` is used.
   rule getArrayElemTy(typeInfoArrayType(ELEM_TY, _)) => ELEM_TY
   rule getArrayElemTy(_) => ty(-1) [owise]
 
-  syntax TypeInfo ::= getArrayElemTypeInfo ( TypeInfo ) [function, total, no-evaluators]
-  // --------------------------------------------------------------------
-  rule getArrayElemTypeInfo(typeInfoArrayType(ELEM_TY, _)) => lookupTyKore(ELEM_TY)
-  rule getArrayElemTypeInfo(_) => typeInfoVoidType [owise]
+```
 
-  syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total, no-evaluators]
-  // -------------------------------------------------------------
-  rule #lookupMaybeTy(TY:Ty) => lookupTyKore(TY)
-  rule #lookupMaybeTy(TyUnknown) => typeInfoVoidType
+```{.k .concrete}
+  syntax TypeInfo ::= getArrayElemTypeInfo ( MaybeMap , TypeInfo ) [function, total]
+  rule getArrayElemTypeInfo(TYPESMAP, typeInfoArrayType(ELEM_TY, _)) => lookupTy(TYPESMAP, ELEM_TY)
+  rule getArrayElemTypeInfo(_, _) => typeInfoVoidType [owise]
 
+  syntax TypeInfo ::= #lookupMaybeTy ( MaybeMap , MaybeTy ) [function, total]
+  rule #lookupMaybeTy(TYPESMAP, TY:Ty) => lookupTy(TYPESMAP, TY)
+  rule #lookupMaybeTy(_, TyUnknown) => typeInfoVoidType
+```
+
+```{.k .symbolic}
+  syntax TypeInfo ::= getArrayElemTypeInfo ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
+  rule getArrayElemTypeInfo(_, typeInfoArrayType(ELEM_TY, _)) => lookupTyKore(ELEM_TY)
+  rule getArrayElemTypeInfo(_, _) => typeInfoVoidType [owise]
+
+  syntax TypeInfo ::= #lookupMaybeTy ( MaybeMap , MaybeTy ) [function, total, no-evaluators]
+  rule #lookupMaybeTy(_, TY:Ty) => lookupTyKore(TY)
+  rule #lookupMaybeTy(_, TyUnknown) => typeInfoVoidType
 ```
 
 ```{.k .concrete}
@@ -470,65 +480,83 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
 The `alignOf` and `sizeOf` nullary operations return the alignment / size in bytes as a `usize`.
 This information is either hard-wired for primitive types (numbers, first and foremost), or read from the layout in `TypeInfo`.
 
+```{.k .concrete}
+  syntax Int ::= #sizeOf ( MaybeMap , TypeInfo )  [function, total]
+               | #alignOf ( MaybeMap , TypeInfo ) [function, total]
+```
+
+```{.k .symbolic}
+  syntax Int ::= #sizeOf ( MaybeMap , TypeInfo )  [function, total, no-evaluators]
+               | #alignOf ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
+```
+
 ```k
-  syntax Int ::= #sizeOf ( TypeInfo )  [function, total, no-evaluators]
-               | #alignOf ( TypeInfo ) [function, total, no-evaluators]
 
   // primitive int types: use bit width (both for size and alignment)
-  rule #sizeOf(typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #alignOf(typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #alignOf(typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #alignOf(typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
   // bool and char
-  rule #sizeOf(typeInfoPrimitiveType(primTypeBool))  => 1
-  rule #alignOf(typeInfoPrimitiveType(primTypeBool)) => 1
-  rule #sizeOf(typeInfoPrimitiveType(primTypeChar))  => 4
-  rule #alignOf(typeInfoPrimitiveType(primTypeChar)) => 4
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeBool))  => 1
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeBool)) => 1
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeChar))  => 4
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeChar)) => 4
   // The str primitive has alignment of a Char but size 0 (indicating dynamic size)
-  rule #sizeOf(typeInfoPrimitiveType(primTypeStr))  => 0
-  rule #alignOf(typeInfoPrimitiveType(primTypeStr)) => 4
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeStr))  => 0
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeStr)) => 4
   // enums, structs , and tuples provide the values from their layout information
-  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoEnumType(_, _, _, _, noLayoutShape)) => 0
-  rule #alignOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
-  rule #alignOf(typeInfoEnumType(_, _, _, _, noLayoutShape)) => 1
+  rule #sizeOf(_, typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoEnumType(_, _, _, _, noLayoutShape)) => 0
+  rule #alignOf(_, typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(_, typeInfoEnumType(_, _, _, _, noLayoutShape)) => 1
   // struct
-  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoStructType(_, _, _, noLayoutShape)) => 0
-  rule #alignOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
-  rule #alignOf(typeInfoStructType(_, _, _, noLayoutShape)) => 1
+  rule #sizeOf(_, typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoStructType(_, _, _, noLayoutShape)) => 0
+  rule #alignOf(_, typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(_, typeInfoStructType(_, _, _, noLayoutShape)) => 1
   // tuple
-  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoTupleType(_, noLayoutShape)) => 0
-  rule #alignOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
-  rule #alignOf(typeInfoTupleType(_, noLayoutShape)) => 1
+  rule #sizeOf(_, typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoTupleType(_, noLayoutShape)) => 0
+  rule #alignOf(_, typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(_, typeInfoTupleType(_, noLayoutShape)) => 1
   // union
-  rule #sizeOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoUnionType(_, _, _, noLayoutShape)) => 0
-  rule #alignOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
-  rule #alignOf(typeInfoUnionType(_, _, _, noLayoutShape)) => 1
-  // arrays with known length have the alignment of the element type, and a size multiplying element count and element size
-  rule #sizeOf(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(lookupTyKore(ELEM_TY)) *Int readTyConstInt(noMap, KIND) // TODO temporary noMap, convert #sizeOf
-  rule #sizeOf(typeInfoArrayType(  _    ,    noTyConst                 )) => 0
-  rule #alignOf(typeInfoArrayType(ELEM_TY, _)) => #alignOf(lookupTyKore(ELEM_TY))
+  rule #sizeOf(_, typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoUnionType(_, _, _, noLayoutShape)) => 0
+  rule #alignOf(_, typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(_, typeInfoUnionType(_, _, _, noLayoutShape)) => 1
+  // arrays with no known length
+  rule #sizeOf(_, typeInfoArrayType(  _    ,    noTyConst                 )) => 0
   // thin ptr and ref types have the size of `usize` and twice that for fat pointers/refs. Alignment is that of `usize`
-  rule #sizeOf(typeInfoPtrType(POINTEE_TY))
-    => #sizeOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-          *Int (#if #metadataSize(noMap, POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
-  rule #sizeOf(typeInfoRefType(POINTEE_TY))
-    => #sizeOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-          *Int (#if #metadataSize(noMap, POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
-  rule #alignOf(typeInfoPtrType(_)) => #alignOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-  rule #alignOf(typeInfoRefType(_)) => #alignOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+  rule #sizeOf(TYPESMAP, typeInfoPtrType(POINTEE_TY))
+    => #sizeOf(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+          *Int (#if #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
+  rule #sizeOf(TYPESMAP, typeInfoRefType(POINTEE_TY))
+    => #sizeOf(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+          *Int (#if #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
+  rule #alignOf(TYPESMAP, typeInfoPtrType(_)) => #alignOf(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+  rule #alignOf(TYPESMAP, typeInfoRefType(_)) => #alignOf(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
   // other types (fun and void types) have size and alignment 0
-  rule #sizeOf(_)  => 0 [owise]
-  rule #alignOf(_) => 0 [owise]
+  rule #sizeOf(_, _)  => 0 [owise]
+  rule #alignOf(_, _) => 0 [owise]
+```
+
+Arrays with known length have the alignment of the element type, and a size multiplying element count and element size:
+
+```{.k .concrete}
+  rule #sizeOf(TYPESMAP, typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(TYPESMAP, lookupTy(TYPESMAP, ELEM_TY)) *Int readTyConstInt(TYPESMAP, KIND)
+  rule #alignOf(TYPESMAP, typeInfoArrayType(ELEM_TY, _)) => #alignOf(TYPESMAP, lookupTy(TYPESMAP, ELEM_TY))
+```
+
+```{.k .symbolic}
+  rule #sizeOf(_, typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(noMap, lookupTyKore(ELEM_TY)) *Int readTyConstInt(noMap, KIND)
+  rule #alignOf(_, typeInfoArrayType(ELEM_TY, _)) => #alignOf(noMap, lookupTyKore(ELEM_TY))
 ```
 
 ```k

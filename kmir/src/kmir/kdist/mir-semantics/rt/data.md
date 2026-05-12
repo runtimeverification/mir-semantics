@@ -1853,7 +1853,7 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
       <types> TYPESMAP </types>
       requires #isUnionType(lookupTy(TYPESMAP, TY_TO))
         andBool #typeNameIs(lookupTy(TYPESMAP, TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TYPESMAP, TY_TO), 1)), 0)
+        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(TYPESMAP, getFieldTy(lookupTy(TYPESMAP, TY_TO), 1)), 0)
 
   rule <k>
            #cast( VAL:Value , castKindTransmute , TY_FROM , TY_TO )
@@ -1864,7 +1864,7 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
       <types> TYPESMAP </types>
       requires #isUnionType(lookupTy(TYPESMAP, TY_TO))
         andBool #typeNameIs(lookupTy(TYPESMAP, TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TYPESMAP, TY_TO), 1)), 0)
+        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(TYPESMAP, getFieldTy(lookupTy(TYPESMAP, TY_TO), 1)), 0)
 
   // Converting static or dynamic sized array of `T` to array of `std::mem::MaybeUninit<T>`.
   // FIXME: Might need to check sizes as this cast could come from transmute_unchecked
@@ -1876,12 +1876,12 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
       </k>
       <types> TYPESMAP </types>
       requires #isArrayType(lookupTy(TYPESMAP, TY_FROM)) andBool #isArrayType(lookupTy(TYPESMAP, TY_TO))
-        andBool #isUnionType(getArrayElemTypeInfo(lookupTy(TYPESMAP, TY_TO)))
-        andBool #typeNameIs(getArrayElemTypeInfo(lookupTy(TYPESMAP, TY_TO)), "std::mem::MaybeUninit<")
-        andBool getArrayElemTypeInfo(lookupTy(TYPESMAP, TY_FROM))
-                  ==K #lookupMaybeTy(getFieldTy(   // ManuallyDrop<T> field 0 Ty (T)
-                        #lookupMaybeTy(getFieldTy( // MaybeUninit<T> field 1 Ty (ManuallyDrop<T>)
-                            getArrayElemTypeInfo(lookupTy(TYPESMAP, TY_TO)), // Array Element Ty
+        andBool #isUnionType(getArrayElemTypeInfo(TYPESMAP, lookupTy(TYPESMAP, TY_TO)))
+        andBool #typeNameIs(getArrayElemTypeInfo(TYPESMAP, lookupTy(TYPESMAP, TY_TO)), "std::mem::MaybeUninit<")
+        andBool getArrayElemTypeInfo(TYPESMAP, lookupTy(TYPESMAP, TY_FROM))
+                  ==K #lookupMaybeTy(TYPESMAP, getFieldTy(   // ManuallyDrop<T> field 0 Ty (T)
+                        #lookupMaybeTy(TYPESMAP, getFieldTy( // MaybeUninit<T> field 1 Ty (ManuallyDrop<T>)
+                            getArrayElemTypeInfo(TYPESMAP, lookupTy(TYPESMAP, TY_TO)), // Array Element Ty
                             1
                           )),
                         0
@@ -2363,14 +2363,14 @@ This information is read from the layout in the `TypeInfo` if available, or a fi
 // FIXME: 64 is hardcoded since usize not supported
 rule <k> rvalueNullaryOp(nullOpSizeOf, TY)
       =>
-           Integer(#sizeOf(lookupTy(TYPESMAP, TY)), 64, false)
+           Integer(#sizeOf(TYPESMAP, lookupTy(TYPESMAP, TY)), 64, false)
          ...
      </k>
      <types> TYPESMAP </types>
     requires lookupTy(TYPESMAP, TY) =/=K typeInfoVoidType
 rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
       =>
-           Integer(#alignOf(lookupTy(TYPESMAP, TY)), 64, false)
+           Integer(#alignOf(TYPESMAP, lookupTy(TYPESMAP, TY)), 64, false)
          ...
      </k>
      <types> TYPESMAP </types>
