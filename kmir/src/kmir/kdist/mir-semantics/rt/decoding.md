@@ -461,8 +461,25 @@ results.
   syntax Value ::= #decodeArrayAllocation ( Bytes, TypeInfo, Int ) [function, no-evaluators]
                    // bytes, element type info, array length, type map (for recursion)
 
+  // non-integer element type (arrays, structs, etc.)
   rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, LEN)
     => Range(#decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, .List))
+    requires notBool #isIntType(ELEMTYPEINFO)
+    [preserves-definedness]
+
+  // signed integer element type — #intTypeOf is only called when #isIntType is true
+  rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, LEN)
+    => Range(#decodeArrayElements(BYTES, ELEMTYPEINFO, LEN, .List))
+    requires #isIntType(ELEMTYPEINFO)
+     andBool notBool isUintTy(#intTypeOf(ELEMTYPEINFO))
+    [preserves-definedness]
+
+  rule #decodeArrayAllocation(BYTES, ELEMTYPEINFO, _LEN)
+    => RangeInteger(lengthBytes(BYTES) /Int #elemSize(ELEMTYPEINFO), #bitWidth(#intTypeOf(ELEMTYPEINFO)), false, BYTES)
+    requires #isIntType(ELEMTYPEINFO)
+     andBool isUintTy(#intTypeOf(ELEMTYPEINFO))
+     andBool lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO) ==Int 0
+    [preserves-definedness]
 
   syntax List ::= #decodeArrayElements ( Bytes, TypeInfo, Int, List ) [function, no-evaluators]
                   // bytes, elem type info, remaining length, accumulated list
@@ -498,6 +515,14 @@ by the element size, then uses the same element-by-element decoding approach as 
   syntax Value ::= #decodeSliceAllocation ( Bytes, TypeInfo ) [function, no-evaluators]
   // -------------------------------------------------------------------
   rule #decodeSliceAllocation(BYTES, ELEMTYPEINFO)
+    => RangeInteger(lengthBytes(BYTES) /Int #elemSize(ELEMTYPEINFO), #bitWidth(#intTypeOf(ELEMTYPEINFO)), false, BYTES)
+    requires #isIntType(ELEMTYPEINFO)
+     andBool isUintTy(#intTypeOf(ELEMTYPEINFO))
+     andBool lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO) ==Int 0
+     andBool 0 <Int #elemSize(ELEMTYPEINFO)
+    [preserves-definedness]
+
+  rule #decodeSliceAllocation(BYTES, ELEMTYPEINFO)
     => Range(#decodeArrayElements(
                 BYTES,
                 ELEMTYPEINFO,
@@ -505,7 +530,8 @@ by the element size, then uses the same element-by-element decoding approach as 
                 .List
              )
       )
-    requires lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO) ==Int 0  // element size divides cleanly
+    requires notBool (#isIntType(ELEMTYPEINFO) andBool isUintTy(#intTypeOf(ELEMTYPEINFO)))
+     andBool lengthBytes(BYTES) %Int #elemSize(ELEMTYPEINFO) ==Int 0  // element size divides cleanly
      andBool 0 <Int #elemSize(ELEMTYPEINFO)
     [preserves-definedness]
 ```

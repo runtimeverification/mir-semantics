@@ -94,10 +94,12 @@ Execution gets stuck (no matching rule) when operands have different types or un
        ... </k>
        <locals> LOCALS </locals>
 
-  // Compare values only if types are identical
+  // Compare values only if types are identical.
+  // #normalizeValue converts Range([Integer(v,W,false)...]) → RangeInteger so that arrays
+  // built via rvalueAggregate (Range) and decoded from constants (RangeInteger) compare equal.
   syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
   rule <k> #execRawEqTyped(DEST, VAL1:Value, TY1:Ty, VAL2:Value, TY2:Ty)
-        => #setLocalValue(DEST, BoolVal(VAL1 ==K VAL2))
+        => #setLocalValue(DEST, BoolVal(#normalizeValue(VAL1) ==K #normalizeValue(VAL2)))
        ... </k>
     requires TY1 ==K TY2
     [preserves-definedness]

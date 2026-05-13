@@ -13,6 +13,7 @@ module RT-VALUE-SYNTAX
   imports BODY
   imports LIB
   imports MONO
+  imports BOOL
 ```
 
 ## Values in MIR
@@ -46,6 +47,7 @@ The special `Moved` value represents values that have been used and should not b
                                                           [symbol(Value::Reference)]
                    // stack depth (initially 0), place, borrow kind, metadata (size, pointer offset, origin size)
                  | Range( List )                          [symbol(Value::Range)]
+                 | RangeInteger( Int, Int, Bool, Bytes )  [symbol(Value::RangeInteger)]
                    // homogenous values              for array/slice
                  | PtrLocal( Int , Place , Mutability, Metadata )
                                                           [symbol(Value::PtrLocal)]

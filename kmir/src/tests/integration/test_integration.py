@@ -10,11 +10,13 @@ import pytest
 from pyk.cterm.show import CTermShow
 from pyk.kast.inner import KApply, KSort, KToken
 from pyk.kast.pretty import PrettyPrinter
+from pyk.proof import Proof
 from pyk.proof.show import APRProofShow
 
+from kmir.__main__ import _kmir_prove_raw
 from kmir.cargo import CargoProject, cargo_get_smir_json
 from kmir.kmir import KMIR, KMIRAPRNodePrinter
-from kmir.options import ProveOpts, ShowOpts
+from kmir.options import ProveOpts, ProveRawOpts, ShowOpts
 from kmir.parse.parser import Parser
 from kmir.smir import SMIRInfo
 from kmir.testing.fixtures import assert_or_update_show_output
@@ -25,9 +27,9 @@ if TYPE_CHECKING:
     from kmir.parse.parser import JSON
 
 
-PROVE_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
-PROVE_FILES = list(PROVE_DIR.glob('*.*'))
-PROVE_START_SYMBOLS = {
+PROVE_RS_DIR = (Path(__file__).parent / 'data' / 'prove-rs').resolve(strict=True)
+PROVE_RS_FILES = list(PROVE_RS_DIR.glob('*.*'))
+PROVE_RS_START_SYMBOLS = {
     'symbolic-args-fail': ['main', 'eats_all_args'],
     'symbolic-structs-fail': ['eats_struct_args'],
     'unchecked_arithmetic': ['unchecked_add_i32', 'unchecked_sub_usize', 'unchecked_mul_isize'],
@@ -41,7 +43,7 @@ PROVE_START_SYMBOLS = {
     'iter-eq-copied-take-dereftruncate': ['repro'],
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
-PROVE_SHOW_SPECS = [
+PROVE_RS_SHOW_SPECS = [
     'local-raw-fail',
     'interior-mut-fail',
     'interior-mut3-fail',
@@ -76,12 +78,12 @@ PROVE_SHOW_SPECS = [
 
 @pytest.mark.parametrize(
     'rs_file',
-    PROVE_FILES,
-    ids=[spec.stem for spec in PROVE_FILES],
+    PROVE_RS_FILES,
+    ids=[spec.stem for spec in PROVE_RS_FILES],
 )
-def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
+def test_prove_rs(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     should_fail = rs_file.stem.endswith('fail')
-    should_show = rs_file.stem in PROVE_SHOW_SPECS
+    should_show = rs_file.stem in PROVE_RS_SHOW_SPECS
     is_smir = rs_file.suffix == '.json'
 
     if update_expected_output and not should_show:
@@ -92,8 +94,8 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
     cterm_show = CTermShow(printer.print)
 
     start_symbols = ['main']
-    if rs_file.stem in PROVE_START_SYMBOLS:
-        start_symbols = PROVE_START_SYMBOLS[rs_file.stem]
+    if rs_file.stem in PROVE_RS_START_SYMBOLS:
+        start_symbols = PROVE_RS_START_SYMBOLS[rs_file.stem]
 
     for start_symbol in start_symbols:
         prove_opts.start_symbols = [start_symbol]
@@ -106,7 +108,7 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
             shower = APRProofShow(kmir.definition, node_printer=KMIRAPRNodePrinter(cterm_show, apr_proof, display_opts))
             show_res = '\n'.join(shower.show(apr_proof))
             assert_or_update_show_output(
-                show_res, PROVE_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
+                show_res, PROVE_RS_DIR / f'show/{rs_file.stem}.{start_symbol}.expected', update=update_expected_output
             )
 
         if not should_fail:
@@ -662,6 +664,26 @@ def test_prove_termination(test_data: tuple[str, Path], tmp_path: Path, kmir: KM
     assert proof.passed
 
 
+PROVING_DIR = (Path(__file__).parent / 'data' / 'proving').resolve(strict=True)
+PROVING_FILES = list(PROVING_DIR.glob('*-spec.k'))
+
+
+@pytest.mark.parametrize(
+    'spec',
+    PROVING_FILES,
+    ids=[spec.stem for spec in PROVING_FILES],
+)
+def test_prove(spec: Path, tmp_path: Path, kmir: KMIR) -> None:
+    proof_dir = tmp_path / (spec.stem + 'proofs')
+    prove_opts = ProveRawOpts(spec, proof_dir=proof_dir)
+    _kmir_prove_raw(prove_opts)
+
+    claim_labels = kmir.get_claim_index(spec).labels()
+    for label in claim_labels:
+        proof = Proof.read_proof_data(proof_dir, label)
+        assert proof.passed
+
+
 SCHEMA_PARSE_DATA = (Path(__file__).parent / 'data' / 'schema-parse').resolve(strict=True)
 SCHEMA_PARSE_INPUT_DIRS = [
     SCHEMA_PARSE_DATA / 'local',
@@ -883,7 +905,7 @@ def test_schema_kapply_parse(
     assert parser.parse_mir_json(json_data, expected_sort.name) == (expected_term, expected_sort)
 
 
-ARITH_SMIR = PROVE_DIR / 'arith.smir.json'
+ARITH_SMIR = PROVE_RS_DIR / 'arith.smir.json'
 
 
 def test_reduce_standalone() -> None:

@@ -128,6 +128,7 @@ Constant operands are simply decoded according to their type.
        ...
        </k>
     requires typeInfoVoidType =/=K lookupTy(TY)
+    [preserves-definedness] // #decodeConstant covers all constant kinds; lookupTy is total
 ```
 
 Function pointers are zero-sized constants whose `Ty` is a key in the function table instaed of the type table.
@@ -318,8 +319,11 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   syntax Context ::= CtxField( VariantIdx, List, Int , Ty )
                    | CtxFieldUnion( FieldIdx, Value, Ty )
                    | CtxIndex( List , Int ) // array index constant or has been read before
+                   | CtxRangeIntegerIndex( Bytes, Int, Int, Bool ) // original packed bytes, element index, bit-width, signed
                    | CtxSubslice( List , Int , Int ) // start and end always counted from beginning
                    | CtxPointerOffset( List, Int, Int ) // pointer offset for accessing elements with an offset (Offset, Origin Length)
+                   | CtxRangeIntSubslice( Bytes, Int, Int, Int, Bool ) // original bytes, element-width, start, end (from front), signed
+                   | CtxRangeIntPointerOffset( Bytes, Int, Int, Bool ) // original bytes, element-width, offset, signed
                    | "CtxWrapStruct" // special context adding a singleton Aggregate(0, _) around a value
 
   syntax ProjectionElem ::= PointerOffset( Int, Int ) // Same as subslice but coming from BinopOffset injected by us
@@ -342,6 +346,21 @@ These helpers mark down, as we traverse the projection, what `Place` we are curr
   rule #buildUpdate(VAL, CtxIndex(ELEMS, I) CTXS)
       => #buildUpdate(Range(ELEMS[I <- VAL]), CTXS)
      [preserves-definedness] // valid list indexing checked upon context construction
+
+  // RangeInteger: patch one element's worth of bytes back in; unsigned-only for now
+  rule #buildUpdate(Integer(VAL, _, _), CtxRangeIntegerIndex(ELEMS, IDX, WIDTH, _) CTXS)
+      => #buildUpdate(
+           RangeInteger(
+             lengthBytes(ELEMS) /Int (WIDTH /Int 8),
+             WIDTH,
+             false,
+             substrBytes(ELEMS, 0, IDX *Int (WIDTH /Int 8))
+               +Bytes Int2Bytes(WIDTH /Int 8, VAL, LE)
+               +Bytes substrBytes(ELEMS, (IDX +Int 1) *Int (WIDTH /Int 8), lengthBytes(ELEMS))
+           ),
+           CTXS
+         )
+     [preserves-definedness]
 
   // we don't expect an update to happen on an entire _subslice_ but define a rule for it anyway
   rule #buildUpdate(Range(INNER), CtxSubslice(ELEMS, START, END) CTXS)
@@ -562,6 +581,36 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
      andBool isValue(ELEMENTS[#expectUsize(getValue(LOCALS, LOCAL))])
     [preserves-definedness] // index checked, valid Int can be read, ELEMENT indexable and writeable or forced
 
+  // RangeInteger: index from local; unsigned-only for now (SIGNED always false at construction)
+  rule <k> #traverseProjection(
+             DEST,
+             RangeInteger(LEN, WIDTH, _SIGNED, ELEMS),
+             projectionElemIndex(local(LOCAL)) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             Integer(
+               Bytes2Int(
+                 substrBytes(ELEMS,
+                   #expectUsize(getValue(LOCALS, LOCAL)) *Int (WIDTH /Int 8),
+                   (#expectUsize(getValue(LOCALS, LOCAL)) +Int 1) *Int (WIDTH /Int 8)),
+                 LE, Unsigned),
+               WIDTH, false),
+             PROJS,
+             CtxRangeIntegerIndex(ELEMS, #expectUsize(getValue(LOCALS, LOCAL)), WIDTH, false) CTXTS
+           )
+        ...
+        </k>
+        <locals> LOCALS </locals>
+    requires 0 <=Int LOCAL andBool LOCAL <Int size(LOCALS)
+     andBool isTypedValue(LOCALS[LOCAL])
+     andBool isInt(#expectUsize(getValue(LOCALS, LOCAL)))
+     andBool 0 <=Int #expectUsize(getValue(LOCALS, LOCAL))
+     andBool #expectUsize(getValue(LOCALS, LOCAL)) <Int LEN
+     andBool (#expectUsize(getValue(LOCALS, LOCAL)) +Int 1) *Int (WIDTH /Int 8) <=Int lengthBytes(ELEMS)
+    [preserves-definedness]
+
   rule <k> #traverseProjection(
              DEST,
              Range(ELEMENTS),
@@ -579,6 +628,26 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
     requires 0 <=Int OFFSET andBool OFFSET <Int size(ELEMENTS)
      andBool isValue(ELEMENTS[OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
+
+  // RangeInteger: constant index from front; unsigned-only for now
+  rule <k> #traverseProjection(
+             DEST,
+             RangeInteger(LEN, WIDTH, _SIGNED, ELEMS),
+             projectionElemConstantIndex(OFFSET:Int, _MINLEN, false) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             Integer(Bytes2Int(substrBytes(ELEMS, OFFSET *Int (WIDTH /Int 8), (OFFSET +Int 1) *Int (WIDTH /Int 8)), LE, Unsigned),
+                     WIDTH, false),
+             PROJS,
+             CtxRangeIntegerIndex(ELEMS, OFFSET, WIDTH, false) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int OFFSET andBool OFFSET <Int LEN
+     andBool (OFFSET +Int 1) *Int (WIDTH /Int 8) <=Int lengthBytes(ELEMS)
+    [preserves-definedness]
 
   rule <k> #traverseProjection(
              DEST,
@@ -598,6 +667,28 @@ In case of a `ConstantIndex`, the index is provided as an immediate value, toget
      andBool MINLEN ==Int size(ELEMENTS) // assumed for valid MIR code
      andBool isValue(ELEMENTS[MINLEN -Int OFFSET])
     [preserves-definedness] // ELEMENT indexable and writeable or forced
+
+  // RangeInteger: constant index from end; unsigned-only for now
+  rule <k> #traverseProjection(
+             DEST,
+             RangeInteger(LEN, WIDTH, _SIGNED, ELEMS),
+             projectionElemConstantIndex(OFFSET:Int, MINLEN, true) PROJS, // from end
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             Integer(Bytes2Int(substrBytes(ELEMS, (MINLEN -Int OFFSET) *Int (WIDTH /Int 8),
+                                                  (MINLEN -Int OFFSET +Int 1) *Int (WIDTH /Int 8)), LE, Unsigned),
+                     WIDTH, false),
+             PROJS,
+             CtxRangeIntegerIndex(ELEMS, MINLEN -Int OFFSET, WIDTH, false) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <Int OFFSET andBool OFFSET <=Int MINLEN
+     andBool MINLEN ==Int LEN
+     andBool (MINLEN -Int OFFSET +Int 1) *Int (WIDTH /Int 8) <=Int lengthBytes(ELEMS)
+    [preserves-definedness]
 
   syntax Int ::= #expectUsize ( Value ) [function]
 
@@ -665,6 +756,68 @@ Similar to `ConstantIndex`, the slice _end_ index may count from the _end_  or t
         </k>
     requires 0 <=Int OFFSET andBool OFFSET <=Int size(ELEMENTS)
     [preserves-definedness] // Offset checked to be in range for ELEMENTS
+
+  // RangeInteger: subslice from front (fromEnd = false)
+  rule <k> #traverseProjection(
+             DEST,
+             RangeInteger(LEN, WIDTH, SIGNED, ELEMS),
+             projectionElemSubslice(START, END, false) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             RangeInteger(END -Int START, WIDTH, SIGNED,
+                          substrBytes(ELEMS, START *Int (WIDTH /Int 8), END *Int (WIDTH /Int 8))),
+             PROJS,
+             CtxRangeIntSubslice(ELEMS, WIDTH, START, END, SIGNED) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int START andBool START <=Int LEN
+     andBool 0 <Int END andBool END <=Int LEN andBool START <Int END
+     andBool END *Int (WIDTH /Int 8) <=Int lengthBytes(ELEMS)
+    [preserves-definedness]
+
+  // RangeInteger: subslice from end (fromEnd = true)
+  rule <k> #traverseProjection(
+             DEST,
+             RangeInteger(LEN, WIDTH, SIGNED, ELEMS),
+             projectionElemSubslice(START, END, true) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             RangeInteger(LEN -Int START -Int END, WIDTH, SIGNED,
+                          substrBytes(ELEMS, START *Int (WIDTH /Int 8), (LEN -Int END) *Int (WIDTH /Int 8))),
+             PROJS,
+             CtxRangeIntSubslice(ELEMS, WIDTH, START, LEN -Int END, SIGNED) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int START andBool START <=Int LEN
+     andBool 0 <=Int END andBool END <Int LEN andBool START <=Int LEN -Int END
+     andBool (LEN -Int END) *Int (WIDTH /Int 8) <=Int lengthBytes(ELEMS)
+    [preserves-definedness]
+
+  // RangeInteger: pointer offset — advance start of the range
+  rule <k> #traverseProjection(
+             DEST,
+             RangeInteger(LEN, WIDTH, SIGNED, ELEMS),
+             PointerOffset(OFFSET, _ORIGIN_LENGTH) PROJS,
+             CTXTS
+           )
+        => #traverseProjection(
+             DEST,
+             RangeInteger(LEN -Int OFFSET, WIDTH, SIGNED,
+                          substrBytes(ELEMS, OFFSET *Int (WIDTH /Int 8), lengthBytes(ELEMS))),
+             PROJS,
+             CtxRangeIntPointerOffset(ELEMS, WIDTH, OFFSET, SIGNED) CTXTS
+           )
+        ...
+        </k>
+    requires 0 <=Int OFFSET andBool OFFSET <=Int LEN
+     andBool OFFSET *Int (WIDTH /Int 8) <=Int lengthBytes(ELEMS)
+    [preserves-definedness]
 ```
 
 #### References
@@ -694,21 +847,53 @@ An attempt to read more elements than the length of the accessed array is undefi
   // TODO move these to value.md
   syntax Bool ::= isRange ( Value ) [function, total]
   // ------------------------------------------------
-  rule isRange(Range(_)) => true
+  rule isRange(Range(_))           => true
+  rule isRange(RangeInteger(_, _, _, _)) => true
   rule isRange( _OTHER ) => false [owise]
 
+  // Normalize a Range of unsigned integers to RangeInteger for uniform representation.
+  // Needed when comparing values that may have been constructed differently
+  // (rvalueAggregate → Range vs. constant allocation → RangeInteger).
+  syntax Value ::= #normalizeValue(Value)                            [function, total]
+               | #tryNormRangeInt(List, Int, Bytes, List)           [function, total]
+               // args: original-list, element-width, accumulated-bytes, remaining-list
+  rule #normalizeValue(Range(ListItem(Integer(V, W, false)) REST))
+    => #tryNormRangeInt(ListItem(Integer(V, W, false)) REST, W, Int2Bytes(W /Int 8, V, LE), REST)
+  rule #normalizeValue(V) => V [owise]
+
+  // accumulate: same-width unsigned integer
+  rule #tryNormRangeInt(ORIG, W, ACC, ListItem(Integer(V, W, false)) REST)
+    => #tryNormRangeInt(ORIG, W, ACC +Bytes Int2Bytes(W /Int 8, V, LE), REST)
+  // done: all elements packed — produce RangeInteger
+  rule #tryNormRangeInt(_, W, ACC, .List)
+    => RangeInteger(lengthBytes(ACC) /Int (W /Int 8), W, false, ACC)
+  // fallback: width mismatch or non-Integer element — return original unchanged
+  rule #tryNormRangeInt(ORIG, _, _, _) => Range(ORIG) [owise]
+
   // staticSize metadata requires an array of suitable length and truncates it
-  rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
+  rule <k> #traverseProjection(DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
         ...
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
+  rule <k> #traverseProjection(DEST, RangeInteger(LEN, WIDTH, SIGNED, ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(staticSize(SIZE), PROJS)
+        => #traverseProjection(DEST, RangeInteger(SIZE, WIDTH, SIGNED, substrBytes(ELEMS, 0, SIZE *Int (WIDTH /Int 8))), PROJS, CTXTS)
+        ...
+       </k>
+    requires 0 <=Int SIZE andBool SIZE <=Int LEN
+     andBool SIZE *Int (WIDTH /Int 8) <=Int lengthBytes(ELEMS) [preserves-definedness] // range parameters checked
   // dynamicSize metadata requires an array of suitable length and truncates it
   rule <k> #traverseProjection( DEST, Range(ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize(SIZE), PROJS)
         => #traverseProjection(DEST, Range(range(ELEMS, 0, size(ELEMS) -Int SIZE)), PROJS, CTXTS)
         ...
        </k>
     requires 0 <=Int SIZE andBool SIZE <=Int size(ELEMS) [preserves-definedness] // range parameters checked
+  rule <k> #traverseProjection(DEST, RangeInteger(LEN, WIDTH, SIGNED, ELEMS), .ProjectionElems, CTXTS) ~> #derefTruncate(dynamicSize(SIZE), PROJS)
+        => #traverseProjection(DEST, RangeInteger(SIZE, WIDTH, SIGNED, substrBytes(ELEMS, 0, SIZE *Int (WIDTH /Int 8))), PROJS, CTXTS)
+        ...
+       </k>
+    requires 0 <=Int SIZE andBool SIZE <=Int LEN
+     andBool SIZE *Int (WIDTH /Int 8) <=Int lengthBytes(ELEMS) [preserves-definedness] // range parameters checked
   // If an array was projected to but no metadata is available, use the head element
   rule <k> #traverseProjection( DEST, Range(ListItem(VAL) _:List), .ProjectionElems, CTXTS) ~> #derefTruncate(noMetadataSize, PROJS)
         => #traverseProjection(DEST, VAL, PROJS, CTXTS)
@@ -1221,9 +1406,12 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
   rule #projectionsFor(       .Contexts          , PROJS) => PROJS
   rule #projectionsFor(CtxField(_, _, I, TY) CTXS, PROJS) => #projectionsFor(CTXS,     projectionElemField(fieldIdx(I), TY) PROJS)
   rule #projectionsFor(       CtxIndex(_, I) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemConstantIndex(I, 0, false) PROJS)
+  rule #projectionsFor(CtxRangeIntegerIndex(_, I, _, _) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemConstantIndex(I, 0, false) PROJS)
   rule #projectionsFor( CtxSubslice(_, I, J) CTXS, PROJS) => #projectionsFor(CTXS,      projectionElemSubslice(I, J, false) PROJS)
   // rule #projectionsFor(CtxPointerOffset(OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(OFFSET, ORIGIN_LENGTH, false) PROJS)
   rule #projectionsFor(CtxPointerOffset( _, OFFSET, ORIGIN_LENGTH) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, ORIGIN_LENGTH) PROJS)
+  rule #projectionsFor(CtxRangeIntSubslice(_, _, START, END, _) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemSubslice(START, END, false) PROJS)
+  rule #projectionsFor(CtxRangeIntPointerOffset(_, _, OFFSET, _) CTXS, PROJS) => #projectionsFor(CTXS, PointerOffset(OFFSET, 0) PROJS)
   rule #projectionsFor(CtxFieldUnion(F_IDX, _, TY) CTXS, PROJS) => #projectionsFor(CTXS, projectionElemField(F_IDX, TY) PROJS)
   rule #projectionsFor(  CtxWrapStruct       CTXS, PROJS) => #projectionsFor(CTXS,                 projectionElemWrapStruct PROJS)
 
@@ -1873,6 +2061,7 @@ For allocated constants without provenance, the decoder works directly with the 
         => #decodeValue(BYTES, TYPEINFO)
         ...
        </k>
+    [preserves-definedness] // #decodeValue is total (has [owise] fallback)
 ```
 
 Zero-sized types can be decoded trivially into their respective representation.

@@ -18,6 +18,18 @@ module KMIR-LEMMAS
 
   imports RT-DATA
 ```
+
+## Simplifications for Bytes
+
+```k
+  rule #Ceil(substrBytes(B, N, M)) => #Top
+    requires 0 <=Int N andBool N <=Int M andBool M <=Int lengthBytes(B)
+    [simplification]
+
+  rule substrBytes(_, N, N) => .Bytes requires 0 <=Int N              [simplification]
+  rule substrBytes(B, 0, N) => B      requires N ==Int lengthBytes(B) [simplification]
+```
+
 ## Simplifications for lists to avoid spurious branching on error cases in control flow
 
 Rewrite rules that look up locals or stack frames require that an index into the respective `List`s in the configuration be within the bounds of the locals list/stack. Therefore, the `size` function on lists needs to be computed. The following simplifications allow for locals and stacks to have concrete values in the beginning but a symbolic rest (of unknown size).

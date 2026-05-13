@@ -241,6 +241,12 @@ def bool_var(var: KVariable) -> tuple[KInner, Iterable[KInner]]:
     return term, ()
 
 
+def bytes_var(var: KVariable, num_bytes: int) -> tuple[KInner, Iterable[KInner]]:
+    size_bytes = KApply('lengthBytes(_)_BYTES-HOOKED_Int_Bytes', (var,))
+    constraint = mlEqualsTrue(eqInt(size_bytes, token(num_bytes)))
+    return var, (constraint,)
+
+
 def mk_call_terminator(target: int, arg_count: int) -> KInner:
     operands = [
         KApply(
@@ -415,18 +421,43 @@ class _ArgGenerator:
                     new_var, new_constraints, _ = self._symbolic_value(element_type, mutable)
                     elem_vars.append(new_var)
                     elem_constraints += new_constraints
-                return (
-                    KApply('Value::Range', (list_of(elem_vars),)),
-                    elem_constraints,
-                    KApply(
-                        'Metadata',
-                        (
-                            KApply('staticSize', (token(size),)),
-                            token(0),
-                            KApply('staticSize', (token(size),)),
-                        ),
-                    ),
-                )
+                match self.types.get(element_type):
+                    case UintT(info):
+                        b_var, b_constraints = bytes_var(self._fresh_var('ARG_RANGEINT'), size * info.value)
+                        return (
+                            KApply(
+                                'Value::RangeInteger',
+                                (
+                                    token(size),
+                                    token(info.value),
+                                    token(False),
+                                    b_var,
+                                ),
+                            ),
+                            list(elem_constraints) + list(b_constraints),
+                            # TODO: Should be token(size) * len(elem_vars)?
+                            KApply(
+                                'Metadata',
+                                (
+                                    KApply('staticSize', (token(size),)),
+                                    token(0),
+                                    KApply('staticSize', (token(size),)),
+                                ),
+                            ),
+                        )
+                    case other:
+                        return (
+                            KApply('Value::Range', (list_of(elem_vars),)),
+                            elem_constraints,
+                            KApply(
+                                'Metadata',
+                                (
+                                    KApply('staticSize', (token(size),)),
+                                    token(0),
+                                    KApply('staticSize', (token(size),)),
+                                ),
+                            ),
+                        )
 
             case TupleT(components=components):
                 elem_vars = []
