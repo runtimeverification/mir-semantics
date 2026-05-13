@@ -83,7 +83,8 @@
                                               "token": "0",
                                               "sort": {
                                                 "node": "KSort",
-                                                "name": "Int"
+                                                "name": "Int",
+                                                "params": []
                                               }
                                             }
                                           ],
@@ -133,7 +134,8 @@
                                                   "token": "-1",
                                                   "sort": {
                                                     "node": "KSort",
-                                                    "name": "Int"
+                                                    "name": "Int",
+                                                    "params": []
                                                   }
                                                 }
                                               ],
@@ -153,7 +155,8 @@
                                                   "token": "0",
                                                   "sort": {
                                                     "node": "KSort",
-                                                    "name": "Int"
+                                                    "name": "Int",
+                                                    "params": []
                                                   }
                                                 }
                                               ],
@@ -204,7 +207,8 @@
                                           "token": "0",
                                           "sort": {
                                             "node": "KSort",
-                                            "name": "Int"
+                                            "name": "Int",
+                                            "params": []
                                           }
                                         }
                                       ],
@@ -265,7 +269,8 @@
                                   "token": "0",
                                   "sort": {
                                     "node": "KSort",
-                                    "name": "Int"
+                                    "name": "Int",
+                                    "params": []
                                   }
                                 }
                               ],
@@ -345,7 +350,8 @@
                           "token": "-1",
                           "sort": {
                             "node": "KSort",
-                            "name": "Int"
+                            "name": "Int",
+                            "params": []
                           }
                         }
                       ],
@@ -438,7 +444,8 @@
                                           "token": "50",
                                           "sort": {
                                             "node": "KSort",
-                                            "name": "Int"
+                                            "name": "Int",
+                                            "params": []
                                           }
                                         }
                                       ],
@@ -481,7 +488,8 @@
                           "name": "CURRENTFUNC_CELL",
                           "sort": {
                             "node": "KSort",
-                            "name": "Ty"
+                            "name": "Ty",
+                            "params": []
                           }
                         }
                       }
@@ -524,7 +532,8 @@
                                   "token": "0",
                                   "sort": {
                                     "node": "KSort",
-                                    "name": "Int"
+                                    "name": "Int",
+                                    "params": []
                                   }
                                 }
                               ],
@@ -650,7 +659,8 @@
                                       "token": "0",
                                       "sort": {
                                         "node": "KSort",
-                                        "name": "Int"
+                                        "name": "Int",
+                                        "params": []
                                       }
                                     },
                                     "rhs": {
@@ -658,7 +668,8 @@
                                       "token": "1",
                                       "sort": {
                                         "node": "KSort",
-                                        "name": "Int"
+                                        "name": "Int",
+                                        "params": []
                                       }
                                     }
                                   }
@@ -749,7 +760,8 @@
                               "name": "CALLER_CELL",
                               "sort": {
                                 "node": "KSort",
-                                "name": "Ty"
+                                "name": "Ty",
+                                "params": []
                               }
                             },
                             {
@@ -757,7 +769,8 @@
                               "name": "DEST_CELL",
                               "sort": {
                                 "node": "KSort",
-                                "name": "Place"
+                                "name": "Place",
+                                "params": []
                               }
                             },
                             {
@@ -765,7 +778,8 @@
                               "name": "TARGET_CELL",
                               "sort": {
                                 "node": "KSort",
-                                "name": "MaybeBasicBlockIdx"
+                                "name": "MaybeBasicBlockIdx",
+                                "params": []
                               }
                             },
                             {
@@ -773,7 +787,8 @@
                               "name": "UNWIND_CELL",
                               "sort": {
                                 "node": "KSort",
-                                "name": "UnwindAction"
+                                "name": "UnwindAction",
+                                "params": []
                               }
                             },
                             {
@@ -805,7 +820,8 @@
                                           "token": "0",
                                           "sort": {
                                             "node": "KSort",
-                                            "name": "Int"
+                                            "name": "Int",
+                                            "params": []
                                           }
                                         }
                                       ],
@@ -873,7 +889,8 @@
         "token": "true",
         "sort": {
           "node": "KSort",
-          "name": "Bool"
+          "name": "Bool",
+          "params": []
         }
       },
       "ensures": {
@@ -881,7 +898,8 @@
         "token": "true",
         "sort": {
           "node": "KSort",
-          "name": "Bool"
+          "name": "Bool",
+          "params": []
         }
       },
       "att": {
