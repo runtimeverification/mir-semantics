@@ -89,10 +89,11 @@ Execution gets stuck (no matching rule) when operands have different types or un
 ```k
   // Raw eq: dereference operands, extract types, and delegate to typed comparison
   rule <k> #execIntrinsic(IntrinsicFunction(symbol("raw_eq")), ARG1:Operand ARG2:Operand .Operands, PLACE, _SPAN)
-        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(#withDeref(ARG1), LOCALS),
-                                  #withDeref(ARG2), #extractOperandType(#withDeref(ARG2), LOCALS))
+        => #execRawEqTyped(PLACE, #withDeref(ARG1), #extractOperandType(TYPESMAP, #withDeref(ARG1), LOCALS),
+                                  #withDeref(ARG2), #extractOperandType(TYPESMAP, #withDeref(ARG2), LOCALS))
        ... </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
 
   // Compare values only if types are identical
   syntax KItem ::= #execRawEqTyped(Place, Evaluation, MaybeTy, Evaluation, MaybeTy) [seqstrict(2,4)]
@@ -112,17 +113,35 @@ Execution gets stuck (no matching rule) when operands have different types or un
   rule #withDeref(OP) => OP [owise]
 
   // Extract type from operands (locals with projections, constants, fallback to unknown)
-  syntax MaybeTy ::= #extractOperandType(Operand, List) [function, total, no-evaluators]
-  rule #extractOperandType(operandCopy(place(local(I), PROJS)), LOCALS)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+```
+
+```{.k .concrete}
+  syntax MaybeTy ::= #extractOperandType(MaybeMap, Operand, List) [function, total]
+  rule #extractOperandType(TYPESMAP, operandCopy(place(local(I), PROJS)), LOCALS)
+       => getTyOf(TYPESMAP, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
-  rule #extractOperandType(operandMove(place(local(I), PROJS)), LOCALS)
-       => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+  rule #extractOperandType(TYPESMAP, operandMove(place(local(I), PROJS)), LOCALS)
+       => getTyOf(TYPESMAP, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
     requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
-  rule #extractOperandType(operandConstant(constOperand(_, _, mirConst(_, TY, _))), _) => TY
-  rule #extractOperandType(_, _) => TyUnknown [owise]
+```
+
+```{.k .symbolic}
+  syntax MaybeTy ::= #extractOperandType(MaybeMap, Operand, List) [function, total, no-evaluators]
+  rule #extractOperandType(_, operandCopy(place(local(I), PROJS)), LOCALS)
+       => getTyOf(noMap, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+  rule #extractOperandType(_, operandMove(place(local(I), PROJS)), LOCALS)
+       => getTyOf(noMap, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+    requires 0 <=Int I andBool I <Int size(LOCALS) andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+```
+
+```k
+  rule #extractOperandType(_, operandConstant(constOperand(_, _, mirConst(_, TY, _))), _) => TY
+  rule #extractOperandType(_, _, _) => TyUnknown [owise]
 ```
 
 #### Volatile Store (`std::intrinsics::volatile_store`, `std::ptr::write_volatile`)

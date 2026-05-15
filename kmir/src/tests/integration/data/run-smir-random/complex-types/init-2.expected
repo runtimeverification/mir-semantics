@@ -51,4 +51,13 @@
   <stack>
     .List
   </stack>
+  <functions>
+    noMap
+  </functions>
+  <types>
+    noMap
+  </types>
+  <memory>
+    noMap
+  </memory>
 </kmir>

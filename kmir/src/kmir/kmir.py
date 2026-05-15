@@ -8,9 +8,12 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import cterm_symbolic
 from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken
+from pyk.kast.prelude.collections import map_of
+from pyk.kast.prelude.utils import token
 from pyk.kcfg.explore import KCFGExplore
 from pyk.kcfg.semantics import DefaultSemantics
 from pyk.kcfg.show import NodePrinter
+from pyk.kore.syntax import App
 from pyk.ktool.kprove import KProve
 from pyk.ktool.krun import KRun
 from pyk.proof.show import APRProofNodePrinter
@@ -84,6 +87,30 @@ class KMIR(KProve, KRun, KParse):
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
         THUNK: Final = KLabel('thunk(_)_RT-DATA_Value_Evaluation')
 
+    _MAP_CELL_LABELS: Final = frozenset(
+        {
+            "Lbl'-LT-'functions'-GT-'",
+            "Lbl'-LT-'types'-GT-'",
+            "Lbl'-LT-'memory'-GT-'",
+        }
+    )
+
+    _NOMAP: Final = App("LblMaybeMap'ColnColn'noMap")
+
+    @staticmethod
+    def strip_map_cells(pattern: Pattern) -> Pattern:
+        """Replace contents of <functions>, <types>, <memory> cells with noMap."""
+
+        def _strip(p: Pattern) -> Pattern:
+            if isinstance(p, App) and p.symbol in KMIR._MAP_CELL_LABELS:
+                return App(p.symbol, p.sorts, (KMIR._NOMAP,))
+            return p
+
+        return pattern.top_down(_strip)
+
+    def kore_to_pretty(self, pattern: Pattern) -> str:
+        return super().kore_to_pretty(self.strip_map_cells(pattern))
+
     @cached_property
     def parser(self) -> Parser:
         return Parser(self.definition)
@@ -110,15 +137,53 @@ class KMIR(KProve, KRun, KParse):
     ) -> Pattern:
         smir_info = smir_info.reduce_to(start_symbol)
         mode = RandomMode(seed) if seed is not None else ConcreteMode()
+        cell_maps = self._make_smir_maps(smir_info)
         init_config, _ = make_call_config(
             self.definition,
             smir_info=smir_info,
             start_symbol=start_symbol,
             mode=mode,
+            cell_maps=cell_maps,
         )
         init_kore = self.kast_to_kore(init_config, KSort('GeneratedTopCell'))
         result = self.run_pattern(init_kore, depth=depth)
         return result
+
+    def _make_smir_maps(self, smir_info: SMIRInfo) -> dict[str, KInner]:
+        """Build map cell substitutions for concrete execution."""
+        from .kompile import _decode_alloc, _functions
+
+        some_map = 'MaybeMap::someMap'
+
+        # Functions map: ty(N) |-> MonoItemKind
+        func_entries: dict[KInner, KInner] = {}
+        for ty, body in _functions(self, smir_info).items():
+            func_entries[KApply('ty', (token(ty),))] = body
+        functions_map = KApply(some_map, (map_of(func_entries),))
+
+        # Types map: ty(N) |-> TypeInfo
+        type_entries: dict[KInner, KInner] = {}
+        for type_json in smir_info._smir['types']:
+            parse_result = self.parser.parse_mir_json(type_json, 'TypeMapping')
+            if parse_result is not None:
+                type_mapping, _ = parse_result
+                if isinstance(type_mapping, KApply) and len(type_mapping.args) == 2:
+                    ty_key, tyinfo = type_mapping.args
+                    type_entries[ty_key] = tyinfo
+        types_map = KApply(some_map, (map_of(type_entries),))
+
+        # Allocs map: allocId(N) |-> Value
+        alloc_entries: dict[KInner, KInner] = {}
+        for raw_alloc in smir_info._smir['allocs']:
+            alloc_id_term, value_term = _decode_alloc(smir_info=smir_info, raw_alloc=raw_alloc)
+            alloc_entries[alloc_id_term] = value_term
+        allocs_map = KApply(some_map, (map_of(alloc_entries),))
+
+        return {
+            'FUNCTIONS_CELL': functions_map,
+            'TYPES_CELL': types_map,
+            'MEMORY_CELL': allocs_map,
+        }
 
     @staticmethod
     def prove_programs(opts: ProveOpts) -> list[APRProof]:

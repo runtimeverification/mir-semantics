@@ -35,11 +35,18 @@ The interface function is meant for pointer casts to compute pointee projections
 ```k
   syntax MaybeProjectionElems ::= ProjectionElems
                                 | "NoProjectionElems"
+```
 
-  syntax MaybeProjectionElems ::= #typeProjection ( TypeInfo , TypeInfo )    [function, total, no-evaluators]
-  // ---------------------------------------------------------------------------------------
-  rule #typeProjection ( typeInfoPtrType(TY1)     , typeInfoPtrType(TY2)     ) => #pointeeProjection(lookupTy(TY1), lookupTy(TY2))
-  rule #typeProjection ( _, _ ) => NoProjectionElems [owise]
+```{.k .concrete}
+  syntax MaybeProjectionElems ::= #typeProjection ( MaybeMap , TypeInfo , TypeInfo )    [function, total]
+  rule #typeProjection ( TYPESMAP, typeInfoPtrType(TY1), typeInfoPtrType(TY2) ) => #pointeeProjection(TYPESMAP, lookupTy(TYPESMAP, TY1), lookupTy(TYPESMAP, TY2))
+  rule #typeProjection ( _, _, _ ) => NoProjectionElems [owise]
+```
+
+```{.k .symbolic}
+  syntax MaybeProjectionElems ::= #typeProjection ( MaybeMap , TypeInfo , TypeInfo )    [function, total, no-evaluators]
+  rule #typeProjection ( _, typeInfoPtrType(TY1), typeInfoPtrType(TY2) ) => #pointeeProjection(noMap, lookupTyKore(TY1), lookupTyKore(TY2))
+  rule #typeProjection ( _, _, _ ) => NoProjectionElems [owise]
 ```
 
 Note that certain projections can cancel each other, such as casting from one transparent wrapper to another.
@@ -81,22 +88,26 @@ attempting to unwrap the target type. This eliminates non-deterministic overlap 
 and target-side rules, because a type cannot be both a struct and an array simultaneously.
 When the source cannot be unwrapped further, target-side unwrapping is handled by `#pointeeProjectionTarget`.
 
-```k
-  syntax MaybeProjectionElems ::= #pointeeProjection ( TypeInfo , TypeInfo ) [function, total, no-evaluators]
+```{.k .concrete}
+  syntax MaybeProjectionElems ::= #pointeeProjection ( MaybeMap , TypeInfo , TypeInfo ) [function, total]
+```
+
+```{.k .symbolic}
+  syntax MaybeProjectionElems ::= #pointeeProjection ( MaybeMap , TypeInfo , TypeInfo ) [function, total, no-evaluators]
 ```
 
 A short-cut rule for identical types takes preference.
 ```k
-  rule #pointeeProjection(T , T) => .ProjectionElems  [priority(40)]
+  rule #pointeeProjection(_, T , T) => .ProjectionElems  [priority(40)]
 ```
 
 Pointers to zero-sized types can be converted from and to. No recursion beyond the ZST.
 **TODO** Problem: our ZSTs have different representation: compare empty arrays and empty structs/unit tuples.
 ```k
-  rule #pointeeProjection(SRC, OTHER) => projectionElemToZST   .ProjectionElems
+  rule #pointeeProjection(_, SRC, OTHER) => projectionElemToZST   .ProjectionElems
     requires #zeroSizedType(OTHER) andBool notBool #zeroSizedType(SRC)
     [priority(45)]
-  rule #pointeeProjection(SRC, OTHER) => projectionElemFromZST .ProjectionElems
+  rule #pointeeProjection(_, SRC, OTHER) => projectionElemFromZST .ProjectionElems
     requires #zeroSizedType(SRC) andBool notBool #zeroSizedType(OTHER)
     [priority(45)]
 ```
@@ -105,28 +116,53 @@ Source-side: unwrap structs and arrays from the source type first.
 
 When source is an array and target is a transparent wrapper whose inner type equals the source,
 the source should be wrapped rather than unwrapped (e.g., `*const [u8;2] → *const Wrapper([u8;2])`).
-```k
-  rule #pointeeProjection(typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
+```{.k .concrete}
+  rule #pointeeProjection(TYPESMAP, typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
     => maybeConcatProj(
           projectionElemField(fieldIdx(0), FIELD),
-          #pointeeProjection(lookupTy(FIELD), OTHER)
+          #pointeeProjection(TYPESMAP, lookupTy(TYPESMAP, FIELD), OTHER)
         )
     requires #zeroFieldOffset(LAYOUT)
 
-  rule #pointeeProjection(SRC:TypeInfo, typeInfoStructType(_NAME, _ADTDEF, FIELD .Tys, LAYOUT))
+  rule #pointeeProjection(TYPESMAP, SRC:TypeInfo, typeInfoStructType(_NAME, _ADTDEF, FIELD .Tys, LAYOUT))
     => maybeConcatProj(
           projectionElemWrapStruct,
-          #pointeeProjection(SRC, lookupTy(FIELD))
+          #pointeeProjection(TYPESMAP, SRC, lookupTy(TYPESMAP, FIELD))
         )
     requires #isArrayType(SRC)
     andBool #zeroFieldOffset(LAYOUT)
-    andBool lookupTy(FIELD) ==K SRC
+    andBool lookupTy(TYPESMAP, FIELD) ==K SRC
     [priority(42)]
 
-  rule #pointeeProjection(typeInfoArrayType(TY1, _), TY2)
+  rule #pointeeProjection(TYPESMAP, typeInfoArrayType(TY1, _), TY2)
     => maybeConcatProj(
           projectionElemConstantIndex(0, 0, false),
-          #pointeeProjection(lookupTy(TY1), TY2)
+          #pointeeProjection(TYPESMAP, lookupTy(TYPESMAP, TY1), TY2)
+        )
+```
+
+```{.k .symbolic}
+  rule #pointeeProjection(_, typeInfoStructType(_, _, FIELD .Tys, LAYOUT), OTHER)
+    => maybeConcatProj(
+          projectionElemField(fieldIdx(0), FIELD),
+          #pointeeProjection(noMap, lookupTyKore(FIELD), OTHER)
+        )
+    requires #zeroFieldOffset(LAYOUT)
+
+  rule #pointeeProjection(_, SRC:TypeInfo, typeInfoStructType(_NAME, _ADTDEF, FIELD .Tys, LAYOUT))
+    => maybeConcatProj(
+          projectionElemWrapStruct,
+          #pointeeProjection(noMap, SRC, lookupTyKore(FIELD))
+        )
+    requires #isArrayType(SRC)
+    andBool #zeroFieldOffset(LAYOUT)
+    andBool lookupTyKore(FIELD) ==K SRC
+    [priority(42)]
+
+  rule #pointeeProjection(_, typeInfoArrayType(TY1, _), TY2)
+    => maybeConcatProj(
+          projectionElemConstantIndex(0, 0, false),
+          #pointeeProjection(noMap, lookupTyKore(TY1), TY2)
         )
 ```
 
@@ -135,45 +171,77 @@ This is actually a 2-step compatibility:
 The `MaybeUninit<X>` union contains a `ManuallyDrop<X>` (when filled),
 which is a singleton struct (see above).
 
-```k
-  rule #pointeeProjection(MAYBEUNINIT_TYINFO, ELEM_TYINFO)
+```{.k .concrete}
+  rule #pointeeProjection(TYPESMAP, MAYBEUNINIT_TYINFO, ELEM_TYINFO)
     => maybeConcatProj(
           projectionElemField(fieldIdx(1), {getFieldTy(MAYBEUNINIT_TYINFO, 1)}:>Ty),
           maybeConcatProj(
-            projectionElemField(fieldIdx(0), {getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)}:>Ty),
+            projectionElemField(fieldIdx(0), {getFieldTy(#lookupMaybeTy(TYPESMAP, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)}:>Ty),
            .ProjectionElems // TODO recursion?
           )
         )
     requires #typeNameIs(MAYBEUNINIT_TYINFO, "std::mem::MaybeUninit<")
-     andBool #lookupMaybeTy(getFieldTy(#lookupMaybeTy(getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
+     andBool #lookupMaybeTy(TYPESMAP, getFieldTy(#lookupMaybeTy(TYPESMAP, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
+```
+
+```{.k .symbolic}
+  rule #pointeeProjection(_, MAYBEUNINIT_TYINFO, ELEM_TYINFO)
+    => maybeConcatProj(
+          projectionElemField(fieldIdx(1), {getFieldTy(MAYBEUNINIT_TYINFO, 1)}:>Ty),
+          maybeConcatProj(
+            projectionElemField(fieldIdx(0), {getFieldTy(#lookupMaybeTy(noMap, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)}:>Ty),
+           .ProjectionElems // TODO recursion?
+          )
+        )
+    requires #typeNameIs(MAYBEUNINIT_TYINFO, "std::mem::MaybeUninit<")
+     andBool #lookupMaybeTy(noMap, getFieldTy(#lookupMaybeTy(noMap, getFieldTy(MAYBEUNINIT_TYINFO, 1)), 0)) ==K ELEM_TYINFO
 ```
 
 Fallback: source is not unwrappable, delegate to target-side.
 ```k
-  rule #pointeeProjection(SRC, TGT) => #pointeeProjectionTarget(SRC, TGT) [owise]
+  rule #pointeeProjection(TYPESMAP, SRC, TGT) => #pointeeProjectionTarget(TYPESMAP, SRC, TGT) [owise]
 ```
 
 Target-side fallback: only reached when source cannot be unwrapped further.
 After one step of target unwrapping, recurse back to `#pointeeProjection` to maintain
 the source-first strategy.
 
-```k
-  syntax MaybeProjectionElems ::= #pointeeProjectionTarget ( TypeInfo , TypeInfo ) [function, total, no-evaluators]
+```{.k .concrete}
+  syntax MaybeProjectionElems ::= #pointeeProjectionTarget ( MaybeMap , TypeInfo , TypeInfo ) [function, total]
 
-  rule #pointeeProjectionTarget(TY1, typeInfoArrayType(TY2, _))
+  rule #pointeeProjectionTarget(TYPESMAP, TY1, typeInfoArrayType(TY2, _))
     => maybeConcatProj(
           projectionElemSingletonArray,
-          #pointeeProjection(TY1, lookupTy(TY2))
+          #pointeeProjection(TYPESMAP, TY1, lookupTy(TYPESMAP, TY2))
         )
 
-  rule #pointeeProjectionTarget(OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+  rule #pointeeProjectionTarget(TYPESMAP, OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
     => maybeConcatProj(
           projectionElemWrapStruct,
-          #pointeeProjection(OTHER, lookupTy(FIELD))
+          #pointeeProjection(TYPESMAP, OTHER, lookupTy(TYPESMAP, FIELD))
         )
     requires #zeroFieldOffset(LAYOUT)
+```
 
-  rule #pointeeProjectionTarget(_, _) => NoProjectionElems [owise]
+```{.k .symbolic}
+  syntax MaybeProjectionElems ::= #pointeeProjectionTarget ( MaybeMap , TypeInfo , TypeInfo ) [function, total, no-evaluators]
+
+  rule #pointeeProjectionTarget(_, TY1, typeInfoArrayType(TY2, _))
+    => maybeConcatProj(
+          projectionElemSingletonArray,
+          #pointeeProjection(noMap, TY1, lookupTyKore(TY2))
+        )
+
+  rule #pointeeProjectionTarget(_, OTHER, typeInfoStructType(_, _, FIELD .Tys, LAYOUT))
+    => maybeConcatProj(
+          projectionElemWrapStruct,
+          #pointeeProjection(noMap, OTHER, lookupTyKore(FIELD))
+        )
+    requires #zeroFieldOffset(LAYOUT)
+```
+
+```k
+  rule #pointeeProjectionTarget(_, _, _) => NoProjectionElems [owise]
 ```
 
 ```k
@@ -250,35 +318,70 @@ To make this function total, an optional `MaybeTy` is used.
   rule getArrayElemTy(typeInfoArrayType(ELEM_TY, _)) => ELEM_TY
   rule getArrayElemTy(_) => ty(-1) [owise]
 
-  syntax TypeInfo ::= getArrayElemTypeInfo ( TypeInfo ) [function, total, no-evaluators]
-  // --------------------------------------------------------------------
-  rule getArrayElemTypeInfo(typeInfoArrayType(ELEM_TY, _)) => lookupTy(ELEM_TY)
-  rule getArrayElemTypeInfo(_) => typeInfoVoidType [owise]
+```
 
-  syntax TypeInfo ::= #lookupMaybeTy ( MaybeTy ) [function, total, no-evaluators]
-  // -------------------------------------------------------------
-  rule #lookupMaybeTy(TY:Ty) => lookupTy(TY)
-  rule #lookupMaybeTy(TyUnknown) => typeInfoVoidType
+```{.k .concrete}
+  syntax TypeInfo ::= getArrayElemTypeInfo ( MaybeMap , TypeInfo ) [function, total]
+  rule getArrayElemTypeInfo(TYPESMAP, typeInfoArrayType(ELEM_TY, _)) => lookupTy(TYPESMAP, ELEM_TY)
 
-  syntax MaybeTy ::= getTyOf( MaybeTy , ProjectionElems ) [function, total, no-evaluators]
+  syntax TypeInfo ::= #lookupMaybeTy ( MaybeMap , MaybeTy ) [function, total]
+  rule #lookupMaybeTy(TYPESMAP, TY:Ty) => lookupTy(TYPESMAP, TY)
+```
+
+```{.k .symbolic}
+  syntax TypeInfo ::= getArrayElemTypeInfo ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
+  rule getArrayElemTypeInfo(_, typeInfoArrayType(ELEM_TY, _)) => lookupTyKore(ELEM_TY)
+
+  syntax TypeInfo ::= #lookupMaybeTy ( MaybeMap , MaybeTy ) [function, total, no-evaluators]
+  rule #lookupMaybeTy(_, TY:Ty) => lookupTyKore(TY)
+```
+
+```k
+  rule getArrayElemTypeInfo(_, _) => typeInfoVoidType [owise]
+  rule #lookupMaybeTy(_, TyUnknown) => typeInfoVoidType
+```
+
+```{.k .concrete}
+  syntax MaybeTy ::= getTyOf( MaybeMap , MaybeTy , ProjectionElems ) [function, total]
   // ----------------------------------------------------------------------
-  rule getTyOf(TyUnknown,             _                      ) => TyUnknown
-  rule getTyOf(TY,                    .ProjectionElems       ) => TY
+  rule getTyOf(TYPESMAP, TY, projectionElemDeref                  PROJS ) => getTyOf(TYPESMAP, pointeeTy(lookupTy(TYPESMAP, TY)), PROJS)
+  rule getTyOf(TYPESMAP,  _, projectionElemField(_, TY)           PROJS ) => getTyOf(TYPESMAP, TY, PROJS)
 
-  rule getTyOf(TY, projectionElemDeref                  PROJS ) => getTyOf(pointeeTy(lookupTy(TY)), PROJS)
-  rule getTyOf( _, projectionElemField(_, TY)           PROJS ) => getTyOf(TY, PROJS) // could also look it up
-  
-  rule getTyOf(TY, projectionElemIndex(_)               PROJS) => getTyOf(elemTy(lookupTy(TY)), PROJS)
-  rule getTyOf(TY, projectionElemConstantIndex(_, _, _) PROJS) => getTyOf(elemTy(lookupTy(TY)), PROJS)
-  rule getTyOf(TY, projectionElemSubslice(_, _, _)      PROJS) => getTyOf(TY, PROJS) // TODO assumes TY is already a slice type
+  rule getTyOf(TYPESMAP, TY, projectionElemIndex(_)               PROJS) => getTyOf(TYPESMAP, elemTy(lookupTy(TYPESMAP, TY)), PROJS)
+  rule getTyOf(TYPESMAP, TY, projectionElemConstantIndex(_, _, _) PROJS) => getTyOf(TYPESMAP, elemTy(lookupTy(TYPESMAP, TY)), PROJS)
+  rule getTyOf(TYPESMAP, TY, projectionElemSubslice(_, _, _)      PROJS) => getTyOf(TYPESMAP, TY, PROJS) // TODO assumes TY is already a slice type
 
-  rule getTyOf(TY, projectionElemDowncast(_)            PROJS) => getTyOf(TY, PROJS) // unchanged type, just setting variantIdx
+  rule getTyOf(TYPESMAP, TY, projectionElemDowncast(_)            PROJS) => getTyOf(TYPESMAP, TY, PROJS)
 
-  rule getTyOf( _, projectionElemOpaqueCast(TY)         PROJS) => getTyOf(TY, PROJS)
+  rule getTyOf(TYPESMAP,  _, projectionElemOpaqueCast(TY)         PROJS) => getTyOf(TYPESMAP, TY, PROJS)
 
-  rule getTyOf( _, projectionElemSubtype(TY)            PROJS) => getTyOf(TY, PROJS)
-  // -----------------------------------------------------------
-  rule getTyOf(_, _) => TyUnknown [owise]
+  rule getTyOf(TYPESMAP,  _, projectionElemSubtype(TY)            PROJS) => getTyOf(TYPESMAP, TY, PROJS)
+```
+
+```{.k .symbolic}
+  syntax MaybeTy ::= getTyOf( MaybeMap , MaybeTy , ProjectionElems ) [function, total, no-evaluators]
+  // ----------------------------------------------------------------------
+  rule getTyOf(_, TY, projectionElemDeref                  PROJS ) => getTyOf(noMap, pointeeTy(lookupTyKore(TY)), PROJS)
+  rule getTyOf(_,  _, projectionElemField(_, TY)           PROJS ) => getTyOf(noMap, TY, PROJS)
+
+  rule getTyOf(_, TY, projectionElemIndex(_)               PROJS) => getTyOf(noMap, elemTy(lookupTyKore(TY)), PROJS)
+  rule getTyOf(_, TY, projectionElemConstantIndex(_, _, _) PROJS) => getTyOf(noMap, elemTy(lookupTyKore(TY)), PROJS)
+  rule getTyOf(_, TY, projectionElemSubslice(_, _, _)      PROJS) => getTyOf(noMap, TY, PROJS) // TODO assumes TY is already a slice type
+
+  rule getTyOf(_, TY, projectionElemDowncast(_)            PROJS) => getTyOf(noMap, TY, PROJS)
+
+  rule getTyOf(_,  _, projectionElemOpaqueCast(TY)         PROJS) => getTyOf(noMap, TY, PROJS)
+
+  rule getTyOf(_,  _, projectionElemSubtype(TY)            PROJS) => getTyOf(noMap, TY, PROJS)
+```
+
+```k
+  rule getTyOf(_, TyUnknown,             _                      ) => TyUnknown
+  rule getTyOf(_, TY,                    .ProjectionElems       ) => TY
+  rule getTyOf(_, _, _) => TyUnknown [owise]
+```
+
+```k
 
 
   syntax MaybeTy ::= pointeeTy ( TypeInfo ) [function, total]
@@ -302,34 +405,68 @@ NB that the need for metadata is determined for the _pointee_ type, not the poin
 A [similar function exists in `rustc`](https://doc.rust-lang.org/nightly/nightly-rustc/src/rustc_middle/ty/util.rs.html#224-235) to determine whether or not a type needs dynamic metadata.
 Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does not.
 
-```k
-  syntax MetadataSize ::= #metadataSize    ( Ty , ProjectionElems ) [function, total, no-evaluators]
-                        | #metadataSize    (  MaybeTy )             [function, total, no-evaluators]
-                        | #metadataSizeAux ( TypeInfo )             [function, total, no-evaluators]
+```{.k .concrete}
+  syntax MetadataSize ::= #metadataSize    ( MaybeMap , Ty , ProjectionElems ) [function, total]
+                        | #metadataSize    ( MaybeMap , MaybeTy )              [function, total]
   // --------------------------------------------------------------------------------------
-  rule #metadataSize(TY, PROJS) => #metadataSize(getTyOf(TY, PROJS))
+  rule #metadataSize(TYPESMAP, TY, PROJS) => #metadataSize(TYPESMAP, getTyOf(TYPESMAP, TY, PROJS))
+  rule #metadataSize(TYPESMAP, TY) => #metadataSizeAux(TYPESMAP, lookupTy(TYPESMAP, TY))
+```
 
-  rule #metadataSize(TyUnknown) => noMetadataSize
-  rule #metadataSize(TY) => #metadataSizeAux(lookupTy(TY))
+```{.k .symbolic}
+  syntax MetadataSize ::= #metadataSize    ( MaybeMap , Ty , ProjectionElems ) [function, total, no-evaluators]
+                        | #metadataSize    ( MaybeMap , MaybeTy )              [function, total, no-evaluators]
+  // --------------------------------------------------------------------------------------
+  rule #metadataSize(_, TY, PROJS) => #metadataSize(noMap, getTyOf(noMap, TY, PROJS))
+  rule #metadataSize(_, TY) => #metadataSizeAux(noMap, lookupTyKore(TY))
+```
 
-  rule #metadataSizeAux(typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
-  rule #metadataSizeAux(typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(CONST))
-  rule #metadataSizeAux(    _OTHER                                          ) => noMetadataSize     [owise]
+```k
+  rule #metadataSize(_, TyUnknown) => noMetadataSize
+```
+
+```{.k .concrete}
+  syntax MetadataSize ::= #metadataSizeAux ( MaybeMap , TypeInfo )  [function, total]
+  rule #metadataSizeAux(TYPESMAP, typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(TYPESMAP, CONST))
+```
+
+```{.k .symbolic}
+  syntax MetadataSize ::= #metadataSizeAux ( MaybeMap , TypeInfo )  [function, total, no-evaluators]
+  rule #metadataSizeAux(_, typeInfoArrayType(_, someTyConst(tyConst(CONST, _)))) => staticSize(readTyConstInt(noMap, CONST))
+```
+
+```k
+  rule #metadataSizeAux(_, typeInfoArrayType(_, noTyConst                     )) => dynamicSize(1)
+  rule #metadataSizeAux(_, _OTHER                                              ) => noMetadataSize     [owise]
 ```
 
 
-```k
+```{.k .concrete}
   // reading Int-valued TyConsts from allocated bytes
-  syntax Int ::= readTyConstInt ( TyConstKind ) [function, no-evaluators]
+  syntax Int ::= readTyConstInt ( MaybeMap , TyConstKind ) [function]
   // -----------------------------------------------------------
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Unsigned)
-    requires isUintTy(#numTypeOf(lookupTy(TY)))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TY))) /Int 8
+  rule readTyConstInt( TYPESMAP, tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Unsigned)
+    requires isUintTy(#numTypeOf(lookupTy(TYPESMAP, TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TYPESMAP, TY))) /Int 8
     [preserves-definedness]
 
-  rule readTyConstInt( tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Signed  )
-    requires isIntTy(#numTypeOf(lookupTy(TY)))
-     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TY))) /Int 8
+  rule readTyConstInt( TYPESMAP, tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Signed  )
+    requires isIntTy(#numTypeOf(lookupTy(TYPESMAP, TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTy(TYPESMAP, TY))) /Int 8
+    [preserves-definedness]
+```
+
+```{.k .symbolic}
+  syntax Int ::= readTyConstInt ( MaybeMap , TyConstKind ) [function, no-evaluators]
+
+  rule readTyConstInt( _, tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Unsigned)
+    requires isUintTy(#numTypeOf(lookupTyKore(TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTyKore(TY))) /Int 8
+    [preserves-definedness]
+
+  rule readTyConstInt( _, tyConstKindValue(TY, allocation(BYTES, _, _, _))) => Bytes2Int(BYTES, LE, Signed  )
+    requires isIntTy(#numTypeOf(lookupTyKore(TY)))
+     andBool lengthBytes(BYTES) ==Int #bitWidth(#numTypeOf(lookupTyKore(TY))) /Int 8
     [preserves-definedness]
 ```
 
@@ -354,65 +491,83 @@ Slices, `str`s  and dynamic types require it, and any `Ty` that `is_sized` does 
 The `alignOf` and `sizeOf` nullary operations return the alignment / size in bytes as a `usize`.
 This information is either hard-wired for primitive types (numbers, first and foremost), or read from the layout in `TypeInfo`.
 
+```{.k .concrete}
+  syntax Int ::= #sizeOf ( MaybeMap , TypeInfo )  [function, total]
+               | #alignOf ( MaybeMap , TypeInfo ) [function, total]
+```
+
+```{.k .symbolic}
+  syntax Int ::= #sizeOf ( MaybeMap , TypeInfo )  [function, total, no-evaluators]
+               | #alignOf ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
+```
+
 ```k
-  syntax Int ::= #sizeOf ( TypeInfo )  [function, total, no-evaluators]
-               | #alignOf ( TypeInfo ) [function, total, no-evaluators]
 
   // primitive int types: use bit width (both for size and alignment)
-  rule #sizeOf(typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #alignOf(typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #alignOf(typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
-  rule #alignOf(typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeInt(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeUint(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeFloat(NUMTY))) => #bitWidth(NUMTY) /Int 8 [preserves-definedness]
   // bool and char
-  rule #sizeOf(typeInfoPrimitiveType(primTypeBool))  => 1
-  rule #alignOf(typeInfoPrimitiveType(primTypeBool)) => 1
-  rule #sizeOf(typeInfoPrimitiveType(primTypeChar))  => 4
-  rule #alignOf(typeInfoPrimitiveType(primTypeChar)) => 4
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeBool))  => 1
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeBool)) => 1
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeChar))  => 4
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeChar)) => 4
   // The str primitive has alignment of a Char but size 0 (indicating dynamic size)
-  rule #sizeOf(typeInfoPrimitiveType(primTypeStr))  => 0
-  rule #alignOf(typeInfoPrimitiveType(primTypeStr)) => 4
+  rule #sizeOf(_, typeInfoPrimitiveType(primTypeStr))  => 0
+  rule #alignOf(_, typeInfoPrimitiveType(primTypeStr)) => 4
   // enums, structs , and tuples provide the values from their layout information
-  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoEnumType(_, _, _, _, noLayoutShape)) => 0
-  rule #alignOf(typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
-  rule #alignOf(typeInfoEnumType(_, _, _, _, noLayoutShape)) => 1
+  rule #sizeOf(_, typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoEnumType(_, _, _, _, noLayoutShape)) => 0
+  rule #alignOf(_, typeInfoEnumType(_, _, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(_, typeInfoEnumType(_, _, _, _, noLayoutShape)) => 1
   // struct
-  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoStructType(_, _, _, noLayoutShape)) => 0
-  rule #alignOf(typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
-  rule #alignOf(typeInfoStructType(_, _, _, noLayoutShape)) => 1
+  rule #sizeOf(_, typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoStructType(_, _, _, noLayoutShape)) => 0
+  rule #alignOf(_, typeInfoStructType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(_, typeInfoStructType(_, _, _, noLayoutShape)) => 1
   // tuple
-  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoTupleType(_, noLayoutShape)) => 0
-  rule #alignOf(typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
-  rule #alignOf(typeInfoTupleType(_, noLayoutShape)) => 1
+  rule #sizeOf(_, typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoTupleType(_, noLayoutShape)) => 0
+  rule #alignOf(_, typeInfoTupleType(_, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(_, typeInfoTupleType(_, noLayoutShape)) => 1
   // union
-  rule #sizeOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
-  rule #sizeOf(typeInfoUnionType(_, _, _, noLayoutShape)) => 0
-  rule #alignOf(typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
-  rule #alignOf(typeInfoUnionType(_, _, _, noLayoutShape)) => 1
-  // arrays with known length have the alignment of the element type, and a size multiplying element count and element size
-  rule #sizeOf(typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(lookupTy(ELEM_TY)) *Int readTyConstInt(KIND)
-  rule #sizeOf(typeInfoArrayType(  _    ,    noTyConst                 )) => 0
-  rule #alignOf(typeInfoArrayType(ELEM_TY, _)) => #alignOf(lookupTy(ELEM_TY))
+  rule #sizeOf(_, typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(   BITS     ))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, _, machineSize(mirInt(BITS)))))) => BITS /Int 8 [preserves-definedness]
+  rule #sizeOf(_, typeInfoUnionType(_, _, _, noLayoutShape)) => 0
+  rule #alignOf(_, typeInfoUnionType(_, _, _, someLayoutShape(layoutShape(_, _, _, align(BYTES),_)))) => BYTES
+  rule #alignOf(_, typeInfoUnionType(_, _, _, noLayoutShape)) => 1
+  // arrays with no known length
+  rule #sizeOf(_, typeInfoArrayType(  _    ,    noTyConst                 )) => 0
   // thin ptr and ref types have the size of `usize` and twice that for fat pointers/refs. Alignment is that of `usize`
-  rule #sizeOf(typeInfoPtrType(POINTEE_TY))
-    => #sizeOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-          *Int (#if #metadataSize(POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
-  rule #sizeOf(typeInfoRefType(POINTEE_TY))
-    => #sizeOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-          *Int (#if #metadataSize(POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
-  rule #alignOf(typeInfoPtrType(_)) => #alignOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
-  rule #alignOf(typeInfoRefType(_)) => #alignOf(typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+  rule #sizeOf(TYPESMAP, typeInfoPtrType(POINTEE_TY))
+    => #sizeOf(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+          *Int (#if #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
+  rule #sizeOf(TYPESMAP, typeInfoRefType(POINTEE_TY))
+    => #sizeOf(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+          *Int (#if #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1) #then 2 #else 1 #fi)
+  rule #alignOf(TYPESMAP, typeInfoPtrType(_)) => #alignOf(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
+  rule #alignOf(TYPESMAP, typeInfoRefType(_)) => #alignOf(TYPESMAP, typeInfoPrimitiveType(primTypeUint(uintTyUsize)))
   // other types (fun and void types) have size and alignment 0
-  rule #sizeOf(_)  => 0 [owise]
-  rule #alignOf(_) => 0 [owise]
+  rule #sizeOf(_, _)  => 0 [owise]
+  rule #alignOf(_, _) => 0 [owise]
+```
+
+Arrays with known length have the alignment of the element type, and a size multiplying element count and element size:
+
+```{.k .concrete}
+  rule #sizeOf(TYPESMAP, typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(TYPESMAP, lookupTy(TYPESMAP, ELEM_TY)) *Int readTyConstInt(TYPESMAP, KIND)
+  rule #alignOf(TYPESMAP, typeInfoArrayType(ELEM_TY, _)) => #alignOf(TYPESMAP, lookupTy(TYPESMAP, ELEM_TY))
+```
+
+```{.k .symbolic}
+  rule #sizeOf(_, typeInfoArrayType(ELEM_TY, someTyConst(tyConst(KIND, _)))) => #sizeOf(noMap, lookupTyKore(ELEM_TY)) *Int readTyConstInt(noMap, KIND)
+  rule #alignOf(_, typeInfoArrayType(ELEM_TY, _)) => #alignOf(noMap, lookupTyKore(ELEM_TY))
 ```
 
 ```k

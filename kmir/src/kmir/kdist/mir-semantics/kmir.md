@@ -105,8 +105,9 @@ will effectively be no-ops at this level).
          ...
        </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
        requires 0 <=Int I andBool I <Int size(LOCALS)
-        andBool notBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+        andBool notBool #isUnionType(lookupTy(TYPESMAP, tyOfLocal(getLocal(LOCALS, I))))
        [preserves-definedness]
 
   rule [execStmt.union]: <k> #execStmt(statement(statementKindAssign(place(local(I), _PROJ) #as PLACE, RVAL), _SPAN))
@@ -115,8 +116,9 @@ will effectively be no-ops at this level).
          ...
        </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
        requires 0 <=Int I andBool I <Int size(LOCALS)
-        andBool #isUnionType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+        andBool #isUnionType(lookupTy(TYPESMAP, tyOfLocal(getLocal(LOCALS, I))))
        [preserves-definedness]
 
   // RVAL evaluation is implemented in rt/data.md
@@ -225,7 +227,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
-         <currentBody> _ => #getBlocks(CALLER) </currentBody>
+         <currentBody> _ => #getBlocks(FUNCSMAP, CALLER) </currentBody>
          <caller> CALLER => NEWCALLER </caller>
          <dest> DEST => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
@@ -234,6 +236,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <functions> FUNCSMAP </functions>
 
   // no value to return, skip writing
   rule [termReturnNone]: <k> #execTerminator(terminator(terminatorKindReturn, _SPAN)) ~> _
@@ -242,7 +245,7 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        </k>
        <currentFunc> _ => CALLER </currentFunc>
        //<currentFrame>
-         <currentBody> _ => #getBlocks(CALLER) </currentBody>
+         <currentBody> _ => #getBlocks(FUNCSMAP, CALLER) </currentBody>
          <caller> CALLER => NEWCALLER </caller>
          <dest> _ => NEWDEST </dest>
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
@@ -251,11 +254,22 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
        //</currentFrame>
        // remaining call stack (without top frame)
        <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <functions> FUNCSMAP </functions>
 
-  syntax List ::= #getBlocks( Ty )               [function, total, no-evaluators]
-                | #getBlocksAux( MonoItemKind )  [function, total]
+```
 
-  rule #getBlocks(TY) => #getBlocksAux(lookupFunction(TY))
+```{.k .concrete}
+  syntax List ::= #getBlocks( MaybeMap, Ty )  [function, total]
+  rule #getBlocks(FUNCSMAP, TY) => #getBlocksAux(lookupFunction(FUNCSMAP, TY))
+```
+
+```{.k .symbolic}
+  syntax List ::= #getBlocks( MaybeMap, Ty )  [function, total, no-evaluators]
+  rule #getBlocks(_, TY) => #getBlocksAux(lookupFunctionKore(TY))
+```
+
+```k
+  syntax List ::= #getBlocksAux( MonoItemKind )  [function, total]
 
   // returns blocks from the body
   rule #getBlocksAux(monoItemFn(_, _, noBody)) => .List
@@ -312,27 +326,44 @@ where the returned result should go.
   syntax KItem ::= #checkFunctionFilter(MonoItemKind)
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandConstant(constOperand(_, _, mirConst(constantKindZeroSized, Ty, _))), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall(Ty, lookupFunction(Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall(Ty, lookupFunction(FUNCSMAP, Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
+       <functions> FUNCSMAP </functions>
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
-        => #execTerminatorCall({#projectedCallTy(I, PROJS, LOCALS)}:>Ty, lookupFunction({#projectedCallTy(I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
+        => #execTerminatorCall({#projectedCallTy(TYPESMAP, I, PROJS, LOCALS)}:>Ty, lookupFunction(FUNCSMAP, {#projectedCallTy(TYPESMAP, I, PROJS, LOCALS)}:>Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
       <locals> LOCALS </locals>
-    requires isTy(#projectedCallTy(I, PROJS, LOCALS))
+      <functions> FUNCSMAP </functions>
+      <types> TYPESMAP </types>
+    requires isTy(#projectedCallTy(TYPESMAP, I, PROJS, LOCALS))
     [preserves-definedness] // valid local indexing checked, projected call target must resolve to a Ty
+```
 
-  syntax MaybeTy ::= #projectedCallTy(Int, ProjectionElems, List) [function, total, no-evaluators]
+```{.k .concrete}
+  syntax MaybeTy ::= #projectedCallTy(MaybeMap, Int, ProjectionElems, List) [function, total]
 
-  rule #projectedCallTy(I, PROJS, LOCALS)
-    => getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+  rule #projectedCallTy(TYPESMAP, I, PROJS, LOCALS)
+    => getTyOf(TYPESMAP, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness]
+```
 
-  rule #projectedCallTy(_, _, _) => TyUnknown [owise]
+```{.k .symbolic}
+  syntax MaybeTy ::= #projectedCallTy(MaybeMap, Int, ProjectionElems, List) [function, total, no-evaluators]
+
+  rule #projectedCallTy(_, I, PROJS, LOCALS)
+    => getTyOf(noMap, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)
+    requires 0 <=Int I andBool I <Int size(LOCALS)
+     andBool isTypedLocal(LOCALS[I])
+    [preserves-definedness]
+```
+
+```k
+  rule #projectedCallTy(_, _, _, _) => TyUnknown [owise]
 
   // Intrinsic function call - execute directly without state switching
   rule [termCallIntrinsic]:
@@ -537,14 +568,15 @@ Therefore a heuristics is used here:
           </stack>
          ...
        </currentFrame>
+       <types> TYPESMAP </types>
     requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
      andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
      andBool isTypedValue(LOCALS[TUPLE])
-     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTupleType(lookupTy(TYPESMAP, tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
      andBool isTypedLocal(LOCALS[CLOSURE])
      andBool (
-               typeInfoVoidType ==K lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
-               orBool isFunType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+               typeInfoVoidType ==K lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))
+               orBool isFunType(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
              )
     [priority(40), preserves-definedness]
 
@@ -570,17 +602,18 @@ Therefore a heuristics is used here:
           </stack>
          ...
        </currentFrame>
+       <types> TYPESMAP </types>
     requires 0 <=Int CLOSURE andBool CLOSURE <Int size(LOCALS)
      andBool 0 <=Int TUPLE andBool TUPLE <Int size(LOCALS)
      andBool isTypedValue(LOCALS[TUPLE])
-     andBool isTupleType(lookupTy(tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
+     andBool isTupleType(lookupTy(TYPESMAP, tyOfLocal({LOCALS[TUPLE]}:>TypedLocal)))
      andBool isTypedLocal(LOCALS[CLOSURE])
                // or the closure ref type pointee is missing from the type table
-     andBool isRefType(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
-     andBool isTy(pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
+     andBool isRefType(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))
+     andBool isTy(pointeeTy(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal))))
      andBool (
-               lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
-               orBool isFunType(lookupTy({pointeeTy(lookupTy(tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty))
+               lookupTy(TYPESMAP, {pointeeTy(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty) ==K typeInfoVoidType
+               orBool isFunType(lookupTy(TYPESMAP, {pointeeTy(lookupTy(TYPESMAP, tyOfLocal({LOCALS[CLOSURE]}:>TypedLocal)))}:>Ty))
              )
     [priority(45), preserves-definedness]
 

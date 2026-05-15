@@ -13,6 +13,7 @@ module RT-VALUE-SYNTAX
   imports BODY
   imports LIB
   imports MONO
+  imports MAP
 ```
 
 ## Values in MIR
@@ -136,19 +137,81 @@ The basic operations of reading and writing those values can use K's "heating" a
 
 # Static data
 
-These functions are global static data  accessed from many places, and will be extended for the particular program.
+In symbolic execution (Haskell/booster backend), static data is stored as generated, hardcoded functions that return KORE.
+In concrete execution (LLVM backend), it is stored in `Map`s in the configuration.
+The `MaybeMap` sort wraps this choice: `someMap(M)` means use map lookups. `noMap` means use generated functions.
+
+```k
+  syntax MaybeMap ::= "noMap"      [symbol(MaybeMap::noMap)]
+                    | someMap(Map) [symbol(MaybeMap::someMap)]
+```
+
+## Lookup functions (for symbolic execution)
+
+These functions are global static data accessed from many places, and will be extended for the particular program.
 
 
 ```k
   // // function store, Ty -> MonoItemFn
-  syntax MonoItemKind ::= lookupFunction ( Ty ) [function, total, symbol(lookupFunction), no-evaluators]
+  syntax MonoItemKind ::= lookupFunctionKore ( Ty ) [function, total, symbol(lookupFunctionKore), no-evaluators]
 
   // // static allocations: AllocId -> AllocData (Value or error)
-  syntax Evaluation ::= lookupAlloc ( AllocId ) [function, total, symbol(lookupAlloc), no-evaluators]
+  syntax Evaluation ::= lookupAllocKore ( AllocId ) [function, total, symbol(lookupAllocKore), no-evaluators]
                       | InvalidAlloc ( AllocId ) // error marker
 
   // // static information about the base type interning in the MIR: Ty -> TypeInfo
-  syntax TypeInfo ::= lookupTy ( Ty )    [function, total, symbol(lookupTy), no-evaluators]
+  syntax TypeInfo ::= lookupTyKore ( Ty )    [function, total, symbol(lookupTyKore), no-evaluators]
+```
+
+## Lookup functions (for concrete execution)
+
+These functions perform lookups from Maps stored in the configuration, used in concrete execution (LLVM backend).
+They return the same defaults as the Kore versions when a key is not found.
+
+```k
+  syntax MonoItemKind ::= lookupFunctionMap ( Map , Ty ) [function, total]
+  rule lookupFunctionMap(M, ty(I)) => {M [ ty(I) ] orDefault monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(I), noBody)}:>MonoItemKind
+
+  syntax TypeInfo ::= lookupTyMap ( Map , Ty ) [function, total]
+  rule lookupTyMap(M, TY) => {M [ TY ] orDefault typeInfoVoidType}:>TypeInfo
+
+  syntax Evaluation ::= lookupAllocMap ( Map , AllocId ) [function, total]
+  rule lookupAllocMap(M, AID) => {M [ AID ] orDefault InvalidAlloc(AID)}:>Evaluation
+```
+
+## Top-level lookup functions
+
+These dispatch to either the map-based or Kore-based lookup depending on the backend.
+
+In **concrete execution** (LLVM), the cells hold `someMap(M)` and the functions dispatch to map lookups.
+The `noMap` case should not occur in concrete execution, so it returns a default/error.
+
+```{.k .concrete}
+  syntax MonoItemKind ::= lookupFunction ( MaybeMap , Ty ) [function, total]
+  rule lookupFunction(someMap(M), TY) => lookupFunctionMap(M, TY)
+  rule lookupFunction(noMap, ty(I)) => monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(I), noBody)
+
+  syntax TypeInfo ::= lookupTy ( MaybeMap , Ty ) [function, total]
+  rule lookupTy(someMap(M), TY) => lookupTyMap(M, TY)
+  rule lookupTy(noMap, _) => typeInfoVoidType
+
+  syntax Evaluation ::= lookupAlloc ( MaybeMap , AllocId ) [function, total]
+  rule lookupAlloc(someMap(M), AID) => lookupAllocMap(M, AID)
+  rule lookupAlloc(noMap, AID) => InvalidAlloc(AID)
+```
+
+In **symbolic execution** (Haskell/booster), the cells hold `noMap` and the functions are `[no-evaluators]`,
+with per-program axioms injected into `definition.kore` providing the actual equations.
+
+```{.k .symbolic}
+  syntax MonoItemKind ::= lookupFunction ( MaybeMap , Ty ) [function, total, no-evaluators]
+  rule lookupFunction(_, TY) => lookupFunctionKore(TY)
+
+  syntax TypeInfo ::= lookupTy ( MaybeMap , Ty ) [function, total, no-evaluators]
+  rule lookupTy(_, TY) => lookupTyKore(TY)
+
+  syntax Evaluation ::= lookupAlloc ( MaybeMap , AllocId ) [function, total, no-evaluators]
+  rule lookupAlloc(_, AID) => lookupAllocKore(AID)
 ```
 
 ```k

@@ -45,6 +45,10 @@ module KMIR-CONFIGURATION
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
+                  // static data lookup tables (populated in concrete execution, noMap in symbolic execution)
+                  <functions> noMap </functions>
+                  <types> noMap </types>
+                  <memory> noMap </memory>
                 </kmir>
 ```
 
@@ -59,6 +63,10 @@ For better performance, this information is reified to K functions,
 rather than carrying static `Map` structures with the configuration.
 
 The functions are defined in the `RT-VALUE` module for now but should have their own module.
+
+The configuration also contains cells for these lookup tables (`functions`, `types`, `memory`)
+holding `MaybeMap` values. In concrete execution they are populated with `someMap(M)` for efficient
+LLVM execution; in symbolic execution they are `noMap` and lookups use the generated functions instead.
 
 ```k
 endmodule

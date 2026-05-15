@@ -16,35 +16,31 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture(scope='session')
-def definition_dir():  # -> Path:
-    import time
+def kmir_instance():
+    import tempfile
 
     from kmir.kmir import KMIR
 
-    from .utils import TEST_DATA_DIR
+    with tempfile.TemporaryDirectory() as target_dir:
+        from pathlib import Path
 
-    target_dir = TEST_DATA_DIR / 'decode-value' / 'tmp'
+        kmir = KMIR.from_kompiled_kore(TEST_SMIR, target_dir=Path(target_dir), symbolic=False)
+        yield kmir
 
-    # prevent other processes from concurrently trying to compile
-    # (the scope='session' above does not actually work in pytest-xdist)
-    lock_file = TEST_DATA_DIR / 'decode-value' / 'tmp.lock'
-    try:
-        with open(lock_file, 'x') as _:
-            # generate and compile an LLVM interpreter with the type-table
-            _ = KMIR.from_kompiled_kore(TEST_SMIR, target_dir=target_dir, symbolic=False)
-        lock_file.unlink()
-    except FileExistsError:
-        # wait loop until interpreter exists, max 1min
-        secs = 0
-        while lock_file.exists() and secs < 60:
-            time.sleep(1)
-        if not (target_dir / 'llvm' / 'interpreter').exists():
-            raise Exception('Waited in vain for interpreter to arise. Exiting') from None
 
-    yield target_dir / 'llvm'
+@pytest.fixture(scope='session')
+def definition_dir(kmir_instance):  # -> Path:
+    return kmir_instance.definition_dir
 
-    # should remove the target_dir but other processes are probably still using it
-    print(f'Remove {target_dir} if you want to clean up')
+
+@pytest.fixture(scope='session')
+def types_cell_kore(kmir_instance):
+    """Build the types map cell as a Kore pattern for use in the test template."""
+    from pyk.kast.inner import KSort
+
+    cell_maps = kmir_instance._make_smir_maps(TEST_SMIR)
+    types_kast = cell_maps['TYPES_CELL']
+    return kmir_instance.kast_to_kore(types_kast, KSort('MaybeMap')).text
 
 
 @pytest.fixture(scope='session')
@@ -85,6 +81,9 @@ KORE_TEMPLATE: Final = Template(dedent(r"""
                 Lbl'-LT-'locals'-GT-'{}(Lbl'Stop'List{}())
             ),
             Lbl'-LT-'stack'-GT-'{}(Lbl'Stop'List{}()),
+            Lbl'-LT-'functions'-GT-'{}(LblMaybeMap'ColnColn'noMap{}()), /* noMap: not needed for decode tests; use someMap otherwise */
+            Lbl'-LT-'types'-GT-'{}($types_cell),
+            Lbl'-LT-'memory'-GT-'{}(LblMaybeMap'ColnColn'noMap{}()) /* noMap: not needed for decode tests; use someMap otherwise */
         ),
         Lbl'-LT-'generatedCounter'-GT-'{}(\dv{SortInt{}}("0"))
     )
@@ -98,7 +97,7 @@ class _TestData(NamedTuple):
     type_info: dict[str, Any]
     expected: str
 
-    def to_pattern(self, definition: KDefinition) -> Pattern:
+    def to_pattern(self, definition: KDefinition, types_cell_pattern: Pattern) -> Pattern:
         from pyk.kore.prelude import bytes_dv
         from pyk.kore.syntax import App
 
@@ -106,6 +105,7 @@ class _TestData(NamedTuple):
             'LbldecodeValue',
             (),
             (
+                types_cell_pattern,
                 bytes_dv(self.bytez),
                 self._json_type_info_to_kore(self.type_info, definition),
             ),
@@ -192,6 +192,7 @@ def test_decode_value(
     test_data: _TestData,
     definition_dir: Path,
     definition: KDefinition,
+    types_cell_kore: str,
     tmp_path: Path,
 ) -> None:
     from pyk.kore import match as km
@@ -204,8 +205,9 @@ def test_decode_value(
         pytest.skip()
 
     # Given
-    evaluation = test_data.to_pattern(definition)
-    kore_text = KORE_TEMPLATE.substitute(evaluation=evaluation.text)
+    types_pattern = KoreParser(types_cell_kore).pattern()
+    evaluation = test_data.to_pattern(definition, types_cell_pattern=types_pattern)
+    kore_text = KORE_TEMPLATE.substitute(evaluation=evaluation.text, types_cell=types_cell_kore)
     parser = KoreParser(kore_text)
     init_pattern = parser.pattern()
     assert parser.eof
