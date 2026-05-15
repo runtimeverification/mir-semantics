@@ -310,45 +310,12 @@ def kompile_smir(
         return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=kdist.which(llvm_lib_target))
 
     else:
-        target_llvmdt_path = target_llvm_path / 'dt'
-        _LOGGER.info(f'Creating directory {target_llvmdt_path}')
-        target_llvmdt_path.mkdir(parents=True, exist_ok=True)
-
-        # Process LLVM definition (only SMIR rules for concrete execution)
-        _LOGGER.info('Writing LLVM definition file')
+        # No per-program LLVM kompile needed: program data goes into map cells in the
+        # initial configuration, not into definition.kore. Use the pre-built kdist definition.
         llvm_def_dir = kdist.which(llvm_target)
-        llvm_def_file = llvm_def_dir / 'definition.kore'
-        llvm_def_output = target_llvm_path / 'definition.kore'
-        _insert_rules_and_write(llvm_def_file, smir_rules, llvm_def_output)
-
-        import subprocess
-
-        _LOGGER.info('Running llvm-kompile-matching')
-        subprocess.run(
-            ['llvm-kompile-matching', str(llvm_def_output), 'qbaL', str(target_llvmdt_path), '1/2'], check=True
-        )
-        _LOGGER.info('Running llvm-kompile')
-        subprocess.run(
-            [
-                'llvm-kompile',
-                str(llvm_def_output),
-                str(target_llvmdt_path),
-                'main',
-                '-O2',
-                '--',
-                '-o',
-                target_llvm_path / 'interpreter',
-            ],
-            check=True,
-        )
-        blacklist = ['definition.kore', 'interpreter', 'dt']
-        to_copy = [file.name for file in llvm_def_dir.iterdir() if file.name not in blacklist]
-        for file in to_copy:
-            _LOGGER.info(f'Copying file {file}')
-            shutil.copy2(llvm_def_dir / file, target_llvm_path / file)
-
+        _LOGGER.info(f'Using pre-built LLVM definition: {llvm_def_dir}')
         kompile_digest.write(target_dir)
-        return KompiledConcrete(llvm_dir=target_llvm_path)
+        return KompiledConcrete(llvm_dir=llvm_def_dir)
 
 
 def _make_stratified_rules(
@@ -451,14 +418,14 @@ def make_kore_rules(
         ),
     )
     default_function = _mk_equation(
-        kmir, 'lookupFunction', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
+        kmir, 'lookupFunctionKore', KApply('ty', (KVariable('TY'),)), 'Ty', unknown_function, 'MonoItemKind'
     ).let_attrs(((App('owise')),))
 
     equations: list[Axiom] = [default_function]
 
     for fty, kind in _functions(kmir, smir_info).items():
         equations.append(
-            _mk_equation(kmir, 'lookupFunction', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
+            _mk_equation(kmir, 'lookupFunctionKore', KApply('ty', (intToken(fty),)), 'Ty', kind, 'MonoItemKind')
         )
 
     # stratify type and alloc lookups
@@ -478,7 +445,7 @@ def make_kore_rules(
         for ty, info in (type_mapping.args for type_mapping in type_mappings if isinstance(type_mapping, KApply))
     ]
 
-    type_equations = _make_stratified_rules(kmir, 'lookupTy', 'Ty', 'TypeInfo', 'ty', type_assocs, invalid_type)
+    type_equations = _make_stratified_rules(kmir, 'lookupTyKore', 'Ty', 'TypeInfo', 'ty', type_assocs, invalid_type)
 
     invalid_alloc_n = KApply(
         'InvalidAlloc(_)_RT-VALUE-SYNTAX_Evaluation_AllocId', (KApply('allocId', (KVariable('N'),)),)
@@ -486,7 +453,7 @@ def make_kore_rules(
     decoded_allocs = [_decode_alloc(smir_info=smir_info, raw_alloc=alloc) for alloc in smir_info._smir['allocs']]
     allocs = [(get_int_arg(alloc_id), value) for (alloc_id, value) in decoded_allocs]
     alloc_equations = _make_stratified_rules(
-        kmir, 'lookupAlloc', 'AllocId', 'Evaluation', 'allocId', allocs, invalid_alloc_n
+        kmir, 'lookupAllocKore', 'AllocId', 'Evaluation', 'allocId', allocs, invalid_alloc_n
     )
 
     # Generate break-on-function filter rule if filters are provided
@@ -494,7 +461,12 @@ def make_kore_rules(
     if break_on_function:
         break_on_rules.append(_mk_break_on_functions_rule(kmir, break_on_function))
 
-    return [*equations, *type_equations, *alloc_equations, *break_on_rules]
+    # Bridge axioms: lookupX(MaybeMap, Key) => lookupXKore(Key)
+    # In symbolic execution, lookupX is [no-evaluators] so its K rules are not compiled.
+    # These axioms delegate to lookupXKore which has the per-program equations.
+    bridge_axioms = _make_lookup_bridge_axioms()
+
+    return [*equations, *type_equations, *alloc_equations, *break_on_rules, *bridge_axioms]
 
 
 def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
@@ -535,6 +507,106 @@ def _functions(kmir: KMIR, smir_info: SMIRInfo) -> dict[int, KInner]:
             )
 
     return functions
+
+
+def _make_lookup_bridge_axioms() -> list[Axiom]:
+    """Generate bridge axioms: lookupX(MaybeMap, Key) => lookupXKore(Key).
+
+    In symbolic execution, lookupX is [no-evaluators], so its K rules are not compiled.
+    These axioms bridge from the two-argument wrapper to the single-argument Kore
+    version, which has per-program equations.
+    """
+    from pyk.kore.rule import FunctionRule
+
+    maybemap_sort = SortApp('SortMaybeMap')
+    ty_sort = SortApp('SortTy')
+    allocid_sort = SortApp('SortAllocId')
+    mono_sort = SortApp('SortMonoItemKind')
+    typeinfo_sort = SortApp('SortTypeInfo')
+    eval_sort = SortApp('SortEvaluation')
+
+    mm_var = EVar('VarMM', maybemap_sort)
+    ty_var = EVar('VarTY', ty_sort)
+    aid_var = EVar('VarAID', allocid_sort)
+
+    list_sort = SortApp('SortList')
+
+    bridges = [
+        # #getBlocks(MM, TY) => #getBlocksAux(lookupFunctionKore(TY))
+        FunctionRule(
+            lhs=App(
+                "Lbl'Hash'getBlocks'LParUndsCommUndsRParUnds'KMIR-CONTROL-FLOW'Unds'List'Unds'MaybeMap'Unds'Ty",
+                (),
+                (mm_var, ty_var),
+            ),
+            rhs=App(
+                "Lbl'Hash'getBlocksAux'LParUndsRParUnds'KMIR-CONTROL-FLOW'Unds'List'Unds'MonoItemKind",
+                (),
+                (App('LbllookupFunctionKore', (), (ty_var,)),),
+            ),
+            req=None,
+            ens=None,
+            sort=list_sort,
+            arg_sorts=(maybemap_sort, ty_sort),
+            anti_left=None,
+            priority=50,
+            uid='getBlocks-bridge',
+            label='getBlocks-bridge',
+        ),
+        # lookupFunction(MM, TY) => lookupFunctionKore(TY)
+        FunctionRule(
+            lhs=App(
+                "LbllookupFunction'LParUndsCommUndsRParUnds'RT-VALUE-SYNTAX'Unds'MonoItemKind'Unds'MaybeMap'Unds'Ty",
+                (),
+                (mm_var, ty_var),
+            ),
+            rhs=App('LbllookupFunctionKore', (), (ty_var,)),
+            req=None,
+            ens=None,
+            sort=mono_sort,
+            arg_sorts=(maybemap_sort, ty_sort),
+            anti_left=None,
+            priority=50,
+            uid='lookupFunction-bridge',
+            label='lookupFunction-bridge',
+        ),
+        # lookupTy(MM, TY) => lookupTyKore(TY)
+        FunctionRule(
+            lhs=App(
+                "LbllookupTy'LParUndsCommUndsRParUnds'RT-VALUE-SYNTAX'Unds'TypeInfo'Unds'MaybeMap'Unds'Ty",
+                (),
+                (mm_var, ty_var),
+            ),
+            rhs=App('LbllookupTyKore', (), (ty_var,)),
+            req=None,
+            ens=None,
+            sort=typeinfo_sort,
+            arg_sorts=(maybemap_sort, ty_sort),
+            anti_left=None,
+            priority=50,
+            uid='lookupTy-bridge',
+            label='lookupTy-bridge',
+        ),
+        # lookupAlloc(MM, AID) => lookupAllocKore(AID)
+        FunctionRule(
+            lhs=App(
+                "LbllookupAlloc'LParUndsCommUndsRParUnds'RT-VALUE-SYNTAX'Unds'Evaluation'Unds'MaybeMap'Unds'AllocId",
+                (),
+                (mm_var, aid_var),
+            ),
+            rhs=App('LbllookupAllocKore', (), (aid_var,)),
+            req=None,
+            ens=None,
+            sort=eval_sort,
+            arg_sorts=(maybemap_sort, allocid_sort),
+            anti_left=None,
+            priority=50,
+            uid='lookupAlloc-bridge',
+            label='lookupAlloc-bridge',
+        ),
+    ]
+
+    return [r.to_axiom().let_attrs((App("UNIQUE'Unds'ID", (), (String(r.uid),)),)) for r in bridges]
 
 
 def _mk_equation(kmir: KMIR, fun: str, arg: KInner, arg_sort: str, result: KInner, result_sort: str) -> Axiom:

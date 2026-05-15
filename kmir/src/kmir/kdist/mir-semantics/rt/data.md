@@ -124,10 +124,11 @@ Constant operands are simply decoded according to their type.
 
 ```k
   rule <k> operandConstant(constOperand(_, _, mirConst(KIND, TY, _)))
-        => #decodeConstant(KIND, TY, lookupTy(TY))
+        => #decodeConstant(KIND, TY, lookupTy(TYPESMAP, TY))
        ...
        </k>
-    requires typeInfoVoidType =/=K lookupTy(TY)
+       <types> TYPESMAP </types>
+    requires typeInfoVoidType =/=K lookupTy(TYPESMAP, TY)
 ```
 
 Function pointers are zero-sized constants whose `Ty` is a key in the function table instaed of the type table.
@@ -137,8 +138,10 @@ Function pointers are zero-sized constants whose `Ty` is a key in the function t
         => FunPtr(TY)
        ...
        </k>
-    requires typeInfoVoidType ==K lookupTy(TY) // not a valid type info
-     andBool lookupFunction(TY) =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
+       <types> TYPESMAP </types>
+       <functions> FUNCSMAP </functions>
+    requires typeInfoVoidType ==K lookupTy(TYPESMAP, TY) // not a valid type info
+     andBool lookupFunction(FUNCSMAP, TY) =/=K monoItemFn(symbol("** UNKNOWN FUNCTION **"), defId(ID), noBody ) // valid function Ty
 ```
 
 ### Copying and Moving
@@ -910,14 +913,15 @@ even though this could be supported.
            )
         => #traverseProjection(
              toAlloc(ALLOC_ID),
-             {lookupAlloc(ALLOC_ID)}:>Value,
+             {lookupAlloc(ALLOCSMAP, ALLOC_ID)}:>Value,
              ALLOC_PROJS, // alloc projections
              .Contexts // previous contexts obsolete
            )
           ~> #derefTruncate(METADATA_SIZE, PROJS) // then truncate, then continue with remaining projections
         ...
         </k>
-    requires isValue(lookupAlloc(ALLOC_ID))
+        <memory> ALLOCSMAP </memory>
+    requires isValue(lookupAlloc(ALLOCSMAP, ALLOC_ID))
     [preserves-definedness] // sort projection checked
 ```
 
@@ -952,15 +956,17 @@ The most basic ones are simply accessing an operand, either directly or by way o
   rule <k> rvalueUse(OPERAND) => OPERAND ... </k>
 
   rule <k> rvalueCast(CASTKIND, operandCopy(place(local(I), PROJS)) #as OPERAND, TY)
-        => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), TY) ... </k>
+        => #cast(OPERAND, CASTKIND, getTyOf(TYPESMAP, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), TY) ... </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
 
   rule <k> rvalueCast(CASTKIND, operandMove(place(local(I), PROJS)) #as OPERAND, TY)
-        => #cast(OPERAND, CASTKIND, getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), TY) ... </k>
+        => #cast(OPERAND, CASTKIND, getTyOf(TYPESMAP, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), TY) ... </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid list indexing checked
@@ -984,8 +990,9 @@ The `RValue::Repeat` creates and array of (statically) fixed length by repeating
 ```k
   syntax Evaluation ::= #mkArray ( Evaluation , Int ) [strict(1)]
 
-  rule <k> rvalueRepeat(ELEM, tyConst(KIND, _)) => #mkArray(ELEM, readTyConstInt(KIND)) ... </k>
-    requires isInt(readTyConstInt(KIND))
+  rule <k> rvalueRepeat(ELEM, tyConst(KIND, _)) => #mkArray(ELEM, readTyConstInt(TYPESMAP, KIND)) ... </k>
+    <types> TYPESMAP </types>
+    requires isInt(readTyConstInt(TYPESMAP, KIND))
     [preserves-definedness]
 
   rule <k> #mkArray(ELEMENT:Value, N) => Range(makeList(N, ELEMENT)) ... </k>
@@ -1115,7 +1122,7 @@ and an array of the indeicated size gets reconstructed if the provided metadata 
         ...
        </k>
     // requires LENGTH +Int PTR_OFFSET <=Int ORIGIN_SIZE // refuse to create an invalid fat pointer
-    //  andBool dynamicSize(1) ==K #metadataSize(lookupTy(_TY)) // expect a slice type
+    //  andBool dynamicSize(1) ==K #metadataSize(lookupTyKore(_TY)) // expect a slice type
     //  andBool hasIndexTail(PROJS) ???
 
   rule <k> ListItem(PtrLocal(OFFSET, PLACE, _, metadata(_SIZE, PTR_OFFSET, ORIGIN_SIZE))) ListItem(Aggregate(_, .List)) ~> #mkAggregate(aggregateKindRawPtr(_TY, MUT))
@@ -1149,8 +1156,9 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
 
 ```k
   rule <k> rvalueDiscriminant(place(local(I), PROJS) #as PLACE)
-        => #discriminant(operandCopy(PLACE), getTyOf(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)) ... </k>
+        => #discriminant(operandCopy(PLACE), getTyOf(TYPESMAP, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS)) ... </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedLocal(LOCALS[I])
     [preserves-definedness] // valid indexing and sort coercion
@@ -1158,12 +1166,13 @@ The `getTyOf` helper applies the projections from the `Place` to determine the `
   syntax Evaluation ::= #discriminant ( Evaluation , MaybeTy ) [strict(1)]
   // ----------------------------------------------------------------
   rule <k> #discriminant(Aggregate(IDX, _), TY:Ty)
-        => Integer(#lookupDiscrAux(discriminantsOf(lookupTy(TY)), IDX), 0, false) // HACK: bit width 0 means "flexible"
+        => Integer(#lookupDiscrAux(discriminantsOf(lookupTy(TYPESMAP, TY)), IDX), 0, false) // HACK: bit width 0 means "flexible"
         ...
        </k>
-    requires asInt(IDX) <Int size(discriminantsOf(lookupTy(TY)))
+       <types> TYPESMAP </types>
+    requires asInt(IDX) <Int size(discriminantsOf(lookupTy(TYPESMAP, TY)))
      andBool 0 <=Int asInt(IDX) // must not be `err(_)`
-     andBool 0 <Int size(discriminantsOf(lookupTy(TY))) // must be an enum
+     andBool 0 <Int size(discriminantsOf(lookupTy(TYPESMAP, TY))) // must be an enum
     [preserves-definedness]
 
   // // default 0 for non-enum types. May be undefined behaviour, though.
@@ -1234,24 +1243,26 @@ This eliminates any `Deref` projections from the place, and also resolves `Index
               #decodeConstant(
                 constantKindZeroSized,
                 tyOfLocal(getLocal(LOCALS, I)),
-                lookupTy(tyOfLocal(getLocal(LOCALS, I)))
+                lookupTy(TYPESMAP, tyOfLocal(getLocal(LOCALS, I)))
               )
             )
         ~> rvalueRef(REGION, KIND, place(local(I), PROJS))
        ...
        </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isNewLocal(LOCALS[I])
-     andBool #zeroSizedType(lookupTy(tyOfLocal(getLocal(LOCALS, I))))
+     andBool #zeroSizedType(lookupTy(TYPESMAP, tyOfLocal(getLocal(LOCALS, I))))
     [preserves-definedness] // valid list indexing checked, zero-sized locals materialise trivially
 
   rule <k> rvalueRef(_REGION, KIND, place(local(I), PROJS))
         => #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
-        ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO: Sus on this rule
+        ~> #forRef(#mutabilityOf(KIND), metadata(#metadataSize(TYPESMAP, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO: Sus on this rule
        ...
        </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
@@ -1307,11 +1318,12 @@ The operation typically creates a pointer with empty metadata.
   rule <k> rvalueAddressOf(MUT, place(local(I), PROJS))
          =>
            #traverseProjection(toLocal(I), getValue(LOCALS, I), PROJS, .Contexts)
-          ~> #forPtr(MUT, metadata(#metadataSize(tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO These initial values might get overwrote
+          ~> #forPtr(MUT, metadata(#metadataSize(TYPESMAP, tyOfLocal({LOCALS[I]}:>TypedLocal), PROJS), 0, noMetadataSize)) // TODO These initial values might get overwrote
            // we should use #alignOf to emulate the address
        ...
        </k>
        <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
     requires 0 <=Int I andBool I <Int size(LOCALS)
      andBool isTypedValue(LOCALS[I])
     [preserves-definedness] // valid list indexing checked, #metadataSize should only use static information
@@ -1383,10 +1395,11 @@ bit width, signedness, and possibly truncating or 2s-complementing the value.
   // int casts
   rule <k> #cast(Integer(VAL, WIDTH, _SIGNEDNESS), castKindIntToInt, _, TY)
           =>
-            #intAsType(VAL, WIDTH, #numTypeOf(lookupTy(TY)))
+            #intAsType(VAL, WIDTH, #numTypeOf(lookupTy(TYPESMAP, TY)))
           ...
         </k>
-      requires #isIntType(lookupTy(TY))
+        <types> TYPESMAP </types>
+      requires #isIntType(lookupTy(TYPESMAP, TY))
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
 
@@ -1395,19 +1408,21 @@ Boolean values can also be cast to Integers (encoding `true` as `1`).
 ```k
   rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
           =>
-            #intAsType(1, 8, #numTypeOf(lookupTy(TY)))
+            #intAsType(1, 8, #numTypeOf(lookupTy(TYPESMAP, TY)))
           ...
         </k>
-      requires #isIntType(lookupTy(TY))
+        <types> TYPESMAP </types>
+      requires #isIntType(lookupTy(TYPESMAP, TY))
        andBool VAL
       [preserves-definedness] // ensures #numTypeOf is defined
 
   rule <k> #cast(BoolVal(VAL), castKindIntToInt, _, TY)
           =>
-            #intAsType(0, 8, #numTypeOf(lookupTy(TY)))
+            #intAsType(0, 8, #numTypeOf(lookupTy(TYPESMAP, TY)))
           ...
         </k>
-      requires #isIntType(lookupTy(TY))
+        <types> TYPESMAP </types>
+      requires #isIntType(lookupTy(TYPESMAP, TY))
        andBool notBool VAL
       [preserves-definedness] // ensures #numTypeOf is defined
 ```
@@ -1439,7 +1454,8 @@ the cast preserves the source pointer and its metadata unchanged.
           => PtrLocal(OFFSET, PLACE, MUT, META)
           ...
         </k>
-      requires pointeeTy(lookupTy(TY_SOURCE)) ==K pointeeTy(lookupTy(TY_TARGET))
+        <types> TYPESMAP </types>
+      requires pointeeTy(lookupTy(TYPESMAP, TY_SOURCE)) ==K pointeeTy(lookupTy(TYPESMAP, TY_TARGET))
       [priority(45), preserves-definedness] // valid map lookups checked
 ```
 
@@ -1450,28 +1466,33 @@ Otherwise, compute the type projection and convert metadata accordingly.
           =>
             PtrLocal(
               OFFSET,
-              place(LOCAL, appendP(PROJS, {#typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))}:>ProjectionElems)),
+              place(LOCAL, appendP(PROJS, {#typeProjection(TYPESMAP, lookupTy(TYPESMAP, TY_SOURCE), lookupTy(TYPESMAP, TY_TARGET))}:>ProjectionElems)),
               MUT,
-              #convertMetadata(META, lookupTy(TY_TARGET))
+              #convertMetadata(TYPESMAP, META, lookupTy(TYPESMAP, TY_TARGET))
             )
           ...
         </k>
-      requires NoProjectionElems =/=K #typeProjection(lookupTy(TY_SOURCE), lookupTy(TY_TARGET))
+        <types> TYPESMAP </types>
+      requires NoProjectionElems =/=K #typeProjection(TYPESMAP, lookupTy(TYPESMAP, TY_SOURCE), lookupTy(TYPESMAP, TY_TARGET))
       [preserves-definedness] // valid map lookups checked
 ```
 
 The pointer's metadata needs to be adapted to the new type.
 
-```k
-  syntax Metadata ::= #convertMetadata ( Metadata , TypeInfo ) [function, total, no-evaluators]
+```{.k .concrete}
+  syntax Metadata ::= #convertMetadata ( MaybeMap , Metadata , TypeInfo ) [function, total]
+```
+
+```{.k .symbolic}
+  syntax Metadata ::= #convertMetadata ( MaybeMap , Metadata , TypeInfo ) [function, total, no-evaluators]
 ```
 
 Pointers to slices can be converted to pointers to single elements, _losing_ their metadata.
 ```k
-  rule #convertMetadata(     metadata(SIZE, OFFSET, _) , typeInfoRefType(POINTEE_TY) ) => metadata(noMetadataSize, OFFSET, SIZE)
-    requires #metadataSize(POINTEE_TY) ==K noMetadataSize                                                      [priority(60)]
-  rule #convertMetadata(     metadata(SIZE, OFFSET, _) , typeInfoPtrType(POINTEE_TY) ) => metadata(noMetadataSize, OFFSET, SIZE)
-    requires #metadataSize(POINTEE_TY) ==K noMetadataSize                                                      [priority(60)]
+  rule #convertMetadata(TYPESMAP, metadata(SIZE, OFFSET, _) , typeInfoRefType(POINTEE_TY) ) => metadata(noMetadataSize, OFFSET, SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K noMetadataSize                                                      [priority(60)]
+  rule #convertMetadata(TYPESMAP, metadata(SIZE, OFFSET, _) , typeInfoPtrType(POINTEE_TY) ) => metadata(noMetadataSize, OFFSET, SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K noMetadataSize                                                      [priority(60)]
 ```
 
 Conversely, when casting a pointer to an element to a pointer to a slice or array,
@@ -1481,17 +1502,17 @@ the original allocation size must be checked to be sufficient.
 
 ```k
   // no metadata to begin with, fill it in from target type (NB dynamicSize(1) if dynamic)
-  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, _)    , typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, noMetadataSize)
-  rule #convertMetadata(   metadata(noMetadataSize, OFFSET, ORIGIN_SIZE )    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, ORIGIN_SIZE)
+  rule #convertMetadata(TYPESMAP, metadata(noMetadataSize, OFFSET, _)    , typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, noMetadataSize)
+  rule #convertMetadata(TYPESMAP, metadata(noMetadataSize, OFFSET, ORIGIN_SIZE )    , typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
 ```
 
 Conversion from an array to a slice pointer requires adding metadata (`dynamicSize`) with the previously-static length.
 ```k
   // convert static length to dynamic length
-  rule #convertMetadata(metadata(staticSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, staticSize(SIZE))
-    requires #metadataSize(POINTEE_TY) ==K dynamicSize(1)
-  rule #convertMetadata(metadata(staticSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, staticSize(SIZE))
-    requires #metadataSize(POINTEE_TY) ==K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(staticSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, staticSize(SIZE))
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(staticSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, staticSize(SIZE))
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1)
 ```
 
 Conversion from a slice to an array pointer, or between different static length array pointers, is allowed in all cases.
@@ -1500,29 +1521,29 @@ It may however be illegal to _dereference_ (i.e., access) the created pointer, d
 **TODO** we can mark cases of insufficient original length as "InvalidCast" in the future, similar to the above future work.
 
 ```k
-  rule #convertMetadata(metadata(staticSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, ORIGIN_SIZE)
-    requires #metadataSize(POINTEE_TY) =/=K dynamicSize(1)
-  rule #convertMetadata(metadata(staticSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, ORIGIN_SIZE)
-    requires #metadataSize(POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(staticSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(staticSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) =/=K dynamicSize(1)
 
-  rule #convertMetadata(metadata(dynamicSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, ORIGIN_SIZE)
-    requires #metadataSize(POINTEE_TY) =/=K dynamicSize(1)
-  rule #convertMetadata(metadata(dynamicSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(POINTEE_TY), OFFSET, ORIGIN_SIZE)
-    requires #metadataSize(POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(dynamicSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) =/=K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(dynamicSize(_) #as ORIGIN_SIZE, OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(#metadataSize(TYPESMAP, POINTEE_TY), OFFSET, ORIGIN_SIZE)
+    requires #metadataSize(TYPESMAP, POINTEE_TY) =/=K dynamicSize(1)
 ```
 
 For a cast bwetween two pointer types with `dynamicSize` metadata (unlikely to occur), the dynamic size value is retained.
 
 ```k
-  rule #convertMetadata(metadata(dynamicSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, dynamicSize(SIZE))
-    requires #metadataSize(POINTEE_TY) ==K dynamicSize(1)
-  rule #convertMetadata(metadata(dynamicSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, dynamicSize(SIZE))
-    requires #metadataSize(POINTEE_TY) ==K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(dynamicSize(SIZE), OFFSET, _), typeInfoRefType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, dynamicSize(SIZE))
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1)
+  rule #convertMetadata(TYPESMAP, metadata(dynamicSize(SIZE), OFFSET, _), typeInfoPtrType(POINTEE_TY)) => metadata(dynamicSize(SIZE), OFFSET, dynamicSize(SIZE))
+    requires #metadataSize(TYPESMAP, POINTEE_TY) ==K dynamicSize(1)
 ```
 
 ```k
   // non-pointer and non-ref target type (should not happen!)
-  rule #convertMetadata( metadata(SIZE, OFFSET, _)    ,  _OTHER_INFO               ) => metadata(noMetadataSize, OFFSET, SIZE) [priority(100)]
+  rule #convertMetadata(_, metadata(SIZE, OFFSET, _)    ,  _OTHER_INFO               ) => metadata(noMetadataSize, OFFSET, SIZE) [priority(100)]
 ```
 
 `PointerCoercion` may achieve a simmilar effect, or deal with function and closure pointers, depending on the coercion type:
@@ -1572,13 +1593,16 @@ What can be supported without additional layout consideration is trivial casts b
 
 ```k
   rule <k> #cast(Reference(_, _, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
-      requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
+      <types> TYPESMAP </types>
+      requires lookupTy(TYPESMAP, TY_SOURCE) ==K lookupTy(TYPESMAP, TY_TARGET)
 
   rule <k> #cast(AllocRef(_, _, _) #as REF, castKindTransmute, TY_SOURCE, TY_TARGET) => REF ... </k>
-      requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
+      <types> TYPESMAP </types>
+      requires lookupTy(TYPESMAP, TY_SOURCE) ==K lookupTy(TYPESMAP, TY_TARGET)
 
   rule <k> #cast(PtrLocal(_, _, _, _) #as PTR, castKindTransmute, TY_SOURCE, TY_TARGET) => PTR ... </k>
-      requires lookupTy(TY_SOURCE) ==K lookupTy(TY_TARGET)
+      <types> TYPESMAP </types>
+      requires lookupTy(TYPESMAP, TY_SOURCE) ==K lookupTy(TYPESMAP, TY_TARGET)
 ```
 
 Other `Transmute` casts that can be resolved are round-trip casts from type A to type B and then directly back from B to A.
@@ -1593,8 +1617,9 @@ The first cast is reified as a `thunk`, the second one resolves it and eliminate
             ) => DATA
           ...
        </k>
-    requires lookupTy(TY_SRC_INNER) ==K lookupTy(TY_DEST_OUTER) // cast is a round-trip
-     andBool lookupTy(TY_DEST_INNER) ==K lookupTy(TY_SRC_OUTER) // and is well-formed (invariant)
+       <types> TYPESMAP </types>
+    requires lookupTy(TYPESMAP, TY_SRC_INNER) ==K lookupTy(TYPESMAP, TY_DEST_OUTER) // cast is a round-trip
+     andBool lookupTy(TYPESMAP, TY_DEST_INNER) ==K lookupTy(TYPESMAP, TY_SRC_OUTER) // and is well-formed (invariant)
 ```
 
 Transmuting a value `T` into a single-field wrapper struct `G<T>` (or vice versa) is sound when the struct
@@ -1610,7 +1635,8 @@ The layout is the same for the wrapped type and so the cast in either direction 
             Aggregate(variantIdx(0), ListItem(VAL))
           ...
         </k>
-      requires #transparentFieldTy(lookupTy(TY_TARGET)) ==K TY_SOURCE
+      <types> TYPESMAP </types>
+      requires #transparentFieldTy(lookupTy(TYPESMAP, TY_TARGET)) ==K TY_SOURCE
 
   // Down: Wrapper(T) -> T
   rule <k> #cast(Aggregate(variantIdx(0), ListItem(VAL)), castKindTransmute, TY_SOURCE, TY_TARGET)
@@ -1618,7 +1644,8 @@ The layout is the same for the wrapped type and so the cast in either direction 
             VAL
           ...
         </k>
-      requires {#transparentFieldTy(lookupTy(TY_SOURCE))}:>Ty ==K TY_TARGET
+        <types> TYPESMAP </types>
+      requires {#transparentFieldTy(lookupTy(TYPESMAP, TY_SOURCE))}:>Ty ==K TY_TARGET
 ```
 
 Casting a byte array/slice to an integer reinterprets the bytes in little-endian order.
@@ -1634,12 +1661,13 @@ Casting a byte array/slice to an integer reinterprets the bytes in little-endian
             #intAsType(
               #littleEndianFromBytes(ELEMS),
               size(ELEMS) *Int 8,
-              #numTypeOf(lookupTy(TY_TARGET))
+              #numTypeOf(lookupTy(TYPESMAP, TY_TARGET))
             )
           ...
         </k>
-      requires #isIntType(lookupTy(TY_TARGET))
-       andBool size(ELEMS) *Int 8 ==Int #bitWidth(#numTypeOf(lookupTy(TY_TARGET)))
+        <types> TYPESMAP </types>
+      requires #isIntType(lookupTy(TYPESMAP, TY_TARGET))
+       andBool size(ELEMS) *Int 8 ==Int #bitWidth(#numTypeOf(lookupTy(TYPESMAP, TY_TARGET)))
        andBool #areLittleEndianBytes(ELEMS)
       [preserves-definedness] // ensures #numTypeOf is defined
 
@@ -1671,8 +1699,9 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
             Range(#littleEndianBytesFromInt(VAL, WIDTH))
           ...
         </k>
-      requires #isStaticU8Array(lookupTy(TY_TARGET))
-       andBool WIDTH ==Int #staticArrayLenBits(lookupTy(TY_TARGET))
+        <types> TYPESMAP </types>
+      requires #isStaticU8Array(TYPESMAP, lookupTy(TYPESMAP, TY_TARGET))
+       andBool WIDTH ==Int #staticArrayLenBits(TYPESMAP, lookupTy(TYPESMAP, TY_TARGET))
       //  andBool WIDTH >=Int 0  ensured by the above
       //  andBool WIDTH % 8 == 0 ensured by the above
       [preserves-definedness] // ensures element type/length are well-formed
@@ -1696,18 +1725,39 @@ Casting an integer to a `[u8; N]` array materialises its little-endian bytes.
     requires COUNT >Int 0
     [preserves-definedness]
 
-  syntax Bool ::= #isStaticU8Array ( TypeInfo ) [function, total, no-evaluators]
-  // -------------------------------------------------------------
-  rule #isStaticU8Array(typeInfoArrayType(ELEM_TY, someTyConst(_)))
-    => lookupTy(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
-  rule #isStaticU8Array(_OTHER) => false [owise]
+```
 
-  syntax Int ::= #staticArrayLenBits ( TypeInfo ) [function, total, no-evaluators]
-  // -------------------------------------------------------------
-  rule #staticArrayLenBits(typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
-    => readTyConstInt(KIND) *Int 8
+```{.k .concrete}
+  syntax Bool ::= #isStaticU8Array ( MaybeMap , TypeInfo ) [function, total]
+  rule #isStaticU8Array(TYPESMAP, typeInfoArrayType(ELEM_TY, someTyConst(_)))
+    => lookupTy(TYPESMAP, ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
+  rule #isStaticU8Array(_, _OTHER) => false [owise]
+```
+
+```{.k .symbolic}
+  syntax Bool ::= #isStaticU8Array ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
+  rule #isStaticU8Array(_, typeInfoArrayType(ELEM_TY, someTyConst(_)))
+    => lookupTyKore(ELEM_TY) ==K typeInfoPrimitiveType(primTypeUint(uintTyU8))
+  rule #isStaticU8Array(_, _OTHER) => false [owise]
+```
+
+```{.k .concrete}
+  syntax Int ::= #staticArrayLenBits ( MaybeMap , TypeInfo ) [function, total]
+  rule #staticArrayLenBits(TYPESMAP, typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
+    => readTyConstInt(TYPESMAP, KIND) *Int 8
     [preserves-definedness]
-  rule #staticArrayLenBits(_OTHER) => 0 [owise]
+  rule #staticArrayLenBits(_, _OTHER) => 0 [owise]
+```
+
+```{.k .symbolic}
+  syntax Int ::= #staticArrayLenBits ( MaybeMap , TypeInfo ) [function, total, no-evaluators]
+  rule #staticArrayLenBits(_, typeInfoArrayType(_, someTyConst(tyConst(KIND, _))))
+    => readTyConstInt(noMap, KIND) *Int 8
+    [preserves-definedness]
+  rule #staticArrayLenBits(_, _OTHER) => 0 [owise]
+```
+
+```k
 ```
 
 A transmutation from an integer to an enum is wellformed if:
@@ -1734,17 +1784,19 @@ index; if not, return `#UBErrorInvalidDiscriminantsInEnumCast`.
         =>
            #UBErrorInvalidDiscriminantsInEnumCast
       </k>
-      requires #isEnumWithoutFields(lookupTy(TY_TO))
-        andBool notBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO) )
+      <types> TYPESMAP </types>
+      requires #isEnumWithoutFields(lookupTy(TYPESMAP, TY_TO))
+        andBool notBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TYPESMAP, TY_TO) )
 
   rule <k>
            #cast( Integer ( VAL , WIDTH , _SIGNED ) , castKindTransmute , _TY_FROM , TY_TO )
         =>
-           Aggregate( #findVariantIdxFromTy( truncate(VAL, WIDTH, Unsigned), lookupTy(TY_TO) ) , .List )
+           Aggregate( #findVariantIdxFromTy( truncate(VAL, WIDTH, Unsigned), lookupTy(TYPESMAP, TY_TO) ) , .List )
        ...
       </k>
-      requires #isEnumWithoutFields(lookupTy(TY_TO))
-        andBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TY_TO))
+      <types> TYPESMAP </types>
+      requires #isEnumWithoutFields(lookupTy(TYPESMAP, TY_TO))
+        andBool #validDiscriminant( truncate(VAL, WIDTH, Unsigned) , lookupTy(TYPESMAP, TY_TO))
 
   syntax VariantIdx ::= #findVariantIdxFromTy ( Int , TypeInfo ) [function, total]
   //------------------------------------------------------------------------------
@@ -1772,9 +1824,10 @@ mapped to the elements.
 
   rule <k> #transmuteElems(VALS, TY_FROM, TY_TO)
         =>
-           #transmuteElemsAux(.List, VALS, getArrayElemTy(lookupTy(TY_FROM)), getArrayElemTy(lookupTy(TY_TO)))
+           #transmuteElemsAux(.List, VALS, getArrayElemTy(lookupTy(TYPESMAP, TY_FROM)), getArrayElemTy(lookupTy(TYPESMAP, TY_TO)))
        ...
       </k>
+      <types> TYPESMAP </types>
 
   rule <k> #transmuteElemsAux(ACC, .List, _, _) => Range(ACC) ... </k>
 
@@ -1809,9 +1862,10 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
            #UBInvalidTransmuteMaybeUninit
        ...
       </k>
-      requires #isUnionType(lookupTy(TY_TO))
-        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+      <types> TYPESMAP </types>
+      requires #isUnionType(lookupTy(TYPESMAP, TY_TO))
+        andBool #typeNameIs(lookupTy(TYPESMAP, TY_TO), "std::mem::MaybeUninit<")
+        andBool TY_FROM =/=K getFieldTy(#lookupMaybeTy(TYPESMAP, getFieldTy(lookupTy(TYPESMAP, TY_TO), 1)), 0)
 
   rule <k>
            #cast( VAL:Value , castKindTransmute , TY_FROM , TY_TO )
@@ -1819,9 +1873,10 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
            Union( fieldIdx ( 1 ) , Aggregate ( variantIdx ( 0 ) , ListItem(VAL) .List ))
        ...
       </k>
-      requires #isUnionType(lookupTy(TY_TO))
-        andBool #typeNameIs(lookupTy(TY_TO), "std::mem::MaybeUninit<")
-        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(getFieldTy(lookupTy(TY_TO), 1)), 0)
+      <types> TYPESMAP </types>
+      requires #isUnionType(lookupTy(TYPESMAP, TY_TO))
+        andBool #typeNameIs(lookupTy(TYPESMAP, TY_TO), "std::mem::MaybeUninit<")
+        andBool TY_FROM ==K getFieldTy(#lookupMaybeTy(TYPESMAP, getFieldTy(lookupTy(TYPESMAP, TY_TO), 1)), 0)
 
   // Converting static or dynamic sized array of `T` to array of `std::mem::MaybeUninit<T>`.
   // FIXME: Might need to check sizes as this cast could come from transmute_unchecked
@@ -1831,13 +1886,14 @@ the safety of this cast. The logic of the semantics and saftey of this cast for 
            #transmuteElems(LIST, TY_FROM, TY_TO)
        ...
       </k>
-      requires #isArrayType(lookupTy(TY_FROM)) andBool #isArrayType(lookupTy(TY_TO))
-        andBool #isUnionType(getArrayElemTypeInfo(lookupTy(TY_TO)))
-        andBool #typeNameIs(getArrayElemTypeInfo(lookupTy(TY_TO)), "std::mem::MaybeUninit<")
-        andBool getArrayElemTypeInfo(lookupTy(TY_FROM))
-                  ==K #lookupMaybeTy(getFieldTy(   // ManuallyDrop<T> field 0 Ty (T)
-                        #lookupMaybeTy(getFieldTy( // MaybeUninit<T> field 1 Ty (ManuallyDrop<T>)
-                            getArrayElemTypeInfo(lookupTy(TY_TO)), // Array Element Ty
+      <types> TYPESMAP </types>
+      requires #isArrayType(lookupTy(TYPESMAP, TY_FROM)) andBool #isArrayType(lookupTy(TYPESMAP, TY_TO))
+        andBool #isUnionType(getArrayElemTypeInfo(TYPESMAP, lookupTy(TYPESMAP, TY_TO)))
+        andBool #typeNameIs(getArrayElemTypeInfo(TYPESMAP, lookupTy(TYPESMAP, TY_TO)), "std::mem::MaybeUninit<")
+        andBool getArrayElemTypeInfo(TYPESMAP, lookupTy(TYPESMAP, TY_FROM))
+                  ==K #lookupMaybeTy(TYPESMAP, getFieldTy(   // ManuallyDrop<T> field 0 Ty (T)
+                        #lookupMaybeTy(TYPESMAP, getFieldTy( // MaybeUninit<T> field 1 Ty (ManuallyDrop<T>)
+                            getArrayElemTypeInfo(TYPESMAP, lookupTy(TYPESMAP, TY_TO)), // Array Element Ty
                             1
                           )),
                         0
@@ -1870,9 +1926,10 @@ For allocated constants without provenance, the decoder works directly with the 
               _TY,
               TYPEINFO
             )
-        => #decodeValue(BYTES, TYPEINFO)
+        => #decodeValue(TYPESMAP, BYTES, TYPEINFO)
         ...
        </k>
+       <types> TYPESMAP </types>
 ```
 
 Zero-sized types can be decoded trivially into their respective representation.
@@ -1906,10 +1963,12 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
               _TY,
               typeInfoRefType(POINTEE_TY)
             )
-        => AllocRef(ALLOC_ID, .ProjectionElems, metadata(#metadataSize(POINTEE_TY), 0, #metadataSize(POINTEE_TY)))
+        => AllocRef(ALLOC_ID, .ProjectionElems, metadata(#metadataSize(TYPESMAP, POINTEE_TY), 0, #metadataSize(TYPESMAP, POINTEE_TY)))
         ...
        </k>
-    requires isValue(lookupAlloc(ALLOC_ID))
+       <memory> ALLOCSMAP </memory>
+       <types> TYPESMAP </types>
+    requires isValue(lookupAlloc(ALLOCSMAP, ALLOC_ID))
      andBool lengthBytes(BYTES) ==Int 8 // no dynamic metadata
 
   rule <k> #decodeConstant(
@@ -1926,7 +1985,8 @@ into the `<memory>` heap where all allocated constants have been decoded at prog
                                                             // assumes usize == u64
         ...
        </k>
-    requires isValue(lookupAlloc(ALLOC_ID))
+       <memory> ALLOCSMAP </memory>
+    requires isValue(lookupAlloc(ALLOCSMAP, ALLOC_ID))
     andBool lengthBytes(BYTES) ==Int 16 // fat pointer (assumes usize == u64)
     [preserves-definedness] // Byte length checked to be sufficient
 ```
@@ -2315,16 +2375,18 @@ This information is read from the layout in the `TypeInfo` if available, or a fi
 // FIXME: 64 is hardcoded since usize not supported
 rule <k> rvalueNullaryOp(nullOpSizeOf, TY)
       =>
-           Integer(#sizeOf(lookupTy(TY)), 64, false)
+           Integer(#sizeOf(TYPESMAP, lookupTy(TYPESMAP, TY)), 64, false)
          ...
      </k>
-    requires lookupTy(TY) =/=K typeInfoVoidType
+     <types> TYPESMAP </types>
+    requires lookupTy(TYPESMAP, TY) =/=K typeInfoVoidType
 rule <k> rvalueNullaryOp(nullOpAlignOf, TY)
       =>
-           Integer(#alignOf(lookupTy(TY)), 64, false)
+           Integer(#alignOf(TYPESMAP, lookupTy(TYPESMAP, TY)), 64, false)
          ...
      </k>
-    requires lookupTy(TY) =/=K typeInfoVoidType
+     <types> TYPESMAP </types>
+    requires lookupTy(TYPESMAP, TY) =/=K typeInfoVoidType
 ```
 
 `nullOpOffsetOf(VariantAndFieldIndices)`

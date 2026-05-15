@@ -34,6 +34,9 @@ module TEST-ADD-MODULE
            <stack>
              ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ) ) )
            </stack>
+           <functions> _FUNCTIONS_CELL </functions>
+           <types> _TYPES_CELL </types>
+           <memory> _MEMORY_CELL </memory>
          </kmir>
       [priority(20), label(BASIC-BLOCK-1-TO-3)]
 

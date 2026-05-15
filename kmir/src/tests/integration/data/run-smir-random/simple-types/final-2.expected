@@ -80,4 +80,13 @@
     ListItem ( typedValue ( Integer ( 28 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
     ListItem ( typedValue ( Integer ( -1754129965 , 32 , true ) , ty ( 8 ) , mutabilityNot ) ) ) )
   </stack>
+  <functions>
+    noMap
+  </functions>
+  <types>
+    noMap
+  </types>
+  <memory>
+    noMap
+  </memory>
 </kmir>
