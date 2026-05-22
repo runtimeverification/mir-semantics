@@ -19,7 +19,7 @@ from kmir.smir import SMIRInfo
 THIS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = THIS_DIR.parents[3]
 PASSING_TSV = REPO_ROOT / 'deps' / 'stable-mir-json' / 'tests' / 'ui' / 'passing.tsv'
-SKIP_FILE = THIS_DIR / 'data' / 'stable-mir-ui' / 'skip.txt'
+SKIP_FILE = THIS_DIR / 'data' / 'stable-mir-ui' / 'skip-exec.txt'
 PASSING_TESTS: tuple[str, ...] = tuple(
     line.split('\t', maxsplit=1)[0] for line in PASSING_TSV.read_text().splitlines() if line.strip()
 )
