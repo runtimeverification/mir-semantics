@@ -263,13 +263,8 @@ highest set bit.
         => #execCtlz(DEST, ARG)
        ... </k>
 
-  syntax Int ::= #log2floor(Int) [function]
-  rule #log2floor(1) => 0
-  rule #log2floor(N) => 1 +Int #log2floor(N >>Int 1)
-    requires N >Int 1
-
   rule <k> #execCtlz(DEST, Integer(VAL, WIDTH, SIGN))
-        => #setLocalValue(DEST, Integer(WIDTH -Int 1 -Int #log2floor(truncate(VAL, WIDTH, Unsigned)), WIDTH, SIGN))
+        => #setLocalValue(DEST, Integer(WIDTH -Int 1 -Int log2Int(truncate(VAL, WIDTH, Unsigned)), WIDTH, SIGN))
        ... </k>
     requires truncate(VAL, WIDTH, Unsigned) >Int 0
     [preserves-definedness]
