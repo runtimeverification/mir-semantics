@@ -13,7 +13,7 @@ def pytest_addoption(parser: Parser) -> None:
         '--update-skip',
         action='store_true',
         default=False,
-        help='Shrink stable-mir-ui skip entries by rerunning only current skip.txt cases.',
+        help='Shrink stable-mir-ui skip entries by rerunning only current skip list cases.',
     )
 
 
