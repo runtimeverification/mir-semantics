@@ -60,10 +60,15 @@ test-verify-rust-std: stable-mir-json build
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/integration/test_integration.py::test_verify_rust_std --maxfail=1 --verbose \
 			--durations=0 --numprocesses=$(PARALLEL) --dist=worksteal $(TEST_ARGS)
 
-.PHONY: test-stable-mir-ui
-test-stable-mir-ui: stable-mir-json build
-	@test -n "$(RUST_DIR_ROOT)" || (echo "RUST_DIR_ROOT is required. Example: RUST_DIR_ROOT=/path/to/rust make test-stable-mir-ui"; exit 2)
+.PHONY: test-stable-mir-ui-prove
+test-stable-mir-ui-prove: stable-mir-json build
+	@test -n "$(RUST_DIR_ROOT)" || (echo "RUST_DIR_ROOT is required. Example: RUST_DIR_ROOT=/path/to/rust make test-stable-mir-ui-prove"; exit 2)
 	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/external/test_stable_mir_ui_prove.py --maxfail=1 --verbose $(TEST_ARGS)
+
+.PHONY: test-stable-mir-ui-exec
+test-stable-mir-ui-exec: stable-mir-json build
+	@test -n "$(RUST_DIR_ROOT)" || (echo "RUST_DIR_ROOT is required. Example: RUST_DIR_ROOT=/path/to/rust make test-stable-mir-ui-exec"; exit 2)
+	$(UV_RUN) pytest $(TOP_DIR)/kmir/src/tests/external/test_stable_mir_ui_exec.py --maxfail=1 --verbose $(TEST_ARGS)
 
 # Checks and formatting
 

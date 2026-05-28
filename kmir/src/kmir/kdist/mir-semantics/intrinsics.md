@@ -182,6 +182,94 @@ the dereferenced operand is evaluated (i.e., the value is read from memory) befo
        ... </k>
 ```
 
+#### Rotate Left (`std::intrinsics::rotate_left`)
+
+The `rotate_left` intrinsic performs a bitwise left rotation on an integer value. For an N-bit integer,
+`rotate_left(x, r)` shifts bits left by `r` positions, wrapping the overflowing bits back to the right.
+The rotation amount is taken modulo N. We use a helper with `seqstrict` to evaluate both operands before
+computing the rotation.
+
+```k
+  syntax KItem ::= #execRotateLeft(Place, Evaluation, Evaluation) [seqstrict(2,3)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("rotate_left")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
+        => #execRotateLeft(DEST, ARG1, ARG2)
+       ... </k>
+
+  syntax Int ::= #rotateLeftInt(Int, Int, Int) [function, total]
+  rule #rotateLeftInt(VAL, WIDTH, ROT) => (VAL <<Int (ROT modInt WIDTH)) |Int (VAL >>Int (WIDTH -Int (ROT modInt WIDTH)))
+    requires WIDTH >Int 0
+  rule #rotateLeftInt(_, _, _) => 0 [owise]
+
+  rule <k> #execRotateLeft(DEST, Integer(VAL, WIDTH, SIGN), Integer(ROT, _, _))
+        => #setLocalValue(DEST, Integer(#rotateLeftInt(truncate(VAL, WIDTH, Unsigned), WIDTH, ROT), WIDTH, SIGN))
+       ... </k>
+    [preserves-definedness]
+```
+
+#### Byte Swap (`std::intrinsics::bswap`)
+
+The `bswap` intrinsic reverses the byte order of an integer value. This is used for endianness conversion.
+We convert the integer to little-endian bytes, then read them back as big-endian (which reverses the order).
+
+```k
+  syntax KItem ::= #execBswap(Place, Evaluation) [strict(2)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("bswap")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execBswap(DEST, ARG)
+       ... </k>
+
+  rule <k> #execBswap(DEST, Integer(VAL, WIDTH, SIGN))
+        => #setLocalValue(DEST, Integer(Bytes2Int(Int2Bytes(WIDTH /Int 8, truncate(VAL, WIDTH, Unsigned), LE), BE, Unsigned), WIDTH, SIGN))
+       ... </k>
+    requires WIDTH >Int 0
+    [preserves-definedness]
+```
+
+#### Count Set Bits (`std::intrinsics::ctpop`)
+
+The `ctpop` intrinsic counts the number of set bits (population count) in an integer value.
+
+```k
+  syntax KItem ::= #execCtpop(Place, Evaluation) [strict(2)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ctpop")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execCtpop(DEST, ARG)
+       ... </k>
+
+  syntax Int ::= #popcount(Int) [function, total]
+  rule #popcount(0) => 0
+  rule #popcount(N) => (N &Int 1) +Int #popcount(N >>Int 1)
+    requires N >Int 0
+  rule #popcount(N) => #popcount(N *Int -1)
+    requires N <Int 0
+
+  rule <k> #execCtpop(DEST, Integer(VAL, WIDTH, SIGN))
+        => #setLocalValue(DEST, Integer(#popcount(truncate(VAL, WIDTH, Unsigned)), WIDTH, SIGN))
+       ... </k>
+    [preserves-definedness]
+```
+
+#### Count Leading Zeros (`std::intrinsics::ctlz_nonzero`)
+
+The `ctlz_nonzero` intrinsic counts the number of leading zero bits in an integer value that is
+guaranteed to be nonzero. For an N-bit integer with value V, this is N minus the position of the
+highest set bit.
+
+```k
+  syntax KItem ::= #execCtlz(Place, Evaluation) [strict(2)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("ctlz_nonzero")), ARG:Operand .Operands, DEST, _SPAN)
+        => #execCtlz(DEST, ARG)
+       ... </k>
+
+  rule <k> #execCtlz(DEST, Integer(VAL, WIDTH, SIGN))
+        => #setLocalValue(DEST, Integer(WIDTH -Int 1 -Int log2Int(truncate(VAL, WIDTH, Unsigned)), WIDTH, SIGN))
+       ... </k>
+    requires truncate(VAL, WIDTH, Unsigned) >Int 0
+    [preserves-definedness]
+```
+
 #### Ptr Offset Computations (`std::intrinsics::ptr_offset_from`, `std::intrinsics::ptr_offset_from_unsigned`)
 
 The `ptr_offset_from[_unsigned]` calculates the distance between two pointers within the same allocation,

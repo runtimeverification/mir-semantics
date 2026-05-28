@@ -19,7 +19,7 @@ from kmir.smir import SMIRInfo
 THIS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = THIS_DIR.parents[3]
 PASSING_TSV = REPO_ROOT / 'deps' / 'stable-mir-json' / 'tests' / 'ui' / 'passing.tsv'
-SKIP_FILE = THIS_DIR / 'data' / 'stable-mir-ui' / 'skip.txt'
+SKIP_FILE = THIS_DIR / 'data' / 'stable-mir-ui' / 'skip-exec.txt'
 PASSING_TESTS: tuple[str, ...] = tuple(
     line.split('\t', maxsplit=1)[0] for line in PASSING_TSV.read_text().splitlines() if line.strip()
 )
@@ -28,6 +28,8 @@ SKIP_ENTRIES: frozenset[str] = (
     if SKIP_FILE.is_file()
     else frozenset()
 )
+# In --update-skip mode, each passing case is removed and skip-exec.txt is rewritten immediately.
+_update_skip_pending: set[str] = set(SKIP_ENTRIES)
 
 
 @pytest.fixture(scope='session')
@@ -77,6 +79,9 @@ def test_stable_mir_ui_exec(test_rel_path: str, rust_dir_root: Path, update_skip
     if update_skip_mode:
         if not reached_end:
             pytest.xfail('Did not reach #EndProgram')
+            return
+        _update_skip_pending.discard(test_rel_path)
+        SKIP_FILE.write_text('\n'.join(sorted(_update_skip_pending)) + '\n' if _update_skip_pending else '')
         return
 
     if not reached_end:
