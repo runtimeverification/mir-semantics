@@ -31,3 +31,31 @@ fn prefetch() {
         // assert_eq!(44, *ptr); // FIXME: fails due to thunks on casts
     }
 }
+
+#[no_mangle]
+pub fn test_rotate_left() {
+    let x: u32 = 0x12345678;
+    let r = x.rotate_left(8);
+    assert!(r == 0x34567812);
+}
+
+#[no_mangle]
+pub fn test_bswap() {
+    let x: u32 = 0x12345678;
+    let r = x.swap_bytes();
+    assert!(r == 0x78563412);
+}
+
+#[no_mangle]
+pub fn test_ctpop() {
+    let x: u32 = 0b1010_1010;
+    let r = x.count_ones();
+    assert!(r == 4);
+}
+
+#[no_mangle]
+pub fn test_ctlz_nonzero() {
+    let x: u32 = 1;
+    let r = unsafe { intrinsics::ctlz_nonzero(x) };
+    assert!(r == 31);
+}
