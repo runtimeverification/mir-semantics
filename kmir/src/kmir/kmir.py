@@ -108,8 +108,8 @@ class KMIR(KProve, KRun, KParse):
 
         return pattern.top_down(_strip)
 
-    def kore_to_pretty(self, pattern: Pattern) -> str:
-        return super().kore_to_pretty(self.strip_map_cells(pattern))
+    def kore_to_pretty(self, pattern: Pattern, *, pyk_print: bool = False) -> str:
+        return super().kore_to_pretty(self.strip_map_cells(pattern), pyk_print=pyk_print)
 
     @cached_property
     def parser(self) -> Parser:
