@@ -117,7 +117,7 @@ jobs:
             -d '{"event_type":"on-demand-test","client_payload":{"repo":"runtimeverification/mir-semantics","version":"'${VERSION}'"}}'
 
   nix-cache:
-    name: 'Populate Nix Cache'
+    name: 'Populate Nix Caches'
     strategy:
       matrix:
         runner: [normal, ARM64]
@@ -126,11 +126,8 @@ jobs:
     steps:
       - name: 'Check out code'
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.push.head.sha }}
-          fetch-depth: 0
 
-      - name: 'Build and cache kmir'
+      - name: 'Build kmir and push to k-framework cache'
         uses: workflow/nix-shell-action@v3
         env:
           GC_DONT_GC: 1
@@ -142,17 +139,8 @@ jobs:
             DRV=$(nix-store --query --deriver ${KMIR})
             nix-store --query --requisites --include-outputs ${DRV} | cachix push k-framework
 
-  nix-binary-cache:
-    name: 'Populate Nix Binary Cache'
-    strategy:
-      matrix:
-        runner: [normal, ARM64]
-    runs-on: ${{ matrix.runner }}
-    needs: draft-release
-    steps:
-      - name: 'Check out code'
-        uses: actions/checkout@v4
-
+      # kup rebuilds nothing here: .#kmir is already in the local nix store
+      # from the previous step, so this only pushes and pins.
       - name: 'Publish kmir to k-framework-binary cache'
         uses: workflow/nix-shell-action@v3
         env:
@@ -166,6 +154,6 @@ jobs:
             export PATH="$(nix build github:runtimeverification/kup --no-link --json | jq -r '.[].outputs | to_entries[].value')/bin:$PATH"
             kup publish k-framework-binary .#kmir --keep-days 180 || true
             kup publish k-framework-binary .#kmir.rust --keep-days 180 || true
-            
+
             # Cachix has not been responding to 'cachix pin' requests made under the hood by kup. So we need to manually verify the push and pin.
             .github/scripts/check-cachix-pin.sh
