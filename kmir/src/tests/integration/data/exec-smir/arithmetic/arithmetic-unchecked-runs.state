@@ -50,9 +50,12 @@
       ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Moved )
       ListItem ( Moved ) ) , ty ( 36 ) , mutabilityMut ) )
     </locals>
+    <currentSpan>
+      span ( 116 )
+    </currentSpan>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List , span ( 0 ) ) )
   </stack>
   <functions>
     noMap
