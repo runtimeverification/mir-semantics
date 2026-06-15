@@ -64,11 +64,6 @@ blocks, or call another function).
                  | #execStmts ( Statements )
                  | #execStmt ( Statement )
                  | #execTerminator ( Terminator )
-                 | #setSpan ( Span ) // observability: record the span of the instruction about to execute
-
-  // Update the current frame's span to that of the instruction about to execute.
-  rule <k> #setSpan(SPAN) => .K ... </k>
-       <currentSpan> _ => SPAN </currentSpan>
 
   rule <k> #execBlockIdx(basicBlockIdx(I))
          =>
@@ -81,9 +76,9 @@ blocks, or call another function).
      andBool isBasicBlock(BLOCKS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #execBlock(basicBlock(STATEMENTS, terminator(_, SPAN) #as TERMINATOR))
+  rule <k> #execBlock(basicBlock(STATEMENTS, TERMINATOR))
          =>
-           #execStmts(STATEMENTS) ~> #setSpan(SPAN) ~> #execTerminator(TERMINATOR)
+           #execStmts(STATEMENTS) ~> #execTerminator(TERMINATOR)
          ...
        </k>
 
@@ -164,10 +159,11 @@ function call, pushing a new stack frame and returning to a different
 block after the call returns.
 
 ```k
-  rule [termGoto]: <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN)) ~> _CONT
+  rule [termGoto]: <k> #execTerminator(terminator(terminatorKindGoto(I), SPAN)) ~> _CONT
          =>
            #execBlockIdx(I)
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 ```
 
 A `SwitchInt` terminator selects one of the blocks given as _targets_,
@@ -179,10 +175,11 @@ will be `129`.
 ```k
   syntax KItem ::= #selectBlock ( SwitchTargets , Evaluation ) [strict(2)]
 
-  rule [termSwitchInt]: <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
+  rule [termSwitchInt]: <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), SPAN)) ~> _CONT
          =>
            #selectBlock(TARGETS, DISCR)
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 
   // These rules preserve definedness because all the same subterms show up on each side except:
   // - `branch(...)`, which is a constructor.
@@ -337,6 +334,7 @@ where the returned result should go.
         => #execTerminatorCall(Ty, lookupFunction(FUNCSMAP, Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
        <functions> FUNCSMAP </functions>
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
@@ -344,6 +342,7 @@ where the returned result should go.
         ...
        </k>
       <locals> LOCALS </locals>
+      <currentSpan> _ => SPAN </currentSpan>
       <functions> FUNCSMAP </functions>
       <types> TYPESMAP </types>
     requires isTy(#projectedCallTy(TYPESMAP, I, PROJS, LOCALS))
@@ -666,10 +665,11 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 ```k
   syntax MIRError ::= AssertError ( AssertMessage )
 
-  rule [termAssert]: <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
+  rule [termAssert]: <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), SPAN)) ~> _CONT
          =>
            #expect(COND, EXPECTED, MSG) ~> #execBlockIdx(TARGET)
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 
   syntax KItem ::= #expect ( Evaluation, Bool, AssertMessage ) [strict(1)]
 
@@ -693,19 +693,21 @@ Other terminators that matter at the MIR level "Runtime" are `Drop` and `Unreach
 Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error.
 
 ```k
-  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), _SPAN))
+  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), SPAN))
          =>
            #execBlockIdx(TARGET)
         ...
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 
   syntax MIRError ::= "ReachedUnreachable"
 
-  rule [termUnreachable]: <k> #execTerminator(terminator(terminatorKindUnreachable, _SPAN))
+  rule [termUnreachable]: <k> #execTerminator(terminator(terminatorKindUnreachable, SPAN))
          =>
            ReachedUnreachable
         ...
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 ```
 
 ### Stopping on Program Errors
