@@ -64,6 +64,11 @@ blocks, or call another function).
                  | #execStmts ( Statements )
                  | #execStmt ( Statement )
                  | #execTerminator ( Terminator )
+                 | #setSpan ( Span ) // observability: record the span of the instruction about to execute
+
+  // Update the current frame's span to that of the instruction about to execute.
+  rule <k> #setSpan(SPAN) => .K ... </k>
+       <currentSpan> _ => SPAN </currentSpan>
 
   rule <k> #execBlockIdx(basicBlockIdx(I))
          =>
@@ -76,19 +81,20 @@ blocks, or call another function).
      andBool isBasicBlock(BLOCKS[I])
     [preserves-definedness] // valid list indexing checked
 
-  rule <k> #execBlock(basicBlock(STATEMENTS, TERMINATOR))
+  rule <k> #execBlock(basicBlock(STATEMENTS, terminator(_, SPAN) #as TERMINATOR))
          =>
-           #execStmts(STATEMENTS) ~> #execTerminator(TERMINATOR)
+           #execStmts(STATEMENTS) ~> #setSpan(SPAN) ~> #execTerminator(TERMINATOR)
          ...
        </k>
 
   rule <k> #execStmts(.Statements) => .K  ... </k>
 
-  rule <k> #execStmts(STATEMENT:Statement STATEMENTS:Statements)
+  rule <k> #execStmts((statement(_, SPAN) #as STATEMENT) STATEMENTS:Statements)
          =>
            #execStmt(STATEMENT) ~> #execStmts(STATEMENTS)
          ...
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 ```
 
 `Statement` execution handles the different `StatementKind`s. Some of
@@ -233,9 +239,10 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
          <locals> ListItem(typedValue(VAL:Value, _, _)) _ => NEWLOCALS </locals>
+         <currentSpan> _ => NEWSPAN </currentSpan> // restore caller's call-site span
        //</currentFrame>
        // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS, NEWSPAN)) STACK => STACK </stack>
        <functions> FUNCSMAP </functions>
 
   // no value to return, skip writing
@@ -251,9 +258,10 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
          <locals> ListItem(_:NewLocal) _ => NEWLOCALS </locals>
+         <currentSpan> _ => NEWSPAN </currentSpan> // restore caller's call-site span
        //</currentFrame>
        // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS, NEWSPAN)) STACK => STACK </stack>
        <functions> FUNCSMAP </functions>
 
 ```
@@ -385,8 +393,9 @@ where the returned result should go.
          <target> OLDTARGET => TARGET </target>
          <unwind> OLDUNWIND => UNWIND </unwind>
          <locals> LOCALS </locals>
+         ... // leaves <currentSpan> unchanged: callee arg setup is related to the caller's call-site span
        </currentFrame>
-       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS, SPAN)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
 
   // Filter check injected after every call: fires as a cut-point only when the function matches the break-on list
@@ -511,7 +520,7 @@ An operand may be a `Reference` (the only way a function could access another fu
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
        </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS, _)) _:List </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
      andBool isTypedValue(CALLERLOCALS[I])
@@ -523,7 +532,7 @@ An operand may be a `Reference` (the only way a function could access another fu
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
        </k>
-       <stack> (ListItem(StackFrame(_, _, _, _, CALLERLOCALS) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
+       <stack> (ListItem(StackFrame(_, _, _, _, CALLERLOCALS, _) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
         </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
