@@ -72,6 +72,7 @@ PROVE_SHOW_SPECS = [
     'ptr-cast-array-to-wrapper-fail',
     'ptr-cast-array-to-nested-wrapper-fail',
     'ptr-cast-array-to-singleton-wrapped-array-fail',
+    'static_reference-fail',
 ]
 
 
