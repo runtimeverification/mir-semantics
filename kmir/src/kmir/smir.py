@@ -191,6 +191,10 @@ class SMIRInfo:
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']
 
+    @staticmethod
+    def _is_static(item: dict[str, dict]) -> bool:
+        return 'MonoItemStatic' in item['mono_item_kind']
+
     def reduce_to(self, start_symbols: str | Sequence[str]) -> SMIRInfo:
         # returns a new SMIRInfo with all _items_ removed that are not reachable from the named function(s)
         match start_symbols:
@@ -209,10 +213,11 @@ class SMIRInfo:
 
         new_smir = self._smir.copy()  # shallow copy, but we can overwrite the `items`
 
-        # filter the new symbols to avoid key errors
+        # filter the new function symbols to avoid key errors
         new_syms = [self.function_symbols[ty] for ty in reachable]
-        new_syms_ = [sym['NormalSym'] for sym in new_syms if 'NormalSym' in sym]
-        new_smir['items'] = [self.items[sym] for sym in new_syms_ if sym in self.items]
+        new_syms_ = {sym['NormalSym'] for sym in new_syms if 'NormalSym' in sym}
+        # Also keep the statics
+        new_smir['items'] = [item for sym, item in self.items.items() if SMIRInfo._is_static(item) or sym in new_syms_]
 
         return SMIRInfo(new_smir)
 
