@@ -6,7 +6,7 @@ from collections import deque
 from functools import cached_property
 from typing import TYPE_CHECKING, NewType
 
-from .alloc import AllocInfo
+from .alloc import Allocation, AllocInfo, DefId
 from .ty import EnumT, RefT, StructT, Ty, TypeMetadata, UnionT
 
 if TYPE_CHECKING:
@@ -53,6 +53,16 @@ class SMIRInfo:
         return {
             alloc_info.alloc_id: alloc_info for alloc_info in (AllocInfo.from_dict(dct) for dct in self._smir['allocs'])
         }
+
+    @cached_property
+    def statics(self) -> dict[DefId, Allocation]:
+        res: dict[DefId, Allocation] = {}
+        for item in self._smir['items']:
+            kind = item['mono_item_kind']
+            if 'MonoItemStatic' in kind:
+                mono_item_static = kind['MonoItemStatic']
+                res[DefId(mono_item_static['id'])] = Allocation.from_dict(mono_item_static['allocation'])
+        return res
 
     @cached_property
     def types(self) -> dict[Ty, TypeMetadata]:
