@@ -44,9 +44,12 @@
       ListItem ( typedValue ( Aggregate ( variantIdx ( 0 ) , ListItem ( Integer ( 32 , 32 , false ) )
       ListItem ( Integer ( 32 , 32 , false ) ) ) , ty ( 32 ) , mutabilityMut ) )
     </locals>
+    <currentSpan>
+      span ( 62 )
+    </currentSpan>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List , span ( 0 ) ) )
   </stack>
   <functions>
     noMap
