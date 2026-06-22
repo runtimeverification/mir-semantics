@@ -43,7 +43,10 @@ module KMIR-CONFIGURATION
                     <target> noBasicBlockIdx </target>
                     <unwind> unwindActionUnreachable </unwind>
                     <locals> .List </locals>
-                    <currentSpan> span(-1) </currentSpan> // span of the instruction currently executing in this frame
+                    // span of the instruction currently executing in this frame.
+                    // span(-1) is the "no span yet" sentinel (a real Span is an interned, non-negative index).
+                    // Note: this is intentionally distinct from the span(0) synthetic entry/main-call span set in kast.py.
+                    <currentSpan> span(-1) </currentSpan>
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
