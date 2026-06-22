@@ -30,9 +30,10 @@ module TEST-ADD-MODULE
              <locals>
                ListItem ( newLocal ( ty ( ( 0 => 1 ) ) , ( mutabilityNot => mutabilityMut ) ) )
              </locals>
+             ...
            </currentFrame>
            <stack>
-             ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ) ) )
+             ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) , span ( -1 ) ) ) )
            </stack>
            <functions> _FUNCTIONS_CELL </functions>
            <types> _TYPES_CELL </types>

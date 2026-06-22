@@ -30,9 +30,12 @@ module ASSERT-TRUE-MAIN-SUMMARY
              <locals>
                ListItem ( newLocal ( ty ( ( 0 => 1 ) ) , ( mutabilityNot => mutabilityMut ) ) )
              </locals>
+             <currentSpan>
+               ( _CURRENTSPAN_CELL => span ( 0 ) )
+             </currentSpan>
            </currentFrame>
            <stack>
-             ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) ) ) )
+             ( .List => ListItem ( StackFrame ( CALLER_CELL:Ty , DEST_CELL:Place , TARGET_CELL:MaybeBasicBlockIdx , UNWIND_CELL:UnwindAction , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) ) , span ( 0 ) ) ) )
            </stack>
            <functions>
              noMap

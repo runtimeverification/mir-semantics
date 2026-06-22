@@ -28,7 +28,8 @@ module KMIR-CONFIGURATION
                                    dest:Place,                // place to store return value
                                    target:MaybeBasicBlockIdx, // basic block to return to
                                    UnwindAction,              // action to perform on panic
-                                   locals:List)               // return val, args, local variables
+                                   locals:List,               // return val, args, local variables
+                                   span:Span)                 // call-site span of this frame
 
   configuration <kmir>
                   <k> $PGM:KItem </k>
@@ -42,6 +43,10 @@ module KMIR-CONFIGURATION
                     <target> noBasicBlockIdx </target>
                     <unwind> unwindActionUnreachable </unwind>
                     <locals> .List </locals>
+                    // span of the instruction currently executing in this frame.
+                    // span(-1) is the "no span yet" sentinel (a real Span is an interned, non-negative index).
+                    // Note: this is intentionally distinct from the span(0) synthetic entry/main-call span set in kast.py.
+                    <currentSpan> span(-1) </currentSpan>
                   </currentFrame>
                   // remaining call stack (without top frame)
                   <stack> .List </stack>
