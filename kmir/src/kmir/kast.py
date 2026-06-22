@@ -286,6 +286,7 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
                                     KApply(
                                         'constOperand(_,_,_)_BODY_ConstOperand_Span_MaybeUserTypeAnnotationIndex_MirConst',
                                         (
+                                            # synthetic span(0) sentinel (see note on the span below)
                                             KApply('span', token(0)),
                                             KApply('noUserTypeAnnotationIndex_BODY_MaybeUserTypeAnnotationIndex', ()),
                                             KApply(
@@ -312,6 +313,9 @@ def mk_call_terminator(target: int, arg_count: int) -> KInner:
                             KApply('UnwindAction::Continue', ()),
                         ),
                     ),
+                    # Synthetic call-site span for this generated entry/main-call terminator (no real source
+                    # location). Note this differs from the rt/configuration.md <currentSpan> default of
+                    # span(-1), which is the "no span yet" sentinel.
                     KApply('span', token(0)),
                 ),
             ),
