@@ -6,7 +6,7 @@ from collections import deque
 from functools import cached_property
 from typing import TYPE_CHECKING, NewType
 
-from .alloc import AllocInfo
+from .alloc import Allocation, AllocInfo, DefId
 from .ty import EnumT, RefT, StructT, Ty, TypeMetadata, UnionT
 
 if TYPE_CHECKING:
@@ -53,6 +53,16 @@ class SMIRInfo:
         return {
             alloc_info.alloc_id: alloc_info for alloc_info in (AllocInfo.from_dict(dct) for dct in self._smir['allocs'])
         }
+
+    @cached_property
+    def statics(self) -> dict[DefId, Allocation]:
+        res: dict[DefId, Allocation] = {}
+        for item in self._smir['items']:
+            kind = item['mono_item_kind']
+            if 'MonoItemStatic' in kind:
+                mono_item_static = kind['MonoItemStatic']
+                res[DefId(mono_item_static['id'])] = Allocation.from_dict(mono_item_static['allocation'])
+        return res
 
     @cached_property
     def types(self) -> dict[Ty, TypeMetadata]:
@@ -131,7 +141,11 @@ class SMIRInfo:
         fnc_symbols[-1] = {'NormalSym': self.main_symbol}
 
         # function items not present in the SMIR lookup table are added with negative Ty ID
-        missing = [name for name in self.items.keys() if {'NormalSym': name} not in fnc_symbols.values()]
+        missing = [
+            name
+            for name, item in self.items.items()
+            if SMIRInfo._is_func(item) and {'NormalSym': name} not in fnc_symbols.values()
+        ]
 
         fake_ty = -2
         for name in missing:
@@ -181,6 +195,10 @@ class SMIRInfo:
     def _is_func(item: dict[str, dict]) -> bool:
         return 'MonoItemFn' in item['mono_item_kind']
 
+    @staticmethod
+    def _is_static(item: dict[str, dict]) -> bool:
+        return 'MonoItemStatic' in item['mono_item_kind']
+
     def reduce_to(self, start_symbols: str | Sequence[str]) -> SMIRInfo:
         # returns a new SMIRInfo with all _items_ removed that are not reachable from the named function(s)
         match start_symbols:
@@ -199,10 +217,11 @@ class SMIRInfo:
 
         new_smir = self._smir.copy()  # shallow copy, but we can overwrite the `items`
 
-        # filter the new symbols to avoid key errors
+        # filter the new function symbols to avoid key errors
         new_syms = [self.function_symbols[ty] for ty in reachable]
-        new_syms_ = [sym['NormalSym'] for sym in new_syms if 'NormalSym' in sym]
-        new_smir['items'] = [self.items[sym] for sym in new_syms_ if sym in self.items]
+        new_syms_ = {sym['NormalSym'] for sym in new_syms if 'NormalSym' in sym}
+        # Also keep the statics
+        new_smir['items'] = [item for sym, item in self.items.items() if SMIRInfo._is_static(item) or sym in new_syms_]
 
         return SMIRInfo(new_smir)
 

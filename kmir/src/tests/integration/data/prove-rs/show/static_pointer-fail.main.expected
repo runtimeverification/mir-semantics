@@ -7,13 +7,13 @@
 ├─ 3
 │   #mkPtr ( toAlloc ( allocId ( 0 ) ) , .ProjectionElems , mutabilityNot , metadata
 │   function: main
-│   span: 53
+│   span: 56
 │
 │  (1 step)
 └─ 4 (leaf, terminal)
     thunk ( #mkPtr ( toAlloc ( allocId ( 0 ) ) , .ProjectionElems , mutabilityNot ,
     function: main
-    span: 53
+    span: 56
 
 
 ┌─ 2 (root, leaf, target, terminal)
