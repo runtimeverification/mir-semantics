@@ -126,6 +126,9 @@
       ListItem ( newLocal ( ty ( 28 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 5 ) , mutabilityMut ) )
     </locals>
+    <currentSpan>
+      span ( 339 )
+    </currentSpan>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , ListItem ( newLocal ( ty ( 0 ) , mutabilityNot ) )
@@ -143,7 +146,7 @@
     ListItem ( typedValue ( Range ( ListItem ( Integer ( -1113843932 , 32 , true ) )
     ListItem ( Integer ( 219246286 , 32 , true ) )
     ListItem ( Integer ( 281121487 , 32 , true ) )
-    ListItem ( Integer ( 1921781853 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) ) ) )
+    ListItem ( Integer ( 1921781853 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) ) , span ( 0 ) ) )
   </stack>
   <functions>
     noMap

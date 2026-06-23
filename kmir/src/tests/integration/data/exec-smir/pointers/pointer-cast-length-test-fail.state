@@ -74,6 +74,9 @@
       ListItem ( newLocal ( ty ( 43 ) , mutabilityMut ) )
       ListItem ( newLocal ( ty ( 39 ) , mutabilityMut ) )
     </locals>
+    <currentSpan>
+      span ( 96 )
+    </currentSpan>
   </currentFrame>
   <stack>
     ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( 0 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionContinue , ListItem ( newLocal ( ty ( 1 ) , mutabilityMut ) )
@@ -83,8 +86,8 @@
     ListItem ( Integer ( 42 , 8 , false ) ) ) , ty ( 30 ) , mutabilityMut ) )
     ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
     ListItem ( typedValue ( Moved , ty ( 26 ) , mutabilityMut ) )
-    ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( staticSize ( 8 ) , 0 , noMetadataSize ) ) , ty ( 31 ) , mutabilityNot ) ) ) )
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
+    ListItem ( typedValue ( Reference ( 0 , place (... local: local ( 1 ) , projection: .ProjectionElems ) , mutabilityNot , metadata ( staticSize ( 8 ) , 0 , noMetadataSize ) ) , ty ( 31 ) , mutabilityNot ) ) , span ( 59 ) ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List , span ( 0 ) ) )
   </stack>
   <functions>
     noMap

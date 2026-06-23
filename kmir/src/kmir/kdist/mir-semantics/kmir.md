@@ -84,11 +84,12 @@ blocks, or call another function).
 
   rule <k> #execStmts(.Statements) => .K  ... </k>
 
-  rule <k> #execStmts(STATEMENT:Statement STATEMENTS:Statements)
+  rule <k> #execStmts((statement(_, SPAN) #as STATEMENT) STATEMENTS:Statements)
          =>
            #execStmt(STATEMENT) ~> #execStmts(STATEMENTS)
          ...
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 ```
 
 `Statement` execution handles the different `StatementKind`s. Some of
@@ -158,10 +159,11 @@ function call, pushing a new stack frame and returning to a different
 block after the call returns.
 
 ```k
-  rule [termGoto]: <k> #execTerminator(terminator(terminatorKindGoto(I), _SPAN)) ~> _CONT
+  rule [termGoto]: <k> #execTerminator(terminator(terminatorKindGoto(I), SPAN)) ~> _CONT
          =>
            #execBlockIdx(I)
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 ```
 
 A `SwitchInt` terminator selects one of the blocks given as _targets_,
@@ -173,10 +175,11 @@ will be `129`.
 ```k
   syntax KItem ::= #selectBlock ( SwitchTargets , Evaluation ) [strict(2)]
 
-  rule [termSwitchInt]: <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), _SPAN)) ~> _CONT
+  rule [termSwitchInt]: <k> #execTerminator(terminator(terminatorKindSwitchInt(DISCR, TARGETS), SPAN)) ~> _CONT
          =>
            #selectBlock(TARGETS, DISCR)
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 
   // These rules preserve definedness because all the same subterms show up on each side except:
   // - `branch(...)`, which is a constructor.
@@ -233,9 +236,10 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
          <locals> ListItem(typedValue(VAL:Value, _, _)) _ => NEWLOCALS </locals>
+         <currentSpan> _ => NEWSPAN </currentSpan> // restore caller's call-site span
        //</currentFrame>
        // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS, NEWSPAN)) STACK => STACK </stack>
        <functions> FUNCSMAP </functions>
 
   // no value to return, skip writing
@@ -251,9 +255,10 @@ If the local `_0` does not have a value (i.e., it remained uninitialised), the f
          <target> someBasicBlockIdx(TARGET) => NEWTARGET </target>
          <unwind> _ => UNWIND </unwind>
          <locals> ListItem(_:NewLocal) _ => NEWLOCALS </locals>
+         <currentSpan> _ => NEWSPAN </currentSpan> // restore caller's call-site span
        //</currentFrame>
        // remaining call stack (without top frame)
-       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS)) STACK => STACK </stack>
+       <stack> ListItem(StackFrame(NEWCALLER, NEWDEST, NEWTARGET, UNWIND, NEWLOCALS, NEWSPAN)) STACK => STACK </stack>
        <functions> FUNCSMAP </functions>
 
 ```
@@ -329,6 +334,7 @@ where the returned result should go.
         => #execTerminatorCall(Ty, lookupFunction(FUNCSMAP, Ty), ARGS, DEST, TARGET, UNWIND, SPAN)
         ...
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
        <functions> FUNCSMAP </functions>
 
   rule <k> #execTerminator(terminator(terminatorKindCall(operandMove(place(local(I), PROJS)), ARGS, DEST, TARGET, UNWIND), SPAN))
@@ -336,6 +342,7 @@ where the returned result should go.
         ...
        </k>
       <locals> LOCALS </locals>
+      <currentSpan> _ => SPAN </currentSpan>
       <functions> FUNCSMAP </functions>
       <types> TYPESMAP </types>
     requires isTy(#projectedCallTy(TYPESMAP, I, PROJS, LOCALS))
@@ -385,8 +392,9 @@ where the returned result should go.
          <target> OLDTARGET => TARGET </target>
          <unwind> OLDUNWIND => UNWIND </unwind>
          <locals> LOCALS </locals>
+         ... // leaves <currentSpan> unchanged: callee arg setup is related to the caller's call-site span
        </currentFrame>
-       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS)) STACK </stack>
+       <stack> STACK => ListItem(StackFrame(OLDCALLER, OLDDEST, OLDTARGET, OLDUNWIND, LOCALS, SPAN)) STACK </stack>
     requires notBool isIntrinsicFunction(FUNC)
 
   // Filter check injected after every call: fires as a cut-point only when the function matches the break-on list
@@ -511,7 +519,7 @@ An operand may be a `Reference` (the only way a function could access another fu
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
        </k>
-       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS)) _:List </stack>
+       <stack> ListItem(StackFrame(_, _, _, _, CALLERLOCALS, _)) _:List </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
      andBool isTypedValue(CALLERLOCALS[I])
@@ -523,7 +531,7 @@ An operand may be a `Reference` (the only way a function could access another fu
            #setLocalValue(place(local(IDX), .ProjectionElems), #incrementRef(getValue(CALLERLOCALS, I)))
         ...
        </k>
-       <stack> (ListItem(StackFrame(_, _, _, _, CALLERLOCALS) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
+       <stack> (ListItem(StackFrame(_, _, _, _, CALLERLOCALS, _) #as CALLERFRAME => #updateStackLocal(CALLERFRAME, I, Moved))) _:List
         </stack>
     requires 0 <=Int I
      andBool I <Int size(CALLERLOCALS)
@@ -657,10 +665,11 @@ Otherwise the provided message is passed to a `panic!` call, ending the program 
 ```k
   syntax MIRError ::= AssertError ( AssertMessage )
 
-  rule [termAssert]: <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), _SPAN)) ~> _CONT
+  rule [termAssert]: <k> #execTerminator(terminator(assert(COND, EXPECTED, MSG, TARGET, _UNWIND), SPAN)) ~> _CONT
          =>
            #expect(COND, EXPECTED, MSG) ~> #execBlockIdx(TARGET)
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 
   syntax KItem ::= #expect ( Evaluation, Bool, AssertMessage ) [strict(1)]
 
@@ -684,19 +693,21 @@ Other terminators that matter at the MIR level "Runtime" are `Drop` and `Unreach
 Drops are elaborated to Noops but still define the continuing control flow. Unreachable terminators lead to a program error.
 
 ```k
-  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), _SPAN))
+  rule [termDrop]: <k> #execTerminator(terminator(terminatorKindDrop(_PLACE, TARGET, _UNWIND), SPAN))
          =>
            #execBlockIdx(TARGET)
         ...
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 
   syntax MIRError ::= "ReachedUnreachable"
 
-  rule [termUnreachable]: <k> #execTerminator(terminator(terminatorKindUnreachable, _SPAN))
+  rule [termUnreachable]: <k> #execTerminator(terminator(terminatorKindUnreachable, SPAN))
          =>
            ReachedUnreachable
         ...
        </k>
+       <currentSpan> _ => SPAN </currentSpan>
 ```
 
 ### Stopping on Program Errors

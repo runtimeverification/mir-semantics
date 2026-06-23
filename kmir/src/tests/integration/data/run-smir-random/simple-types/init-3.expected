@@ -30,6 +30,9 @@
       ListItem ( typedValue ( Integer ( 66 , 8 , false ) , ty ( 9 ) , mutabilityNot ) )
       ListItem ( typedValue ( Integer ( 446333181 , 32 , true ) , ty ( 8 ) , mutabilityNot ) )
     </locals>
+    <currentSpan>
+      span ( -1 )
+    </currentSpan>
   </currentFrame>
   <stack>
     .List

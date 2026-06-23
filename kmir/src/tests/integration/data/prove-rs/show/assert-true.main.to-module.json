@@ -713,9 +713,49 @@
                     ],
                     "arity": 1,
                     "variable": false
+                  },
+                  {
+                    "node": "KApply",
+                    "label": {
+                      "node": "KLabel",
+                      "name": "<currentSpan>",
+                      "params": []
+                    },
+                    "args": [
+                      {
+                        "node": "KRewrite",
+                        "lhs": {
+                          "node": "KVariable",
+                          "name": "_CURRENTSPAN_CELL"
+                        },
+                        "rhs": {
+                          "node": "KApply",
+                          "label": {
+                            "node": "KLabel",
+                            "name": "span",
+                            "params": []
+                          },
+                          "args": [
+                            {
+                              "node": "KToken",
+                              "token": "0",
+                              "sort": {
+                                "node": "KSort",
+                                "name": "Int",
+                                "params": []
+                              }
+                            }
+                          ],
+                          "arity": 1,
+                          "variable": false
+                        }
+                      }
+                    ],
+                    "arity": 1,
+                    "variable": false
                   }
                 ],
-                "arity": 6,
+                "arity": 7,
                 "variable": false
               },
               {
@@ -751,7 +791,7 @@
                           "node": "KApply",
                           "label": {
                             "node": "KLabel",
-                            "name": "StackFrame(_,_,_,_,_)_KMIR-CONFIGURATION_StackFrame_Ty_Place_MaybeBasicBlockIdx_UnwindAction_List",
+                            "name": "StackFrame(_,_,_,_,_,_)_KMIR-CONFIGURATION_StackFrame_Ty_Place_MaybeBasicBlockIdx_UnwindAction_List_Span",
                             "params": []
                           },
                           "args": [
@@ -846,9 +886,30 @@
                               ],
                               "arity": 1,
                               "variable": false
+                            },
+                            {
+                              "node": "KApply",
+                              "label": {
+                                "node": "KLabel",
+                                "name": "span",
+                                "params": []
+                              },
+                              "args": [
+                                {
+                                  "node": "KToken",
+                                  "token": "0",
+                                  "sort": {
+                                    "node": "KSort",
+                                    "name": "Int",
+                                    "params": []
+                                  }
+                                }
+                              ],
+                              "arity": 1,
+                              "variable": false
                             }
                           ],
-                          "arity": 5,
+                          "arity": 6,
                           "variable": false
                         }
                       ],

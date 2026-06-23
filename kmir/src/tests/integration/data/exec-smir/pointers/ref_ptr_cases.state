@@ -35,9 +35,12 @@
       ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
       ListItem ( newLocal ( ty ( 1 ) , mutabilityNot ) )
     </locals>
+    <currentSpan>
+      span ( 190 )
+    </currentSpan>
   </currentFrame>
   <stack>
-    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List ) )
+    ListItem ( StackFrame ( ty ( -1 ) , place (... local: local ( -1 ) , projection: .ProjectionElems ) , noBasicBlockIdx , unwindActionUnreachable , .List , span ( 0 ) ) )
   </stack>
   <functions>
     noMap

@@ -69,6 +69,9 @@
       ListItem ( Integer ( -328986497 , 32 , true ) )
       ListItem ( Integer ( -528598575 , 32 , true ) ) ) , ty ( 26 ) , mutabilityNot ) )
     </locals>
+    <currentSpan>
+      span ( -1 )
+    </currentSpan>
   </currentFrame>
   <stack>
     .List
