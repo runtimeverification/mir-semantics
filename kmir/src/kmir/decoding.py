@@ -100,7 +100,7 @@ def decode_alloc_or_unable(
 
             pointee_ty = _pointee_ty(type_info)
             if pointee_ty is None:
-                return UnableToDecodeValue(f'Static allocation type is not a reference: {type_info}')
+                return UnableToDecodeValue(f'Static allocation type is not a reference or a pointer: {type_info}')
 
             data = bytes(n or 0 for n in allocation.bytez)
             return _decode_memory_alloc_or_unable(
