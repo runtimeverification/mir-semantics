@@ -1,0 +1,1 @@
+../exec-smir/references/static_reference.rs

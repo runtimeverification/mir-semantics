@@ -662,7 +662,7 @@ def _decode_alloc(smir_info: SMIRInfo, raw_alloc: Any) -> tuple[KInner, KInner]:
 
     alloc_id = raw_alloc['alloc_id']
     alloc_info = smir_info.allocs[alloc_id]
-    value = decode_alloc_or_unable(alloc_info=alloc_info, types=smir_info.types)
+    value = decode_alloc_or_unable(alloc_info=alloc_info, types=smir_info.types, statics=smir_info.statics)
 
     match value:
         case UnableToDecodeValue(msg):
