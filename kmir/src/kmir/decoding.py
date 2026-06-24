@@ -47,6 +47,7 @@ if TYPE_CHECKING:
 
     from pyk.kast import KInner
 
+    from .alloc import DefId
     from .ty import FieldsShape, LayoutShape, MachineSize, Scalar, TagEncoding, Ty, TypeMetadata, UintTy
     from .value import MetadataSize
 
@@ -62,7 +63,12 @@ class UnableToDecodeValue(Value):
         )
 
 
-def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadata]) -> Value:
+def decode_alloc_or_unable(
+    alloc_info: AllocInfo,
+    types: Mapping[Ty, TypeMetadata],
+    statics: Mapping[DefId, Allocation] | None = None,
+) -> Value:
+    statics = statics or {}
     match alloc_info:
         case AllocInfo(
             ty=ty,
@@ -78,12 +84,28 @@ def decode_alloc_or_unable(alloc_info: AllocInfo, types: Mapping[Ty, TypeMetadat
             data = bytes(n or 0 for n in bytez)
             return _decode_memory_alloc_or_unable(data=data, ptrs=ptrs, ty=ty, types=types)
         case AllocInfo(
-            ty=_,
-            # `Static` currently only carries `def_id`; we ignore it here.
-            global_alloc=Static(),
+            ty=ty,
+            global_alloc=Static(def_id=def_id),
         ):
-            # Static global alloc does not carry raw bytes here; leave as unable-to-decode placeholder
-            return UnableToDecodeValue('Static global allocation not decoded')
+            # The static's bytes live in its `MonoItemStatic` item, not in the alloc entry.
+            # The alloc's `ty` is a reference to the static; decode its contents against the pointee type.
+            allocation = statics.get(def_id)
+            if allocation is None:
+                return UnableToDecodeValue(f'Static allocation not found for def_id: {def_id}')
+
+            try:
+                type_info = types[ty]
+            except KeyError:
+                return UnableToDecodeValue(f'Decoding static allocation with unknown type: {ty}')
+
+            pointee_ty = _pointee_ty(type_info)
+            if pointee_ty is None:
+                return UnableToDecodeValue(f'Static allocation type is not a reference or a pointer: {type_info}')
+
+            data = bytes(n or 0 for n in allocation.bytez)
+            return _decode_memory_alloc_or_unable(
+                data=data, ptrs=allocation.provenance.ptrs, ty=pointee_ty, types=types
+            )
         case AllocInfo(
             ty=_,
             global_alloc=Function(

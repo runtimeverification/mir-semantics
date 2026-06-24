@@ -72,6 +72,7 @@ PROVE_SHOW_SPECS = [
     'ptr-cast-array-to-wrapper-fail',
     'ptr-cast-array-to-nested-wrapper-fail',
     'ptr-cast-array-to-singleton-wrapped-array-fail',
+    'static_pointer-fail',
 ]
 
 
@@ -540,6 +541,12 @@ EXEC_DATA = [
         'Ref-array-elem-ref',
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.smir.json',
         EXEC_DATA_DIR / 'references' / 'array_elem_ref.state',
+        None,
+    ),
+    (
+        'Ref-static_reference',
+        EXEC_DATA_DIR / 'references' / 'static_reference.smir.json',
+        EXEC_DATA_DIR / 'references' / 'static_reference.state',
         None,
     ),
     (
