@@ -3,13 +3,14 @@
 │   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
 │   span: 0
 │
-│  (32 steps)
-└─ 3 (stuck, leaf)
-    #execIntrinsic ( IntrinsicFunction ( symbol ( "size_of_val" ) ) , operandMove (
-    span: 232
-
-
-┌─ 2 (root, leaf, target, terminal)
+│  (48 steps)
+├─ 3 (terminal)
 │   #EndProgram ~> .K
+│
+┊  constraint: true
+┊  subst: ...
+└─ 2 (leaf, target, terminal)
+    #EndProgram ~> .K
+
 
 
