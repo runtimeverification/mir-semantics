@@ -1,0 +1,15 @@
+
+┌─ 1 (root, init)
+│   #execTerminator ( terminator ( ... kind: terminatorKindCall ( ... func: operandC
+│   span: 0
+│
+│  (32 steps)
+└─ 3 (stuck, leaf)
+    #execIntrinsic ( IntrinsicFunction ( symbol ( "size_of_val" ) ) , operandMove (
+    span: 232
+
+
+┌─ 2 (root, leaf, target, terminal)
+│   #EndProgram ~> .K
+
+
