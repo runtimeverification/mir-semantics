@@ -51,7 +51,6 @@ PROVE_START_SYMBOLS = {
     'spl-multisig-iter-eq-copied-next': ['repro'],
 }
 PROVE_SHOW_SPECS = [
-    'intrinsics',
     'local-raw-fail',
     'interior-mut-fail',
     'interior-mut3-fail',
