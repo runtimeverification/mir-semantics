@@ -260,7 +260,6 @@ tests/ui/catch-unwind-bang.rs
 tests/ui/cfg/cfg_attr.rs
 tests/ui/cfg/cfg-macros-foo.rs
 tests/ui/cfg/cfgs-on-items.rs
-tests/ui/cfg/conditional-compile.rs
 tests/ui/cfguard-run.rs
 tests/ui/char.rs
 tests/ui/cleanup-rvalue-for-scope.rs
@@ -315,7 +314,6 @@ tests/ui/codegen/equal-pointers-unequal/strict-provenance/print.rs
 tests/ui/codegen/equal-pointers-unequal/strict-provenance/segfault.rs
 tests/ui/codegen/equal-pointers-unequal/strict-provenance/zero.rs
 tests/ui/codegen/init-large-type.rs
-tests/ui/codegen/issue-16602-3.rs
 tests/ui/codegen/issue-27859.rs
 tests/ui/codegen/issue-28950.rs
 tests/ui/codegen/issue-55976.rs
@@ -364,8 +362,6 @@ tests/ui/const_prop/const-prop-ice3.rs
 tests/ui/const_prop/dont-propagate-generic-instance-2.rs
 tests/ui/const_prop/dont-propagate-generic-instance.rs
 tests/ui/consts/cast-discriminant-zst-enum.rs
-tests/ui/consts/const-adt-align-mismatch.rs
-tests/ui/consts/const-big-enum.rs
 tests/ui/consts/const-binops.rs
 tests/ui/consts/const-block-item-macro-codegen.rs
 tests/ui/consts/const-block-item.rs
@@ -374,22 +370,7 @@ tests/ui/consts/const-bound.rs
 tests/ui/consts/const-cast-ptr-int.rs
 tests/ui/consts/const-cast.rs
 tests/ui/consts/const-contents.rs
-tests/ui/consts/const-deref.rs
 tests/ui/consts/const_discriminant.rs
-tests/ui/consts/const-enum-byref.rs
-tests/ui/consts/const-enum-byref-self.rs
-tests/ui/consts/const-enum-cast.rs
-tests/ui/consts/const-enum-ptr.rs
-tests/ui/consts/const-enum-struct2.rs
-tests/ui/consts/const-enum-structlike.rs
-tests/ui/consts/const-enum-struct.rs
-tests/ui/consts/const-enum-tuple2.rs
-tests/ui/consts/const-enum-tuple.rs
-tests/ui/consts/const-enum-tuplestruct2.rs
-tests/ui/consts/const-enum-tuplestruct.rs
-tests/ui/consts/const-enum-vec-index.rs
-tests/ui/consts/const-enum-vec-ptr.rs
-tests/ui/consts/const-enum-vector.rs
 tests/ui/consts/const-eval/const_fn_ptr.rs
 tests/ui/consts/const-eval/float_methods.rs
 tests/ui/consts/const-eval/heap/alloc_intrinsic_nontransient.rs
@@ -408,9 +389,6 @@ tests/ui/consts/const_in_pattern/custom-eq-branch-pass.rs
 tests/ui/consts/const_in_pattern/null-raw-ptr-issue-119270.rs
 tests/ui/consts/const-int-arithmetic-overflow.rs
 tests/ui/consts/const_let_eq_float.rs
-tests/ui/consts/const-needs_drop.rs
-tests/ui/consts/const-negative.rs
-tests/ui/consts/const-nullary-enum.rs
 tests/ui/consts/const-nullary-univariant-enum.rs
 tests/ui/consts/const-pattern-variant.rs
 tests/ui/consts/const-ptr-nonnull-rpass.rs
@@ -422,7 +400,6 @@ tests/ui/consts/const-region-ptrs.rs
 tests/ui/consts/const.rs
 tests/ui/consts/const-size_of_val-align_of_val.rs
 tests/ui/consts/const-struct.rs
-tests/ui/consts/const-tuple-struct.rs
 tests/ui/consts/const-typeid-of-rpass.rs
 tests/ui/consts/const-variant-count.rs
 tests/ui/consts/const-vec-of-fns.rs
@@ -434,7 +411,6 @@ tests/ui/consts/issue-21721.rs
 tests/ui/consts/issue-23833.rs
 tests/ui/consts/issue-27890.rs
 tests/ui/consts/issue-33537.rs
-tests/ui/consts/issue-37222.rs
 tests/ui/consts/issue-46553.rs
 tests/ui/consts/issue-58435-ice-with-assoc-const.rs
 tests/ui/consts/issue-66345.rs
@@ -442,9 +418,7 @@ tests/ui/consts/issue-67640.rs
 tests/ui/consts/issue-69532.rs
 tests/ui/consts/issue-90762.rs
 tests/ui/consts/load-preserves-partial-init.rs
-tests/ui/consts/locals-in-const-fn.rs
 tests/ui/consts/mut-ptr-to-static.rs
-tests/ui/consts/offset.rs
 tests/ui/consts/promoted_const_call4.rs
 tests/ui/consts/promotion-mutable-ref.rs
 tests/ui/consts/references.rs
@@ -773,7 +747,6 @@ tests/ui/issues/issue-12677.rs
 tests/ui/issues/issue-12744.rs
 tests/ui/issues/issue-12860.rs
 tests/ui/issues/issue-12909.rs
-tests/ui/issues/issue-13027.rs
 tests/ui/issues/issue-13204.rs
 tests/ui/issues/issue-13323.rs
 tests/ui/issues/issue-13434.rs
@@ -849,7 +822,6 @@ tests/ui/issues/issue-23891.rs
 tests/ui/issues/issue-24533.rs
 tests/ui/issues/issue-24779.rs
 tests/ui/issues/issue-25089.rs
-tests/ui/issues/issue-25145.rs
 tests/ui/issues/issue-25497.rs
 tests/ui/issues/issue-25515.rs
 tests/ui/issues/issue-25549-multiple-drop.rs
@@ -872,7 +844,6 @@ tests/ui/issues/issue-28498-ugeh-ex1.rs
 tests/ui/issues/issue-28550.rs
 tests/ui/issues/issue-29053.rs
 tests/ui/issues/issue-29071-2.rs
-tests/ui/issues/issue-29147-rpass.rs
 tests/ui/issues/issue-2935.rs
 tests/ui/issues/issue-29466.rs
 tests/ui/issues/issue-29668.rs
@@ -1066,7 +1037,6 @@ tests/ui/match/issue-114691.rs
 tests/ui/match/issue-115681.rs
 tests/ui/match/issue-11940.rs
 tests/ui/match/issue-26251.rs
-tests/ui/match/issue-36401.rs
 tests/ui/match/issue-42679.rs
 tests/ui/match/issue-72680.rs
 tests/ui/match/match-float.rs
@@ -1113,7 +1083,6 @@ tests/ui/mir/mir_overflow_off.rs
 tests/ui/mir/mir_raw_fat_ptr.rs
 tests/ui/mir/mir_temp_promotions.rs
 tests/ui/mir/validate/needs-reveal-all.rs
-tests/ui/monomorphize-abi-alignment.rs
 tests/ui/moves/move-1-unique.rs
 tests/ui/moves/move-2.rs
 tests/ui/moves/move-2-unique.rs
@@ -1168,7 +1137,6 @@ tests/ui/numbers-arithmetic/overflow-attribute-works-2.rs
 tests/ui/numbers-arithmetic/saturating-float-casts.rs
 tests/ui/numbers-arithmetic/saturating-float-casts-wasm.rs
 tests/ui/numbers-arithmetic/shift-near-oflo.rs
-tests/ui/numbers-arithmetic/shift.rs
 tests/ui/numbers-arithmetic/u128-as-f32.rs
 tests/ui/numbers-arithmetic/u128.rs
 tests/ui/numbers-arithmetic/unary-minus-suffix-inference.rs
@@ -1301,7 +1269,6 @@ tests/ui/regions/regions-self-in-enums.rs
 tests/ui/regions/regions-simple.rs
 tests/ui/regions/regions-static-closure.rs
 tests/ui/regions/regions-trait-object-1.rs
-tests/ui/repeat-expr/repeat-expr-in-static.rs
 tests/ui/repr/aligned_enum_cast.rs
 tests/ui/repr/repr_c_int_align.rs
 tests/ui/resolve/blind-item-local-shadow.rs
@@ -1385,7 +1352,6 @@ tests/ui/self/string-self-append.rs
 tests/ui/self/ufcs-explicit-self.rs
 tests/ui/self/uniq-self-in-mut-slot.rs
 tests/ui/self/where-for-self.rs
-tests/ui/sepcomp/sepcomp-statics.rs
 tests/ui/sepcomp/sepcomp-unwind.rs
 tests/ui/simd/array-type.rs
 tests/ui/simd/generics.rs
@@ -1425,9 +1391,7 @@ tests/ui/specialization/specialization-assoc-fns.rs
 tests/ui/specialization/specialization-basics.rs
 tests/ui/specialization/specialization-default-methods.rs
 tests/ui/sse2.rs
-tests/ui/static/refer-to-other-statics-by-value.rs
 tests/ui/statics/const_generics.rs
-tests/ui/statics/issue-17233.rs
 tests/ui/statics/static-function-pointer.rs
 tests/ui/statics/static-impl.rs
 tests/ui/statics/static-promotion.rs
@@ -1450,7 +1414,6 @@ tests/ui/structs-enums/class-impl-very-parameterized-trait.rs
 tests/ui/structs-enums/class-poly-methods.rs
 tests/ui/structs-enums/class-separate-impl.rs
 tests/ui/structs-enums/class-str-field.rs
-tests/ui/structs-enums/codegen-tag-static-padding.rs
 tests/ui/structs-enums/empty-tag.rs
 tests/ui/structs-enums/enum-alignment.rs
 tests/ui/structs-enums/enum-clike-ffi-as-int.rs
@@ -1460,7 +1423,6 @@ tests/ui/structs-enums/enum-disr-val-pretty.rs
 tests/ui/structs-enums/enum-non-c-like-repr-c-and-int.rs
 tests/ui/structs-enums/enum-non-c-like-repr-c.rs
 tests/ui/structs-enums/enum-non-c-like-repr-int.rs
-tests/ui/structs-enums/enum-nullable-const-null-with-fields.rs
 tests/ui/structs-enums/enum-nullable-simplifycfg-misopt.rs
 tests/ui/structs-enums/enum-null-pointer-opt.rs
 tests/ui/structs-enums/enum-univariant-repr.rs
@@ -1599,7 +1561,6 @@ tests/ui/traits/issue-9394-inherited-calls.rs
 tests/ui/traits/kindck-owned-contains-1.rs
 tests/ui/traits/monad.rs
 tests/ui/traits/multidispatch-conditional-impl-not-considered.rs
-tests/ui/traits/next-solver/alias-bound-preference.rs
 tests/ui/traits/next-solver/dyn-any-dont-prefer-impl.rs
 tests/ui/traits/object/auto-dedup.rs
 tests/ui/traits/object/exclusion.rs
@@ -1678,7 +1639,6 @@ tests/ui/unboxed-closures/unboxed-closures-prelude.rs
 tests/ui/unboxed-closures/unboxed-closures-single-word-env.rs
 tests/ui/unboxed-closures/unboxed-closures-sugar-object.rs
 tests/ui/unboxed-closures/unboxed-closures-zero-args.rs
-tests/ui/union/union-align.rs
 tests/ui/union/union-const-codegen.rs
 tests/ui/union/union-const-eval-field.rs
 tests/ui/union/union-drop-assign.rs
