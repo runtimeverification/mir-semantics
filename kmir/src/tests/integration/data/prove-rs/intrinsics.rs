@@ -66,3 +66,10 @@ pub fn test_size_of_val() {
     let r = unsafe { intrinsics::size_of_val(&x as *const u32) };
     assert!(r == 4);
 }
+
+#[no_mangle]
+pub fn test_min_align_of_val() {
+    let x: u32 = 0;
+    let r = unsafe { intrinsics::min_align_of_val(&x as *const u32) };
+    assert!(r == 4);
+}
