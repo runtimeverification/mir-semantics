@@ -319,6 +319,46 @@ the second argument, so the returned difference is always positive.
     [priority(100)]
 ```
 
+#### Size of a value (`std::intrinsics::size_of_val`)
+
+`size_of_val` returns the size in bytes of the value its argument points to. The pointee type is
+computed from the argument's type and its size from the existing `#sizeOf`.
+
+Only statically-sized pointees are handled here: the rule requires the pointee not to be a
+dynamically-sized type (`#metadataSize =/=K dynamicSize(1)`). Dynamically-sized pointees (slices,
+`str`, `dyn`) need the runtime metadata carried by the fat pointer and are left for later (the
+intrinsic stays stuck on them rather than returning a wrong size).
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("size_of_val")), ARG:Operand .Operands, DEST, _SPAN)
+        => #setLocalValue(DEST, Integer(#sizeOf(TYPESMAP, lookupTy(TYPESMAP, {pointeeTy(lookupTy(TYPESMAP, {#extractOperandType(TYPESMAP, ARG, LOCALS)}:>Ty))}:>Ty)), 64, false))
+       ... </k>
+       <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
+    requires isTy(#extractOperandType(TYPESMAP, ARG, LOCALS))
+     andBool isTy(pointeeTy(lookupTy(TYPESMAP, {#extractOperandType(TYPESMAP, ARG, LOCALS)}:>Ty)))
+     andBool #metadataSize(TYPESMAP, pointeeTy(lookupTy(TYPESMAP, {#extractOperandType(TYPESMAP, ARG, LOCALS)}:>Ty))) =/=K dynamicSize(1)
+    [preserves-definedness]
+```
+
+#### Minimum alignment of a value (`std::intrinsics::min_align_of_val`)
+
+`min_align_of_val` returns the minimum alignment of the value its argument points to.
+The pointee type is computed from the argument's type and the alignment from the existing `#alignOf`. Again only statically-sized pointee types are handled here.
+Dynamically-sized ones are left for later, so the intrinsic stays stuck if one reaches here.
+
+```k
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("min_align_of_val")), ARG:Operand .Operands, DEST, _SPAN)
+        => #setLocalValue(DEST, Integer(#alignOf(TYPESMAP, lookupTy(TYPESMAP, {pointeeTy(lookupTy(TYPESMAP, {#extractOperandType(TYPESMAP, ARG, LOCALS)}:>Ty))}:>Ty)), 64, false))
+       ... </k>
+       <locals> LOCALS </locals>
+       <types> TYPESMAP </types>
+    requires isTy(#extractOperandType(TYPESMAP, ARG, LOCALS))
+     andBool isTy(pointeeTy(lookupTy(TYPESMAP, {#extractOperandType(TYPESMAP, ARG, LOCALS)}:>Ty)))
+     andBool #metadataSize(TYPESMAP, pointeeTy(lookupTy(TYPESMAP, {#extractOperandType(TYPESMAP, ARG, LOCALS)}:>Ty))) =/=K dynamicSize(1)
+    [preserves-definedness]
+```
+
 ```k
 endmodule
 ```
