@@ -9,7 +9,7 @@ For semantics details and specialized workflows, see [Further Reading](#further-
 ### Prerequisites
 
 - [Python](https://www.python.org/) `>= 3.10`
-- [`uv`](https://docs.astral.sh/uv/)
+- [`uv`](https://docs.astral.sh/uv/), pinned in [`deps/uv_release`](deps/uv_release); if yours differs, run `uv self update <version>`
 - [`pip`](https://pip.pypa.io/) `>= 20.0.2`
 - [`gcc`](https://gcc.gnu.org/) `>= 11.4.0`
 - [Rust](https://rustup.rs/) via `rustup`

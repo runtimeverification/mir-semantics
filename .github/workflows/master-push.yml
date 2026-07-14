@@ -41,8 +41,7 @@ jobs:
           # See docs/dev/releasing.md
           prior_version=$(cat package/version)
 
-          # Choose the bump level from `Bump:` trailers on the new master commits
-          # (defaults to patch; major wins over minor wins over patch).
+          bump_level=patch  # default bump level, may be overwritten
           new_commits="origin/release..origin/master"
           if git log --format='%B' "${new_commits}" | grep -qiE '^[[:space:]]*Bump:[[:space:]]*major[[:space:]]*$'; then
               bump_level=major
@@ -51,6 +50,8 @@ jobs:
           fi
           echo "Release bump level: ${bump_level}"
 
+          # `ours` resolves conflicts in favour of release; only the version
+          # files should ever conflict (release = master + version commits).
           git merge --no-edit --strategy-option=ours origin/master
           package/version.sh bump ${prior_version} ${bump_level}
           # substitute the version in all relevant files
