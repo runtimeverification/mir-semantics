@@ -152,6 +152,7 @@ RUSTC=deps/.stable-mir-json/debug.sh cargo build
 - [docs/semantics-of-mir.md](docs/semantics-of-mir.md)
 - [docs/example-mir-execution-flow.md](docs/example-mir-execution-flow.md)
 - [docs/dev/adding-intrinsics.md](docs/dev/adding-intrinsics.md)
+- [docs/dev/releasing.md](docs/dev/releasing.md)
 - [docs/feature-checklist.md](docs/feature-checklist.md)
 - [Stable-MIR-JSON repository](https://github.com/runtimeverification/stable-mir-json/)
 
