@@ -47,6 +47,10 @@ dev = [
     "pyupgrade",
 ]
 
+[tool.uv]
+# Pinned uv version for local builds, kept in sync with deps/uv_release
+required-version = "0.9.22"
+
 [tool.hatch.metadata]
 allow-direct-references = true
 

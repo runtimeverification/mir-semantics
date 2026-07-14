@@ -28,7 +28,9 @@ jobs:
           UV_VERSION=$(curl -s https://raw.githubusercontent.com/pyproject-nix/uv2nix/$(cat deps/uv2nix)/pkgs/uv-bin/srcs.json | jq -r .version)
           [[ "$UV_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           echo $UV_VERSION > deps/uv_release
-          git add deps/uv_release && git commit -m "Sync uv version: uv ${UV_VERSION}" || true
+          # keep the [tool.uv] required-version guard in kmir/pyproject.toml in lockstep
+          sed --in-place 's/^required-version = ".*"$/required-version = "'"${UV_VERSION}"'"/' kmir/pyproject.toml
+          git add deps/uv_release kmir/pyproject.toml && git commit -m "Sync uv version: uv ${UV_VERSION}" || true
           echo uv_version=$UV_VERSION >> "${GITHUB_OUTPUT}"
       - name: 'Install uv'
         uses: astral-sh/setup-uv@v6
