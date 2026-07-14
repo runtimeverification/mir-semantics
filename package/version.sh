@@ -7,24 +7,23 @@ fatal() { echo "[FATAL] $@" ; exit 1 ; }
 
 version_file="package/version"
 
+# Bump the given version by the requested level and write it to the version file.
+# Usage: version_bump <version> [major|minor|patch]  (defaults to patch)
+# The version counter lives on the `release` branch, so <version> is always the
+# prior released version -- see docs/dev/releasing.md
 version_bump() {
-    local version release_commit version_major version_minor version_patch new_version current_version current_version_major current_version_minor current_version_patch
+    local version level version_major version_minor version_patch new_version
     version="$1" ; shift
+    level="${1:-patch}"
     version_major="$(echo ${version} | cut --delimiter '.' --field 1)"
     version_minor="$(echo ${version} | cut --delimiter '.' --field 2)"
     version_patch="$(echo ${version} | cut --delimiter '.' --field 3)"
-    current_version="$(cat ${version_file})"
-    current_version_major="$(echo ${current_version} | cut --delimiter '.' --field 1)"
-    current_version_minor="$(echo ${current_version} | cut --delimiter '.' --field 2)"
-    current_version_patch="$(echo ${current_version} | cut --delimiter '.' --field 3)"
-    new_version="${version}"
-    if [[ "${version_major}" == "${current_version_major}" ]] && [[ "${version_minor}" == "${current_version_minor}" ]]; then
-        new_version="${version_major}.${version_minor}.$((version_patch + 1))"
-    fi
-    # If the file being commited increases the major or minor, then take that version as it is
-    if [[ "${version_major}" < "${current_version_major}" ]] || [[ "${version_minor}" < "${current_version_minor}" ]]; then
-        new_version="${current_version}"
-    fi
+    case "${level}" in
+        major) new_version="$((version_major + 1)).0.0"                              ;;
+        minor) new_version="${version_major}.$((version_minor + 1)).0"               ;;
+        patch) new_version="${version_major}.${version_minor}.$((version_patch + 1))" ;;
+        *)     fatal "Unknown bump level: ${level} (expected major, minor or patch)" ;;
+    esac
     echo "${new_version}" > "${version_file}"
     notif "Version: ${new_version}"
 }
