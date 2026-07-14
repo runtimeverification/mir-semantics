@@ -4,9 +4,7 @@ set -xueo pipefail
 
 which kmir
 kmir --help
-
-# there is no `kmir version` implemented yet
-# kmir version
+kmir --version
 
 # ( \
 #      cd kmir/src/tests/integration/data/crate-tests/single-bin/main-crate \

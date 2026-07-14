@@ -9,7 +9,7 @@ For semantics details and specialized workflows, see [Further Reading](#further-
 ### Prerequisites
 
 - [Python](https://www.python.org/) `>= 3.10`
-- [`uv`](https://docs.astral.sh/uv/)
+- [`uv`](https://docs.astral.sh/uv/), pinned in [`deps/uv_release`](deps/uv_release); if yours differs, run `uv self update <version>`
 - [`pip`](https://pip.pypa.io/) `>= 20.0.2`
 - [`gcc`](https://gcc.gnu.org/) `>= 11.4.0`
 - [Rust](https://rustup.rs/) via `rustup`
@@ -152,6 +152,7 @@ RUSTC=deps/.stable-mir-json/debug.sh cargo build
 - [docs/semantics-of-mir.md](docs/semantics-of-mir.md)
 - [docs/example-mir-execution-flow.md](docs/example-mir-execution-flow.md)
 - [docs/dev/adding-intrinsics.md](docs/dev/adding-intrinsics.md)
+- [docs/dev/releasing.md](docs/dev/releasing.md)
 - [docs/feature-checklist.md](docs/feature-checklist.md)
 - [Stable-MIR-JSON repository](https://github.com/runtimeverification/stable-mir-json/)
 

@@ -34,17 +34,26 @@ jobs:
       - name: 'Update release branch with current master'
         run: |
           git checkout -B release origin/release
+          # The release branch owns the version counter. master carries sentinel
+          # 0.0.0 and should not be changed by any scripts. Release branch reads
+          # the prior version (from release) and bumps it. `--strategy-option=ours`
+          # keeps the release branch's version files when they conflict with master.
+          # See docs/dev/releasing.md
           prior_version=$(cat package/version)
-          old_master="$(git merge-base origin/master origin/release)"
-          new_master="$(git rev-parse origin/master)"
-          # otherwise bump the prior_version
-          if git diff --exit-code ${old_master} ${new_master} -- package/version; then
-              git merge --no-edit origin/master
-              package/version.sh bump ${prior_version}
-          else
-              # if the version has changed on master, use it unmodified
-              git merge --no-edit --strategy-option=theirs origin/master
+
+          bump_level=patch  # default bump level, may be overwritten
+          new_commits="origin/release..origin/master"
+          if git log --format='%B' "${new_commits}" | grep -qiE '^[[:space:]]*Bump:[[:space:]]*major[[:space:]]*$'; then
+              bump_level=major
+          elif git log --format='%B' "${new_commits}" | grep -qiE '^[[:space:]]*Bump:[[:space:]]*minor[[:space:]]*$'; then
+              bump_level=minor
           fi
+          echo "Release bump level: ${bump_level}"
+
+          # `ours` resolves conflicts in favour of release; only the version
+          # files should ever conflict (release = master + version commits).
+          git merge --no-edit --strategy-option=ours origin/master
+          package/version.sh bump ${prior_version} ${bump_level}
           # substitute the version in all relevant files
           package/version.sh sub
           uv --directory kmir lock --no-upgrade

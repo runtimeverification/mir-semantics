@@ -15,6 +15,7 @@ from pyk.proof.reachability import APRProof
 from pyk.proof.show import APRProofShow
 from pyk.proof.tui import APRProofViewer
 
+from . import __version__
 from .cargo import CargoProject
 from .kmir import KMIR, KMIRAPRNodePrinter
 from .linker import link
@@ -325,6 +326,7 @@ def kmir(args: Sequence[str]) -> None:
 
 def _arg_parser() -> ArgumentParser:
     parser = ArgumentParser(prog='kmir')
+    parser.add_argument('-V', '--version', action='version', version=f'kmir {__version__}')
 
     command_parser = parser.add_subparsers(dest='command', required=True)
     kcli_args = KCLIArgs()

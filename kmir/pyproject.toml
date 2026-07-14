@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kmir"
-version = "0.3.181"
+version = "0.0.0"
 description = ""
 requires-python = ">=3.10"
 dependencies = [
@@ -46,6 +46,10 @@ dev = [
     "pytest-xdist",
     "pyupgrade",
 ]
+
+[tool.uv]
+# Pinned uv version for local builds, kept in sync with deps/uv_release
+required-version = "0.9.22"
 
 [tool.hatch.metadata]
 allow-direct-references = true
