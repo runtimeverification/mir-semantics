@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 'Get uv release'
         id: uv_release
         run: |
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 'Get uv release'
         id: uv_release
         run: |
@@ -84,7 +84,7 @@ jobs:
             timeout: 60
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
       - name: 'Set up Docker'
@@ -107,7 +107,7 @@ jobs:
     runs-on: [self-hosted, linux, normal]
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
       - name: 'Set up Docker'
@@ -137,7 +137,7 @@ jobs:
       short-sha: ${{ steps.set-image-name.outputs.short-sha }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -215,7 +215,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Check out pull request HEAD instead of merge commit.
           ref: ${{ github.event.pull_request.head.sha }}
