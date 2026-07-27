@@ -23,13 +23,13 @@ jobs:
       CONTAINER_NAME: mir-ui-ci-${{ github.sha }}
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.JENKINS_GITHUB_PAT }}
           submodules: recursive
 
       - name: 'Check out Rust repo'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: rust-lang/rust
           path: rust

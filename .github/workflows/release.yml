@@ -13,7 +13,7 @@ jobs:
       version: ${{ steps.make-release.outputs.version }}
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 'Make release'
         id: 'make-release'
         env:
@@ -32,7 +32,7 @@ jobs:
     runs-on: [self-hosted, linux, normal]
     needs: draft-release
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
@@ -83,7 +83,7 @@ jobs:
     runs-on: [ self-hosted, linux ]
     needs: [ release-docker ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
@@ -125,7 +125,7 @@ jobs:
     needs: draft-release
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 'Build kmir and push to k-framework cache'
         uses: workflow/nix-shell-action@v3
