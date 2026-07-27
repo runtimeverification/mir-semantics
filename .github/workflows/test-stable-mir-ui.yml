@@ -104,7 +104,7 @@ jobs:
 
       - name: 'Upload proof artifacts on failure'
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: proof-artifacts
           path: .github-artifacts/proof-artifacts
@@ -121,7 +121,7 @@ jobs:
 
       - name: 'Upload updated skip.txt'
         if: inputs.update-skip
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: updated-skip-txt
           path: .github-artifacts/update-skip/skip.txt
