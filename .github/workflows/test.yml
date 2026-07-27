@@ -86,7 +86,6 @@ jobs:
       - name: 'Check out code'
         uses: actions/checkout@v6
         with:
-          token: ${{ secrets.JENKINS_GITHUB_PAT }}
           submodules: recursive
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
@@ -110,7 +109,6 @@ jobs:
       - name: 'Check out code'
         uses: actions/checkout@v6
         with:
-          token: ${{ secrets.JENKINS_GITHUB_PAT }}
           submodules: recursive
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
