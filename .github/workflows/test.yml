@@ -226,15 +226,13 @@ jobs:
         uses: cachix/install-nix-action@v31.11.0
         with:
           install_url: https://releases.nixos.org/nix/nix-2.31.2/install
+          # k-framework is a public Cachix cache, so we pull it as an ordinary
+          # anonymous substituter (URL + public key, both public info). This
+          # replaces cachix/cachix-action, which authenticated with a token
+          # configured on the runner and thus kept a secret in scope for CI.
           extra_nix_config: |
-            substituters = http://cache.nixos.org https://cache.iog.io
-            trusted-public-keys = cache.nixos.org
-
-      - name: 'Install Cachix'
-        if: ${{ matrix.runner != 'MacM1' }}
-        uses: cachix/cachix-action@v17
-        with:
-          name: k-framework
+            substituters = http://cache.nixos.org https://cache.iog.io https://k-framework.cachix.org
+            trusted-public-keys = cache.nixos.org k-framework.cachix.org-1:jeyMXB2h28gpNRjuVkehg+zLj62ma1RnyyopA/20yFE=
 
       - name: 'Build and test'
         run: |
