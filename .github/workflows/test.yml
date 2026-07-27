@@ -142,7 +142,7 @@ jobs:
           submodules: recursive
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3.10.0
+        uses: docker/setup-buildx-action@v4.2.0
 
       - name: Set Image Name Parameters
         id: set-image-name
@@ -153,7 +153,7 @@ jobs:
           echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Build Kmir Container
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile.kmir
