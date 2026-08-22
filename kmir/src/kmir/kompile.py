@@ -256,13 +256,12 @@ def kompile_smir(
     )
 
     target_hs_path = target_dir / 'haskell'
-    target_llvm_lib_path = target_dir / 'llvm-library'
     target_llvm_path = target_dir / 'llvm'
 
     if kompile_digest == expected_digest:
         _LOGGER.info(f'Kompiled SMIR up-to-date, no kompilation necessary: {target_dir}')
         if symbolic:
-            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=target_llvm_lib_path)
+            return KompiledSymbolic(haskell_dir=target_hs_path, llvm_lib_dir=kdist.which(llvm_lib_target))
         else:
             return KompiledConcrete(llvm_dir=target_llvm_path)
 
