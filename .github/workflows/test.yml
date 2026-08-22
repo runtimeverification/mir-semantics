@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: 'Get uv release'
         id: uv_release
         run: |
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: 'Get uv release'
         id: uv_release
         run: |
@@ -84,9 +84,8 @@ jobs:
             timeout: 60
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
-          token: ${{ secrets.JENKINS_GITHUB_PAT }}
           submodules: recursive
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
@@ -108,9 +107,8 @@ jobs:
     runs-on: [self-hosted, linux, normal]
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
-          token: ${{ secrets.JENKINS_GITHUB_PAT }}
           submodules: recursive
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
@@ -139,7 +137,7 @@ jobs:
       short-sha: ${{ steps.set-image-name.outputs.short-sha }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -212,12 +210,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [normal, MacM1]  # MacM1 / normal are self-hosted, 
+        runner: [normal, MacM1]  # MacM1 / normal are self-hosted,
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # Check out pull request HEAD instead of merge commit.
           ref: ${{ github.event.pull_request.head.sha }}
@@ -243,4 +241,3 @@ jobs:
           set -euxo pipefail
           nix --version
           nix flake check # build and run smoke test
-
