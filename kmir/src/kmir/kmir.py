@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from pyk.cli.utils import bug_report_arg
 from pyk.cterm import cterm_symbolic
 from pyk.kast.inner import KApply, KLabel, KSequence, KSort, KToken
+from pyk.kast.manip import flatten_label
 from pyk.kast.prelude.collections import map_of
 from pyk.kast.prelude.utils import token
 from pyk.kcfg.explore import KCFGExplore
@@ -86,6 +87,7 @@ class KMIR(KProve, KRun, KParse):
     class Symbols:
         END_PROGRAM: Final = KApply('#EndProgram_KMIR-CONTROL-FLOW_KItem')
         THUNK: Final = KLabel('thunk(_)_RT-DATA_Value_Evaluation')
+        SELECT_BLOCK: Final = KLabel('#selectBlock(_,_)_KMIR-CONTROL-FLOW_KItem_SwitchTargets_Evaluation')
 
     _MAP_CELL_LABELS: Final = frozenset(
         {
@@ -226,6 +228,47 @@ class KMIRSemantics(DefaultSemantics):
             if k_cell.arity == 1 and k_cell[0] == KMIR.Symbols.END_PROGRAM:
                 return True
         return False
+
+    # Loop heads for bounded model checking (APRProof.bmc_depth): pyk bounds a
+    # node once more than bmc_depth earlier nodes on its path are `same_loop`.
+
+    def is_loop(self, cterm: CTerm) -> bool:
+        """A node is a loop head if it is about to select a block at a `switchInt` (`#selectBlock`).
+
+        Every loop whose condition is symbolic splits the proof at such a node in each iteration.
+        """
+        return KMIRSemantics._loop_head(cterm) is not None
+
+    def same_loop(self, c1: CTerm, c2: CTerm) -> bool:
+        """Two loop heads are the same loop if they are the same `switchInt` of the same function at the same call depth.
+
+        The value being switched on and the local variables are not compared, as they change from one iteration to
+        the next. The call depth distinguishes the same loop in different (e.g. recursive) calls.
+        """
+        head1 = KMIRSemantics._loop_head(c1)
+        return head1 is not None and head1 == KMIRSemantics._loop_head(c2)
+
+    @staticmethod
+    def _loop_head(cterm: CTerm) -> tuple[KInner, KInner, int] | None:
+        """Return (current function, switch targets, call depth) if `cterm` is a loop head, else None."""
+        k_cell = cterm.cell('K_CELL')
+        first = k_cell[0] if type(k_cell) is KSequence and k_cell.arity > 0 else k_cell
+        if not (type(first) is KApply and first.label == KMIR.Symbols.SELECT_BLOCK):
+            return None
+        switch_targets = first.args[0]
+        return (cterm.cell('CURRENTFUNC_CELL'), switch_targets, KMIRSemantics._call_depth(cterm.cell('STACK_CELL')))
+
+    @staticmethod
+    def _call_depth(stack: KInner) -> int:
+        """The call depth given by a `<stack>`: its number of frames.
+
+        The frames themselves are not compared, as their locals change from one iteration to the next. A symbolic part
+        of the stack is not counted: along a path, the stack only changes at its front, so the symbolic part stays the
+        same.
+        """
+        return sum(
+            1 for item in flatten_label('_List_', stack) if type(item) is KApply and item.label.name == 'ListItem'
+        )
 
 
 class KMIRNodePrinter(NodePrinter):

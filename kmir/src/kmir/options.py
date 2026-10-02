@@ -75,6 +75,7 @@ class ProveOpts(KMirOpts):
     max_depth: int | None
     max_iterations: int | None
     max_workers: int | None
+    bmc_depth: int | None
     reload: bool
     fail_fast: bool
     maintenance_rate: int
@@ -111,6 +112,7 @@ class ProveOpts(KMirOpts):
         max_depth: int | None = None,
         max_iterations: int | None = None,
         max_workers: int | None = None,
+        bmc_depth: int | None = None,
         reload: bool = False,
         fail_fast: bool = False,
         maintenance_rate: int = 1,
@@ -144,6 +146,7 @@ class ProveOpts(KMirOpts):
         self.max_depth = max_depth
         self.max_iterations = max_iterations
         self.max_workers = max_workers
+        self.bmc_depth = bmc_depth
         self.reload = reload
         self.fail_fast = fail_fast
         self.maintenance_rate = maintenance_rate

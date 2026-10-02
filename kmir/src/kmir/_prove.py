@@ -39,6 +39,9 @@ def prove(opts: ProveOpts) -> list[APRProof]:
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
 
+    if opts.bmc_depth is not None and opts.bmc_depth < 0:
+        raise ValueError(f'Expected non-negative integer for `bmc_depth`, got: {opts.bmc_depth}')
+
     if opts.proof_dir is not None:
         if len(opts.start_symbols) == 1:
             label = f'{opts.rs_file.stem}.{opts.start_symbols[0]}'
@@ -71,6 +74,9 @@ def prove_with_kmir(
     if opts.max_workers is not None and opts.max_workers < 1:
         raise ValueError(f'Expected positive integer for `max_workers, got: {opts.max_workers}')
 
+    if opts.bmc_depth is not None and opts.bmc_depth < 0:
+        raise ValueError(f'Expected non-negative integer for `bmc_depth`, got: {opts.bmc_depth}')
+
     # No check for rs_file as smir_info already exists
     start_symbol = opts.start_symbols[0]
     label = f'{opts.rs_file.stem}.{start_symbol}'
@@ -82,6 +88,7 @@ def prove_with_kmir(
         smir_info,
         start_symbol=start_symbol,
         proof_dir=opts.proof_dir,
+        bmc_depth=opts.bmc_depth,
     )
     if opts.proof_dir is not None:
         kompiled_smir_path = opts.proof_dir / f'{opts.rs_file.stem}.kompiled' / 'smir.json'
@@ -150,6 +157,10 @@ def _prove_multi(opts: ProveOpts, target_path: Path) -> list[APRProof]:
     for label, start_symbol in zip(labels, opts.start_symbols, strict=True):
         if label in resumable:
             proof = resumable[label]
+            # An explicit --bmc-depth overrides the one stored with the proof.
+            if opts.bmc_depth is not None and opts.bmc_depth != proof.bmc_depth:
+                _LOGGER.info(f'Changing bmc_depth of {label} from {proof.bmc_depth} to {opts.bmc_depth}')
+                proof.bmc_depth = opts.bmc_depth
         else:
             _LOGGER.info(f'Constructing initial proof: {label}')
             proof = apr_proof_from_smir(
@@ -158,6 +169,7 @@ def _prove_multi(opts: ProveOpts, target_path: Path) -> list[APRProof]:
                 smir_info,
                 start_symbol=start_symbol,
                 proof_dir=opts.proof_dir,
+                bmc_depth=opts.bmc_depth,
             )
 
         proof = _advance_proof(kmir, proof, opts, label)
@@ -278,6 +290,7 @@ def apr_proof_from_smir(
     *,
     start_symbol: str = 'main',
     proof_dir: Path | None = None,
+    bmc_depth: int | None = None,
 ) -> APRProof:
     lhs_config, constraints = make_call_config(
         kmir.definition,
@@ -296,7 +309,7 @@ def apr_proof_from_smir(
     kcfg = KCFG()
     init_node = kcfg.create_node(lhs)
     target_node = kcfg.create_node(rhs)
-    return APRProof(id, kcfg, [], init_node.id, target_node.id, {}, proof_dir=proof_dir)
+    return APRProof(id, kcfg, [], init_node.id, target_node.id, {}, proof_dir=proof_dir, bmc_depth=bmc_depth)
 
 
 def _cut_point_rules(
