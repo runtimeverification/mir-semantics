@@ -12,8 +12,8 @@
 ┣━━┓
 ┃  │
 ┃  ├─ 4
-┃  │   Integer ( ARG_UINT1:Int *Int ARG_UINT2:Int &Int 255 , 8 , false )
-~> #freezer#se
+┃  │   Integer ( ARG_UINT1:Int *Int ARG_UINT2:Int , 8 , false )
+~> #freezer#setLocalVal
 ┃  │   span: 84
 ┃  │
 ┃  │  (71 steps)

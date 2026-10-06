@@ -5,6 +5,7 @@ requires "kmir-ast.md"
 requires "rt/data.md"
 requires "rt/configuration.md"
 requires "lemmas/kmir-lemmas.md"
+requires "lemmas/bitwise-lemmas.md"
 requires "cheatcodes.md"
 requires "intrinsics.md"
 ```
@@ -730,7 +731,7 @@ endmodule
 
 ## Top-level Module
 
-The top-level module `KMIR` includes both the control flow constructs (and transitively all modules related to runtime operations and AST) and a collection of simplification lemmas required for symbolic execution of MIR programs.
+The top-level module `KMIR` includes both the control flow constructs (and transitively all modules related to runtime operations and AST) and collections of simplification lemmas required for symbolic execution of MIR programs.
 
 ```k
 module KMIR
@@ -739,4 +740,5 @@ module KMIR
   imports KMIR-CHEATCODES
   imports KMIR-INTRINSICS
   imports KMIR-LEMMAS
+  imports KMIR-BITWISE-LEMMAS
 endmodule

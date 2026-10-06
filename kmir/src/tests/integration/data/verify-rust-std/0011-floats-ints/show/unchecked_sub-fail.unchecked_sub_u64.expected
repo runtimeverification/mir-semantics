@@ -12,7 +12,8 @@
 ┣━━┓
 ┃  │
 ┃  ├─ 4
-┃  │   Integer ( ARG_UINT1:Int -Int ARG_UINT2:Int &Int 18446744073709551615 , 64 , fals
+┃  │   Integer ( ARG_UINT1:Int -Int ARG_UINT2:Int , 64 , false )
+~> #freezer#setLocalVa
 ┃  │   span: 270
 ┃  │
 ┃  │  (71 steps)
