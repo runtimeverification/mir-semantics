@@ -12,7 +12,8 @@
 ┣━━┓
 ┃  │
 ┃  ├─ 4
-┃  │   Integer ( ARG_UINT1:Int +Int ARG_UINT2:Int &Int 34028236692093846346337460743176
+┃  │   Integer ( ARG_UINT1:Int +Int ARG_UINT2:Int , 128 , false )
+~> #freezer#setLocalV
 ┃  │   span: 332
 ┃  │
 ┃  │  (71 steps)
