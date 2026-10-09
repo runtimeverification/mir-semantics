@@ -117,6 +117,51 @@ def test_prove(rs_file: Path, kmir: KMIR, update_expected_output: bool) -> None:
             assert apr_proof.failed
 
 
+PROVE_BMC_FILE = (Path(__file__).parent / 'data' / 'prove-bmc' / 'loops.rs').resolve(strict=True)
+# start symbol, --bmc-depth, --break-on-terminator-switch-int, expected paths reaching the end, expected bounded nodes
+PROVE_BMC_TESTS = [
+    # A loop on a symbolic condition is explored for 0 to bmc_depth iterations: one exit path per number of iterations,
+    # and the next loop head is bounded.
+    ('count_up', 0, False, 1, 1),
+    ('count_up', 1, False, 2, 1),
+    ('count_up', 2, False, 3, 1),
+    # A loop on a decided condition has no loop heads unless the proof breaks at its switchInt.
+    ('count_fixed', 2, True, 0, 1),
+    ('count_fixed', 2, False, 1, 0),
+    # Two loops in sequence are bounded independently: 2 exits from the first loop, each followed by 2 exits from the
+    # second; one bounded node for the first loop, and one for the second after each exit from the first.
+    ('two_loops', 1, False, 4, 3),
+]
+
+
+@pytest.mark.parametrize(
+    'start_symbol,bmc_depth,break_on_switch_int,exits,bounded',
+    PROVE_BMC_TESTS,
+    ids=[f'{t[0]}-depth{t[1]}{"-break" if t[2] else ""}' for t in PROVE_BMC_TESTS],
+)
+def test_prove_bmc(
+    start_symbol: str, bmc_depth: int, break_on_switch_int: bool, exits: int, bounded: int, kmir: KMIR
+) -> None:
+    prove_opts = ProveOpts(
+        PROVE_BMC_FILE,
+        start_symbols=[start_symbol],
+        bmc_depth=bmc_depth,
+        break_on_terminator_switch_int=break_on_switch_int,
+        terminate_on_thunk=True,
+    )
+    apr_proof = kmir.prove_program(prove_opts)
+
+    assert apr_proof.passed
+    assert apr_proof.bmc_depth == bmc_depth
+    assert len(apr_proof.kcfg.covers(target_id=apr_proof.target)) == exits
+    assert len(apr_proof.bounded) == bounded
+
+
+def test_prove_bmc_negative_depth(kmir: KMIR) -> None:
+    with pytest.raises(ValueError, match='bmc_depth'):
+        kmir.prove_program(ProveOpts(PROVE_BMC_FILE, start_symbols=['count_up'], bmc_depth=-1))
+
+
 VERIFY_RUST_STD_DIR = (Path(__file__).parent / 'data' / 'verify-rust-std').resolve(strict=True)
 VERIFY_RUST_STD_FILES = list(VERIFY_RUST_STD_DIR.glob('**/*.rs'))
 VERIFY_RUST_STD_START_SYMBOLS = {

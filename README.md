@@ -126,6 +126,24 @@ uv --project kmir run kmir prove program.rs --proof-dir ./proofs --add-module le
 
 Other useful `prove` break flags: `--break-every-step`, `--break-every-terminator`, `--break-on-thunk`, `--terminate-on-thunk`.
 
+### Bounding loops
+
+A loop whose condition depends on symbolic values may never terminate symbolically if its looping condition can't be decided,
+instead branching at every iteration on whether it breaks out of the loop or not. The option `--bmc-depth N` (bounded model
+checking) bounds the number of iterations explored for every such loop, stopping executing a path if it reaches the same loop
+head more than N times (and marking the node where it stopped as *bounded*):
+
+```bash
+uv --project kmir run kmir prove program.rs --start-symbol my_fn --bmc-depth 8
+```
+
+- A loop head is a `switchInt` about to select its target block. A loop on a symbolic condition gets one at every
+  iteration, since the proof splits there. A loop whose condition is decided gets none, as it runs without branching;
+  add `--break-on-terminator-switch-int` to bound such loops too.
+- Bounded nodes are neither failing nor pending, so a proof with `bounded:` > 0 in `kmir show --statistics` can still be
+  `PASSED`: it then only holds for up to N iterations of each loop.
+- Resuming a proof keeps already-bounded nodes bounded; use `--reload` to explore further with a larger N.
+
 ### Generate Stable MIR JSON manually
 
 After `make stable-mir-json`:

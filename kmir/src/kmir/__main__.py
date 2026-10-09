@@ -374,6 +374,15 @@ def _arg_parser() -> ArgumentParser:
         '--max-iterations', metavar='ITERATIONS', type=int, help='max number of proof iterations to take'
     )
     prove_args.add_argument(
+        '--bmc-depth',
+        metavar='DEPTH',
+        type=int,
+        help=(
+            'Bounded model checking: explore each loop for at most DEPTH iterations, marking the rest as bounded. '
+            'Loops on decided conditions are only bounded with --break-on-terminator-switch-int'
+        ),
+    )
+    prove_args.add_argument(
         '--reload', action='store_true', help='Discard any existing proof progress and restart from scratch'
     )
     prove_args.add_argument(
@@ -727,6 +736,7 @@ def _parse_args(ns: Namespace) -> KMirOpts:
                 max_depth=ns.max_depth,
                 max_iterations=ns.max_iterations,
                 max_workers=ns.max_workers,
+                bmc_depth=ns.bmc_depth,
                 reload=ns.reload,
                 fail_fast=ns.fail_fast,
                 maintenance_rate=ns.maintenance_rate,
