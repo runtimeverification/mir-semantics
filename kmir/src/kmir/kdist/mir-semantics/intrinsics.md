@@ -182,7 +182,7 @@ the dereferenced operand is evaluated (i.e., the value is read from memory) befo
        ... </k>
 ```
 
-#### Rotate Left (`std::intrinsics::rotate_left`)
+#### Rotate Left (`std::intrinsics::rotate_left`) and Right (`std::intrinsics::rotate_right`)
 
 The `rotate_left` intrinsic performs a bitwise left rotation on an integer value. For an N-bit integer,
 `rotate_left(x, r)` shifts bits left by `r` positions, wrapping the overflowing bits back to the right.
@@ -209,6 +209,35 @@ did not wrap around, and read back as signed for signed types.
 
   rule <k> #execRotateLeft(DEST, Integer(VAL, WIDTH, true), Integer(ROT, _, _))
         => #setLocalValue(DEST, Integer(truncate(#rotateLeftInt(truncate(VAL, WIDTH, Unsigned), WIDTH, ROT), WIDTH, Signed), WIDTH, true))
+       ... </k>
+    [preserves-definedness]
+```
+
+The `rotate_right` intrinsic performs a bitwise right rotation on an integer value. For an N-bit integer,
+`rotate_right(x, r)` shifts bits right by `r` positions, wrapping the bits shifted out back to the left.
+The rotation amount is taken modulo N. As for `rotate_left`, a helper with `seqstrict` evaluates both
+operands first. The bits wrapped around to the left are shifted past bit N-1 as well, so the result is
+truncated to N bits, and read back as signed for signed types.
+
+```k
+  syntax KItem ::= #execRotateRight(Place, Evaluation, Evaluation) [seqstrict(2,3)]
+
+  rule <k> #execIntrinsic(IntrinsicFunction(symbol("rotate_right")), ARG1:Operand ARG2:Operand .Operands, DEST, _SPAN)
+        => #execRotateRight(DEST, ARG1, ARG2)
+       ... </k>
+
+  syntax Int ::= #rotateRightInt(Int, Int, Int) [function, total]
+  rule #rotateRightInt(VAL, WIDTH, ROT) => (VAL >>Int (ROT modInt WIDTH)) |Int (VAL <<Int (WIDTH -Int (ROT modInt WIDTH)))
+    requires WIDTH >Int 0
+  rule #rotateRightInt(_, _, _) => 0 [owise]
+
+  rule <k> #execRotateRight(DEST, Integer(VAL, WIDTH, false), Integer(ROT, _, _))
+        => #setLocalValue(DEST, Integer(truncate(#rotateRightInt(truncate(VAL, WIDTH, Unsigned), WIDTH, ROT), WIDTH, Unsigned), WIDTH, false))
+       ... </k>
+    [preserves-definedness]
+
+  rule <k> #execRotateRight(DEST, Integer(VAL, WIDTH, true), Integer(ROT, _, _))
+        => #setLocalValue(DEST, Integer(truncate(#rotateRightInt(truncate(VAL, WIDTH, Unsigned), WIDTH, ROT), WIDTH, Signed), WIDTH, true))
        ... </k>
     [preserves-definedness]
 ```
