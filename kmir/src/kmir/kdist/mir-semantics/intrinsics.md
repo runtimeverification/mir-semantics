@@ -187,7 +187,8 @@ the dereferenced operand is evaluated (i.e., the value is read from memory) befo
 The `rotate_left` intrinsic performs a bitwise left rotation on an integer value. For an N-bit integer,
 `rotate_left(x, r)` shifts bits left by `r` positions, wrapping the overflowing bits back to the right.
 The rotation amount is taken modulo N. We use a helper with `seqstrict` to evaluate both operands before
-computing the rotation.
+computing the rotation. The rotated bit pattern is then truncated to N bits, keeping only the bits that
+did not wrap around, and read back as signed for signed types.
 
 ```k
   syntax KItem ::= #execRotateLeft(Place, Evaluation, Evaluation) [seqstrict(2,3)]
@@ -201,8 +202,13 @@ computing the rotation.
     requires WIDTH >Int 0
   rule #rotateLeftInt(_, _, _) => 0 [owise]
 
-  rule <k> #execRotateLeft(DEST, Integer(VAL, WIDTH, SIGN), Integer(ROT, _, _))
-        => #setLocalValue(DEST, Integer(#rotateLeftInt(truncate(VAL, WIDTH, Unsigned), WIDTH, ROT), WIDTH, SIGN))
+  rule <k> #execRotateLeft(DEST, Integer(VAL, WIDTH, false), Integer(ROT, _, _))
+        => #setLocalValue(DEST, Integer(truncate(#rotateLeftInt(truncate(VAL, WIDTH, Unsigned), WIDTH, ROT), WIDTH, Unsigned), WIDTH, false))
+       ... </k>
+    [preserves-definedness]
+
+  rule <k> #execRotateLeft(DEST, Integer(VAL, WIDTH, true), Integer(ROT, _, _))
+        => #setLocalValue(DEST, Integer(truncate(#rotateLeftInt(truncate(VAL, WIDTH, Unsigned), WIDTH, ROT), WIDTH, Signed), WIDTH, true))
        ... </k>
     [preserves-definedness]
 ```

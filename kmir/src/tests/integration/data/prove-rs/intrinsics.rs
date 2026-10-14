@@ -40,6 +40,24 @@ pub fn test_rotate_left() {
 }
 
 #[no_mangle]
+pub fn test_rotate_left_wrap() {
+    let x: u32 = 0x8000_0001;
+    let r = x.rotate_left(4);
+    // the bits shifted out at the top must reappear at the bottom only
+    assert!(r >> 4 == 0x0000_0001);
+    assert!(r & 0xF == 0x8);
+}
+
+#[no_mangle]
+pub fn test_rotate_left_signed() {
+    // i8::rotate_left goes through u8, so call the intrinsic on i8 directly
+    let x: i8 = 0x40;
+    let r = intrinsics::rotate_left(x, 1); // bit pattern 0x80, i.e. -128
+    assert!(r < 0);
+    assert!(r == i8::MIN);
+}
+
+#[no_mangle]
 pub fn test_bswap() {
     let x: u32 = 0x12345678;
     let r = x.swap_bytes();
