@@ -52,6 +52,7 @@ runs:
         "${TAG}"
 
       # Copy the sources in instead of bind-mounting them: on rootless Podman runners the
-      # container user cannot write to a bind-mounted host directory.
-      docker cp . "${CONTAINER_NAME}:${WORKSPACE}"
+      # container user cannot write to a bind-mounted host directory. './.' copies the
+      # directory's contents; a bare '.' lands in a subdirectory with some Podman versions.
+      docker cp ./. "${CONTAINER_NAME}:${WORKSPACE}"
       docker exec --user root "${CONTAINER_NAME}" chown -R "${CONTAINER_USER}:${CONTAINER_GROUP}" "${WORKSPACE}"
