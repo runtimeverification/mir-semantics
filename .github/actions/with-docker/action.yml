@@ -20,34 +20,38 @@ runs:
       RUST_TOOLCHAIN=$(sed -nE 's/^channel = "([^"]+)"/\1/p' rust-toolchain.toml)
       test -n "${RUST_TOOLCHAIN}"
 
-      USER=github-user
-      GROUP=${USER}
-      USER_ID=1000
-      GROUP_ID=${USER_ID}
+      # Not USER: that variable is exported, and rootless Podman looks up the runner
+      # user's subordinate UIDs by $USER. Overriding it leaves the container with
+      # only root mapped.
+      CONTAINER_USER=github-user
+      CONTAINER_GROUP=${CONTAINER_USER}
+      CONTAINER_UID=1000
+      CONTAINER_GID=${CONTAINER_UID}
+      WORKSPACE=/home/${CONTAINER_USER}/workspace
 
       docker build . --tag "${TAG}"                    \
         --file .github/workflows/Dockerfile            \
         --build-arg K_COMMIT="${K_COMMIT}"             \
-        --build-arg USER="${USER}"                     \
-        --build-arg GROUP="${GROUP}"                   \
-        --build-arg USER_ID="${USER_ID}"               \
-        --build-arg GROUP_ID="${GROUP_ID}"             \
+        --build-arg USER="${CONTAINER_USER}"           \
+        --build-arg GROUP="${CONTAINER_GROUP}"         \
+        --build-arg USER_ID="${CONTAINER_UID}"         \
+        --build-arg GROUP_ID="${CONTAINER_GID}"        \
         --build-arg RUST_TOOLCHAIN="${RUST_TOOLCHAIN}" \
         --build-arg UV_VERSION="${UV_VERSION}"
 
       # A container left over from a canceled run of the same commit would make 'docker run' fail.
       docker rm -f "${CONTAINER_NAME}" || true
 
-      docker run                            \
-        --name "${CONTAINER_NAME}"          \
-        --rm                                \
-        --interactive                       \
-        --tty                               \
-        --detach                            \
-        --workdir "/home/${USER}/workspace" \
+      docker run                   \
+        --name "${CONTAINER_NAME}" \
+        --rm                       \
+        --interactive              \
+        --tty                      \
+        --detach                   \
+        --workdir "${WORKSPACE}"   \
         "${TAG}"
 
       # Copy the sources in instead of bind-mounting them: on rootless Podman runners the
       # container user cannot write to a bind-mounted host directory.
-      docker cp . "${CONTAINER_NAME}:/home/${USER}/workspace"
-      docker exec --user root "${CONTAINER_NAME}" chown -R "${USER}:${GROUP}" "/home/${USER}/workspace"
+      docker cp . "${CONTAINER_NAME}:${WORKSPACE}"
+      docker exec --user root "${CONTAINER_NAME}" chown -R "${CONTAINER_USER}:${CONTAINER_GROUP}" "${WORKSPACE}"
