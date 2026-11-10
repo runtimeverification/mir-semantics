@@ -6,23 +6,30 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# No job here writes to the repository, so the token stays read-only regardless of
+# the repository default.
+permissions:
+  contents: read
+
 jobs:
   code-quality-checks:
     name: 'Code Quality Checks'
     runs-on: ubuntu-latest
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
       - name: 'Get uv release'
         id: uv_release
         run: |
-          echo uv_version=$(cat deps/uv_release) >> "${GITHUB_OUTPUT}"
+          echo "uv_version=$(cat deps/uv_release)" >> "${GITHUB_OUTPUT}"
       - name: 'Install uv'
-        uses: astral-sh/setup-uv@v9.0.0
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
         with:
           version: ${{ steps.uv_release.outputs.uv_version }}
       - name: 'Install Nix'
-        uses: cachix/install-nix-action@v31.11.0
+        uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b  # v31.11.3
         with:
           install_url: https://releases.nixos.org/nix/nix-2.31.2/install
           extra_nix_config: |
@@ -37,13 +44,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
       - name: 'Get uv release'
         id: uv_release
         run: |
-          echo uv_version=$(cat deps/uv_release) >> "${GITHUB_OUTPUT}"
+          echo "uv_version=$(cat deps/uv_release)" >> "${GITHUB_OUTPUT}"
       - name: 'Install uv'
-        uses: astral-sh/setup-uv@v9.0.0
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2  # v10.3.3
         with:
           version: ${{ steps.uv_release.outputs.uv_version }}
       - name: 'Run unit tests'
@@ -82,78 +91,87 @@ jobs:
             test-args: '-k "not llvm and not test_run_smir_random and not test_exec_smir and not test_prove_termination and not test_prove and not test_verify_rust_std"'
             parallel: 6
             timeout: 60
+    env:
+      # One container per matrix entry: several entries can land on the same runner.
+      CONTAINER: mir-semantics-${{ github.job }}-${{ strategy.job-index }}-${{ github.sha }}
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
         with:
-          container-name: mir-semantics-ci-${{ github.sha }}
+          container-name: ${{ env.CONTAINER }}
       - name: 'Build stable-mir-json and kmir'
-        run: docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make build
+        run: docker exec --user github-user "${CONTAINER}" make build
       - name: 'Run integration tests'
+        env:
+          TEST_ARGS: ${{ matrix.test-args }}
+          PARALLEL: ${{ matrix.parallel }}
         run: |
-          docker exec --user github-user mir-semantics-ci-${GITHUB_SHA} make test-integration \
-            TEST_ARGS='${{ matrix.test-args }}' PARALLEL=${{ matrix.parallel }}
+          docker exec --user github-user "${CONTAINER}" make test-integration \
+            TEST_ARGS="${TEST_ARGS}" PARALLEL="${PARALLEL}"
       - name: 'Tear down Docker'
         if: always()
-        run: docker stop --time 0 mir-semantics-ci-${GITHUB_SHA}
+        run: |
+          # Best effort: the container does not exist if 'Set up Docker' failed, and a
+          # non-zero exit here would mask the step that actually failed.
+          docker rm -f "${CONTAINER}" || true
 
   stable-mir-json-integration-tests:
     needs: code-quality-checks
     name: "Integration with stable-mir-json"
     runs-on: [self-hosted, linux, normal]
+    env:
+      CONTAINER: mir-semantics-${{ github.job }}-${{ github.sha }}
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
         with:
-          container-name: mir-smir-ci-${{ github.sha }}
+          container-name: ${{ env.CONTAINER }}
       - name: 'Build stable-mir-json'
-        run: docker exec --user github-user mir-smir-ci-${GITHUB_SHA} make stable-mir-json
+        run: docker exec --user github-user "${CONTAINER}" make stable-mir-json
       - name: 'Build kmir (within docker)'
-        run: docker exec --user github-user mir-smir-ci-${GITHUB_SHA} make build
+        run: docker exec --user github-user "${CONTAINER}" make build
       - name: 'Run parser tests (within docker)'
-        run: docker exec --user github-user mir-smir-ci-${GITHUB_SHA} make smir-parse-tests
+        run: docker exec --user github-user "${CONTAINER}" make smir-parse-tests
       - name: 'Tear down Docker'
         if: always()
-        run: docker stop --time 0 mir-smir-ci-${GITHUB_SHA}
+        run: |
+          # Best effort, see the integration-tests job.
+          docker rm -f "${CONTAINER}" || true
 
   test-kmir-image:
     name: Test Kmir Image
     needs: [ unit-tests, code-quality-checks ]
     runs-on: ubuntu-latest
     env:
-      container_name: "kmir-${{ github.run_id }}"
-    outputs:
-      image-name: ${{ steps.set-image-name.outputs.image-name }}
-      k-version: ${{ steps.set-image-name.outputs.k-version }}
-      kmir-version: ${{ steps.set-image-name.outputs.kmir-version }}
-      short-sha: ${{ steps.set-image-name.outputs.short-sha }}
+      CONTAINER: "kmir-${{ github.run_id }}"
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v4.2.0
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069  # v4.4.1
 
       - name: Set Image Name Parameters
         id: set-image-name
         run: |
-          echo "image-name=ghcr.io/runtimeverification/mir-semantics/kmir" >> $GITHUB_OUTPUT
-          echo "k-version=$(cat deps/k_release)" >> $GITHUB_OUTPUT
-          echo "kmir-version=$(cat package/version)" >> $GITHUB_OUTPUT
-          echo "short-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          echo "k-version=$(cat deps/k_release)" >> "$GITHUB_OUTPUT"
+          echo "image=kmir:ubuntu-jammy-$(cat package/version)-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Build Kmir Container
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc  # v7.4.0
         with:
           context: .
           file: Dockerfile.kmir
@@ -162,29 +180,31 @@ jobs:
           load: true
           build-args: |
             K_VERSION=${{ steps.set-image-name.outputs.k-version }}
-          tags: ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }}
+          tags: ${{ steps.set-image-name.outputs.image }}
 
       - name: Container Sanity Check
+        env:
+          IMAGE: ${{ steps.set-image-name.outputs.image }}
         run: |
           # Create output directories for each test
           for k_file in kmir/src/tests/integration/data/*/*-spec.k; do
-            proof_dir="$(dirname ${k_file})/proofs"
+            proof_dir="$(dirname "${k_file}")/proofs"
             mkdir -p "${proof_dir}"
             chmod 777 "${proof_dir}"
           done
 
           # Start Container
           docker run --detach --rm -t \
-            --name ${{ env.container_name }} \
-            -v $PWD:/home/kmir/workspace \
+            --name "${CONTAINER}" \
+            -v "$PWD:/home/kmir/workspace" \
             -w /home/kmir/workspace \
-            ${{ steps.set-image-name.outputs.image-name }}:ubuntu-jammy-${{ steps.set-image-name.outputs.kmir-version }}-${{ steps.set-image-name.outputs.short-sha }} \
+            "${IMAGE}" \
             /bin/bash
 
           # Run all tests in a single exec command to maintain fixuid context
           docker exec \
             -w /home/kmir/workspace \
-            ${{ env.container_name }} \
+            "${CONTAINER}" \
             /bin/bash -c '
               for k_file in kmir/src/tests/integration/data/*/*-spec.k; do
                 echo "Running ${k_file}"
@@ -197,11 +217,11 @@ jobs:
 
           # Print test results
           echo "Test results:"
-          find kmir/src/tests/integration/data -name "proofs" -type d -exec echo {} >> GITHUB_STEP_SUMMARY \;
+          find kmir/src/tests/integration/data -name "proofs" -type d >> "$GITHUB_STEP_SUMMARY"
 
       - name: Tear Down Container
         if: always()
-        run: docker stop ${{ env.container_name }}
+        run: docker rm -f "${CONTAINER}" || true
 
 
   nix:
@@ -210,33 +230,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [normal, MacM1]  # MacM1 / normal are self-hosted, 
+        runner: [normal, MacM1]  # Both are self-hosted.
+    # Both runners have Nix installed. Neither Nix nor cachix-action is installed here:
+    # cachix-action would pick up a revoked token stored on the runners.
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           # Check out pull request HEAD instead of merge commit.
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: recursive
-
-      - name: 'Install Nix'
-        if: ${{ matrix.runner != 'MacM1' }}
-        uses: cachix/install-nix-action@v31.11.0
-        with:
-          install_url: https://releases.nixos.org/nix/nix-2.31.2/install
-          # k-framework is a public Cachix cache, so we pull it as an ordinary
-          # anonymous substituter (URL + public key, both public info). This
-          # replaces cachix/cachix-action, which authenticated with a token
-          # configured on the runner and thus kept a secret in scope for CI.
-          extra_nix_config: |
-            substituters = http://cache.nixos.org https://cache.iog.io https://k-framework.cachix.org
-            trusted-public-keys = cache.nixos.org k-framework.cachix.org-1:jeyMXB2h28gpNRjuVkehg+zLj62ma1RnyyopA/20yFE=
+          persist-credentials: false
 
       - name: 'Build and test'
         run: |
           set -euxo pipefail
           nix --version
           nix flake check # build and run smoke test
-

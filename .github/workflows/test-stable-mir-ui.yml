@@ -15,36 +15,45 @@ on:
         type: string
         default: '300'
 
+# Runs of the same commit share a container name, so they must not overlap.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
+
+# No job here writes to the repository, so the token stays read-only regardless of
+# the repository default.
+permissions:
+  contents: read
+
 jobs:
   stable-mir-ui-tests:
     name: 'Stable MIR UI Tests'
     runs-on: [self-hosted, linux, normal]
     env:
-      CONTAINER_NAME: mir-ui-ci-${{ github.sha }}
+      CONTAINER_NAME: mir-semantics-${{ github.job }}-${{ github.sha }}
     steps:
       - name: 'Check out code'
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           submodules: recursive
+          persist-credentials: false
 
       - name: 'Check out Rust repo'
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           repository: rust-lang/rust
           path: rust
           fetch-depth: 1
+          persist-credentials: false
 
       - name: 'Set up Docker'
         uses: ./.github/actions/with-docker
         with:
           container-name: ${{ env.CONTAINER_NAME }}
 
-      - name: 'Copy Rust repo into container'
-        run: docker cp rust ${{ env.CONTAINER_NAME }}:/home/github-user/workspace/rust
-
       - name: 'Align Rust checkout with active toolchain'
         run: |
-          docker exec --user github-user ${{ env.CONTAINER_NAME }} bash -lc '
+          docker exec --user github-user "${CONTAINER_NAME}" bash -lc '
             set -euo pipefail
             cd /home/github-user/workspace
             rust_commit="$(rustc -vV | sed -n "s/^commit-hash: //p")"
@@ -54,10 +63,10 @@ jobs:
           '
 
       - name: 'Build stable-mir-json'
-        run: docker exec --user github-user ${{ env.CONTAINER_NAME }} make stable-mir-json
+        run: docker exec --user github-user "${CONTAINER_NAME}" make stable-mir-json
 
       - name: 'Build kmir'
-        run: docker exec --user github-user ${{ env.CONTAINER_NAME }} make build
+        run: docker exec --user github-user "${CONTAINER_NAME}" make build
 
       - name: 'Run stable-mir-ui tests'
         env:
@@ -75,7 +84,7 @@ jobs:
           printf -v test_args_escaped '%q ' "${test_args[@]}"
           docker exec --user github-user \
             --env RUST_DIR_ROOT=rust \
-            ${{ env.CONTAINER_NAME }} \
+            "${CONTAINER_NAME}" \
             make test-stable-mir-ui "TEST_ARGS=${test_args_escaped}"
 
       - name: 'Copy proof artifacts from container'
@@ -83,7 +92,7 @@ jobs:
         run: |
           rm -rf .github-artifacts/proof-artifacts
           mkdir -p .github-artifacts/proof-artifacts
-          docker exec --user github-user ${{ env.CONTAINER_NAME }} bash -lc '
+          docker exec --user github-user "${CONTAINER_NAME}" bash -lc '
             set -euo pipefail
             artifact_dir=/home/github-user/workspace/.github-artifacts/proof-artifacts
             rm -rf "$artifact_dir"
@@ -100,11 +109,11 @@ jobs:
               cp -R "$case_dir" "$dest"
             done
           '
-          docker cp ${{ env.CONTAINER_NAME }}:/home/github-user/workspace/.github-artifacts/proof-artifacts/. .github-artifacts/proof-artifacts/ || true
+          docker cp "${CONTAINER_NAME}:/home/github-user/workspace/.github-artifacts/proof-artifacts/." .github-artifacts/proof-artifacts/ || true
 
       - name: 'Upload proof artifacts on failure'
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         with:
           name: proof-artifacts
           path: .github-artifacts/proof-artifacts
@@ -116,12 +125,12 @@ jobs:
           rm -rf .github-artifacts/update-skip
           mkdir -p .github-artifacts/update-skip
           docker cp \
-            ${{ env.CONTAINER_NAME }}:/home/github-user/workspace/kmir/src/tests/external/data/stable-mir-ui/skip.txt \
+            "${CONTAINER_NAME}:/home/github-user/workspace/kmir/src/tests/external/data/stable-mir-ui/skip.txt" \
             .github-artifacts/update-skip/skip.txt || true
 
       - name: 'Upload updated skip.txt'
         if: inputs.update-skip
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
         with:
           name: updated-skip-txt
           path: .github-artifacts/update-skip/skip.txt
@@ -129,4 +138,7 @@ jobs:
 
       - name: 'Tear down Docker'
         if: always()
-        run: docker stop --time 0 ${{ env.CONTAINER_NAME }}
+        run: |
+          # Best effort: the container does not exist if 'Set up Docker' failed, and a
+          # non-zero exit here would mask the step that actually failed.
+          docker rm -f "${CONTAINER_NAME}" || true
