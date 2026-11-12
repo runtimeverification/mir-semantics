@@ -26,9 +26,10 @@ stable-mir-json:
 	${TOP_DIR}/deps/.stable-mir-json/release.sh --version || ${TOP_DIR}/deps/.stable-mir-json/debug.sh --version
 
 # generate smir and parse given test files (from parameter or run-rs subdirectory)
-smir-parse-tests: TESTS = $(shell find $(PWD)/kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
+smir-parse-tests: TESTS = $(shell find $(CURDIR)/kmir/src/tests/integration/data/run-rs -type f -name "*.rs")
 smir-parse-tests: SMIR = cargo -q -Z unstable-options -C deps/stable-mir-json run --
 smir-parse-tests: # build # commented out for CI's sake
+	[ -n "${TESTS}" ] || { echo "smir-parse-tests: no tests found" >&2; exit 1; }; \
 	errors=""; \
 	report() { echo $$2; errors="$$errors $$1"; }; \
 	for source in ${TESTS}; do \

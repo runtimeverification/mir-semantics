@@ -1,6 +1,8 @@
 ARG K_DISTRO=jammy
 ARG K_COMMIT
-FROM runtimeverificationinc/kframework-k:ubuntu-${K_DISTRO}-${K_COMMIT}
+# Fully qualified: rootless Podman refuses short names when no unqualified-search
+# registry is configured.
+FROM docker.io/runtimeverificationinc/kframework-k:ubuntu-${K_DISTRO}-${K_COMMIT}
 RUN    apt-get update        \
     && apt-get upgrade --yes \
     && apt-get install --yes \
